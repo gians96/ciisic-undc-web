@@ -47,7 +47,5 @@ export default defineNuxtConfig({
       mode: 'out-in'
     }
   },
-  nitro: {
-    preset: 'static'
-  }
+
 })
