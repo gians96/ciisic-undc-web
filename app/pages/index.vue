@@ -29,9 +29,9 @@
 <script setup lang="ts">
 // Page metadata
 useHead({
-  title: 'VII CIISIC - Gaming Platform',
+  title: 'VII CIISIC | UNDC',
   meta: [
-    { name: 'description', content: 'Professional gaming platform with tournaments, NFTs, and community features' }
+    { name: 'description', content: 'Sistema de informacion del VII CIISIC' }
   ]
 })
 </script>

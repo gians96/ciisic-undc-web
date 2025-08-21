@@ -1,25 +1,23 @@
 <template>
-  <header 
-    id="header" 
+  <header
+    id="header"
     :class="headerClasses"
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
   >
     <!-- Container Principal -->
     <div class="custom-container">
       <div class="flex items-center justify-between h-16 lg:h-20">
-        
         <!-- Logo -->
-        <div class="flex-shrink-0">
-          <NuxtLink to="/" class="flex items-center space-x-2 group">
+        <div class="flex items-center">
+          <NuxtLink to="/" class="flex items-center space-x-3">
             <NuxtImg
-              src="/images/logo/logo.png"
-              alt="MYKD Logo"
-              width="120"
-              height="40"
-              class="h-8 lg:h-10 w-auto transition-transform duration-300 group-hover:scale-105"
-              loading="eager"
-              format="webp"
+              src="images/logo/preloader.png"
+              alt="Logo CIISIC"
+              class="w-10 h-10 object-contain"
             />
+            <span class="text-white font-bold text-xl tracking-wider"
+              >VII CIISIC</span
+            >
           </NuxtLink>
         </div>
 
@@ -34,14 +32,14 @@
               class="relative px-3 py-2 text-sm font-medium transition-all duration-300 hover:text-primary group"
             >
               {{ item.label }}
-              <span 
+              <span
                 v-if="navigationStore.isActiveRoute(item.href)"
                 class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-primary"
               />
             </NuxtLink>
 
             <!-- Items con dropdown -->
-            <div 
+            <div
               v-else
               class="relative group"
               @mouseenter="showDropdown(item.id)"
@@ -52,11 +50,11 @@
                 class="flex items-center px-3 py-2 text-sm font-medium transition-all duration-300 hover:text-primary group"
               >
                 {{ item.label }}
-                <Icon 
-                  name="heroicons:chevron-down" 
-                  class="ml-1 h-4 w-4 transition-transform duration-300 group-hover:rotate-180" 
+                <Icon
+                  name="heroicons:chevron-down"
+                  class="ml-1 h-4 w-4 transition-transform duration-300 group-hover:rotate-180"
                 />
-                <span 
+                <span
                   v-if="navigationStore.isParentRoute(item.href)"
                   class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-primary"
                 />
@@ -101,7 +99,7 @@
             aria-label="Carrito de compras"
           >
             <Icon name="heroicons:shopping-bag" class="h-5 w-5" />
-            <span 
+            <span
               v-if="cartItemsCount > 0"
               class="absolute -top-1 -right-1 h-4 w-4 bg-primary text-black text-xs rounded-full flex items-center justify-center font-bold"
             >
@@ -117,10 +115,7 @@
             >
               Iniciar Sesión
             </NuxtLink>
-            <NuxtLink
-              to="/register"
-              class="btn btn-primary text-sm"
-            >
+            <NuxtLink to="/register" class="btn btn-primary text-sm">
               Registrarse
             </NuxtLink>
           </div>
@@ -132,16 +127,20 @@
           class="lg:hidden p-2 text-gray-400 hover:text-primary transition-colors duration-300"
           aria-label="Menú móvil"
         >
-          <Icon 
-            :name="layoutStore.isMobileMenuOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'" 
-            class="h-6 w-6" 
+          <Icon
+            :name="
+              layoutStore.isMobileMenuOpen
+                ? 'heroicons:x-mark'
+                : 'heroicons:bars-3'
+            "
+            class="h-6 w-6"
           />
         </button>
       </div>
     </div>
 
     <!-- Indicador de Progreso de Scroll -->
-    <div 
+    <div
       class="absolute bottom-0 left-0 h-0.5 bg-gradient-primary transition-all duration-300"
       :style="{ width: `${scrollProgress}%` }"
     />
@@ -153,76 +152,78 @@
 // IMPORTS
 // ============================================================================
 
-import { storeToRefs } from 'pinia'
-import { useLayoutStore } from '~/stores/layout'
-import { useNavigationStore } from '~/stores/navigation'
-import { useScroll } from '~/composables/useScroll'
+import { storeToRefs } from "pinia";
+import { useLayoutStore } from "~/stores/layout";
+import { useNavigationStore } from "~/stores/navigation";
+import { useScroll } from "~/composables/useScroll";
 
 // ============================================================================
 // STORES Y COMPOSABLES
 // ============================================================================
 
-const layoutStore = useLayoutStore()
-const navigationStore = useNavigationStore()
-const { scrollY } = useScroll()
+const layoutStore = useLayoutStore();
+const navigationStore = useNavigationStore();
+const { scrollY } = useScroll();
 
-const { 
-  isMobileMenuOpen, 
-  isSearchOpen 
-} = storeToRefs(layoutStore)
+const { isMobileMenuOpen, isSearchOpen } = storeToRefs(layoutStore);
 
-const { 
-  mainNavigation
-} = storeToRefs(navigationStore)
+const { mainNavigation } = storeToRefs(navigationStore);
 
 // ============================================================================
 // ESTADO LOCAL
 // ============================================================================
 
-const activeDropdown = ref<string | null>(null)
-const isScrolled = computed(() => scrollY.value > 50)
+const activeDropdown = ref<string | null>(null);
+const isScrolled = computed(() => scrollY.value > 50);
 const scrollProgress = computed(() => {
-  const winScroll = scrollY.value
-  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
-  return height > 0 ? (winScroll / height) * 100 : 0
-})
+  const winScroll = scrollY.value;
+  const height =
+    document.documentElement.scrollHeight -
+    document.documentElement.clientHeight;
+  return height > 0 ? (winScroll / height) * 100 : 0;
+});
 
 // Mock data - en una aplicación real, esto vendría de un store
-const cartItemsCount = ref(2)
+const cartItemsCount = ref(2);
 
 // ============================================================================
 // COMPUTED
 // ============================================================================
 
 const headerClasses = computed(() => ({
-  'bg-secondary-900/95 backdrop-blur-md border-b border-secondary-700': isScrolled.value,
-  'bg-transparent': !isScrolled.value,
-  'shadow-lg': isScrolled.value
-}))
+  "bg-secondary-900/95 backdrop-blur-md border-b border-secondary-700":
+    isScrolled.value,
+  "bg-transparent": !isScrolled.value,
+  "shadow-lg": isScrolled.value,
+}));
 
 const navLinkClasses = (href: string) => {
   return {
-    'text-primary': navigationStore.isActiveRoute(href) || navigationStore.isParentRoute(href),
-    'text-gray-300': !navigationStore.isActiveRoute(href) && !navigationStore.isParentRoute(href)
-  }
-}
+    "text-primary":
+      navigationStore.isActiveRoute(href) ||
+      navigationStore.isParentRoute(href),
+    "text-gray-300":
+      !navigationStore.isActiveRoute(href) &&
+      !navigationStore.isParentRoute(href),
+  };
+};
 
 // ============================================================================
 // METHODS
 // ============================================================================
 
 const showDropdown = (itemId: string) => {
-  activeDropdown.value = itemId
-}
+  activeDropdown.value = itemId;
+};
 
 const hideDropdown = (itemId: string) => {
   // Agregar un pequeño delay para permitir hover sobre el dropdown
   setTimeout(() => {
     if (activeDropdown.value === itemId) {
-      activeDropdown.value = null
+      activeDropdown.value = null;
     }
-  }, 150)
-}
+  }, 150);
+};
 
 // ============================================================================
 // LIFECYCLE
@@ -231,15 +232,15 @@ const hideDropdown = (itemId: string) => {
 onMounted(() => {
   // Cerrar dropdown al hacer scroll
   const handleScroll = () => {
-    activeDropdown.value = null
-  }
-  
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  
+    activeDropdown.value = null;
+  };
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+
   onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-  })
-})
+    window.removeEventListener("scroll", handleScroll);
+  });
+});
 </script>
 
 <style scoped>
@@ -283,7 +284,7 @@ header {
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 50%;
@@ -317,7 +318,7 @@ header {
   .nav-link::after {
     transition: none;
   }
-  
+
   .group-hover\\:rotate-180 {
     transform: none !important;
   }
