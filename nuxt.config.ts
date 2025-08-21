@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     
     // Variables públicas (expuestas al cliente)
     public: {
-      appName: 'MYKD - eSports & Gaming',
+    appName: 'VII CIISIC 2025',
       appVersion: '1.0.0'
     }
   },
@@ -28,14 +28,14 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'es'
       },
-      title: 'MYKD - eSports & Gaming',
+      title: 'VI CIISIC | UNDC',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'MYKD - eSports and Gaming Platform' }
+        { name: 'description', content: 'Xd' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/x-icon', href: 'images/logo/preloader.png' }
       ]
     },
     pageTransition: {
