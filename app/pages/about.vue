@@ -326,30 +326,6 @@ const teamSections = [
   transform: translateY(0);
 }
 
-/* Animación inicial del hero (se ejecuta inmediatamente) */
-.fade-in-element:nth-child(1) {
-  animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-.fade-in-element:nth-child(2) {
-  animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
-}
-
-.fade-in-element:nth-child(3) {
-  animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ============================================================================
    ESTILOS DE BOTONES
    ============================================================================ */
