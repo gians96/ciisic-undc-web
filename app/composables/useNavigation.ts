@@ -12,7 +12,7 @@ export const useNavigation = () => {
   // Elementos de navegación principales
   const mainNavigation = ref<INavigationItem[]>([
     {
-      id: 'home',
+      id: 'inicio',
       label: 'Inicio',
       href: '/',
       icon: 'heroicons:home'

@@ -1,107 +1,110 @@
 <template>
-  <section class="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+  <section
+    class="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-screen lg:-top-10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden"
+  >
     <!-- Background Pattern -->
     <div class="absolute inset-0">
       <!-- Círculos decorativos de fondo (como en la imagen) -->
-      <div class="absolute top-32 left-32 w-24 h-24 border border-yellow-500/30 rounded-full"></div>
-      <div class="absolute top-64 right-48 w-16 h-16 border border-yellow-500/20 rounded-full"></div>
-      <div class="absolute bottom-32 left-48 w-12 h-12 border border-yellow-500/25 rounded-full"></div>
-      <div class="absolute bottom-48 right-32 w-20 h-20 border border-yellow-500/20 rounded-full"></div>
-      
+      <div
+        class="absolute top-32 left-32 w-24 h-24 border border-yellow-500/30 rounded-full"
+      ></div>
+      <div
+        class="absolute top-64 right-48 w-16 h-16 border border-yellow-500/20 rounded-full"
+      ></div>
+      <div
+        class="absolute bottom-32 left-48 w-12 h-12 border border-yellow-500/25 rounded-full"
+      ></div>
+      <div
+        class="absolute bottom-48 right-32 w-20 h-20 border border-yellow-500/20 rounded-full"
+      ></div>
+
       <!-- Puntos decorativos dorados -->
-      <div class="absolute top-48 left-64 w-3 h-3 bg-yellow-500 rounded-full opacity-60"></div>
-      <div class="absolute top-96 right-64 w-2 h-2 bg-yellow-500 rounded-full opacity-50"></div>
-      <div class="absolute bottom-64 right-48 w-3 h-3 bg-yellow-500 rounded-full opacity-40"></div>
+      <div
+        class="absolute top-48 left-64 w-3 h-3 bg-yellow-500 rounded-full opacity-60"
+      ></div>
+      <div
+        class="absolute top-96 right-64 w-2 h-2 bg-yellow-500 rounded-full opacity-50"
+      ></div>
+      <div
+        class="absolute bottom-64 right-48 w-3 h-3 bg-yellow-500 rounded-full opacity-40"
+      ></div>
     </div>
 
     <!-- Contenido Principal -->
     <div class="relative z-10 min-h-screen flex items-center">
       <div class="w-full max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
-          
           <!-- Lado Izquierdo - Contenido de Texto -->
-          <div class="text-left space-y-8">
-            <!-- Badge LIVE GAMING -->
-            <div class="inline-block">
-              <div class="bg-green-500 text-black px-6 py-2 font-bold text-sm uppercase tracking-wider relative"
-                   style="clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%)">
-                LIVE GAMING
+          <div class="md:text-left text-center space-y-8">
+            <!-- Título Principal STEAMING -->
+            <div class="space-y-2">
+              <h1
+                class="text-gray-800 pt-4 dark:text-white font-bold text-4xl lg:text-7xl"
+              >
+                <span
+                  class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-[#8cd66a]"
+                  >VII</span
+                >
+                Congreso Internacional de Ingeniería de Sistemas e Investigación
+                Científica.
+              </h1>
+              <div class="pt-8">
+                <Countdown />
               </div>
             </div>
 
-            <!-- Título Principal STEAMING -->
-            <div class="space-y-2">
-              <h1 class="text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-none tracking-tight">
-                STEAMING
-              </h1>
-              <h2 class="text-2xl lg:text-3xl text-gray-300 font-medium uppercase tracking-widest">
-                VIDEO GAMES ONLINE
-              </h2>
-            </div>
-
-            <!-- Botón CONTACT US -->
-            <div class="pt-8">
-              <NuxtLink 
-                to="/contact" 
-                class="inline-block bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105"
-                style="clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%)"
+            <!-- Botón Registro -->
+            <div class="pt-4">
+              <NuxtLink
+                to="/contact"
+                class="inline-block bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-4 text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105"
+                style="
+                  clip-path: polygon(
+                    0 0,
+                    calc(100% - 20px) 0,
+                    100% 100%,
+                    20px 100%
+                  );
+                "
               >
-                CONTACT US
+                REGISTRO
               </NuxtLink>
             </div>
           </div>
 
-          <!-- Lado Derecho - Personaje Gaming -->
-          <div class="relative">
-            <!-- Contenedor principal del personaje -->
-            <div class="relative z-10 flex items-center justify-center min-h-[600px]">
-              <!-- Círculo verde grande de fondo -->
-              <div class="absolute inset-0 w-96 h-96 bg-green-500/20 rounded-full blur-3xl"></div>
-              <div class="absolute inset-8 w-80 h-80 bg-green-500/30 rounded-full blur-2xl"></div>
-              
-              <!-- Personaje principal con espada -->
-              <div class="relative w-80 h-80 lg:w-96 lg:h-96 flex items-center justify-center">
-                <!-- Placeholder para el personaje con espada (como en la imagen) -->
-                <div class="relative w-full h-full flex items-center justify-center">
-                  <!-- Icono de personaje gaming con espada -->
-                  <div class="text-9xl filter drop-shadow-2xl">🗡️</div>
-                  
-                  <!-- Elementos adicionales para simular el personaje anime -->
-                  <div class="absolute top-4 left-4 text-4xl">👤</div>
-                  <div class="absolute bottom-16 right-8 text-3xl">⚡</div>
-                </div>
-
-                <!-- Badge DEFEAT (posicionado como en la imagen) -->
-                <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-                  <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 text-white px-8 py-3 font-black text-xl tracking-wider shadow-2xl border-4 border-amber-700"
-                       style="clip-path: polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%)">
-                    DEFEAT
-                  </div>
-                </div>
+          <!-- Lado Derecho - Contenedores de Imágenes -->
+          <div class="lg:h-full hidden md:flex">
+            <div
+              class="flex w-full h-96 min-h-[24rem] lg:min-h-[none] lg:w-full lg:h-full items-center relative"
+            >
+              <div
+                class="absolute z-0 top-1/2 -translate-y-1/2 w-5/6 right-0 h-[calc(80%+20px)] bg-gradient-to-tr opacity-25 from-primary to-pink-300 dark:from-[#570cac] dark:to-primary blur-2xl"
+              ></div>
+              <div
+                class="absolute w-3/5 h-full z-10 p-1 -translate-y-1/2 top-1/2 right-3 rounded-3xl bg-white dark:bg-body shadow-lg shadow-box-shadow border border-box-border"
+              >
+                <img
+                  src="/images/hero/img-hero-1.webp"
+                  alt="In studio"
+                  width="500"
+                  height="auto"
+                  loading="lazy"
+                  class="w-full h-full rounded-2xl object-cover"
+                />
+              </div>
+              <div
+                class="absolute -translate-y-1/2 top-1/2 h-[calc(80%-2rem)] w-[calc(40%-20px)] p-1 rounded-3xl bg-white dark:bg-body shadow-lg shadow-box-shadow border border-box-border"
+              >
+                <img
+                  src="/images/hero/img-hero-2.webp"
+                  alt="Happy in studio"
+                  width="200"
+                  height="auto"
+                  loading="lazy"
+                  class="w-full h-full rounded-2xl object-cover"
+                />
               </div>
             </div>
-
-            <!-- Elementos decorativos adicionales -->
-            <div class="absolute top-10 right-10 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-            <div class="absolute bottom-32 left-10 w-6 h-6 border-2 border-green-500 rotate-45"></div>
-          </div>
-        </div>
-
-        <!-- Logos de Patrocinadores (parte inferior) -->
-        <div class="absolute bottom-8 left-8 flex items-center space-x-8">
-          <!-- DARK ZONE -->
-          <div class="bg-slate-800 border border-slate-600 text-white px-4 py-2 font-bold text-sm uppercase tracking-wider">
-            DARK ZONE
-          </div>
-          
-          <!-- NextGen -->
-          <div class="text-white font-bold text-xl">
-            NextGen
-          </div>
-          
-          <!-- TANUPO// -->
-          <div class="text-white font-bold text-xl uppercase tracking-wider">
-            TANUPO<span class="text-green-500">//</span>
           </div>
         </div>
       </div>
@@ -110,14 +113,30 @@
     <!-- Elementos decorativos flotantes mejorados -->
     <div class="absolute inset-0 pointer-events-none">
       <!-- Partículas flotantes verdes y doradas -->
-      <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-green-500 rounded-full animate-ping" style="animation-delay: 0s;"></div>
-      <div class="absolute top-1/3 right-1/3 w-1 h-1 bg-yellow-500 rounded-full animate-ping" style="animation-delay: 1s;"></div>
-      <div class="absolute bottom-1/4 left-1/3 w-2 h-2 bg-green-500 rounded-full animate-ping" style="animation-delay: 2s;"></div>
-      <div class="absolute top-2/3 left-1/5 w-1 h-1 bg-yellow-500 rounded-full animate-ping" style="animation-delay: 3s;"></div>
-      
+      <div
+        class="absolute top-1/4 left-1/4 w-2 h-2 bg-green-500 rounded-full animate-ping"
+        style="animation-delay: 0s"
+      ></div>
+      <div
+        class="absolute top-1/3 right-1/3 w-1 h-1 bg-yellow-500 rounded-full animate-ping"
+        style="animation-delay: 1s"
+      ></div>
+      <div
+        class="absolute bottom-1/4 left-1/3 w-2 h-2 bg-green-500 rounded-full animate-ping"
+        style="animation-delay: 2s"
+      ></div>
+      <div
+        class="absolute top-2/3 left-1/5 w-1 h-1 bg-yellow-500 rounded-full animate-ping"
+        style="animation-delay: 3s"
+      ></div>
+
       <!-- Líneas decorativas -->
-      <div class="absolute top-1/2 left-0 w-32 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></div>
-      <div class="absolute top-1/3 right-0 w-32 h-px bg-gradient-to-l from-transparent via-green-500/50 to-transparent"></div>
+      <div
+        class="absolute top-1/2 left-0 w-32 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent"
+      ></div>
+      <div
+        class="absolute top-1/3 right-0 w-32 h-px bg-gradient-to-l from-transparent via-green-500/50 to-transparent"
+      ></div>
     </div>
   </section>
 </template>
@@ -128,11 +147,11 @@
 // ============================================================================
 
 interface HeroProps {
-  title?: string
-  subtitle?: string
-  description?: string
-  ctaText?: string
-  ctaLink?: string
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
 // ============================================================================
@@ -140,12 +159,12 @@ interface HeroProps {
 // ============================================================================
 
 const props = withDefaults(defineProps<HeroProps>(), {
-  title: 'STEAMING',
-  subtitle: 'VIDEO GAMES ONLINE',
-  description: 'Live gaming experience with cutting-edge technology.',
-  ctaText: 'CONTACT US',
-  ctaLink: '/contact'
-})
+  title: "STEAMING",
+  subtitle: "VIDEO GAMES ONLINE",
+  description: "Live gaming experience with cutting-edge technology.",
+  ctaText: "CONTACT US",
+  ctaLink: "/contact",
+});
 </script>
 
 <style scoped>
@@ -155,28 +174,43 @@ const props = withDefaults(defineProps<HeroProps>(), {
 
 /* Animaciones personalizadas */
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(2deg);
+  }
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+  }
 }
 
 /* Efectos especiales del fondo */
 section {
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(34, 197, 94, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(245, 158, 11, 0.1) 0%,
+      transparent 50%
+    ),
     linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
 
 /* Efectos especiales para el título STEAMING */
 h1 {
-  text-shadow: 
-    0 0 20px rgba(34, 197, 94, 0.5),
-    0 0 40px rgba(34, 197, 94, 0.3),
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.5), 0 0 40px rgba(34, 197, 94, 0.3),
     0 0 60px rgba(34, 197, 94, 0.1);
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.8));
 }
@@ -184,15 +218,13 @@ h1 {
 /* Efectos del badge LIVE GAMING */
 .bg-green-500 {
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  box-shadow: 
-    0 4px 20px rgba(34, 197, 94, 0.4),
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Efectos del badge DEFEAT */
 .bg-gradient-to-r {
-  box-shadow: 
-    0 8px 32px rgba(245, 158, 11, 0.6),
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.8));
 }
@@ -241,15 +273,15 @@ a:hover {
     font-size: 4rem !important;
     line-height: 1;
   }
-  
+
   h2 {
     font-size: 1.25rem !important;
   }
-  
+
   .grid {
     text-align: center;
   }
-  
+
   .absolute.bottom-8 {
     position: relative !important;
     bottom: auto !important;
@@ -257,7 +289,7 @@ a:hover {
     text-align: center;
     margin-top: 2rem;
   }
-  
+
   .absolute.bottom-8 .flex {
     justify-content: center;
     flex-wrap: wrap;
@@ -269,11 +301,11 @@ a:hover {
   h1 {
     font-size: 3rem !important;
   }
-  
+
   .text-9xl {
     font-size: 4rem !important;
   }
-  
+
   .w-80.h-80 {
     width: 16rem !important;
     height: 16rem !important;
@@ -287,11 +319,11 @@ a:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .text-9xl {
     animation: none;
   }
-  
+
   .border-yellow-500\/30,
   .border-yellow-500\/20,
   .border-yellow-500\/25 {
