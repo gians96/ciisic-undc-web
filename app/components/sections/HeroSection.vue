@@ -84,7 +84,7 @@
                 class="absolute w-3/5 h-full z-10 p-1 -translate-y-1/2 top-1/2 right-3 rounded-3xl bg-white dark:bg-body shadow-lg shadow-box-shadow border border-box-border"
               >
                 <img
-                  src="/images/hero/IMG_1131.jpg"
+                  src="/images/hero/img-hero-1.webp"
                   alt="In studio"
                   width="500"
                   height="auto"
@@ -96,7 +96,7 @@
                 class="absolute -translate-y-1/2 top-1/2 h-[calc(80%-2rem)] w-[calc(40%-20px)] p-1 rounded-3xl bg-white dark:bg-body shadow-lg shadow-box-shadow border border-box-border"
               >
                 <img
-                  src="/images/hero/IMG_1385.jpg"
+                  src="/images/hero/img-hero-2.webp"
                   alt="Happy in studio"
                   width="200"
                   height="auto"

@@ -6,8 +6,7 @@
       <div class="flex items-center justify-between mb-12">
         <!-- Título -->
         <div class="flex items-center space-x-3">
-          <h2 class="text-3xl lg:text-4xl font-bold text-white">TOP TRENDING</h2>
-          <span class="text-3xl">🔥</span>
+          <h2 class="text-3xl lg:text-4xl font-bold text-white">Eventos y Consursos</h2>
         </div>
         
         <!-- Controles de navegación -->
@@ -37,7 +36,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <span class="text-black font-bold text-sm">CM</span>
+                  <span class="text-black font-bold text-sm">XD</span>
                 </div>
                 <div>
                   <p class="text-white text-sm font-medium">Crypto Max</p>
@@ -69,7 +68,7 @@
                   </div>
                   
                   <button class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200">
-                    Bid →
+                    Leer más
                   </button>
                 </div>
               </div>
