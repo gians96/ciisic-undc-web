@@ -86,8 +86,8 @@
 
             <!-- Description -->
             <p class="text-gray-400 leading-relaxed">
-              Lorem ipsum dolor sitamet consectetur adipiscing Duis esollici
-              tudin augue euismod. Nulla ullam dolor sitamet consectetur
+              La ingeniería de sistemas impulsa la innovación y la investigación
+              científica, construyendo soluciones que transforman el futuro.
             </p>
 
             <!-- Social Media -->
