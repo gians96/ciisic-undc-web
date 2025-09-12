@@ -2,6 +2,12 @@
   <div class="min-h-screen bg-slate-900">
     <!-- Hero Section -->
     <SectionsHeroSection />
+
+    <!-- Memorias 2024 -->
+    <SectionsMemorias />
+
+    <!-- Ponentes para el congreso no hay ni pincho -->
+    <SectionsPonentes />
     
     <!-- Gaming Cards Section -->
     <SectionsGamingCardsSection />
