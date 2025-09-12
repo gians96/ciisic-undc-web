@@ -33,7 +33,7 @@
           <!-- Botón Sign In -->
           <div class="flex items-center space-x-4">
             <NuxtLink
-              to="/login"
+              to="/planes"
               class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300"
               style="
                 clip-path: polygon(
