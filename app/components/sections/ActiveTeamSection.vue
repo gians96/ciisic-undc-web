@@ -1,123 +1,59 @@
 <template>
   <section class="py-20 bg-slate-900 relative">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-      
       <!-- Título de la sección -->
       <div class="text-center mb-16">
         <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4">
-          ACTIVE TEAM MEMBERS
+          Comité General de Estudiantes
         </h2>
         <!-- Línea decorativa verde -->
         <div class="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
       </div>
 
       <!-- Grid de miembros del equipo -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        
-        <!-- Killer Master -->
-        <div class="team-member-card group">
-          <div class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
-            <!-- Background decorativo -->
-            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"></div>
-            
-            <!-- Foto del miembro -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
+        <div
+          v-for="(member, index) in teamMembers"
+          :key="member.id"
+          class="team-member-card group"
+        >
+          <div
+            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"
+            ></div>
             <div class="relative z-10 flex justify-center mb-6">
-              <div class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden">
-                <!-- Avatar placeholder -->
-                <div class="text-3xl">👤</div>
+              <div
+                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  v-if="member.image"
+                  :src="member.image"
+                  :alt="member.name"
+                  class="w-full h-full object-cover"
+                />
+                <div v-else class="text-3xl">{{ member.image }}</div>
               </div>
             </div>
-
-            <!-- Información del miembro -->
             <div class="relative z-10 text-center">
-              <h3 class="text-xl font-bold text-white mb-2">KILLER MASTER</h3>
-              <p class="text-green-500 text-sm font-medium uppercase tracking-wider">Blockchain Expert</p>
+              <h3 class="text-xl font-bold text-white mb-2">
+                {{ member.name }}
+              </h3>
+              <p
+                class="text-green-500 text-sm font-medium uppercase tracking-wider"
+              >
+                {{ member.role }}
+              </p>
             </div>
-
-            <!-- Efectos decorativos -->
-            <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
-            <div class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"></div>
+            <div
+              class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"
+            ></div>
+            <div
+              class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"
+            ></div>
           </div>
         </div>
-
-        <!-- Tanu Hark -->
-        <div class="team-member-card group">
-          <div class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
-            <!-- Background decorativo -->
-            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"></div>
-            
-            <!-- Foto del miembro -->
-            <div class="relative z-10 flex justify-center mb-6">
-              <div class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden">
-                <!-- Avatar placeholder -->
-                <div class="text-3xl">👨‍💻</div>
-              </div>
-            </div>
-
-            <!-- Información del miembro -->
-            <div class="relative z-10 text-center">
-              <h3 class="text-xl font-bold text-white mb-2">TANU HARK</h3>
-              <p class="text-green-500 text-sm font-medium uppercase tracking-wider">Developer</p>
-            </div>
-
-            <!-- Efectos decorativos -->
-            <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
-            <div class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"></div>
-          </div>
-        </div>
-
-        <!-- Thompson Scot -->
-        <div class="team-member-card group">
-          <div class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
-            <!-- Background decorativo -->
-            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"></div>
-            
-            <!-- Foto del miembro -->
-            <div class="relative z-10 flex justify-center mb-6">
-              <div class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden">
-                <!-- Avatar placeholder -->
-                <div class="text-3xl">🎨</div>
-              </div>
-            </div>
-
-            <!-- Información del miembro -->
-            <div class="relative z-10 text-center">
-              <h3 class="text-xl font-bold text-white mb-2">THOMPSON SCOT</h3>
-              <p class="text-green-500 text-sm font-medium uppercase tracking-wider">Art Director</p>
-            </div>
-
-            <!-- Efectos decorativos -->
-            <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
-            <div class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"></div>
-          </div>
-        </div>
-
-        <!-- Shakh Danial -->
-        <div class="team-member-card group">
-          <div class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden">
-            <!-- Background decorativo -->
-            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"></div>
-            
-            <!-- Foto del miembro -->
-            <div class="relative z-10 flex justify-center mb-6">
-              <div class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden">
-                <!-- Avatar placeholder -->
-                <div class="text-3xl">💰</div>
-              </div>
-            </div>
-
-            <!-- Información del miembro -->
-            <div class="relative z-10 text-center">
-              <h3 class="text-xl font-bold text-white mb-2">SHAKH DANIAL</h3>
-              <p class="text-green-500 text-sm font-medium uppercase tracking-wider">Crypto Advisor</p>
-            </div>
-
-            <!-- Efectos decorativos -->
-            <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"></div>
-            <div class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"></div>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
@@ -129,17 +65,10 @@
 // ============================================================================
 
 interface TeamMember {
-  id: string
-  name: string
-  role: string
-  avatar: string
-  bio?: string
-  skills?: string[]
-  social?: {
-    twitter?: string
-    linkedin?: string
-    github?: string
-  }
+  id: string;
+  name: string;
+  role: string;
+  image: string;
 }
 
 // ============================================================================
@@ -148,65 +77,33 @@ interface TeamMember {
 
 const teamMembers: TeamMember[] = [
   {
-    id: '1',
-    name: 'KILLER MASTER',
-    role: 'Blockchain Expert',
-    avatar: '👤',
-    bio: 'Experto en tecnologías blockchain con más de 5 años de experiencia.',
-    skills: ['Solidity', 'Web3', 'Smart Contracts'],
-    social: {
-      twitter: '@killermaster',
-      linkedin: 'killer-master',
-      github: 'killermaster'
-    }
+    id: "1",
+    name: "Alexandra Reyna",
+    role: "Vicepresidenta",
+    image: "/images/team/reyna.jpg",
   },
   {
-    id: '2',
-    name: 'TANU HARK',
-    role: 'Developer',
-    avatar: '👨‍💻',
-    bio: 'Desarrollador full-stack especializado en aplicaciones gaming.',
-    skills: ['Vue.js', 'Node.js', 'MongoDB'],
-    social: {
-      twitter: '@tanuhark',
-      linkedin: 'tanu-hark',
-      github: 'tanuhark'
-    }
+    id: "2",
+    name: "Carolay Delgado",
+    role: "Presidenta",
+    image: "/images/team/delgado.jpg",
   },
   {
-    id: '3',
-    name: 'THOMPSON SCOT',
-    role: 'Art Director',
-    avatar: '🎨',
-    bio: 'Director de arte con pasión por el diseño gaming y NFTs.',
-    skills: ['3D Modeling', 'Digital Art', 'Game Design'],
-    social: {
-      twitter: '@thompsonscot',
-      linkedin: 'thompson-scot'
-    }
+    id: "3",
+    name: "Josemaria Caballa",
+    role: "tesorero",
+    image: "/images/team/caballa.jpg",
   },
-  {
-    id: '4',
-    name: 'SHAKH DANIAL',
-    role: 'Crypto Advisor',
-    avatar: '💰',
-    bio: 'Asesor en criptomonedas y estrategias de tokenización.',
-    skills: ['DeFi', 'Tokenomics', 'Trading'],
-    social: {
-      twitter: '@shakhdanial',
-      linkedin: 'shakh-danial'
-    }
-  }
-]
+];
 
 // ============================================================================
 // METHODS
 // ============================================================================
 
 const viewMember = (memberId: string) => {
-  console.log(`Viewing member: ${memberId}`)
+  console.log(`Viewing member: ${memberId}`);
   // Lógica para ver perfil del miembro
-}
+};
 </script>
 
 <style scoped>
@@ -236,7 +133,8 @@ const viewMember = (memberId: string) => {
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
   }
   50% {
@@ -274,15 +172,22 @@ const viewMember = (memberId: string) => {
 
 /* Efectos de partículas flotantes */
 .team-member-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 30%),
-    radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 30%);
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(34, 197, 94, 0.1) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(34, 197, 94, 0.05) 0%,
+      transparent 30%
+    );
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: 1rem;
@@ -312,7 +217,7 @@ const viewMember = (memberId: string) => {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   h2 {
     font-size: 2.5rem !important;
   }
@@ -323,11 +228,11 @@ const viewMember = (memberId: string) => {
   .team-member-card:hover {
     transform: none;
   }
-  
+
   .team-member-card:hover .rounded-full {
     animation: none;
   }
-  
+
   .team-member-card {
     animation: none;
   }

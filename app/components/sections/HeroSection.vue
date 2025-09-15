@@ -56,7 +56,7 @@
             <!-- Botón Registro -->
             <div class="pt-4">
               <NuxtLink
-                to="/contact"
+                to="/planes"
                 class="inline-block bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-4 text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105"
                 style="
                   clip-path: polygon(

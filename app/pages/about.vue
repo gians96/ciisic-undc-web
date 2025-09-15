@@ -1,5 +1,5 @@
 <!-- ============================================================================
-     PÁGINA ABOUT - NOSOTROS
+     PÁGINA ABOUT - NOSOTROS CON ANIMACIONES DE SCROLL
      ============================================================================ -->
 
 <template>
@@ -8,26 +8,18 @@
     <section class="relative py-20 lg:py-32 overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
       <div class="custom-container relative">
-        <div class="max-w-4xl mx-auto text-center">
-          <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">
-            Sobre <span class="text-primary">MYKD</span>
+        <div class="max-w-4xl mx-auto text-center" ref="heroRef">
+          <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6 fade-in-element">
+            {{ aboutCongress.title.replace(aboutCongress.highlight, '') }}
+            <span class="text-primary">{{ aboutCongress.highlight }}</span>
           </h1>
-          <p class="text-xl text-gray-300 mb-8 leading-relaxed">
-            Somos la plataforma líder de eSports donde los jugadores se convierten en leyendas. 
-            Nuestra misión es democratizar el gaming competitivo y crear oportunidades para todos.
+          <p class="text-xl text-gray-300 mb-8 leading-relaxed fade-in-element" style="animation-delay: 0.2s;">
+            {{ aboutCongress.description }}
           </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink 
-              to="/tournaments"
-              class="btn-primary"
-            >
-              Ver Torneos
-            </NuxtLink>
-            <NuxtLink 
-              to="/contact"
-              class="btn-secondary"
-            >
-              Contáctanos
+          <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-element" style="animation-delay: 0.4s;">
+            <NuxtLink v-for="(action, index) in aboutCongress.actions" :key="index" :to="action.to"
+              :class="action.style">
+              {{ action.label }}
             </NuxtLink>
           </div>
         </div>
@@ -35,35 +27,33 @@
     </section>
 
     <!-- Mission Section -->
-    <section class="py-20 bg-secondary-800">
+    <section class="py-20 bg-secondary-800" ref="missionRef">
       <div class="custom-container">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
+          <div class="fade-in-element">
             <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6">
-              Nuestra Misión
+              {{ congressInfo.title }}
             </h2>
-            <p class="text-gray-300 text-lg mb-6 leading-relaxed">
-              En MYKD creemos que el gaming es más que entretenimiento: es una pasión, 
-              una comunidad y una oportunidad de crecimiento personal y profesional.
+
+            <p v-for="(paragraph, index) in congressInfo.paragraphs" :key="'p-' + index"
+              class="text-gray-300 text-lg mb-6 leading-relaxed">
+              {{ paragraph }}
             </p>
+
             <ul class="space-y-4">
-              <li class="flex items-start">
+              <li v-for="(bullet, index) in congressInfo.bullets" :key="'b-' + index" 
+                  class="flex items-start fade-in-element" 
+                  :style="`animation-delay: ${0.1 * (index + 1)}s;`">
                 <Icon name="heroicons:check" class="h-6 w-6 text-primary mt-1 mr-3 flex-shrink-0" />
-                <span class="text-gray-300">Crear oportunidades para gamers de todos los niveles</span>
-              </li>
-              <li class="flex items-start">
-                <Icon name="heroicons:check" class="h-6 w-6 text-primary mt-1 mr-3 flex-shrink-0" />
-                <span class="text-gray-300">Fomentar la competencia justa y el fair play</span>
-              </li>
-              <li class="flex items-start">
-                <Icon name="heroicons:check" class="h-6 w-6 text-primary mt-1 mr-3 flex-shrink-0" />
-                <span class="text-gray-300">Construir la comunidad gaming más grande de Latinoamérica</span>
+                <span class="text-gray-300">{{ bullet }}</span>
               </li>
             </ul>
           </div>
-          <div class="relative">
-            <div class="w-full h-64 bg-gradient-to-br from-primary/20 to-secondary-700 rounded-2xl shadow-2xl flex items-center justify-center">
-              <Icon name="heroicons:trophy" class="h-24 w-24 text-primary" />
+
+          <div class="relative fade-in-element" style="animation-delay: 0.3s;">
+            <div
+              class="w-full h-64 bg-gradient-to-br from-primary/20 to-secondary-700 rounded-2xl shadow-2xl flex items-center justify-center">
+              <img :src="congressInfo.image" alt="Imagen Congreso" class="object-cover w-full h-full rounded-2xl" />
             </div>
           </div>
         </div>
@@ -71,154 +61,94 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-20">
+    <section class="py-20" ref="statsRef">
       <div class="custom-container">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 fade-in-element">
           <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">
-            MYKD en Números
+            Comunidad en crecimiento
           </h2>
           <p class="text-gray-300 text-lg">
-            Nuestra comunidad crece día a día
+            Cada edición reúne a más asistentes, más países y más investigaciones, consolidando al congreso como un
+            espacio de referencia en innovación y conocimiento.
           </p>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          <div class="text-center">
-            <div class="text-4xl lg:text-5xl font-bold text-primary mb-2">500K+</div>
-            <div class="text-gray-300">Jugadores Registrados</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl lg:text-5xl font-bold text-primary mb-2">1,200+</div>
-            <div class="text-gray-300">Torneos Realizados</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl lg:text-5xl font-bold text-primary mb-2">50M+</div>
-            <div class="text-gray-300">Prize Pool Total</div>
-          </div>
-          <div class="text-center">
-            <div class="text-4xl lg:text-5xl font-bold text-primary mb-2">25+</div>
-            <div class="text-gray-300">Países</div>
+        <div class="grid gap-8" :class="[
+          'grid-cols-1',
+          stats.length >= 2 ? 'md:grid-cols-2' : '',
+          stats.length >= 3 ? 'lg:grid-cols-3' : '',
+          stats.length >= 4 ? 'xl:grid-cols-4' : ''
+        ]">
+          <div v-for="(item, index) in stats" :key="index" 
+               class="text-center fade-in-element" 
+               :style="`animation-delay: ${0.2 * index}s;`">
+            <div class="text-4xl lg:text-5xl font-bold text-primary mb-2 count-up" 
+                 :data-target="item.value.replace('+', '')">
+              0
+            </div>
+            <div class="text-gray-300">
+              {{ item.label }}
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Team Section -->
-    <section class="py-20 bg-secondary-800">
+    <section class="py-20 bg-secondary-800" ref="teamRef">
       <div class="custom-container">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 fade-in-element">
           <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">
-            Nuestro Equipo
+            Voces que inspiran
           </h2>
           <p class="text-gray-300 text-lg">
-            Conoce a las personas que hacen posible MYKD
+            Descubre a los invitados y especialistas que harán de este congreso una experiencia única de aprendizaje.
           </p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Team Member 1 -->
-          <div class="bg-secondary-700 rounded-2xl p-6 text-center hover:bg-secondary-600 transition-colors duration-300">
-            <div class="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Icon name="heroicons:user" class="h-10 w-10 text-black" />
+        <div class="grid gap-8" :class="[
+          'grid-cols-1',
+          teamSections.length >= 2 ? 'md:grid-cols-2' : '',
+          teamSections.length >= 3 ? 'lg:grid-cols-3' : ''
+        ]">
+          <div v-for="(item, index) in teamSections" :key="index"
+            class="bg-secondary-700 rounded-2xl p-6 text-center hover:bg-secondary-600 transition-all duration-300 fade-in-element team-card"
+            :style="`animation-delay: ${0.15 * index}s;`">
+            <div
+              class="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <Icon :name="item.icon" class="h-10 w-10 text-black" />
             </div>
-            <h3 class="text-xl font-semibold text-white mb-2">Alex Rodriguez</h3>
-            <p class="text-primary mb-2">CEO & Fundador</p>
+            <h3 class="text-xl font-semibold text-primary mb-2">{{ item.title }}</h3>
             <p class="text-gray-300 text-sm">
-              Gamer profesional con más de 10 años de experiencia en la industria de los eSports.
-            </p>
-          </div>
-          
-          <!-- Team Member 2 -->
-          <div class="bg-secondary-700 rounded-2xl p-6 text-center hover:bg-secondary-600 transition-colors duration-300">
-            <div class="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Icon name="heroicons:user" class="h-10 w-10 text-black" />
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-2">Maria González</h3>
-            <p class="text-primary mb-2">CTO</p>
-            <p class="text-gray-300 text-sm">
-              Experta en desarrollo de plataformas gaming con más de 8 años de experiencia.
-            </p>
-          </div>
-          
-          <!-- Team Member 3 -->
-          <div class="bg-secondary-700 rounded-2xl p-6 text-center hover:bg-secondary-600 transition-colors duration-300">
-            <div class="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Icon name="heroicons:user" class="h-10 w-10 text-black" />
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-2">Carlos Mendoza</h3>
-            <p class="text-primary mb-2">Head of eSports</p>
-            <p class="text-gray-300 text-sm">
-              Ex-jugador profesional y organizador de eventos con amplia experiencia en torneos.
+              {{ item.description }}
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Values Section -->
-    <section class="py-20">
-      <div class="custom-container">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">
-            Nuestros Valores
-          </h2>
-          <p class="text-gray-300 text-lg">
-            Los principios que guían nuestro trabajo
-          </p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-primary rounded-2xl mx-auto mb-6 flex items-center justify-center">
-              <Icon name="heroicons:trophy" class="h-8 w-8 text-black" />
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-4">Excelencia</h3>
-            <p class="text-gray-300">
-              Buscamos la excelencia en cada torneo, cada experiencia y cada interacción con nuestra comunidad.
-            </p>
-          </div>
-          
-          <div class="text-center">
-            <div class="w-16 h-16 bg-primary rounded-2xl mx-auto mb-6 flex items-center justify-center">
-              <Icon name="heroicons:user-group" class="h-8 w-8 text-black" />
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-4">Comunidad</h3>
-            <p class="text-gray-300">
-              Creemos en el poder de la comunidad para crear experiencias increíbles y duraderas.
-            </p>
-          </div>
-          
-          <div class="text-center">
-            <div class="w-16 h-16 bg-primary rounded-2xl mx-auto mb-6 flex items-center justify-center">
-              <Icon name="heroicons:rocket-launch" class="h-8 w-8 text-black" />
-            </div>
-            <h3 class="text-xl font-semibold text-white mb-4">Innovación</h3>
-            <p class="text-gray-300">
-              Constantemente innovamos para mantenernos a la vanguardia de la industria gaming.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
 // ============================================================================
 // SEO Y META TAGS
 // ============================================================================
 
 useHead({
-  title: 'Sobre Nosotros - MYKD',
+  title: 'Sobre Nosotros - VII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Conoce más sobre MYKD, la plataforma líder de eSports. Nuestra misión, equipo y valores que nos convierten en la comunidad gaming más grande de Latinoamérica.'
+      content: 'Conoce más sobre VII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
     },
     {
       property: 'og:title',
-      content: 'Sobre Nosotros - MYKD'
+      content: 'Sobre Nosotros - VII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Conoce más sobre MYKD, la plataforma líder de eSports. Nuestra misión, equipo y valores.'
+      content: 'Conoce más sobre VII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
     },
     {
       property: 'og:type',
@@ -228,56 +158,176 @@ useHead({
 })
 
 // ============================================================================
+// REFS PARA ANIMACIONES
+// ============================================================================
+
+const heroRef = ref(null)
+const missionRef = ref(null)
+const statsRef = ref(null)
+const teamRef = ref(null)
+
+// ============================================================================
+// INTERSECTION OBSERVER PARA ANIMACIONES
+// ============================================================================
+
+let observer: IntersectionObserver | null = null
+
+const observeElements = () => {
+  if (process.client) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const target = entry.target as HTMLElement
+            
+            // Animar elementos fade-in dentro de la sección
+            const fadeElements = target.querySelectorAll('.fade-in-element')
+            fadeElements.forEach((el, index) => {
+              const element = el as HTMLElement
+              setTimeout(() => {
+                element.classList.add('visible')
+              }, index * 100) // Retraso escalonado
+            })
+
+            // Animar contadores si es la sección de stats
+            if (target.classList.contains('stats-section') || target.querySelector('.count-up')) {
+              animateCounters(target)
+            }
+
+            // Desconectar el observer después de animar
+            observer?.unobserve(target)
+          }
+        })
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    )
+
+    // Observar todas las secciones
+    const sections = [heroRef.value, missionRef.value, statsRef.value, teamRef.value]
+    sections.forEach(section => {
+      if (section) observer?.observe(section)
+    })
+  }
+}
+
+// ============================================================================
+// ANIMACIÓN DE CONTADORES
+// ============================================================================
+
+const animateCounters = (section: Element) => {
+  const counters = section.querySelectorAll('.count-up')
+  
+  counters.forEach((counter) => {
+    const target = parseInt(counter.getAttribute('data-target') || '0')
+    const increment = target / 30 // Duración de la animación
+    let current = 0
+    
+    const updateCounter = () => {
+      current += increment
+      if (current < target) {
+        counter.textContent = Math.floor(current).toString()
+        requestAnimationFrame(updateCounter)
+      } else {
+        counter.textContent = target.toString() + '+'
+      }
+    }
+    
+    updateCounter()
+  })
+}
+
+// ============================================================================
+// LIFECYCLE HOOKS
+// ============================================================================
+
+onMounted(() => {
+  // Inicializar animaciones después de que el DOM esté listo
+  nextTick(() => {
+    observeElements()
+  })
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
+})
+
+// ============================================================================
 // DATOS DE LA PÁGINA
 // ============================================================================
 
+const aboutCongress = {
+  title: '¿Qué es el congreso VII CIISIC?',
+  highlight: 'VII CIISIC',
+  description: 'El congreso VII CIISIC es un evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos y experiencias en el campo de la informática y sus aplicaciones. Presentan conferencias o exposiciones sobre temas relacionados con su trabajo o actividad.',
+  actions: [
+    { label: 'Inscríbete', to: '/tournaments', style: 'btn-primary' },
+    { label: 'Contáctanos', to: '/contact', style: 'btn-secondary' }
+  ]
+}
+
+const congressInfo = {
+  title: 'El valor de un congreso',
+  paragraphs: [
+    'Asistir y participar en congresos fortalece los aprendizajes adquiridos en la universidad, ofreciendo a los estudiantes un espacio para compartir ideas, opiniones y experiencias. Además, los asistentes reciben un certificado que enriquece su currículo académico y potencia su experiencia profesional.'
+  ],
+  bullets: [
+    'Conectar con expertos y profesionales del sector',
+    'Fortalecer aprendizajes universitarios con experiencias reales',
+    'Obtener certificados que enriquecen tu currículo académico'
+  ],
+  image: '/images/about/casa-de-la-cultura.png'
+}
+
 const stats = [
-  { value: '500K+', label: 'Jugadores Registrados' },
-  { value: '1,200+', label: 'Torneos Realizados' },
-  { value: '50M+', label: 'Prize Pool Total' },
-  { value: '25+', label: 'Países' }
+  { value: '200+', label: 'Asistentes' },
+  { value: '3+', label: 'Países representados' },
+  { value: '8+', label: 'Ponencias' }
 ]
 
-const team = [
-  {
-    name: 'Alex Rodriguez',
-    role: 'CEO & Fundador',
-    description: 'Gamer profesional con más de 10 años de experiencia en la industria de los eSports.'
-  },
-  {
-    name: 'Maria González',
-    role: 'CTO',
-    description: 'Experta en desarrollo de plataformas gaming con más de 8 años de experiencia.'
-  },
-  {
-    name: 'Carlos Mendoza',
-    role: 'Head of eSports',
-    description: 'Ex-jugador profesional y organizador de eventos con amplia experiencia en torneos.'
-  }
-]
-
-const values = [
-  {
-    icon: 'heroicons:trophy',
-    title: 'Excelencia',
-    description: 'Buscamos la excelencia en cada torneo, cada experiencia y cada interacción con nuestra comunidad.'
-  },
+const teamSections = [
   {
     icon: 'heroicons:user-group',
-    title: 'Comunidad',
-    description: 'Creemos en el poder de la comunidad para crear experiencias increíbles y duraderas.'
+    title: 'Ponentes invitados',
+    description: 'Expertos reconocidos a nivel nacional e internacional que compartirán su experiencia, casos reales y tendencias del sector.'
   },
   {
-    icon: 'heroicons:rocket-launch',
-    title: 'Innovación',
-    description: 'Constantemente innovamos para mantenernos a la vanguardia de la industria gaming.'
+    icon: 'heroicons:academic-cap',
+    title: 'Ponentes especializados',
+    description: 'Profesionales y académicos con trayectoria en áreas específicas que profundizan en metodologías, herramientas y buenas prácticas.'
+  },
+  {
+    icon: 'heroicons:light-bulb',
+    title: 'Oportunidad de aprender y crecer',
+    description: 'Espacio para escuchar a los ponentes, hacer preguntas y llevarte ideas accionables para tus proyectos, investigaciones y carrera.'
   }
 ]
+
 </script>
 
 <style scoped>
 /* ============================================================================
-   ESTILOS ESPECÍFICOS DE LA PÁGINA ABOUT
+   ANIMACIONES DE ENTRADA Y FADE-IN
+   ============================================================================ */
+
+.fade-in-element {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--animation-delay, 0s);
+}
+
+.fade-in-element.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   ESTILOS DE BOTONES
    ============================================================================ */
 
 .btn-primary {
@@ -286,11 +336,14 @@ const values = [
   font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(0);
 }
 
 .btn-primary:hover {
   background-color: rgba(69, 248, 130, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
 }
 
 .btn-secondary {
@@ -300,63 +353,76 @@ const values = [
   font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(0);
 }
 
 .btn-secondary:hover {
   background-color: #45f882;
   color: black;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
 }
 
-/* Animaciones para las estadísticas */
-@keyframes countUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ============================================================================
+   EFECTOS HOVER MEJORADOS
+   ============================================================================ */
+
+.team-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(0);
 }
 
-.stats-item {
-  animation: countUp 0.6s ease-out forwards;
-}
-
-/* Hover effects para las tarjetas del equipo */
 .team-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(69, 248, 130, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(69, 248, 130, 0.15);
 }
 
-/* Responsive adjustments */
+/* ============================================================================
+   ANIMACIONES DE CONTADORES
+   ============================================================================ */
+
+.count-up {
+  transition: all 0.3s ease-out;
+}
+
+/* ============================================================================
+   RESPONSIVE Y ACCESSIBILITY
+   ============================================================================ */
+
 @media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
-    line-height: 1.2;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-}
-
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  .stats-item,
-  .team-card {
-    animation: none;
-    transition: none;
+  .fade-in-element {
+    transform: translateY(20px);
   }
   
   .team-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* Respeta las preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-element,
+  .team-card,
+  .btn-primary,
+  .btn-secondary {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .fade-in-element {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .team-card:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover {
     transform: none;
   }
 }
 
-/* High contrast mode */
+/* Modo alto contraste */
 @media (prefers-contrast: high) {
   .bg-secondary-700,
   .bg-secondary-800 {
@@ -366,5 +432,23 @@ const values = [
   .text-gray-300 {
     color: #ffffff;
   }
+  
+  .fade-in-element {
+    outline: 1px solid transparent;
+  }
+}
+
+/* ============================================================================
+   INDICADOR DE CARGA SUAVE
+   ============================================================================ */
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
 }
 </style>
