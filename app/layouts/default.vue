@@ -66,11 +66,8 @@
       ></div>
 
       <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16 relative">
-        <!-- Footer Content Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          <!-- Company Info -->
-          <div class="space-y-6">
-            <!-- Logo -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div class="lg:col-span-5 space-y-6">
             <div class="flex items-center space-x-3">
               <NuxtLink to="/" class="flex items-center space-x-3">
                 <NuxtImg
@@ -78,190 +75,76 @@
                   alt="Logo CIISIC"
                   class="w-10 h-10 object-contain"
                 />
-                <span class="text-white font-bold text-xl tracking-wider"
-                  >VII CIISIC</span
-                >
+                <span class="text-white font-bold text-xl tracking-wider">VII CIISIC</span>
               </NuxtLink>
             </div>
-
-            <!-- Description -->
             <p class="text-gray-400 leading-relaxed">
-              Lorem ipsum dolor sitamet consectetur adipiscing Duis esollici
-              tudin augue euismod. Nulla ullam dolor sitamet consectetur
+              Evento anual de ingeniería e investigación de la UNDC, donde se reúnen estudiantes, profesionales y empresas para compartir conocimiento, innovación y oportunidades. Aquí encuentras información sobre conferencias, ponentes, inscripciones y actividades clave para tu desarrollo profesional.
             </p>
-
-            <!-- Social Media -->
             <div class="space-y-4">
-              <h4 class="text-white font-bold text-lg">
-                ACTIVE <span class="text-green-500">WITH US &gt;&gt;</span>
-              </h4>
+              <h4 class="text-white font-bold text-lg">SÍGUENOS</h4>
               <div class="flex space-x-4">
-                <!-- Discord -->
-                <a
-                  href="#"
-                  class="w-10 h-10 bg-[#5865F2] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <Icon
-                    name="simple-icons:discord"
-                    class="w-5 h-5 text-white"
-                  />
+                <a href="https://facebook.com/fiundc" target="_blank" class="w-10 h-10 bg-[#0967FF] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Discord">
+                  <Icon name="simple-icons:facebook" class="w-5 h-5 text-white" />
                 </a>
-                <!-- Twitter -->
-                <a
-                  href="#"
-                  class="w-10 h-10 bg-[#1DA1F2] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <Icon
-                    name="simple-icons:twitter"
-                    class="w-5 h-5 text-white"
-                  />
-                </a>
-                <!-- Instagram -->
-                <a
-                  href="#"
-                  class="w-10 h-10 bg-gradient-to-br from-[#E4405F] to-[#F77737] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <Icon
-                    name="simple-icons:instagram"
-                    class="w-5 h-5 text-white"
-                  />
-                </a>
-                <!-- Telegram -->
-                <a
-                  href="#"
-                  class="w-10 h-10 bg-[#0088CC] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200"
-                >
-                  <Icon
-                    name="simple-icons:telegram"
-                    class="w-5 h-5 text-white"
-                  />
+                <a href="https://tiktok.com/@fiundc" target="_blank" class="w-10 h-10 bg-[#000] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Twitter">
+                  <Icon name="simple-icons:tiktok" class="w-5 h-5 text-white" />
                 </a>
               </div>
             </div>
           </div>
-
-          <!-- Quick Links -->
-          <div class="space-y-6">
-            <h3 class="text-white font-bold text-xl tracking-wider">
-              QUICK LINK
-            </h3>
+          <div class="lg:col-span-3 space-y-6">
+            <h3 class="text-white font-bold text-xl tracking-wider">ENLACES ÚTILES</h3>
             <nav class="space-y-3">
-              <NuxtLink to="/gaming" class="footer-link">Gaming</NuxtLink>
-              <NuxtLink to="/product" class="footer-link">Product</NuxtLink>
-              <NuxtLink to="/nfts" class="footer-link">All NFTs</NuxtLink>
-              <NuxtLink to="/social" class="footer-link"
-                >Social Network</NuxtLink
-              >
-              <NuxtLink to="/domains" class="footer-link"
-                >Domain Names</NuxtLink
-              >
-              <NuxtLink to="/collectibles" class="footer-link"
-                >Collectibles</NuxtLink
-              >
+              <NuxtLink to="/about" class="footer-link">Sobre el evento</NuxtLink>
+              <NuxtLink to="/faq" class="footer-link">Preguntas frecuentes</NuxtLink>
+              <NuxtLink to="/privacy" class="footer-link">Política de privacidad</NuxtLink>
             </nav>
           </div>
-
-          <!-- Supports -->
-          <div class="space-y-6">
-            <h3 class="text-white font-bold text-xl tracking-wider">
-              SUPPORTS
-            </h3>
+          <!-- Columna 3: Recursos -->
+          <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-white font-bold text-xl tracking-wider">RECURSOS</h3>
             <nav class="space-y-3">
-              <NuxtLink to="/settings" class="footer-link"
-                >Setting & Privacy</NuxtLink
-              >
-              <NuxtLink to="/help" class="footer-link">Help & Support</NuxtLink>
-              <NuxtLink to="/auctions" class="footer-link"
-                >Live Auctions</NuxtLink
-              >
-              <NuxtLink to="/details" class="footer-link"
-                >Item Details</NuxtLink
-              >
-              <NuxtLink to="/support" class="footer-link"
-                >24/7 Supports</NuxtLink
-              >
-              <NuxtLink to="/news" class="footer-link">Our News</NuxtLink>
+              <NuxtLink to="/tournaments" class="footer-link">Torneos</NuxtLink>
+              <NuxtLink to="/ponencias" class="footer-link">Ponencias</NuxtLink>
+              <NuxtLink to="/memorias" class="footer-link">Memorias</NuxtLink>
+              <NuxtLink to="/gallery" class="footer-link">Galería</NuxtLink>
+              <NuxtLink to="/register" class="footer-link">Registro</NuxtLink>
             </nav>
           </div>
+          <!-- Columna 4: Contacto -->
+          <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-white font-bold text-xl tracking-wider">CONTACTO</h3>
+            <nav class="space-y-3">
+              <NuxtLink to="mailto:congreso@undc.edu.pe" class="footer-link">congreso@undc.edu.pe</NuxtLink>
+              <NuxtLink to="https://wa.me/51949026908" class="footer-link">+51 949026908</NuxtLink>
+              <NuxtLink to="" class="footer-link">Auditorio "Casa de la Cultura", San Vicente - Cañete</NuxtLink>
 
-          <!-- Newsletter -->
-          <div class="space-y-6">
-            <h3 class="text-white font-bold text-xl tracking-wider">
-              NEWSLETTER
-            </h3>
-
-            <p class="text-gray-400 leading-relaxed">
-              Subscribe our newsletter to get our latest update &
-              newsconsectetur
-            </p>
-
-            <!-- Newsletter Form -->
-            <div class="space-y-4">
-              <div class="relative">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  class="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:border-green-500 focus:outline-none transition-colors duration-200"
-                />
-                <button
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-500 hover:bg-green-400 text-black p-2 rounded-lg transition-colors duration-200"
-                >
-                  <Icon name="heroicons:paper-airplane" class="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+            </nav>
           </div>
         </div>
 
-        <!-- Footer Bottom -->
         <div class="mt-16 pt-8 border-t border-slate-700">
           <div
             class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0"
           >
-            <!-- Copyright -->
             <div class="text-gray-400 text-sm">
-              <span class="text-green-500">COPYRIGHT © 2025</span> - ALL RIGHTS
-              RESERVED BY
-              <span class="text-blue-400 font-semibold">MYKD</span>
+              <a href="https://fi.undc.edu.pe" class="text-green-500">Facultad de Ingeniería</a> - Todos los derechos reservados
+             
             </div>
 
-            <!-- Payment Methods -->
             <div class="flex items-center space-x-3">
-              <!-- PayPal -->
+              <!-- Yape -->
               <div
-                class="w-12 h-8 bg-[#00457C] rounded flex items-center justify-center"
+                class="w-12 h-8 bg-[#811BA1] rounded flex items-center justify-center"
               >
-                <span class="text-white text-xs font-bold">PayPal</span>
+                <span class="text-white text-xs font-bold">Yape</span>
               </div>
-              <!-- eBay -->
+              <!-- Plin -->
               <div
-                class="w-12 h-8 bg-[#E53238] rounded flex items-center justify-center"
+                class="w-12 h-8 bg-[#3FBAB3] rounded flex items-center justify-center"
               >
-                <span class="text-white text-xs font-bold">eBay</span>
-              </div>
-              <!-- Coinbase -->
-              <div
-                class="w-12 h-8 bg-[#0052FF] rounded flex items-center justify-center"
-              >
-                <span class="text-white text-xs font-bold">Coin</span>
-              </div>
-              <!-- Visa -->
-              <div
-                class="w-12 h-8 bg-[#1A1F71] rounded flex items-center justify-center"
-              >
-                <span class="text-white text-xs font-bold">VISA</span>
-              </div>
-              <!-- Discover -->
-              <div
-                class="w-12 h-8 bg-[#FF6000] rounded flex items-center justify-center"
-              >
-                <span class="text-white text-xs font-bold">Disc</span>
-              </div>
-              <!-- Mastercard -->
-              <div
-                class="w-12 h-8 bg-[#EB001B] rounded flex items-center justify-center"
-              >
-                <span class="text-white text-xs font-bold">MC</span>
+                <span class="text-white text-xs font-bold">Plin</span>
               </div>
             </div>
           </div>
