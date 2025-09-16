@@ -6,7 +6,7 @@
         <!-- Título -->
         <div class="flex items-center space-x-3">
           <h2 class="text-3xl lg:text-4xl font-bold text-white">
-            Eventos y Consursos
+            Eventos y Concursos
           </h2>
         </div>
       </div>
@@ -17,7 +17,7 @@
         <div
           v-for="(evento, index) in eventosItems"
           :key="evento.id"
-          class="trending-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl overflow-hidden hover:border-green-500/50 transition-all duration-300 hover:transform hover:scale-105"
+          class=" bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl overflow-hidden "
         >
           <!-- Creator info header -->
           <div class="p-4 border-b border-slate-700">
