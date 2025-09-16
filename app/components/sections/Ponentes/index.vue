@@ -9,24 +9,30 @@
       <header class="flex justify-center mb-16">
         <div class="w-full max-w-2xl">
           <div class="text-center">
-            <p class="text-green-400 text-sm font-semibold tracking-wider mb-4 uppercase">
+            <p
+              class="text-green-400 text-sm font-semibold tracking-wider mb-4 uppercase"
+            >
               <span
-  class="pulse-bg px-4 py-1 rounded-full text-green-300"
-  aria-hidden="true"
->
-  Invitados de reconocimiento
-</span>
-
+                class="pulse-bg px-4 py-1 rounded-full text-green-300"
+                aria-hidden="true"
+              >
+                Invitados de reconocimiento
+              </span>
             </p>
 
             <!-- Main title -->
-            <h1 id="team-title" class="text-white text-4xl md:text-5xl font-bold">
+            <h1
+              id="team-title"
+              class="text-white text-4xl md:text-5xl font-bold"
+            >
               PONENTES INVITADOS
             </h1>
 
             <!-- Línea decorativa -->
             <div class="mt-4 flex justify-center">
-              <div class="w-24 h-1 rounded bg-green-400 shadow shadow-green-500/50" />
+              <div
+                class="w-24 h-1 rounded bg-green-400 shadow shadow-green-500/50"
+              />
             </div>
           </div>
         </div>
@@ -51,7 +57,6 @@
     </div>
   </section>
 </template>
-
 
 <script setup>
 import PerfilCard from "./PerfilCard.vue";
@@ -111,5 +116,4 @@ const ponentes = [
     box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
   }
 }
-
 </style>
