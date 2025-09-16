@@ -66,21 +66,21 @@ const ponentes = [
   },
   {
     id: 2,
-    nombre: "Philip Chu Joy",
-    rol: "Empresario",
-    imagen: "/images/ponentes/phillip_chu.webp",
+    nombre: "Gera Flores",
+    rol: "Docente Centrum PUCP",
+    imagen: "/images/ponentes/yera_flores.png",
   },
   {
     id: 3,
-    nombre: "Philip Chu Joy",
-    rol: "Empresario",
-    imagen: "/images/ponentes/phillip_chu.webp",
+    nombre: "Freddy Vega",
+    rol: "CEO and Founder at Platzi",
+    imagen: "/images/ponentes/vega.jpg",
   },
   {
     id: 4,
-    nombre: "Philip Chu Joy",
-    rol: "Empresario",
-    imagen: "/images/ponentes/phillip_chu.webp",
+    nombre: "Eric Liu",
+    rol: "Huawei Perú",
+    imagen: "/images/ponentes/liu.jpg",
   },
 ];
 </script>

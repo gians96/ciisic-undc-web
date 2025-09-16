@@ -9,26 +9,15 @@
     <!-- Ponentes para el congreso no hay ni pincho -->
     <SectionsPonentes />
     
-    <!-- Gaming Cards Section -->
-    <SectionsGamingCardsSection />
-    
-    <!-- Top Trending Section -->
+    <!-- Top Trending Section - Eventos y concursos -->
     <SectionsTopTrendingSection />
     
-    <!-- Top Streamers Section -->
-    <SectionsTopStreamersSection />
-    
-    <!-- Human Game Section -->
+    <!-- Human Game Section - Mapa ubicacion -->
     <SectionsHumanGameSection />
     
-    <!-- Active Team Section -->
+    <!-- Active Team Section - comite de estudiantes -->
     <SectionsActiveTeamSection />
-    
-    <!-- Join Community Section -->
-    <SectionsJoinCommunitySection />
-    
-    <!-- Roadmap Seasons Section -->
-    <SectionsRoadmapSeasonsSection />
+
   </div>
 </template>
 
