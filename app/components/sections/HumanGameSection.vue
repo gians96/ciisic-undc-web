@@ -4,20 +4,20 @@
       <div class="grid lg:grid-cols-2 gap-12 items-center">
         <!-- Lado Izquierdo - Imagen del juego -->
         <div class="relative">
-          <!-- Imagen principal del juego -->
-          <div
-            class="relative bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl overflow-hidden"
-          >
-            <!-- Placeholder para la imagen del personaje gaming -->
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.4102303763925!2d-76.37044542403272!3d-13.073167361861685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x910ff8eefc5f8f01%3A0x679e228fde345aa4!2sFacultad%20de%20ingenier%C3%ADa%20de%20sistemas%20-%20UNDC!5e0!3m2!1ses!2spe!4v1757971240354!5m2!1ses!2spe"
-              width="600"
-              height="450"
-              style="border: 0"
-              allowfullscreen
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            />
+          <!-- mapa -->
+          <div class="relative">
+            <div
+              class="bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl border border-slate-700"
+            >
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.4102303763925!2d-76.37044542403272!3d-13.073167361861685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x910ff8eefc5f8f01%3A0x679e228fde345aa4!2sFacultad%20de%20ingenier%C3%ADa%20de%20sistemas%20-%20UNDC!5e0!3m2!1ses!2spe!4v1757971240354!5m2!1ses!2spe"
+                class="w-full h-[300px] md:h-[450px] rounded-2xl"
+                style="border: 0"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
           </div>
         </div>
 
@@ -36,7 +36,7 @@
           </div>
 
           <!-- Descripción -->
-          <p class="text-gray-400 text-lg leading-relaxed">
+          <p class="text-gray-400 text-lg leading-relaxed text-justify">
             El VII Congreso Internacional de Ingeniería de Sistemas e
             Investigación Científica 2025 (VII CIISIC 2025) se desarrollará en
             la Sede Académica Casa de la Cultura de la Facultad de Ingeniería de
@@ -51,9 +51,9 @@
               class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
             >
               <div
-                class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center"
+                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
               >
-                <span class="text-white text-xl">🐲</span>
+                <span class="text-white text-xl">🚗</span>
               </div>
               <span class="text-white font-medium">Taxi Colectivo</span>
             </div>
@@ -63,11 +63,11 @@
               class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
             >
               <div
-                class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center"
+                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
               >
-                <span class="text-white text-xl">🚀</span>
+                <span class="text-white text-xl">🚌</span>
               </div>
-              <span class="text-white font-medium">Combis</span>
+              <span class="text-white font-medium">Transporte Público</span>
             </div>
 
             <!-- Dragon Ball -->
@@ -75,9 +75,9 @@
               class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
             >
               <div
-                class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center"
+                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
               >
-                <span class="text-white text-xl">⚡</span>
+                <span class="text-white text-xl">🏍️</span>
               </div>
               <span class="text-white font-medium">Mototaxi</span>
             </div>
@@ -284,7 +284,7 @@ button:focus,
 }
 
 /* Efectos especiales para la imagen del juego */
-.relative::after {
+.relative.image-effect::after {
   content: "";
   position: absolute;
   inset: 0;
