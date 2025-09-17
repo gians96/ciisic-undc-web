@@ -87,6 +87,18 @@ const ponentes = [
     rol: "Huawei Perú",
     imagen: "/images/ponentes/liu.jpg",
   },
+  {
+    id: 5,
+    nombre: "Jim Dios Luna",
+    rol: "Universidad Autónoma de Madrid",
+    imagen: "/images/ponentes/diosluna.png",
+  },
+  {
+    id: 6,
+    nombre: "Jowel Cabrera",
+    rol: "Universidad Técnica de Georgia",
+    imagen: "/images/ponentes/cabrera.png",
+  }
 ];
 </script>
 
