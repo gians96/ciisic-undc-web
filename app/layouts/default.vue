@@ -24,7 +24,7 @@
           <nav class="hidden lg:flex items-center space-x-8">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
-            <NuxtLink to="/tournament" class="nav-link">Convocatorias</NuxtLink>
+            <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
             <NuxtLink to="/pages" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/news" class="nav-link">Sede</NuxtLink>
             <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
