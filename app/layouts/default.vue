@@ -24,13 +24,12 @@
           <nav class="hidden lg:flex items-center space-x-8">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
-            <NuxtLink to="/tournament" class="nav-link">Convocatorias</NuxtLink>
+            <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
             <NuxtLink to="/pages" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/news" class="nav-link">Sede</NuxtLink>
             <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
           </nav>
 
-          <!-- Botón Sign In -->
           <div class="flex items-center space-x-4">
             <NuxtLink
               to="/planes"
@@ -82,17 +81,6 @@
               La ingeniería de sistemas impulsa la innovación y la investigación
               científica, construyendo soluciones que transforman el futuro.
             </p>
-            <div class="space-y-4">
-              <h4 class="text-white font-bold text-lg">SÍGUENOS</h4>
-              <div class="flex space-x-4">
-                <a href="https://facebook.com/fiundc" target="_blank" class="w-10 h-10 bg-[#0967FF] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Discord">
-                  <Icon name="simple-icons:facebook" class="w-5 h-5 text-white" />
-                </a>
-                <a href="https://tiktok.com/@fiundc" target="_blank" class="w-10 h-10 bg-[#000] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Twitter">
-                  <Icon name="simple-icons:tiktok" class="w-5 h-5 text-white" />
-                </a>
-              </div>
-            </div>
           </div>
           <div class="lg:col-span-3 space-y-6">
             <h3 class="text-white font-bold text-xl tracking-wider">ENLACES ÚTILES</h3>
@@ -102,7 +90,6 @@
               <NuxtLink to="/privacy" class="footer-link">Política de privacidad</NuxtLink>
             </nav>
           </div>
-          <!-- Columna 3: Recursos -->
           <div class="lg:col-span-2 space-y-6">
             <h3 class="text-white font-bold text-xl tracking-wider">RECURSOS</h3>
             <nav class="space-y-3">
@@ -110,7 +97,7 @@
               <NuxtLink to="/ponencias" class="footer-link">Ponencias</NuxtLink>
               <NuxtLink to="/memorias" class="footer-link">Memorias</NuxtLink>
               <NuxtLink to="/gallery" class="footer-link">Galería</NuxtLink>
-              <NuxtLink to="/register" class="footer-link">Registro</NuxtLink>
+              <NuxtLink to="/planes" class="footer-link">Registro</NuxtLink>
             </nav>
           </div>
           <!-- Columna 4: Contacto -->
@@ -135,17 +122,19 @@
             </div>
 
             <div class="flex items-center space-x-3">
-              <!-- Yape -->
               <div
-                class="w-12 h-8 bg-[#811BA1] rounded flex items-center justify-center"
+                class="w-12 h-8 rounded flex items-center justify-center"
               >
-                <span class="text-white text-xs font-bold">Yape</span>
+                <a href="https://facebook.com/fiundc" target="_blank" class="w-10 h-10 bg-[#0967FF] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Discord">
+                  <Icon name="simple-icons:facebook" class="w-5 h-5 text-white" />
+                </a>
               </div>
-              <!-- Plin -->
               <div
-                class="w-12 h-8 bg-[#3FBAB3] rounded flex items-center justify-center"
+                class="w-12 h-8 rounded flex items-center justify-center"
               >
-                <span class="text-white text-xs font-bold">Plin</span>
+                 <a href="https://tiktok.com/@fiundc" target="_blank" class="w-10 h-10 bg-[#000] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-200" aria-label="Twitter">
+                  <Icon name="simple-icons:tiktok" class="w-5 h-5 text-white" />
+                </a>
               </div>
             </div>
           </div>
