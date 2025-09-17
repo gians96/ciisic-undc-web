@@ -78,7 +78,8 @@
               </NuxtLink>
             </div>
             <p class="text-gray-400 leading-relaxed">
-              Evento anual de ingeniería e investigación de la UNDC, donde se reúnen estudiantes, profesionales y empresas para compartir conocimiento, innovación y oportunidades. Aquí encuentras información sobre conferencias, ponentes, inscripciones y actividades clave para tu desarrollo profesional.
+              La ingeniería de sistemas impulsa la innovación y la investigación
+              científica, construyendo soluciones que transforman el futuro.
             </p>
           </div>
           <div class="lg:col-span-3 space-y-6">
