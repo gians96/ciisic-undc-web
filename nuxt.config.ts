@@ -10,6 +10,10 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@pinia/nuxt'
   ],
+  image: {
+    // Deshabilitar IPX en producción para evitar problemas
+    provider: 'none'
+  },
   colorMode: {
     classSuffix: ''
   },
