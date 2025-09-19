@@ -25,14 +25,13 @@
       </div>
     </section>
 
-    <!-- Papers Section (Formulario) -->
+    <!-- Sección: Resumen -->
     <section class="pb-20 mt-16">
       <div class="custom-container">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
-          <!-- Columna 1: Card Call for Papers -->
+          <!-- Call for Papers -->
           <div class="flex justify-center items-start col-span-12 lg:col-span-4">
             <div class="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl overflow-hidden w-full flex flex-col gap-2">
-              <!-- Header -->
               <div class="p-4 border-b border-slate-700">
                 <div class="flex items-center space-x-3">
                   <div class="w-10 h-10 bg-slate-500 rounded-full flex items-center justify-center">
@@ -54,7 +53,7 @@
               </div>
             </div>
           </div>
-          <!-- Columna 2: Datos importantes -->
+          <!-- Datos importantes -->
           <div class="flex items-center justify-center col-span-12 lg:col-span-8">
             <div class="p-8 flex flex-col gap-3 w-full">
             <div class="flex items-center gap-2 mb-2">
@@ -68,7 +67,7 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-1">Extensión</h3>
-                  <p class="text-gray-300 text-sm">Entre 2500 y 3500 palabras por paper.</p>
+                  <p class="text-gray-300 text-sm">De 6 a 8 páginas.</p>
                 </div>
               </li>
               <li class="flex items-start gap-3">
@@ -103,8 +102,8 @@
                   <Icon name="mdi:file-word-box-outline" class="h-7 w-7 text-black" />
                 </div>
                 <div>
-                  <h3 class="text-white font-semibold mb-1">Formato</h3>
-                  <p class="text-gray-300 text-sm">El envío debe realizarse en formato Word o PDF.</p>
+                  <h3 class="text-white font-semibold mb-1">Presentación</h3>
+                  <p class="text-gray-300 text-sm">El envío debe realizarse en formato Word o PDF. Siguiendo el <a href="https://docs.google.com/document/d/117noI2HN1mk9RivWRuA290-IviB6nbRI/edit" target="_blank" class="text-primary underline">formato de presentación.</a></p>
                 </div>
               </li>
               <li class="flex items-start gap-3">
@@ -112,8 +111,8 @@
                   <Icon name="mdi:account-voice" class="h-7 w-7 text-black" />
                 </div>
                 <div>
-                  <h3 class="text-white font-semibold mb-1">Presentación</h3>
-                  <p class="text-gray-300 text-sm">La presentación de los papers será presencial.</p>
+                  <h3 class="text-white font-semibold mb-1">Ponencia</h3>
+                  <p class="text-gray-300 text-sm">La difusión de papers será presencial o virtual.</p>
                 </div>
               </li>
               <li class="flex items-start gap-3">
@@ -122,7 +121,7 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-1">Contacto</h3>
-                  <p class="text-gray-300 text-sm">congreso@undc.edu.pe</p>
+                  <p class="text-gray-300 text-sm">Whatsapp: 998092687</p>
                 </div>
               </li>
             </ul>
@@ -136,13 +135,34 @@
     <section class="py-20 bg-secondary-800">
       <div class="custom-container">
         <h2 class="text-3xl font-bold text-white mb-12 text-center">Ejes Temáticos</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-center">
-          <div v-for="(axis, idx) in thematicAxes" :key="idx" class="bg-secondary-900 rounded-xl p-6 flex flex-col items-center text-center shadow hover:shadow-lg transition-all duration-300">
-            <div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center mb-4">
-              <Icon :name="axis.icon" class="h-8 w-8 text-black" />
-            </div>
-            <h3 class="text-lg font-semibold text-white mb-2">{{ axis.title }}</h3>
-            <p class="text-gray-300 text-sm">{{ axis.desc }}</p>
+        <div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-stretch">
+            <template v-for="(axis, idx) in thematicAxes.slice(0, Math.floor(thematicAxes.length / 4) * 4)" :key="'normal-' + idx">
+              <div class="bg-secondary-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow hover:shadow-lg transition-all duration-300 w-full h-full min-h-[270px]">
+                <div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center mb-4">
+                  <Icon :name="axis.icon" class="h-8 w-8 text-black" />
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">{{ axis.title }}</h3>
+                <p class="text-gray-300 text-sm">{{ axis.desc }}</p>
+              </div>
+            </template>
+          </div>
+          <div v-if="thematicAxes.length % 4 !== 0" class="grid grid-cols-4 gap-8 mt-8">
+            <template v-for="n in Math.floor((4 - (thematicAxes.length % 4)) / 2)" :key="'empty-left-' + n">
+              <div></div>
+            </template>
+            <template v-for="(axis, idx) in thematicAxes.slice(Math.floor(thematicAxes.length / 4) * 4)" :key="'centered-' + idx">
+              <div class="bg-secondary-900 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow hover:shadow-lg transition-all duration-300 w-full h-full min-h-[270px]">
+                <div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center mb-4">
+                  <Icon :name="axis.icon" class="h-8 w-8 text-black" />
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">{{ axis.title }}</h3>
+                <p class="text-gray-300 text-sm">{{ axis.desc }}</p>
+              </div>
+            </template>
+            <template v-for="n in Math.ceil((4 - (thematicAxes.length % 4)) / 2)" :key="'empty-right-' + n">
+              <div></div>
+            </template>
           </div>
         </div>
       </div>
@@ -172,36 +192,38 @@
 <script setup lang="ts">
 // Ejes temáticos
 const thematicAxes = [
-  { title: 'Inteligencia Artificial', icon: 'mdi:robot-outline', desc: 'Aplicaciones, ética y avances en IA.' },
-  { title: 'Ciberseguridad', icon: 'mdi:shield-lock-outline', desc: 'Protección de datos, amenazas y soluciones.' },
-  { title: 'Transformación Digital', icon: 'mdi:cloud-sync-outline', desc: 'Innovación en empresas y procesos.' },
-  { title: 'Educación y TIC', icon: 'mdi:school-outline', desc: 'Tecnología en la enseñanza y aprendizaje.' },
-  { title: 'Desarrollo de Software', icon: 'mdi:code-tags', desc: 'Metodologías, frameworks y casos de éxito.' },
-  { title: 'Internet de las Cosas', icon: 'mdi:access-point-network', desc: 'IoT, dispositivos conectados y aplicaciones.' },
-  { title: 'Emprendimiento Tecnológico', icon: 'mdi:lightbulb-on-outline', desc: 'Startups, innovación y modelos de negocio.' },
+  { title: 'Inteligencia Artificial y Aprendizaje Automático', icon: 'mdi:robot-outline', desc: 'Avances, aplicaciones y retos en IA y machine learning.' },
+  { title: 'Ciencia de Datos y Big Data', icon: 'mdi:database-search', desc: 'Procesamiento, análisis y visualización de grandes volúmenes de datos.' },
+  { title: 'Redes y Ciberseguridad', icon: 'mdi:shield-lock-outline', desc: 'Infraestructura, protección de datos y amenazas digitales.' },
+  { title: 'Desarrollo de Software y Metodologías Ágiles', icon: 'mdi:code-tags', desc: 'Buenas prácticas, frameworks y gestión ágil de proyectos.' },
+  { title: 'Ingeniería de Software y Pruebas Automatizadas', icon: 'mdi:bug-check-outline', desc: 'Calidad, testing y automatización en el ciclo de vida del software.' },
+  { title: 'Transformación Digital', icon: 'mdi:cloud-sync-outline', desc: 'Innovación, digitalización y cambio organizacional.' },
+  { title: 'Industria 5.0 y Operaciones Inteligentes', icon: 'mdi:factory', desc: 'Integración de tecnologías avanzadas en la industria.' },
+  { title: 'Economía Digital y Fintech', icon: 'mdi:currency-usd-circle-outline', desc: 'Nuevos modelos de negocio, pagos digitales y servicios financieros.' },
+  { title: 'Aprendizaje en Línea y Gamificación', icon: 'mdi:gamepad-variant-outline', desc: 'Estrategias, plataformas y motivación en la educación digital.' },
+  { title: 'Educación en Ingeniería y Tecnología', icon: 'mdi:school-outline', desc: 'Innovación educativa y formación en áreas STEM.' },
 ]
 
 // Línea de tiempo
 const timelineEvents = [
-  { title: 'Apertura de convocatoria', date: '1 de agosto', icon: 'mdi:calendar-plus' },
-  { title: 'Recepción de papers', date: '1 de agosto - 15 de septiembre', icon: 'mdi:file-upload-outline' },
-  { title: 'Evaluación de papers', date: '16 de septiembre - 10 de octubre', icon: 'mdi:clipboard-check-outline' },
-  { title: 'Notificación de aceptación', date: '15 de octubre', icon: 'mdi:email-check-outline' },
-  { title: 'Presentación de papers', date: '24 de octubre', icon: 'mdi:account-voice' },
+  { title: 'Apertura de convocatoria', date: '17 de septiembre', icon: 'mdi:calendar-plus' },
+  { title: 'Recepción de papers', date: 'Del 18 de septiembre al 14 de octubre', icon: 'mdi:file-upload-outline' },
+  { title: 'Evaluación de papers', date: '15 de octubre', icon: 'mdi:clipboard-check-outline' },
+  { title: 'Notificación de aceptación', date: 'Del 16 al 19 de octubre ', icon: 'mdi:email-check-outline' },
+  { title: 'Presentación de papers', date: 'Del 21 al 23 de octubre ', icon: 'mdi:account-voice' },
 ]
 
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useLayoutStore } from '~/stores/layout'
 const layoutStore = useLayoutStore()
-// Hero Section data estilo About
 const heroRef = ref(null)
 const papersHero = {
-  title: '¿Quieres presentar tu paper en el VII CISIC? ',
+  title: '¿Quieres presentar tu investigación en el VII CISIC? ',
   highlight: 'Call for Papers',
-  description: 'Comparte tu investigación, experiencia o proyecto con la comunidad académica y profesional.',
+  description: 'Comparte tu paper, experiencia o proyecto con la comunidad académica y profesional.',
   actions: [
-    { label: 'Registrar paper', to: 'https://google.com', style: 'btn-primary' },
-    { label: 'Verificar bases', to: 'https://google.com', style: 'btn-secondary' }
+    { label: 'Registrar paper', to: 'https://easychair.org/cfp/viiciisic2025', style: 'btn-primary' },
+    { label: 'Formato de presentación', to: 'https://docs.google.com/document/d/117noI2HN1mk9RivWRuA290-IviB6nbRI/edit', style: 'btn-secondary' }
   ]
 }
 // Animación de entrada
@@ -263,40 +285,6 @@ useHead({
   ]
 })
 
-const form = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  title: '',
-  abstract: ''
-})
-const isSubmitting = ref(false)
-
-const submitForm = async () => {
-  if (isSubmitting.value) return
-  if (!form.firstName || !form.lastName || !form.email || !form.title || !form.abstract) {
-    layoutStore.showError('Por favor completa todos los campos requeridos', 'Formulario')
-    return
-  }
-  isSubmitting.value = true
-  try {
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    layoutStore.showSuccess(
-      `¡Gracias ${form.firstName}! Tu ponencia ha sido enviada correctamente. Nos pondremos en contacto pronto.`,
-      'Ponencia Enviada'
-    )
-    Object.keys(form).forEach(key => {
-      form[key as keyof typeof form] = ''
-    })
-  } catch (error) {
-    layoutStore.showError(
-      'Hubo un error al enviar tu ponencia. Por favor intenta de nuevo.',
-      'Error'
-    )
-  } finally {
-    isSubmitting.value = false
-  }
-}
 </script>
 
 <style scoped>
@@ -428,6 +416,4 @@ const submitForm = async () => {
   justify-content: center;
   z-index: 10;
 }
-
-
 </style>
