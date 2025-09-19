@@ -4,6 +4,63 @@
       <!-- Título de la sección -->
       <div class="text-center mb-16">
         <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4">
+          Comité General
+        </h2>
+        <!-- Línea decorativa verde -->
+        <div class="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
+      </div>
+
+      <!-- Grid de miembros del equipo -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
+        <div
+          v-for="(member, index) in teamMembers.slice(3)"
+          :key="member.id"
+          class="team-member-card group"
+        >
+          <div
+            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"
+            ></div>
+            <div class="relative z-10 flex justify-center mb-6">
+              <div
+                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  v-if="member.image"
+                  :src="member.image"
+                  :alt="member.name"
+                  class="w-full h-full object-cover"
+                />
+                <div v-else class="text-3xl">{{ member.image }}</div>
+              </div>
+            </div>
+            <div class="relative z-10 text-center">
+              <h3 class="text-xl font-bold text-white mb-2">
+                {{ member.name }}
+              </h3>
+              <p
+                class="text-green-500 text-sm font-medium uppercase tracking-wider"
+              >
+                {{ member.role }}
+              </p>
+            </div>
+            <div
+              class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"
+            ></div>
+            <div
+              class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 pt-20">
+      <!-- Título de la sección -->
+      <div class="text-center mb-16">
+        <h2 class="text-4xl lg:text-5xl font-bold text-white mb-4">
           Comité General de Estudiantes
         </h2>
         <!-- Línea decorativa verde -->
@@ -13,7 +70,7 @@
       <!-- Grid de miembros del equipo -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
         <div
-          v-for="(member, index) in teamMembers"
+          v-for="(member, index) in teamMembers.slice(0, 3)"
           :key="member.id"
           class="team-member-card group"
         >
@@ -93,6 +150,36 @@ const teamMembers: TeamMember[] = [
     name: "Josemaria Caballa",
     role: "tesorero",
     image: "/images/team/caballa.jpg",
+  },
+  {
+    id: "4",
+    name: "Dr. Wagner Vicente",
+    role: "Chair General",
+    image: "/images/team/w-vicente.webp",
+  },
+  {
+    id: "5",
+    name: "Ph.D. Dulio Oseda",
+    role: "Chair General",
+    image: "/images/team/d-oseda.webp",
+  },
+  {
+    id: "6",
+    name: "M.Sc. Leonidas Asto",
+    role: "Chair General",
+    image: "/images/team/l-asto.webp",
+  },
+  {
+    id: "7",
+    name: "Dra. Amanda Duran",
+    role: "Chair Académico",
+    image: "/images/team/a-duran.webp",
+  },
+  {
+    id: "8",
+    name: "Dr. Carlos Almidón",
+    role: "Chair Académico",
+    image: "/images/team/c-almidon.webp",
   },
 ];
 
