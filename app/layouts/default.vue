@@ -26,7 +26,7 @@
             <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
             <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
             <NuxtLink to="/pages" class="nav-link">Ponentes</NuxtLink>
-            <NuxtLink to="/news" class="nav-link">Sede</NuxtLink>
+            <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
             <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
           </nav>
 
