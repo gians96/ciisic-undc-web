@@ -223,7 +223,7 @@ const papersHero = {
   description: 'Comparte tu paper, experiencia o proyecto con la comunidad académica y profesional.',
   actions: [
     { label: 'Registrar paper', to: 'https://easychair.org/cfp/viiciisic2025', style: 'btn-primary' },
-    { label: 'Formato de presentación', to: 'https://docs.google.com/document/d/117noI2HN1mk9RivWRuA290-IviB6nbRI/edit', style: 'btn-secondary' }
+    { label: 'Bases y formato de presentación', to: 'http://drive.google.com/drive/folders/1ecOOWv9lRdYThSbG6_B1Z3UuW2zjIkL8', style: 'btn-secondary' }
   ]
 }
 // Animación de entrada

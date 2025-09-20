@@ -93,11 +93,11 @@
           <div class="lg:col-span-2 space-y-6">
             <h3 class="text-white font-bold text-xl tracking-wider">RECURSOS</h3>
             <nav class="space-y-3">
-              <NuxtLink to="/tournaments" class="footer-link">Torneos</NuxtLink>
-              <NuxtLink to="/ponencias" class="footer-link">Ponencias</NuxtLink>
-              <NuxtLink to="/memorias" class="footer-link">Memorias</NuxtLink>
-              <NuxtLink to="/gallery" class="footer-link">Galería</NuxtLink>
               <NuxtLink to="/planes" class="footer-link">Registro</NuxtLink>
+              <NuxtLink to="/about" class="footer-link">Acerca del congreso</NuxtLink>
+              <NuxtLink to="/ponencias" class="footer-link">Ponencias</NuxtLink>
+              <NuxtLink to="/papers" class="footer-link">Call for Papers</NuxtLink>
+              
             </nav>
           </div>
           <!-- Columna 4: Contacto -->
