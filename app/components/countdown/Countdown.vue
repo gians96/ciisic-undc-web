@@ -39,27 +39,27 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="flex flex-col items-center gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
+    class="flex flex-col items-center gap-4 p-4 sm:p-6 bg-slate-800/50 rounded-lg shadow-lg border border-slate-700 backdrop-blur-sm"
   >
-    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+    <h2 class="text-xl sm:text-2xl lg:text-2xl font-bold text-white text-center">
       ⏳ Faltan para el Congreso
     </h2>
-    <div class="flex gap-4 text-center">
-      <div>
-        <span class="block text-4xl font-bold text-primary">{{ days }}</span>
-        <span class="text-gray-600 dark:text-gray-300">Días</span>
+    <div class="flex gap-3 sm:gap-4 text-center">
+      <div class="flex flex-col items-center">
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ days }}</span>
+        <span class="text-gray-300 text-sm sm:text-base">Días</span>
       </div>
-      <div>
-        <span class="block text-4xl font-bold text-primary">{{ hours }}</span>
-        <span class="text-gray-600 dark:text-gray-300">Horas</span>
+      <div class="flex flex-col items-center">
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ hours }}</span>
+        <span class="text-gray-300 text-sm sm:text-base">Horas</span>
       </div>
-      <div>
-        <span class="block text-4xl font-bold text-primary">{{ minutes }}</span>
-        <span class="text-gray-600 dark:text-gray-300">Min</span>
+      <div class="flex flex-col items-center">
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ minutes }}</span>
+        <span class="text-gray-300 text-sm sm:text-base">Min</span>
       </div>
-      <div>
-        <span class="block text-4xl font-bold text-primary">{{ seconds }}</span>
-        <span class="text-gray-600 dark:text-gray-300">Seg</span>
+      <div class="flex flex-col items-center">
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ seconds }}</span>
+        <span class="text-gray-300 text-sm sm:text-base">Seg</span>
       </div>
     </div>
   </div>
