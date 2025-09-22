@@ -12,7 +12,7 @@
     >
       <div
         v-if="isOpen"
-        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] lg:hidden"
         @click="closeMenu"
         role="dialog"
         aria-modal="true"
@@ -30,7 +30,7 @@
         >
           <div
             v-if="isOpen"
-            class="fixed inset-y-0 left-0 w-80 max-w-sm bg-secondary-800 shadow-xl overflow-y-auto"
+            class="fixed inset-y-0 left-0 w-80 max-w-sm bg-secondary-800 shadow-xl overflow-y-auto z-[9999]"
             @click.stop
           >
             <!-- Header del Menu -->

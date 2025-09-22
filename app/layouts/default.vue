@@ -2,7 +2,7 @@
   <div id="app" class="min-h-screen bg-slate-900 text-white">
     <!-- Header Principal -->
     <header
-      class="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50"
+      class="fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50"
     >
       <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
@@ -160,7 +160,6 @@
 // IMPORTS
 // ============================================================================
 
-import { storeToRefs } from "pinia";
 import { useLayoutStore } from "~/stores/layout";
 import { useNavigationStore } from "~/stores/navigation";
 import MobileMenuOverlay from "~/components/layout/MobileMenuOverlay.vue";
