@@ -136,7 +136,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 // ============================================================================
 
 useHead({
-  title: 'Sobre Nosotros - VII CIISIC',
+  title: 'Sobre Nosotros | VII CIISIC',
   meta: [
     {
       name: 'description',
@@ -144,7 +144,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Sobre Nosotros - VII CIISIC'
+      content: 'Sobre Nosotros | VII CIISIC'
     },
     {
       property: 'og:description',

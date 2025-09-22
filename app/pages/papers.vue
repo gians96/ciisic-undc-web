@@ -264,7 +264,7 @@ onUnmounted(() => {
 })
 
 useHead({
-  title: 'Call for Papers - CIISIC',
+  title: 'Call for Papers | VII CIISIC',
   meta: [
     {
       name: 'description',
@@ -272,7 +272,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Call for Papers  - CIISIC'
+      content: 'Call for Papers  | VII CIISIC'
     },
     {
       property: 'og:description',

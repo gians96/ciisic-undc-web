@@ -474,11 +474,11 @@
 // ============================================================================
 
 useHead({
-  title: 'Política de Privacidad - MYKD',
+  title: 'Política de Privacidad | VII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Política de privacidad de MYKD. Conoce cómo protegemos y manejamos tus datos personales en nuestra plataforma de gaming y esports.'
+      content: 'Política de privacidad de VII CIISIC. Conoce cómo protegemos y manejamos tus datos personales en nuestra plataforma.'
     }
   ]
 })
@@ -487,7 +487,7 @@ useHead({
 // DATOS
 // ============================================================================
 
-const lastUpdated = ref('15 de Enero de 2024')
+const lastUpdated = ref('15 de Setiembre de 2025')
 
 // ============================================================================
 // METHODS

@@ -197,7 +197,7 @@ import { ref, watch } from 'vue'
 // ===========================================================================
 
 useHead({
-  title: 'Registro de Estudiantes - CIISIC',
+  title: 'Inscripción | VII CIISIC',
   meta: [
     { name: 'description', content: 'Formulario de registro para estudiantes del congreso CIISIC.' }
   ]
