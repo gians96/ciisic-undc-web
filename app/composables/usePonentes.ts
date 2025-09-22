@@ -12,30 +12,57 @@ export const usePonentes = () => {
   const ponentes: Ponente[] = [
     {
       id: 1,
-      nombre: "Gera Flores Sempertegui",
+      nombre: "José Verbel",
+      imagen: "/images/ponentes/verbel.png",
+      descripcion: "Especialista en ingeniería del software, con experiencia y habilidades en el Desarrollo de Software, Arquitecturas orientadas a servicios, así como también en la Administración y gestión en el Desarrollo de Soluciones de Software empleando metodologías ágiles.",
+      linkedin: "https://www.linkedin.com/in/jverbel",
+      empresa: "Solati SAS",
+      especialidades: ["Desarrollo", "Tecnología Empresarial", "Software"]
+    },
+    {
+      id: 2,
+      nombre: "Abigail Kauf",
+      imagen: "/images/ponentes/kauf.jpg",
+      descripcion: "Profesional en ciberseguridad con diez años de experiencia. Tiene como objetivo diseñar y aplicar métodos eficientes para optimizar el trabajo diario, convirtiéndolos en un valor agregado para las organizaciones en las que colabora.",
+      linkedin: "https://www.linkedin.com/in/abigailkauf/",
+      empresa: "UTN Argentina",
+      especialidades: ["Sistemas de Información", "Educación"]
+    },
+    {
+      id: 3,
+      nombre: "Eric Liu",
+      imagen: "/images/ponentes/liu.jpg",
+      descripcion: "Vicepresidente de Relaciones Públicas de Huawei Perú, un cargo desde el cual ha participado en acuerdos de colaboración con universidades peruanas para impulsar el talento digital y el desarrollo de la tecnología en el país. ",
+      linkedin: "#",
+      empresa: "Huawei Perú",
+      especialidades: ["Telecomunicaciones", "IoT", "Cloud Computing"]
+    },
+    {
+      id: 4,
+      nombre: "Jim Dios",
+      imagen: "/images/ponentes/diosluna.png",
+      descripcion: "Máster en Ingeniería Informática UAM, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
+      linkedin: "https://www.linkedin.com/in/jimdios/",
+      empresa: "Universidad de Lima",
+      especialidades: ["Investigación", "Sistemas de Información"]
+    },
+    {
+      id: 5,
+      nombre: "Jowel Cabrera",
+      imagen: "/images/ponentes/cabrera.png",
+      descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
+      linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
+      empresa: "Universidad Técnica de Georgia",
+      especialidades: ["Investigación", "Tecnologías Emergentes"]
+    },
+    {
+      id: 6,
+      nombre: "Gera Flores",
       imagen: "/images/ponentes/yera_flores.png",
       descripcion: "Ejecutiva senior con más de 12 años de experiencia liderando áreas de analítica avanzada, inteligencia artificial e inteligencia comercial.",
       linkedin: "https://www.linkedin.com/in/gflores1092/",
       empresa: "Miss Yera",
       especialidades: ["Gestión", "Estrategia", "Educación"]
-    },
-    {
-      id: 2,
-      nombre: "Jim Dios Luna",
-      imagen: "/images/ponentes/diosluna.png",
-      descripcion: "Máster en Ingeniería Informática por la Universidad Autónoma de Madrid, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
-      linkedin: "https://www.linkedin.com/in/jimdios/",
-      empresa: "Universidad de Lima",
-      especialidades: ["Investigación", "Sistemas de Información", "Ciencias de la Computación"]
-    },
-    {
-      id: 3,
-      nombre: "Jowel Cabrera Padilla",
-      imagen: "/images/ponentes/cabrera.png",
-      descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
-      linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
-      empresa: "Universidad Técnica de Georgia",
-      especialidades: ["Investigación", "Sistemas Computacionales", "Tecnologías Emergentes"]
     }
   ]
 

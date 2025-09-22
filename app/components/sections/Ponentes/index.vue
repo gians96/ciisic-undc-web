@@ -41,7 +41,7 @@
       <!-- Ponentes -->
       <main class="flex justify-center">
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 max-w-7xl"
           role="list"
           aria-label="Lista de miembros del equipo"
         >
@@ -61,46 +61,10 @@
 <script setup>
 import PerfilCard from "./PerfilCard.vue";
 
-// Props with default values
-const ponentes = [
-  {
-    id: 1,
-    nombre: "José Verbel",
-    rol: "Solati SAS",
-    imagen: "/images/ponentes/verbel.png",
-  },
-  {
-    id: 2,
-    nombre: "Abigail Kauf",
-    rol: "Universidad Tecnológica Nacional - Argentina",
-    imagen: "/images/ponentes/kauf.jpg",
-  },
-  {
-    id: 3,
-    nombre: "Eric Liu",
-    rol: "Huawei Perú",
-    imagen: "/images/ponentes/liu.jpg",
-  },
-  {
-    id: 4,
-    nombre: "Jim Dios Luna",
-    rol: "Universidad Autónoma de Madrid",
-    imagen: "/images/ponentes/diosluna.png",
-  },
-  {
-    id: 5,
-    nombre: "Jowel Cabrera",
-    rol: "Universidad Técnica de Georgia",
-    imagen: "/images/ponentes/cabrera.png",
-  },
-  {
-    id: 6,
-    nombre: "Gera Flores",
-    rol: "Centrum PUCP",
-    imagen: "/images/ponentes/yera_flores.png",
-  },
-];
+// Usar el composable centralizado de ponentes
+const { ponentes } = usePonentes()
 
+// Usar todos los ponentes para la sección en la página principal
 </script>
 
 <style scoped>
