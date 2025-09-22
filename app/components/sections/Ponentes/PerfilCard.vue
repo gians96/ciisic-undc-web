@@ -50,7 +50,7 @@
         class="text-green-400 text-sm font-medium transition-all duration-300 ease-out"
         style="transform: translate3d(0, 0, 0);"
       >
-        {{ rol }}
+        {{ empresa }}
       </p>
     </footer>
   </article>
@@ -62,7 +62,7 @@ const props = defineProps({
     type: String,
     required: true
   },
-  rol: {
+  empresa: {
     type: String,
     required: true
   },

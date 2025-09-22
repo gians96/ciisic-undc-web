@@ -41,7 +41,7 @@
       <!-- Ponentes -->
       <main class="flex justify-center">
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl"
           role="list"
           aria-label="Lista de miembros del equipo"
         >
@@ -50,7 +50,7 @@
             :key="ponente.id"
             :nombre="ponente.nombre"
             :imagen="ponente.imagen"
-            :rol="ponente.rol"
+            :empresa="ponente.empresa"
           />
         </div>
       </main>
@@ -61,45 +61,11 @@
 <script setup>
 import PerfilCard from "./PerfilCard.vue";
 
-// Props with default values
-const ponentes = [
-  {
-    id: 1,
-    nombre: "Philip Chu Joy",
-    rol: "Empresario",
-    imagen: "/images/ponentes/phillip_chu.webp",
-  },
-  {
-    id: 2,
-    nombre: "Gera Flores",
-    rol: "Docente Centrum PUCP",
-    imagen: "/images/ponentes/yera_flores.png",
-  },
-  {
-    id: 3,
-    nombre: "Freddy Vega",
-    rol: "CEO and Founder at Platzi",
-    imagen: "/images/ponentes/vega.jpg",
-  },
-  {
-    id: 4,
-    nombre: "Eric Liu",
-    rol: "Huawei Perú",
-    imagen: "/images/ponentes/liu.jpg",
-  },
-  {
-    id: 5,
-    nombre: "Jim Dios Luna",
-    rol: "Universidad Autónoma de Madrid",
-    imagen: "/images/ponentes/diosluna.png",
-  },
-  {
-    id: 6,
-    nombre: "Jowel Cabrera",
-    rol: "Universidad Técnica de Georgia",
-    imagen: "/images/ponentes/cabrera.png",
-  }
-];
+// Usar el composable centralizado de ponentes
+const { ponentesDestacados } = usePonentes()
+
+// Usar los ponentes destacados para la página principal
+const ponentes = ponentesDestacados
 </script>
 
 <style scoped>
