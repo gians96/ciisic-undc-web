@@ -122,7 +122,7 @@ onUnmounted(() => {
 // ============================================================================
 
 useHead({
-  title: 'Ponentes - VII CIISIC UNDC',
+  title: 'Ponentes | VII CIISIC',
   meta: [
     {
       name: 'description',
@@ -130,7 +130,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Ponentes - VII CIISIC UNDC'
+      content: 'Ponentes | VII CIISIC'
     },
     {
       property: 'og:description',

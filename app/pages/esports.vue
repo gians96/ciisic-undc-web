@@ -9,7 +9,7 @@
       <div class="custom-container">
         <div class="max-w-4xl mx-auto text-center">
           <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">
-            <span class="text-primary">Torneos</span> MYKD
+            <span class="text-primary">Torneos</span> eSports
           </h1>
           <p class="text-xl text-gray-300 mb-8">
             Participa en los torneos más emocionantes y compite por premios increíbles. 
@@ -230,19 +230,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Torneos - MYKD',
+  title: 'eSports | VII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Participa en los mejores torneos de eSports en MYKD. Compite por premios increíbles en League of Legends, CS:GO, Valorant y más juegos.'
+      content: 'Participa en los mejores torneos de eSports en el VII CIISIC. Compite por premios increíbles.'
     },
     {
       property: 'og:title',
-      content: 'Torneos - MYKD'
+      content: 'eSports | VII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Participa en los mejores torneos de eSports en MYKD. Compite por premios increíbles.'
+      content: 'Participa en los mejores torneos de eSports en el VII CIISIC. Compite por premios increíbles.'
     },
     {
       property: 'og:type',

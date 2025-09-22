@@ -160,19 +160,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Iniciar Sesión - MYKD',
+  title: 'Iniciar Sesión | VII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Inicia sesión en tu cuenta MYKD para acceder a torneos exclusivos, estadísticas y más funcionalidades.'
+      content: 'Inicia sesión en tu cuenta VII CIISIC para acceder a más funcionalidades.'
     },
     {
       property: 'og:title',
-      content: 'Iniciar Sesión - MYKD'
+      content: 'Iniciar Sesión | VII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Inicia sesión en tu cuenta MYKD para acceder a torneos exclusivos.'
+      content: 'Inicia sesión en tu cuenta VII CIISIC para acceder al panel administrativo.'
     },
     {
       property: 'og:type',

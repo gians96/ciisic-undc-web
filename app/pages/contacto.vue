@@ -208,7 +208,7 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Contacto - MYKD',
+  title: 'Contacto | VII CIISIC',
   meta: [
     {
       name: 'description',
@@ -216,7 +216,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Contacto - MYKD'
+      content: 'Contacto | VII CIISIC'
     },
     {
       property: 'og:description',

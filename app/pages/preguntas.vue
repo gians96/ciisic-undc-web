@@ -116,7 +116,7 @@
 // ============================================================================
 
 useHead({
-  title: 'Preguntas Frecuentes - MYKD',
+  title: 'Preguntas Frecuentes | VII CIISIC',
   meta: [
     {
       name: 'description',

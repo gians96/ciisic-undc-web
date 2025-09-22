@@ -125,7 +125,7 @@ const navigateToPlan = (path?: string) => {
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-  title: 'Planes de Inscripción - VI CIISIC UNDC',
+  title: 'Planes de Inscripción | VII CIISIC',
   meta: [
     { name: 'description', content: 'Explora los planes de inscripción para el VI Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
   ]

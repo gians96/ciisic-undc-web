@@ -154,7 +154,7 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Sede del Evento - CIISIC 2025',
+  title: 'Sede del Evento | VII CIISIC',
   meta: [
     {
       name: 'description',
@@ -162,7 +162,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Sede del Evento - CIISIC 2025'
+      content: 'Sede del Evento | VII CIISIC'
     },
     {
       property: 'og:description',
