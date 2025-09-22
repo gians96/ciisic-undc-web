@@ -61,11 +61,46 @@
 <script setup>
 import PerfilCard from "./PerfilCard.vue";
 
-// Usar el composable centralizado de ponentes
-const { ponentesDestacados } = usePonentes()
+// Props with default values
+const ponentes = [
+  {
+    id: 1,
+    nombre: "José Verbel",
+    rol: "Solati SAS",
+    imagen: "/images/ponentes/verbel.png",
+  },
+  {
+    id: 2,
+    nombre: "Abigail Kauf",
+    rol: "Universidad Tecnológica Nacional - Argentina",
+    imagen: "/images/ponentes/kauf.jpg",
+  },
+  {
+    id: 3,
+    nombre: "Eric Liu",
+    rol: "Huawei Perú",
+    imagen: "/images/ponentes/liu.jpg",
+  },
+  {
+    id: 4,
+    nombre: "Jim Dios Luna",
+    rol: "Universidad Autónoma de Madrid",
+    imagen: "/images/ponentes/diosluna.png",
+  },
+  {
+    id: 5,
+    nombre: "Jowel Cabrera",
+    rol: "Universidad Técnica de Georgia",
+    imagen: "/images/ponentes/cabrera.png",
+  },
+  {
+    id: 6,
+    nombre: "Gera Flores",
+    rol: "Centrum PUCP",
+    imagen: "/images/ponentes/yera_flores.png",
+  },
+];
 
-// Usar los ponentes destacados para la página principal
-const ponentes = ponentesDestacados
 </script>
 
 <style scoped>

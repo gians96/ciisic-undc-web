@@ -133,35 +133,36 @@ interface TeamMember {
 // ============================================================================
 
 const teamMembers: TeamMember[] = [
+  
   {
     id: "1",
-    name: "Alexandra Reyna",
-    role: "Vicepresidenta",
-    image: "/images/team/reyna.jpg",
+    name: "Carolay Delgado",
+    role: "Presidenta",
+    image: "/images/team/delgado.webp",
   },
   {
     id: "2",
-    name: "Carolay Delgado",
-    role: "Presidenta",
-    image: "/images/team/delgado.jpg",
+    name: "Alexandra Reyna",
+    role: "Vicepresidenta",
+    image: "/images/team/reyna.webp",
   },
   {
     id: "3",
     name: "Josemaria Caballa",
     role: "tesorero",
-    image: "/images/team/caballa.jpg",
+    image: "/images/team/caballa.webp",
   },
   {
     id: "4",
-    name: "Dr. Wagner Vicente",
-    role: "Chair General",
-    image: "/images/team/w-vicente.webp",
-  },
-  {
-    id: "5",
     name: "Ph.D. Dulio Oseda",
     role: "Chair General",
     image: "/images/team/d-oseda.webp",
+  },
+  {
+    id: "5",
+    name: "Dr. Wagner Vicente",
+    role: "Chair General",
+    image: "/images/team/w-vicente.webp",
   },
   {
     id: "6",
