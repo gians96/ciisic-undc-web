@@ -289,6 +289,22 @@ useHead({
 
 <style scoped>
 
+/* ============================================================================
+   ANIMACIONES DE ENTRADA Y FADE-IN
+   ============================================================================ */
+
+.fade-in-element {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--animation-delay, 0s);
+}
+
+.fade-in-element.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* =========================================================================
   ESTILOS 
   ========================================================================= */
@@ -362,24 +378,34 @@ useHead({
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-element,
+  .form-field,
+  .social-link:hover,
+  .contact-info-card:hover,
+  .form-input:focus {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  .fade-in-element {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 768px) {
+  .fade-in-element {
+    transform: translateY(20px);
+  }
+  
   .contact-grid {
     grid-template-columns: 1fr;
     gap: 3rem;
   }
   .social-links {
     justify-content: center;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .form-field,
-  .social-link:hover,
-  .contact-info-card:hover,
-  .form-input:focus {
-    animation: none;
-    transform: none;
-    transition: none;
   }
 }
 
