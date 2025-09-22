@@ -12,7 +12,7 @@
     >
       <div
         v-if="isOpen"
-        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] lg:hidden"
         @click="closeMenu"
         role="dialog"
         aria-modal="true"
@@ -30,20 +30,19 @@
         >
           <div
             v-if="isOpen"
-            class="fixed inset-y-0 left-0 w-80 max-w-sm bg-secondary-800 shadow-xl overflow-y-auto"
+            class="fixed inset-y-0 left-0 w-80 max-w-sm bg-secondary-800 shadow-xl overflow-y-auto z-[9999]"
             @click.stop
           >
             <!-- Header del Menu -->
             <div class="flex items-center justify-between p-6 border-b border-secondary-700">
               <!-- Logo -->
-              <NuxtLink to="/" @click="closeMenu" class="flex items-center">
+              <NuxtLink to="/" @click="closeMenu" class="flex items-center space-x-3">
                 <NuxtImg
-                  src="/images/logo/logo.png"
-                  alt="MYKD Logo"
-                  width="120"
-                  height="40"
-                  class="h-8 w-auto"
+                  src="/images/logo/preloader.png"
+                  alt="VII CIISIC Logo"
+                  class="w-8 h-8 object-contain"
                 />
+                <span class="text-white font-bold text-xl tracking-wider">VII CIISIC</span>
               </NuxtLink>
 
               <!-- Close Button -->
@@ -61,9 +60,7 @@
               <ul class="space-y-2">
                 <!-- Navigation Items -->
                 <li v-for="item in mainNavigation" :key="item.id">
-                  <!-- Simple Link -->
                   <NuxtLink
-                    v-if="!item.children"
                     :to="item.href"
                     @click="closeMenu"
                     class="mobile-nav-link"
@@ -76,109 +73,19 @@
                     />
                     <span>{{ item.label }}</span>
                   </NuxtLink>
-
-                  <!-- Dropdown -->
-                  <div v-else>
-                    <button
-                      @click="toggleSubmenu(item.id)"
-                      class="mobile-nav-link w-full"
-                      :class="{ 'active': item.isActive }"
-                    >
-                      <Icon 
-                        v-if="item.icon" 
-                        :name="item.icon" 
-                        class="h-5 w-5 mr-3 text-primary" 
-                      />
-                      <span>{{ item.label }}</span>
-                      <Icon 
-                        name="heroicons:chevron-down" 
-                        class="h-4 w-4 ml-auto transition-transform duration-200"
-                        :class="{ 'rotate-180': openSubmenus.includes(item.id) }"
-                      />
-                    </button>
-
-                    <!-- Submenu -->
-                    <Transition
-                      name="slide-down"
-                      enter-active-class="transition-all duration-200 ease-out"
-                      enter-from-class="transform -translate-y-2 opacity-0 max-h-0"
-                      enter-to-class="transform translate-y-0 opacity-100 max-h-96"
-                      leave-active-class="transition-all duration-150 ease-in"
-                      leave-from-class="transform translate-y-0 opacity-100 max-h-96"
-                      leave-to-class="transform -translate-y-2 opacity-0 max-h-0"
-                    >
-                      <div v-if="openSubmenus.includes(item.id)" class="mt-2 ml-8">
-                        <ul class="space-y-1">
-                          <li v-for="child in item.children" :key="child.id">
-                            <NuxtLink
-                              :to="child.href"
-                              @click="closeMenu"
-                              class="mobile-submenu-link"
-                              :class="{ 'active': child.isActive }"
-                            >
-                              {{ child.label }}
-                            </NuxtLink>
-                          </li>
-                        </ul>
-                      </div>
-                    </Transition>
-                  </div>
                 </li>
               </ul>
             </nav>
 
-            <!-- Search Section -->
-            <div class="border-t border-secondary-700 p-6">
-              <button
-                @click="openSearch"
-                class="w-full flex items-center p-3 bg-secondary-700 hover:bg-secondary-600 rounded-lg transition-colors duration-200"
-              >
-                <Icon name="heroicons:magnifying-glass" class="h-5 w-5 mr-3 text-primary" />
-                <span class="text-gray-300">Buscar...</span>
-              </button>
-            </div>
-
             <!-- User Actions -->
             <div class="border-t border-secondary-700 p-6">
-              <div class="flex space-x-3">
-                <!-- Login Button -->
-                <NuxtLink
-                  to="/login"
-                  @click="closeMenu"
-                  class="flex-1 bg-secondary-700 hover:bg-secondary-600 text-white py-3 px-4 rounded-lg text-center font-semibold transition-colors duration-200"
-                >
-                  Iniciar Sesión
-                </NuxtLink>
-
-                <!-- Register Button -->
-                <NuxtLink
-                  to="/register"
-                  @click="closeMenu"
-                  class="flex-1 bg-primary hover:bg-primary/90 text-black py-3 px-4 rounded-lg text-center font-semibold transition-colors duration-200"
-                >
-                  Registrarse
-                </NuxtLink>
-              </div>
-            </div>
-
-            <!-- Social Links -->
-            <div class="border-t border-secondary-700 p-6">
-              <h3 class="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider">
-                Síguenos
-              </h3>
-              <div class="flex space-x-4">
-                <a 
-                  v-for="social in socialLinks" 
-                  :key="social.platform"
-                  :href="social.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="w-10 h-10 bg-secondary-700 hover:bg-primary text-gray-400 hover:text-black rounded-lg flex items-center justify-center transition-all duration-300"
-                  :aria-label="`Síguenos en ${social.platform}`"
-                >
-                  <Icon :name="social.icon" class="h-5 w-5" />
-                </a>
-              </div>
+              <NuxtLink
+                to="/planes"
+                @click="closeMenu"
+                class="w-full bg-green-500 hover:bg-green-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+              >
+                REGISTRO
+              </NuxtLink>
             </div>
           </div>
         </Transition>
@@ -192,6 +99,7 @@
 // IMPORTS
 // ============================================================================
 
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNavigationStore } from '~/stores/navigation'
 import { useLayoutStore } from '~/stores/layout'
@@ -203,8 +111,56 @@ import { useLayoutStore } from '~/stores/layout'
 const navigationStore = useNavigationStore()
 const layoutStore = useLayoutStore()
 
-const { mainNavigation } = storeToRefs(navigationStore)
 const { isMobileMenuOpen } = storeToRefs(layoutStore)
+
+// ============================================================================
+// NAVEGACIÓN LOCAL PARA CIISIC
+// ============================================================================
+
+const mainNavigation = ref([
+  {
+    id: 'home',
+    label: 'Inicio',
+    href: '/',
+    icon: 'heroicons:home',
+    isActive: false
+  },
+  {
+    id: 'about',
+    label: 'Acerca de',
+    href: '/about',
+    icon: 'heroicons:information-circle',
+    isActive: false
+  },
+  {
+    id: 'papers',
+    label: 'Call for papers',
+    href: '/papers',
+    icon: 'heroicons:document-text',
+    isActive: false
+  },
+  {
+    id: 'ponentes',
+    label: 'Ponentes',
+    href: '/ponentes',
+    icon: 'heroicons:user-group',
+    isActive: false
+  },
+  {
+    id: 'sede',
+    label: 'Sede',
+    href: '/sede',
+    icon: 'heroicons:map-pin',
+    isActive: false
+  },
+  {
+    id: 'contacto',
+    label: 'Contacto',
+    href: '/contacto',
+    icon: 'heroicons:envelope',
+    isActive: false
+  }
+])
 
 // ============================================================================
 // ESTADO LOCAL
@@ -216,30 +172,9 @@ const openSubmenus = ref<string[]>([])
 // COMPUTED
 // ============================================================================
 
-const isOpen = computed(() => isMobileMenuOpen.value)
-
-const socialLinks = computed(() => [
-  {
-    platform: 'Discord',
-    url: 'https://discord.gg/mykd',
-    icon: 'simple-icons:discord'
-  },
-  {
-    platform: 'Twitter',
-    url: 'https://twitter.com/mykd',
-    icon: 'simple-icons:twitter'
-  },
-  {
-    platform: 'YouTube',
-    url: 'https://youtube.com/mykd',
-    icon: 'simple-icons:youtube'
-  },
-  {
-    platform: 'Twitch',
-    url: 'https://twitch.tv/mykd',
-    icon: 'simple-icons:twitch'
-  }
-])
+const isOpen = computed(() => {
+  return isMobileMenuOpen.value
+})
 
 // ============================================================================
 // METHODS
@@ -250,40 +185,31 @@ const closeMenu = () => {
   openSubmenus.value = []
 }
 
-const toggleSubmenu = (itemId: string) => {
-  const index = openSubmenus.value.indexOf(itemId)
-  if (index > -1) {
-    openSubmenus.value.splice(index, 1)
-  } else {
-    openSubmenus.value.push(itemId)
-  }
-}
+// ============================================================================
+// KEYBOARD NAVIGATION
+// ============================================================================
 
-const openSearch = () => {
-  closeMenu()
-  layoutStore.openSearch()
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && isOpen.value) {
+    closeMenu()
+  }
 }
 
 // ============================================================================
 // LIFECYCLE
 // ============================================================================
 
-// Cerrar el menú cuando se presiona Escape
 onMounted(() => {
-  const handleEscape = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && isOpen.value) {
-      closeMenu()
-    }
-  }
-
-  document.addEventListener('keydown', handleEscape)
-
-  onUnmounted(() => {
-    document.removeEventListener('keydown', handleEscape)
-  })
+  document.addEventListener('keydown', handleKeydown)
 })
 
-// Prevenir scroll en el body cuando el menú está abierto
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+  if (process.client) {
+    document.body.style.overflow = ''
+  }
+})
+
 watch(isOpen, (newValue) => {
   if (process.client) {
     if (newValue) {
@@ -291,13 +217,6 @@ watch(isOpen, (newValue) => {
     } else {
       document.body.style.overflow = ''
     }
-  }
-})
-
-// Limpiar overflow al desmontar
-onUnmounted(() => {
-  if (process.client) {
-    document.body.style.overflow = ''
   }
 })
 </script>

@@ -41,7 +41,7 @@
       <!-- Ponentes -->
       <main class="flex justify-center">
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl"
           role="list"
           aria-label="Lista de miembros del equipo"
         >
@@ -50,7 +50,7 @@
             :key="ponente.id"
             :nombre="ponente.nombre"
             :imagen="ponente.imagen"
-            :rol="ponente.rol"
+            :empresa="ponente.empresa"
           />
         </div>
       </main>
@@ -100,6 +100,7 @@ const ponentes = [
     imagen: "/images/ponentes/yera_flores.png",
   },
 ];
+
 </script>
 
 <style scoped>

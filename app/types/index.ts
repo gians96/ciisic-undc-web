@@ -344,3 +344,17 @@ export interface ISocketEvent extends IEvent {
   room?: string
   userId?: string
 }
+
+// ============================================================================
+// TIPOS PARA PONENTES
+// ============================================================================
+
+export interface Ponente {
+  id: number
+  nombre: string
+  imagen: string
+  descripcion?: string
+  linkedin?: string
+  empresa?: string
+  especialidades: string[]
+}
