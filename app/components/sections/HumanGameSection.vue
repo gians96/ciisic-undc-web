@@ -43,45 +43,6 @@
             la Universidad Nacional de Cañete, un espacio diseñado para la
             formación, la investigación y la innovación.
           </p>
-
-          <!-- Lista de juegos -->
-          <div class="space-y-4">
-            <!-- Chichi Dragon Ball -->
-            <div
-              class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
-            >
-              <div
-                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
-              >
-                <span class="text-white text-xl">🚗</span>
-              </div>
-              <span class="text-white font-medium">Taxi Colectivo</span>
-            </div>
-
-            <!-- Space Babe Night -->
-            <div
-              class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
-            >
-              <div
-                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
-              >
-                <span class="text-white text-xl">🚌</span>
-              </div>
-              <span class="text-white font-medium">Transporte Público</span>
-            </div>
-
-            <!-- Dragon Ball -->
-            <div
-              class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-green-500/50 transition-colors duration-300"
-            >
-              <div
-                class="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center"
-              >
-                <span class="text-white text-xl">🏍️</span>
-              </div>
-              <span class="text-white font-medium">Mototaxi</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
