@@ -25,12 +25,21 @@
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
             <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
-            <NuxtLink to="/pages" class="nav-link">Ponentes</NuxtLink>
+            <NuxtLink to="/ponentes" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
-            <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
+            <NuxtLink to="/contacto" class="nav-link">Contacto</NuxtLink>
           </nav>
 
           <div class="flex items-center space-x-4">
+            <!-- Botón de menú móvil -->
+            <button
+              @click="() => { console.log('Button clicked, current state:', layoutStore.isMobileMenuOpen); layoutStore.toggleMobileMenu(); console.log('New state:', layoutStore.isMobileMenuOpen); }"
+              class="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              aria-label="Abrir menú de navegación"
+            >
+              <Icon name="heroicons:bars-3" class="h-6 w-6" />
+            </button>
+
             <NuxtLink
               to="/planes"
               class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300"
@@ -49,6 +58,9 @@
         </div>
       </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <MobileMenuOverlay />
 
     <!-- Contenido Principal -->
     <main id="main-content" class="relative">
@@ -86,8 +98,8 @@
             <h3 class="text-white font-bold text-xl tracking-wider">ENLACES ÚTILES</h3>
             <nav class="space-y-3">
               <NuxtLink to="/about" class="footer-link">Sobre el evento</NuxtLink>
-              <NuxtLink to="/faq" class="footer-link">Preguntas frecuentes</NuxtLink>
-              <NuxtLink to="/privacy" class="footer-link">Política de privacidad</NuxtLink>
+              <NuxtLink to="/preguntas" class="footer-link">Preguntas frecuentes</NuxtLink>
+              <NuxtLink to="/privacidad" class="footer-link">Política de privacidad</NuxtLink>
             </nav>
           </div>
           <div class="lg:col-span-2 space-y-6">
@@ -95,7 +107,7 @@
             <nav class="space-y-3">
               <NuxtLink to="/planes" class="footer-link">Registro</NuxtLink>
               <NuxtLink to="/about" class="footer-link">Acerca del congreso</NuxtLink>
-              <NuxtLink to="/ponencias" class="footer-link">Ponencias</NuxtLink>
+              <NuxtLink to="/ponentes" class="footer-link">Ponencias</NuxtLink>
               <NuxtLink to="/papers" class="footer-link">Call for Papers</NuxtLink>
               
             </nav>
@@ -152,6 +164,7 @@
 import { storeToRefs } from "pinia";
 import { useLayoutStore } from "~/stores/layout";
 import { useNavigationStore } from "~/stores/navigation";
+import MobileMenuOverlay from "~/components/layout/MobileMenuOverlay.vue";
 
 // ============================================================================
 // STORES
