@@ -106,7 +106,6 @@
             <h3 class="text-white font-bold text-xl tracking-wider">RECURSOS</h3>
             <nav class="space-y-3">
               <NuxtLink to="/planes" class="footer-link">Registro</NuxtLink>
-              <NuxtLink to="/about" class="footer-link">Acerca del congreso</NuxtLink>
               <NuxtLink to="/ponentes" class="footer-link">Ponencias</NuxtLink>
               <NuxtLink to="/papers" class="footer-link">Call for Papers</NuxtLink>
               
