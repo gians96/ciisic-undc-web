@@ -65,40 +65,40 @@ import PerfilCard from "./PerfilCard.vue";
 const ponentes = [
   {
     id: 1,
-    nombre: "Philip Chu Joy",
-    rol: "Empresario",
-    imagen: "/images/ponentes/phillip_chu.webp",
+    nombre: "José Verbel",
+    rol: "Solati SAS",
+    imagen: "/images/ponentes/verbel.png",
   },
   {
     id: 2,
-    nombre: "Gera Flores",
-    rol: "Docente Centrum PUCP",
-    imagen: "/images/ponentes/yera_flores.png",
+    nombre: "Abigail Kauf",
+    rol: "Universidad Tecnológica Nacional - Argentina",
+    imagen: "/images/ponentes/kauf.jpg",
   },
   {
     id: 3,
-    nombre: "Freddy Vega",
-    rol: "CEO and Founder at Platzi",
-    imagen: "/images/ponentes/vega.jpg",
-  },
-  {
-    id: 4,
     nombre: "Eric Liu",
     rol: "Huawei Perú",
     imagen: "/images/ponentes/liu.jpg",
   },
   {
-    id: 5,
+    id: 4,
     nombre: "Jim Dios Luna",
     rol: "Universidad Autónoma de Madrid",
     imagen: "/images/ponentes/diosluna.png",
   },
   {
-    id: 6,
+    id: 5,
     nombre: "Jowel Cabrera",
     rol: "Universidad Técnica de Georgia",
     imagen: "/images/ponentes/cabrera.png",
-  }
+  },
+  {
+    id: 6,
+    nombre: "Gera Flores",
+    rol: "Centrum PUCP",
+    imagen: "/images/ponentes/yera_flores.png",
+  },
 ];
 </script>
 
