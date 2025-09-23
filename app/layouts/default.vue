@@ -24,6 +24,7 @@
           <nav class="hidden lg:flex items-center space-x-8">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
+            <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
             <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
             <NuxtLink to="/ponentes" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>

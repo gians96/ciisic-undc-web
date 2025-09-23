@@ -265,8 +265,8 @@ const aboutCongress = {
   highlight: 'VII CIISIC',
   description: 'El congreso VII CIISIC es un evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos y experiencias en el campo de la informática y sus aplicaciones. Presentan conferencias o exposiciones sobre temas relacionados con su trabajo o actividad.',
   actions: [
-    { label: 'Inscríbete', to: '/tournaments', style: 'btn-primary' },
-    { label: 'Contáctanos', to: '/contact', style: 'btn-secondary' }
+    { label: 'Inscríbete', to: '/planes', style: 'btn-primary' },
+    { label: 'Contáctanos', to: '/contacto', style: 'btn-secondary' }
   ]
 }
 
