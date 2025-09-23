@@ -12,7 +12,7 @@
             Preguntas <span class="text-primary">Frecuentes</span>
           </h1>
           <p class="text-xl text-gray-300 mb-8">
-            Encuentra respuestas a las preguntas más comunes sobre MYKD
+            Encuentra respuestas a las preguntas más comunes sobre el VII CIISIC 2025
           </p>
         </div>
 
@@ -23,7 +23,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Buscar en las preguntas frecuentes..."
+              placeholder="Buscar información sobre el congreso..."
               class="w-full pl-12 pr-4 py-4 bg-secondary-800 border border-secondary-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
             />
           </div>
@@ -86,22 +86,20 @@
         <div class="mt-16 text-center bg-secondary-800 rounded-2xl p-8">
           <h3 class="text-2xl font-bold text-white mb-4">¿No encontraste lo que buscabas?</h3>
           <p class="text-gray-300 mb-6">
-            Nuestro equipo de soporte está aquí para ayudarte con cualquier pregunta
+            Nuestro equipo organizador está aquí para ayudarte con cualquier pregunta sobre el congreso
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink 
-              to="/contact"
+              to="/contacto"
               class="bg-primary hover:bg-primary/90 text-black font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
             >
-              Contactar Soporte
+              Contactar Organización
             </NuxtLink>
             <a 
-              href="https://discord.gg/mykd"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:congreso@undc.edu.pe"
               class="bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-black font-semibold py-3 px-8 rounded-lg transition-colors duration-300"
             >
-              Únete a Discord
+              Enviar Email
             </a>
           </div>
         </div>
@@ -120,7 +118,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Encuentra respuestas a las preguntas más frecuentes sobre MYKD, torneos, registro y más.'
+      content: 'Encuentra respuestas a las preguntas más frecuentes sobre el VII CIISIC 2025, ponentes, registro, pagos y más información del congreso.'
     }
   ]
 })
@@ -139,60 +137,67 @@ const openFaqs = ref<number[]>([])
 
 const categories = ref([
   { id: 'all', name: 'Todas' },
-  { id: 'tournaments', name: 'Torneos' },
-  { id: 'account', name: 'Cuenta' },
-  { id: 'payments', name: 'Pagos' },
-  { id: 'technical', name: 'Técnico' }
+  { id: 'registro', name: 'Registro' },
+  { id: 'ponentes', name: 'Ponentes' },
+  { id: 'pagos', name: 'Pagos' },
+  { id: 'evento', name: 'Evento' },
+  { id: 'sede', name: 'Sede' }
 ])
 
 const faqs = ref([
   {
     id: 1,
-    category: 'tournaments',
-    question: '¿Cómo me registro para un torneo?',
-    answer: 'Para registrarte en un torneo, primero debes crear una cuenta en MYKD. Luego, visita la página del torneo que te interese y haz clic en el botón "Registrarse". Asegúrate de leer las reglas y requisitos antes de confirmar tu participación.'
+    category: 'registro',
+    question: '¿Cómo me registro para el VII CIISIC 2025?',
+    answer: 'Puedes registrarte a través de nuestra página web en la sección de registro. Solo necesitas completar el formulario con tus datos personales, seleccionar el tipo de inscripción y realizar el pago correspondiente. Una vez confirmado el pago, recibirás un email de confirmación con todos los detalles.'
   },
   {
     id: 2,
-    category: 'tournaments',
-    question: '¿Puedo cancelar mi registro en un torneo?',
-    answer: 'Sí, puedes cancelar tu registro hasta 24 horas antes del inicio del torneo. Después de este período, no se permiten cancelaciones. Para cancelar, ve a tu perfil y encuentra el torneo en la sección "Mis Torneos".'
+    category: 'ponentes',
+    question: '¿Quiénes serán los ponentes del congreso?',
+    answer: 'Contaremos con destacados expertos en sistemas de información, inteligencia artificial, ciberseguridad y tecnologías emergentes. Entre nuestros ponentes principales se encuentran reconocidos académicos y profesionales de la industria con amplia experiencia en investigación y desarrollo tecnológico. Puedes ver la lista completa en nuestra sección de ponentes.'
   },
   {
     id: 3,
-    category: 'account',
-    question: '¿Cómo cambio mi nombre de usuario?',
-    answer: 'Puedes cambiar tu nombre de usuario una vez cada 30 días. Ve a la configuración de tu perfil, encuentra la sección "Información personal" y actualiza tu nombre de usuario. Ten en cuenta que algunos nombres pueden no estar disponibles.'
+    category: 'pagos',
+    question: '¿Qué métodos de pago aceptan?',
+    answer: 'Aceptamos transferencias bancarias. Los precios varían según el tipo de inscripción.'
   },
   {
     id: 4,
-    category: 'payments',
-    question: '¿Cuándo recibo mis premios?',
-    answer: 'Los premios se procesan automáticamente dentro de 48 horas después de que termine el torneo. Recibirás una notificación por email cuando tu premio esté disponible. Los pagos se realizan a través del método que hayas configurado en tu perfil.'
+    category: 'evento',
+    question: '¿Cuándo y dónde se realizará el congreso?',
+    answer: 'El VII CIISIC 2025 se realizará del 20 al 24 de octubre de 2025 en las instalaciones del Auditorio "Casa de la Cultura", en San Vicente de Cañete. El evento incluye conferencias magistrales, presentación de trabajos de investigación y networking académico y profesional.'
   },
   {
     id: 5,
-    category: 'technical',
-    question: '¿Qué requisitos técnicos necesito?',
-    answer: 'Los requisitos varían según el juego. En general, necesitas una conexión a internet estable, el juego instalado y actualizado, y cumplir con los requisitos mínimos del sistema. Revisa la página específica de cada torneo para conocer los requisitos exactos.'
+    category: 'sede',
+    question: '¿Cómo llego a la sede del evento?',
+    answer: 'La Sede Académica "Casa de la Cultura" se encuentra en Av. Mariscal Benavides N° 1370 San Vicente - Cañete.'
   },
   {
     id: 6,
-    category: 'tournaments',
-    question: '¿Qué pasa si pierdo mi conexión durante un partido?',
-    answer: 'Si pierdes la conexión durante un partido oficial, tienes un máximo de 5 minutos para reconectarte. Si no puedes reconectarte en ese tiempo, el partido se otorgará a tu oponente. Para partidos de equipo, se pueden hacer pausas acordadas entre ambos equipos.'
+    category: 'registro',
+    question: '¿Hasta cuándo puedo registrarme?',
+    answer: 'Las inscripciones están abiertas hasta el 19 de octubre de 2025. Te recomendamos registrarte con anticipación para asegurar tu lugar para no perderte de este increíble evento.'
   },
   {
     id: 7,
-    category: 'account',
-    question: '¿Cómo verifico mi cuenta?',
-    answer: 'Para verificar tu cuenta, ve a la configuración de perfil y proporciona un documento de identidad válido. La verificación es obligatoria para participar en torneos con premios en efectivo y puede tomar hasta 24 horas en procesarse.'
+    category: 'evento',
+    question: '¿Qué incluye mi inscripción?',
+    answer: 'Se incluyen diferentes beneficios según el tipo de inscripcion, lo puedes revisar en la sección de planes.'
   },
   {
     id: 8,
-    category: 'payments',
-    question: '¿Qué métodos de pago aceptan?',
-    answer: 'Aceptamos tarjetas de crédito y débito, PayPal, transferencias bancarias y varios métodos de pago digital locales. También puedes recibir premios a través de estos mismos métodos.'
+    category: 'ponentes',
+    question: '¿Puedo presentar mi trabajo de investigación?',
+    answer: 'Sí, aceptamos la presentación de trabajos de investigación en las modalidades de ponencia oral y poster. Las propuestas deben enviarse según cronograma indicado en la sección de Call for Papers. Todos los trabajos pasan por un proceso de evaluación por pares.'
+  },
+  {
+    id: 9,
+    category: 'evento',
+    question: '¿Habrá modalidad virtual?',
+    answer: 'El congreso es presencial, pero las conferencias magistrales principales serán transmitidas en vivo y quedarán disponibles en nuestra plataforma virtual para los participantes registrados. Los talleres prácticos y sesiones de networking son exclusivamente presenciales.'
   }
 ])
 

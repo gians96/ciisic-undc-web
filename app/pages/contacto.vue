@@ -8,11 +8,11 @@
     <section class="py-20 lg:py-32">
       <div class="custom-container">
         <div class="max-w-4xl mx-auto text-center">
-          <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">
+          <h1 class="text-4xl lg:text-6xl font-bold text-white mb-4">
             Contáctanos
           </h1>
-          <p class="text-xl text-gray-300 mb-8">
-            ¿Tienes una pregunta, sugerencia o quieres formar parte del equipo MYKD? 
+          <p class="text-xl text-gray-300 mb-2">
+            ¿Tienes una pregunta, sugerencia o quieres formar parte del VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica? 
             Estamos aquí para ayudarte.
           </p>
         </div>
@@ -37,9 +37,20 @@
                     v-model="form.firstName"
                     type="text"
                     required
-                    class="w-full px-4 py-3 bg-secondary-800 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                    :class="[
+                      'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300',
+                      errors.firstName 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                        : 'border-secondary-600 focus:border-primary focus:ring-primary/20'
+                    ]"
                     placeholder="Tu nombre"
+                    @input="validateOnInput('firstName', form.firstName)"
+                    @blur="validateField('firstName', form.firstName)"
                   />
+                  <p v-if="errors.firstName" class="mt-1 text-sm text-red-500 flex items-center">
+                    <Icon name="heroicons:exclamation-circle" class="h-4 w-4 mr-1" />
+                    {{ errors.firstName }}
+                  </p>
                 </div>
                 <div>
                   <label for="lastName" class="block text-sm font-medium text-gray-300 mb-2">
@@ -50,9 +61,20 @@
                     v-model="form.lastName"
                     type="text"
                     required
-                    class="w-full px-4 py-3 bg-secondary-800 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                    :class="[
+                      'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300',
+                      errors.lastName 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                        : 'border-secondary-600 focus:border-primary focus:ring-primary/20'
+                    ]"
                     placeholder="Tu apellido"
+                    @input="validateOnInput('lastName', form.lastName)"
+                    @blur="validateField('lastName', form.lastName)"
                   />
+                  <p v-if="errors.lastName" class="mt-1 text-sm text-red-500 flex items-center">
+                    <Icon name="heroicons:exclamation-circle" class="h-4 w-4 mr-1" />
+                    {{ errors.lastName }}
+                  </p>
                 </div>
               </div>
 
@@ -65,9 +87,20 @@
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full px-4 py-3 bg-secondary-800 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                  :class="[
+                    'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300',
+                    errors.email 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-secondary-600 focus:border-primary focus:ring-primary/20'
+                  ]"
                   placeholder="tu@email.com"
+                  @input="validateOnInput('email', form.email)"
+                  @blur="validateField('email', form.email)"
                 />
+                <p v-if="errors.email" class="mt-1 text-sm text-red-500 flex items-center">
+                  <Icon name="heroicons:exclamation-circle" class="h-4 w-4 mr-1" />
+                  {{ errors.email }}
+                </p>
               </div>
 
               <div>
@@ -78,40 +111,93 @@
                   id="subject"
                   v-model="form.subject"
                   required
-                  class="w-full px-4 py-3 bg-secondary-800 border border-secondary-600 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                  :class="[
+                    'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white focus:outline-none focus:ring-2 transition-all duration-300',
+                    errors.subject 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-secondary-600 focus:border-primary focus:ring-primary/20'
+                  ]"
+                  @change="validateField('subject', form.subject)"
+                  @blur="validateField('subject', form.subject)"
                 >
                   <option value="">Selecciona un asunto</option>
                   <option value="general">Consulta General</option>
-                  <option value="tournament">Torneos</option>
-                  <option value="partnership">Patrocinios</option>
-                  <option value="technical">Soporte Técnico</option>
-                  <option value="press">Prensa</option>
-                  <option value="other">Otro</option>
+                  <option value="torneos">Torneos</option>
+                  <option value="ponencias">Ponencias</option>
+                  <option value="patrocinios">Patrocinios</option>
+                  <option value="soporte">Soporte</option>
+                  <option value="otros">Otros</option>
                 </select>
+                <p v-if="errors.subject" class="mt-1 text-sm text-red-500 flex items-center">
+                  <Icon name="heroicons:exclamation-circle" class="h-4 w-4 mr-1" />
+                  {{ errors.subject }}
+                </p>
               </div>
 
               <div>
                 <label for="message" class="block text-sm font-medium text-gray-300 mb-2">
                   Mensaje *
+                  <span class="text-xs text-gray-400 ml-1">({{ form.message.length }}/1000)</span>
                 </label>
                 <textarea
                   id="message"
                   v-model="form.message"
                   rows="6"
                   required
-                  class="w-full px-4 py-3 bg-secondary-800 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 resize-none"
+                  :class="[
+                    'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 resize-none',
+                    errors.message 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-secondary-600 focus:border-primary focus:ring-primary/20'
+                  ]"
                   placeholder="Cuéntanos en qué podemos ayudarte..."
+                  maxlength="1000"
+                  @input="validateOnInput('message', form.message)"
+                  @blur="validateField('message', form.message)"
                 ></textarea>
+                <p v-if="errors.message" class="mt-1 text-sm text-red-500 flex items-center">
+                  <Icon name="heroicons:exclamation-circle" class="h-4 w-4 mr-1" />
+                  {{ errors.message }}
+                </p>
               </div>
 
               <button
                 type="submit"
-                :disabled="isSubmitting"
-                class="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-4 px-8 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                :disabled="isSubmitting || isBlocked"
+                :class="[
+                  'w-full font-semibold py-4 px-8 rounded-lg transition-colors duration-300 flex items-center justify-center',
+                  isBlocked 
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                    : 'bg-primary hover:bg-primary/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
+                ]"
               >
                 <Icon v-if="isSubmitting" name="heroicons:arrow-path" class="h-5 w-5 animate-spin mr-2" />
-                {{ isSubmitting ? 'Enviando...' : 'Enviar Mensaje' }}
+                <Icon v-else-if="isBlocked" name="heroicons:clock" class="h-5 w-5 mr-2" />
+                
+                <span v-if="isBlocked">
+                  Espera {{ formatRemainingTime() }} para enviar otro mensaje
+                </span>
+                <span v-else-if="isSubmitting">
+                  Enviando...
+                </span>
+                <span v-else>
+                  Enviar Mensaje
+                </span>
               </button>
+
+              <!-- Alerta de cooldown -->
+              <div v-if="isBlocked" class="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <div class="flex items-center">
+                  <Icon name="heroicons:exclamation-triangle" class="h-5 w-5 text-yellow-500 mr-2" />
+                  <div>
+                    <p class="text-yellow-400 font-medium text-sm">Límite de envío alcanzado</p>
+                    <p class="text-yellow-300 text-xs mt-1">
+                      Para evitar spam, solo puedes enviar un mensaje cada 30 minutos. 
+                      Tiempo restante: <span class="font-mono font-bold cooldown-timer">{{ formatRemainingTime() }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </form>
           </div>
 
@@ -126,8 +212,7 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-2">Email</h3>
-                  <p class="text-gray-300">info@mykd.com</p>
-                  <p class="text-gray-300">support@mykd.com</p>
+                  <p class="text-gray-300">congreso@undc.edu.pe</p>
                 </div>
               </div>
 
@@ -161,9 +246,7 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-2">Horarios de Atención</h3>
-                  <p class="text-gray-300">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
-                  <p class="text-gray-300">Sábados: 10:00 AM - 4:00 PM</p>
-                  <p class="text-gray-300">Domingos: Cerrado</p>
+                  <p class="text-gray-300">Lunes a Viernes: 8:00 AM - 05:00 PM</p>
                 </div>
               </div>
 
@@ -174,10 +257,10 @@
                   Revisa nuestras preguntas frecuentes para encontrar soluciones inmediatas.
                 </p>
                 <NuxtLink 
-                  to="/faq"
+                  to="/preguntas"
                   class="inline-flex items-center text-primary hover:text-primary/80 font-semibold"
                 >
-                  Ver FAQ
+                  Revisar preguntas frecuentes
                   <Icon name="heroicons:arrow-right" class="h-4 w-4 ml-2" />
                 </NuxtLink>
               </div>
@@ -194,7 +277,6 @@
 // IMPORTS
 // ============================================================================
 
-import { storeToRefs } from 'pinia'
 import { useLayoutStore } from '~/stores/layout'
 
 // ============================================================================
@@ -212,7 +294,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Contáctanos para resolver tus dudas sobre MYKD. Soporte técnico, patrocinios, torneos y más. Estamos aquí para ayudarte.'
+      content: 'Contáctanos para resolver tus dudas sobre el VII CIISIC. Soporte técnico, patrocinios, torneos y más. Estamos aquí para ayudarte.'
     },
     {
       property: 'og:title',
@@ -220,7 +302,7 @@ useHead({
     },
     {
       property: 'og:description',
-      content: 'Contáctanos para resolver tus dudas sobre MYKD. Soporte técnico, patrocinios, torneos y más.'
+      content: 'Contáctanos para resolver tus dudas sobre el VII CIISIC. Soporte técnico, patrocinios, torneos y más.'
     },
     {
       property: 'og:type',
@@ -241,7 +323,21 @@ const form = reactive({
   message: ''
 })
 
+const errors = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  subject: '',
+  message: ''
+})
+
 const isSubmitting = ref(false)
+const lastSubmissionTime = ref<number | null>(null)
+const remainingTime = ref(0)
+const isBlocked = ref(false)
+
+// Timer para actualizar el tiempo restante
+let timer: NodeJS.Timeout | null = null
 
 // ============================================================================
 // COMPUTED
@@ -249,29 +345,14 @@ const isSubmitting = ref(false)
 
 const socialLinks = computed(() => [
   {
-    platform: 'Discord',
-    url: 'https://discord.gg/mykd',
-    icon: 'simple-icons:discord'
+    platform: 'Facebook',
+    url: 'https://facebook.com/fiundc',
+    icon: 'simple-icons:facebook'
   },
   {
-    platform: 'Twitter',
-    url: 'https://twitter.com/mykd',
-    icon: 'simple-icons:twitter'
-  },
-  {
-    platform: 'YouTube',
-    url: 'https://youtube.com/mykd',
-    icon: 'simple-icons:youtube'
-  },
-  {
-    platform: 'Twitch',
-    url: 'https://twitch.tv/mykd',
-    icon: 'simple-icons:twitch'
-  },
-  {
-    platform: 'Instagram',
-    url: 'https://instagram.com/mykd',
-    icon: 'simple-icons:instagram'
+    platform: 'TikTok',
+    url: 'https://tiktok.com/@fiundc',
+    icon: 'simple-icons:tiktok'
   }
 ])
 
@@ -279,33 +360,231 @@ const socialLinks = computed(() => [
 // METHODS
 // ============================================================================
 
-const submitForm = async () => {
-  if (isSubmitting.value) return
+// Función debounce para optimizar validaciones
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
 
-  // Validar campos requeridos
-  if (!form.firstName || !form.lastName || !form.email || !form.subject || !form.message) {
-    layoutStore.showError('Por favor completa todos los campos requeridos', 'Formulario')
+// Constante para el tiempo de espera (30 minutos en milisegundos)
+const COOLDOWN_TIME = 30 * 60 * 1000 // 30 minutos
+
+// Función para comprobar si está en cooldown
+const checkCooldown = () => {
+  if (process.client) {
+    const lastTime = localStorage.getItem('lastContactSubmission')
+    if (lastTime) {
+      const timeDiff = Date.now() - parseInt(lastTime)
+      if (timeDiff < COOLDOWN_TIME) {
+        lastSubmissionTime.value = parseInt(lastTime)
+        remainingTime.value = Math.ceil((COOLDOWN_TIME - timeDiff) / 1000)
+        isBlocked.value = true
+        startCountdown()
+        return true
+      } else {
+        // Limpiar localStorage si ya pasó el tiempo
+        localStorage.removeItem('lastContactSubmission')
+      }
+    }
+  }
+  return false
+}
+
+// Función para iniciar la cuenta regresiva
+const startCountdown = () => {
+  if (timer) clearInterval(timer)
+  
+  timer = setInterval(() => {
+    if (remainingTime.value > 0) {
+      remainingTime.value--
+    } else {
+      isBlocked.value = false
+      if (timer) clearInterval(timer)
+      if (process.client) {
+        localStorage.removeItem('lastContactSubmission')
+      }
+    }
+  }, 1000)
+}
+
+// Función para formatear tiempo restante
+const formatRemainingTime = () => {
+  const minutes = Math.floor(remainingTime.value / 60)
+  const seconds = remainingTime.value % 60
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
+// Función para guardar timestamp del envío
+const saveSubmissionTime = () => {
+  if (process.client) {
+    const now = Date.now()
+    localStorage.setItem('lastContactSubmission', now.toString())
+    lastSubmissionTime.value = now
+    remainingTime.value = COOLDOWN_TIME / 1000
+    isBlocked.value = true
+    startCountdown()
+  }
+}
+
+// Función para limpiar errores
+const clearError = (field: string) => {
+  errors[field as keyof typeof errors] = ''
+}
+
+// Función para validar email
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Función para validar un campo específico
+const validateField = (field: string, value: string) => {
+  switch (field) {
+    case 'firstName':
+      if (!value.trim()) {
+        errors.firstName = 'El nombre es requerido'
+      } else if (value.trim().length < 2) {
+        errors.firstName = 'El nombre debe tener al menos 2 caracteres'
+      } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+        errors.firstName = 'El nombre solo puede contener letras'
+      } else {
+        errors.firstName = ''
+      }
+      break
+    
+    case 'lastName':
+      if (!value.trim()) {
+        errors.lastName = 'El apellido es requerido'
+      } else if (value.trim().length < 2) {
+        errors.lastName = 'El apellido debe tener al menos 2 caracteres'
+      } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+        errors.lastName = 'El apellido solo puede contener letras'
+      } else {
+        errors.lastName = ''
+      }
+      break
+    
+    case 'email':
+      if (!value.trim()) {
+        errors.email = 'El correo electrónico es requerido'
+      } else if (!isValidEmail(value)) {
+        errors.email = 'Ingresa un correo electrónico válido'
+      } else {
+        errors.email = ''
+      }
+      break
+    
+    case 'subject':
+      if (!value) {
+        errors.subject = 'Selecciona un asunto'
+      } else {
+        errors.subject = ''
+      }
+      break
+    
+    case 'message':
+      if (!value.trim()) {
+        errors.message = 'El mensaje es requerido'
+      } else if (value.trim().length < 10) {
+        errors.message = 'El mensaje debe tener al menos 10 caracteres'
+      } else if (value.trim().length > 1000) {
+        errors.message = 'El mensaje no puede exceder 1000 caracteres'
+      } else {
+        errors.message = ''
+      }
+      break
+  }
+}
+
+// Función para validar todo el formulario
+const validateForm = () => {
+  validateField('firstName', form.firstName)
+  validateField('lastName', form.lastName)
+  validateField('email', form.email)
+  validateField('subject', form.subject)
+  validateField('message', form.message)
+  
+  return !Object.values(errors).some(error => error !== '')
+}
+
+// Validación con debounce para optimizar rendimiento
+const debouncedValidateField = debounce(validateField, 300)
+
+// Función para validar en tiempo real (solo en blur para evitar exceso de validaciones)
+const validateOnInput = (field: string, value: string) => {
+  // Solo validar si el campo tenía error previamente o si está vacío
+  const fieldError = errors[field as keyof typeof errors]
+  if (fieldError || !value.trim()) {
+    debouncedValidateField(field, value)
+  }
+}
+
+const submitForm = async () => {
+  if (isSubmitting.value || isBlocked.value) return
+
+  // Validar formulario completo
+  if (!validateForm()) {
+    layoutStore.showError('Por favor corrige los errores en el formulario', 'Formulario')
     return
   }
 
   isSubmitting.value = true
 
   try {
-    // Aquí iría la lógica para enviar el formulario
-    // Por ahora simulamos una llamada a la API
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Preparar datos en formato JSON
+    const formData = {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim().toLowerCase(),
+      subject: form.subject,
+      message: form.message.trim(),
+      timestamp: new Date().toISOString(),
+    }
+
+    console.log(JSON.stringify(formData, null, 2))
+
+    // Para copiar fácilmente el JSON
+    if (process.client) {
+      console.log('JSON para copiar:', JSON.stringify(formData))
+    }
+
+    // Aquí puedes enviar al API
+    // const response = await $fetch('/api/contact', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(formData)
+    // })
+
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
+    // Guardar tiempo de envío para cooldown
+    saveSubmissionTime()
+    
+    // Mostrar notificación pequeña de éxito
     layoutStore.showSuccess(
-      `¡Gracias ${form.firstName}! Tu mensaje ha sido enviado correctamente. Te contactaremos pronto.`,
+      `¡Gracias ${form.firstName}! Tu mensaje ha sido enviado correctamente.`,
       'Mensaje Enviado'
     )
     
-    // Limpiar formulario
+    // Limpiar formulario y errores
     Object.keys(form).forEach(key => {
       form[key as keyof typeof form] = ''
     })
+    Object.keys(errors).forEach(key => {
+      errors[key as keyof typeof errors] = ''
+    })
     
   } catch (error) {
+    console.error('Error al enviar formulario:', error)
     layoutStore.showError(
       'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.',
       'Error'
@@ -320,6 +599,9 @@ const submitForm = async () => {
 // ============================================================================
 
 onMounted(() => {
+  // Comprobar cooldown al cargar la página
+  checkCooldown()
+  
   // Focus en el primer campo del formulario
   nextTick(() => {
     const firstInput = document.getElementById('firstName')
@@ -327,6 +609,13 @@ onMounted(() => {
       firstInput.focus()
     }
   })
+})
+
+onUnmounted(() => {
+  // Limpiar timer al desmontar componente
+  if (timer) {
+    clearInterval(timer)
+  }
 })
 </script>
 
@@ -449,5 +738,45 @@ onMounted(() => {
 .message-error {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #ffffff;
+}
+
+/* Cooldown Timer Styles */
+.cooldown-timer {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Blocked Button Animation */
+button:disabled.bg-gray-600 {
+  position: relative;
+  overflow: hidden;
+}
+
+button:disabled.bg-gray-600::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 </style>

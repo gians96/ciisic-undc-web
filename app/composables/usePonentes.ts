@@ -61,7 +61,7 @@ export const usePonentes = () => {
       imagen: "/images/ponentes/yera_flores.png",
       descripcion: "Ejecutiva senior con más de 12 años de experiencia liderando áreas de analítica avanzada, inteligencia artificial e inteligencia comercial.",
       linkedin: "https://www.linkedin.com/in/gflores1092/",
-      empresa: "Miss Yera",
+      empresa: "CENTRUM PUCP",
       especialidades: ["Gestión", "Estrategia", "Educación"]
     }
   ]
