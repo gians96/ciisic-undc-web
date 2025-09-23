@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Variables privadas del servidor (no expuestas al cliente)
     xApiToken: process.env.X_API_TOKEN || '',
-    xApiUrl: process.env.X_API_URL || 'https://api-test.nube-tec.com/api/v1/consultation',
+    xApiUrl: process.env.X_API_URL || '',
     // Variables públicas (expuestas al cliente)
     public: {
       appName: 'VII CIISIC 2025',

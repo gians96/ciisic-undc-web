@@ -12,27 +12,36 @@ export default defineEventHandler(async (event) => {
     // ========================================
     // VERIFICACIÓN DE CONFIGURACIÓN AL INICIO
     // ========================================
-    const config = useRuntimeConfig()
+    
+    // Intentar obtener variables de múltiples fuentes
+    let apiToken = process.env.X_API_TOKEN || 
+                   process.env.NUXT_X_API_TOKEN || 
+                   process.env.RUNTIME_X_API_TOKEN
+    
+    let apiUrl = process.env.X_API_URL || 
+                 process.env.NUXT_X_API_URL || 
+                 process.env.RUNTIME_X_API_URL || 
+                 'https://api-test.nube-tec.com/api/v1/consultation'
     
     // Log para debugging en producción
     console.log('=== API CONSULTATION DEBUG ===')
     console.log('Environment:', process.env.NODE_ENV)
-    console.log('API Token exists:', !!config.xApiToken)
-    console.log('API URL:', config.xApiUrl)
-    console.log('Config keys:', Object.keys(config))
+    console.log('API Token exists:', !!apiToken)
+    console.log('API URL:', apiUrl)
+    console.log('Token source:', apiToken ? 'FOUND' : 'NOT_FOUND')
     
     // Verificar variables de entorno
-    if (!config.xApiToken || config.xApiToken === '') {
-      console.error('ERROR: X_API_TOKEN no está configurado')
-      console.error('Available env vars:', Object.keys(process.env).filter(key => key.startsWith('X_')))
+    if (!apiToken || apiToken === '') {
+      console.error('ERROR: No se encontró token de API en ninguna variable')
+      console.error('Checked variables: X_API_TOKEN, NUXT_X_API_TOKEN, RUNTIME_X_API_TOKEN')
       throw createError({
         statusCode: 500,
         statusMessage: 'Server configuration error: API token not found'
       })
     }
     
-    if (!config.xApiUrl || config.xApiUrl === '') {
-      console.error('ERROR: X_API_URL no está configurado')
+    if (!apiUrl || apiUrl === '') {
+      console.error('ERROR: No se encontró URL de API')
       throw createError({
         statusCode: 500,
         statusMessage: 'Server configuration error: API URL not found'
@@ -143,38 +152,16 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Obtener la configuración del runtime (DISPONIBLE EN EL SERVIDOR)
-
-    // Debug: Log para verificar configuración
-    console.log('API Configuration check:', {
-      hasToken: !!config.xApiToken,
-      hasUrl: !!config.xApiUrl,
-      nodeEnv: process.env.NODE_ENV,
-      envKeys: Object.keys(process.env).filter(k => k.startsWith('X_API'))
-    })
-
-    if (!config.xApiToken || !config.xApiUrl) {
-      console.error('❌ Variables de entorno faltantes:', {
-        X_API_TOKEN: config.xApiToken ? 'CONFIGURED' : 'MISSING',
-        X_API_URL: config.xApiUrl || 'MISSING'
-      })
-      
-      throw createError({
-        statusCode: 500,
-        statusMessage: 'Server configuration error: API credentials not found. Please configure X_API_TOKEN and X_API_URL environment variables.'
-      })
-    }
-
     // Construir la URL según el tipo de documento
     const endpoint = documentType === 'DNI' ? 'dni' : 'ce'
-    const apiUrl = `${config.xApiUrl}/${endpoint}/${documentNumber}`
+    const requestUrl = `${apiUrl}/${endpoint}/${documentNumber}`
     
-    console.log('Making request to:', apiUrl)
+    console.log('Making request to:', requestUrl)
 
     // Hacer la petición a la API externa desde el servidor
-    const response = await $fetch(apiUrl, {
+    const response = await $fetch(requestUrl, {
       headers: {
-        'X-API-Token': config.xApiToken,
+        'X-API-Token': apiToken,
         'Content-Type': 'application/json'
       }
     })

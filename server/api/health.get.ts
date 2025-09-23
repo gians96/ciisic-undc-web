@@ -4,7 +4,15 @@
 
 export default defineEventHandler(async (event) => {
   try {
-    const config = useRuntimeConfig()
+    // Leer variables directamente de process.env (como en consultation.post.ts)
+    const apiToken = process.env.X_API_TOKEN || 
+                     process.env.NUXT_X_API_TOKEN || 
+                     process.env.RUNTIME_X_API_TOKEN
+    
+    const apiUrl = process.env.X_API_URL || 
+                   process.env.NUXT_X_API_URL || 
+                   process.env.RUNTIME_X_API_URL || 
+                   'https://api-test.nube-tec.com/api/v1/consultation'
     
     // Verificar configuración básica (sin exponer valores sensibles)
     const healthCheck: any = {
@@ -12,9 +20,9 @@ export default defineEventHandler(async (event) => {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       configuration: {
-        hasApiToken: !!config.xApiToken,
-        hasApiUrl: !!config.xApiUrl,
-        apiUrlHost: config.xApiUrl ? new URL(config.xApiUrl).hostname : 'not-configured'
+        hasApiToken: !!apiToken,
+        hasApiUrl: !!apiUrl,
+        apiUrlHost: apiUrl ? new URL(apiUrl).hostname : 'not-configured'
       },
       server: {
         nodeVersion: process.version,
@@ -23,7 +31,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Si falta alguna configuración crítica, marcar como unhealthy
-    if (!config.xApiToken || !config.xApiUrl) {
+    if (!apiToken || !apiUrl) {
       healthCheck.status = 'error'
       healthCheck.error = 'Missing critical environment variables'
     }
