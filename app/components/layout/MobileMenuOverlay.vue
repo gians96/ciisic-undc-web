@@ -133,6 +133,13 @@ const mainNavigation = ref([
     isActive: false
   },
   {
+    id: 'cronograma',
+    label: 'Cronograma',
+    href: '/cronograma',
+    icon: 'heroicons:calendar-days',
+    isActive: false
+  },
+  {
     id: 'papers',
     label: 'Call for papers',
     href: '/papers',
