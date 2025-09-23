@@ -358,3 +358,41 @@ export interface Ponente {
   empresa?: string
   especialidades: string[]
 }
+
+// ============================================================================
+// INTERFACES PARA CONSULTA DE DNI
+// ============================================================================
+
+export interface DniData {
+  documentNumber: string
+  documentType: string
+  names: string
+  paternalSurname: string
+  maternalSurname: string
+  fullName: string
+}
+
+export interface DniMetadata {
+  provider: string
+  isCached: boolean
+  responseTime: number
+  dataSource: string
+  requestOrigin: string
+  billableToClient: boolean
+  consumesSubscription: boolean
+  remaining_credits: number
+}
+
+export interface DniConsultationResponse {
+  success: boolean
+  data: DniData
+  metadata: DniMetadata
+}
+
+export interface DocumentType {
+  value: 'DNI' | 'CE'
+  label: string
+  maxLength: number
+  placeholder: string
+  pattern: string
+}

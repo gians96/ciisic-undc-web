@@ -5,9 +5,15 @@
         ============================================================================ -->
     <section class="breadcrumb-area">
       <div class="breadcrumb-container">
-        <h1 class="page-title">INSCRIPCION</h1>
+        <h1 class="page-title">INSCRIPCION DE ESTUDIANTES</h1>
       </div>
     </section>
+
+    <!-- ===========================================================================
+        SISTEMA DE NOTIFICACIONES
+        ============================================================================ -->
+    <NotificationSystem :error-message="errorMessage" :success-message="successMessage" @clear-error="errorMessage = ''"
+      @clear-success="successMessage = ''" />
 
     <!-- ===========================================================================
         SECCIÓN DEL FORMULARIO
@@ -17,45 +23,63 @@
         <!-- El tag <form> ahora es el contenedor de la rejilla -->
         <form @submit.prevent="handleSubmit" class="student-form">
 
-          <!-- Fila 1: DNI, Nombres, Apellidos -->
+          <!-- Fila 1: Documento (Tipo + Número), Nombres, Apellidos -->
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
-            <label for="dni" class="form-label">DNI</label>
-            <div class="relative">
-              <input id="dni" v-model="dni" type="text" placeholder="Tu número de DNI" required class="form-input pr-12" pattern="[0-9]{8}" maxlength="8">
-              <button
-                type="button"
-                @click="handleDniSearch"
-                :disabled="isSearchingDni || dni.length !== 8"
-                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-primary disabled:cursor-not-allowed disabled:text-gray-600 transition-colors"
-                aria-label="Buscar DNI"
-              >
-                <Icon v-if="isSearchingDni" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" />
-                <Icon v-else name="heroicons:magnifying-glass" class="h-5 w-5" />
-              </button>
+            <label for="documentType" class="form-label">Documento de identidad</label>
+            <div class="document-input-group">
+              <div class="document-type-container">
+                <select id="documentType" v-model="documentType" class="document-type-select" required>
+                  <option v-for="type in documentTypes" :key="type.value" :value="type.value">
+                    {{ type.value }}
+                  </option>
+                </select>
+                <Icon name="heroicons:chevron-down" class="document-type-arrow" />
+              </div>
+              <div class="document-number-container">
+                <input id="documentNumber" v-model="documentNumber" type="text"
+                  :placeholder="getSelectedDocumentType()?.placeholder || 'Número de documento'"
+                  :maxlength="getSelectedDocumentType()?.maxLength || 8"
+                  :pattern="getSelectedDocumentType()?.pattern || '[0-9]{8}'" @input="handleDocumentInput" required
+                  class="document-number-input">
+                <button type="button" @click="handleDocumentSearch"
+                  :disabled="isSearchingDni || !isDocumentNumberComplete()" class="document-search-button"
+                  aria-label="Buscar documento">
+                  <Icon v-if="isSearchingDni" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" />
+                  <Icon v-else name="heroicons:magnifying-glass" class="h-5 w-5" />
+                </button>
+              </div>
             </div>
-            <small class="form-hint">De 8 dígitos. Presiona la lupa para buscar.</small>
+            <small class="form-hint">
+              {{ getSelectedDocumentType()?.maxLength || 8 }} dígitos.
+              {{ isDocumentNumberComplete() ? 'Presiona la lupa para buscar.' : `Faltan ${getRemainingDigits()}
+              dígitos.` }}
+            </small>
           </div>
 
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
             <label for="nombres" class="form-label">Nombres</label>
-            <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)" readonly class="form-input" :class="{ 'input-filled': nombres }">
+            <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)" class="form-input"
+              :class="{ 'input-filled': nombres }">
           </div>
 
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
             <label for="apellidos" class="form-label">Apellidos</label>
-            <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)" readonly class="form-input" :class="{ 'input-filled': apellidos }">
+            <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)"
+              class="form-input" :class="{ 'input-filled': apellidos }">
           </div>
 
           <!-- Fila 2: Correo, Celular -->
           <div class="form-group col-span-6 md:col-span-3">
             <label for="email" class="form-label">Correo electrónico</label>
-            <input id="email" v-model="email" type="email" placeholder="Tu correo electrónico" required class="form-input">
+            <input id="email" v-model="email" type="email" placeholder="Tu correo electrónico" required
+              class="form-input">
             <small class="form-hint">Debe ser el correo institucional</small>
           </div>
 
           <div class="form-group col-span-6 md:col-span-3">
             <label for="celular" class="form-label">Celular</label>
-            <input id="celular" v-model="celular" type="tel" placeholder="Tu número de celular" required class="form-input" pattern="[9][0-9]{8}" maxlength="9">
+            <input id="celular" v-model="celular" type="tel" placeholder="Tu número de celular" required
+              class="form-input" pattern="[9][0-9]{8}" maxlength="9">
             <small class="form-hint">De 9 digitos y sin espacios</small>
           </div>
 
@@ -64,7 +88,49 @@
             <div class="w-full border-t border-slate-700"></div>
           </div>
 
+          <!-- Fila 3: Tipo de Inscripción y Clasificación -->
+          <div class="form-group col-span-6 md:col-span-3">
+            <label class="form-label">Tipo de inscripción</label>
+            <div class="radio-group">
+              <label v-for="opcion in tiposInscripcion" :key="opcion.value" :for="opcion.value" class="radio-label">
+                <input :id="opcion.value" v-model="tipoInscripcion" type="radio" :value="opcion.value" class="sr-only">
+                <div class="radio-custom-indicator" :class="{ 'selected': tipoInscripcion === opcion.value }">
+                  <div v-if="tipoInscripcion === opcion.value" class="radio-dot"></div>
+                </div>
+                <div class="relative flex items-center group">
+                  <span>{{ opcion.label }}</span>
+                  <Icon @click.prevent.stop name="heroicons:information-circle"
+                    class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
+                  <div class="tooltip">
+                    <div>{{ opcion.tooltip }}</div>
+                    <div class="tooltip-arrow"></div>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <small class="form-hint">Seleccionar tipo de inscripción</small>
+          </div>
 
+          <div class="form-group col-span-6 md:col-span-3">
+            <label for="clasificacion" class="form-label">Clasificación</label>
+            <select id="clasificacion" v-model="clasificacion" required class="form-input">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="docente">DOCENTE</option>
+              <option value="posgrado">POSGRADO</option>
+              <option value="estudiante_ciclo_1">ESTUDIANTE - I CICLO</option>
+              <option value="estudiante_ciclo_3">ESTUDIANTE - III CICLO</option>
+              <option value="estudiante_ciclo_5">ESTUDIANTE - V CICLO</option>
+              <option value="estudiante_ciclo_7">ESTUDIANTE - VII CICLO</option>
+              <option value="estudiante_ciclo_9">ESTUDIANTE - IX CICLO</option>
+              <option value="estudiante_ciclo_10">ESTUDIANTE - X CICLO</option>
+            </select>
+            <small class="form-hint">Indicar el ciclo que perteneces</small>
+          </div>
+
+          <!-- Línea Divisoria Blanca -->
+          <div class="col-span-6">
+            <div class="w-full border-t border-white/20"></div>
+          </div>
 
           <!-- Fila 4: Contenedor complejo -->
           <div class="col-span-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
@@ -81,7 +147,8 @@
                     </div>
                     <div class="relative flex items-center group">
                       <span>Banco de la Nación</span>
-                      <Icon @click.prevent.stop name="heroicons:information-circle" class="ml-2 text-gray-400 cursor-pointer h-6 w-6"/>
+                      <Icon @click.prevent.stop name="heroicons:information-circle"
+                        class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
                       <div class="tooltip">
                         <div>- N° Cuenta: 04-029-958659</div>
                         <div>(Cendy Girao)</div>
@@ -90,13 +157,15 @@
                     </div>
                   </label>
                   <label for="billeteraDigital" class="radio-label">
-                    <input id="billeteraDigital" v-model="modalidadDeposito" type="radio" value="billetera" class="sr-only">
+                    <input id="billeteraDigital" v-model="modalidadDeposito" type="radio" value="billetera"
+                      class="sr-only">
                     <div class="radio-custom-indicator" :class="{ 'selected': modalidadDeposito === 'billetera' }">
                       <div v-if="modalidadDeposito === 'billetera'" class="radio-dot"></div>
                     </div>
                     <div class="relative flex items-center group">
                       <span>Billetera Digital</span>
-                      <Icon @click.prevent.stop name="heroicons:information-circle" class="ml-2 text-gray-400 cursor-pointer h-6 w-6"/>
+                      <Icon @click.prevent.stop name="heroicons:information-circle"
+                        class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
                       <div class="tooltip">
                         <div>Número de Yape: 987654321</div>
                         <div>UNDC</div>
@@ -119,7 +188,8 @@
                       <span>Pago Directo</span>
                     </label>
                     <label for="pagoInterbancario" class="radio-label">
-                      <input id="pagoInterbancario" v-model="tipoPago" type="radio" value="interbancario" class="sr-only">
+                      <input id="pagoInterbancario" v-model="tipoPago" type="radio" value="interbancario"
+                        class="sr-only">
                       <div class="radio-custom-indicator" :class="{ 'selected': tipoPago === 'interbancario' }">
                         <div v-if="tipoPago === 'interbancario'" class="radio-dot"></div>
                       </div>
@@ -156,7 +226,8 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
                 <div class="form-group">
                   <label for="codigoVoucher" class="form-label">Código del voucher de pago</label>
-                  <input id="codigoVoucher" v-model="codigoVoucher" type="text" placeholder="Código de operación" required class="form-input">
+                  <input id="codigoVoucher" v-model="codigoVoucher" type="text" placeholder="Código de operación"
+                    required class="form-input">
                   <small class="form-hint">Digitar codigo de pago</small>
                 </div>
                 <div class="form-group">
@@ -167,9 +238,11 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Adjuntar voucher de pago</label>
-                <label for="archivoVoucher" class="file-input-wrapper" :class="{ 'file-input-completed': archivoVoucher }">
+                <label for="archivoVoucher" class="file-input-wrapper"
+                  :class="{ 'file-input-completed': archivoVoucher }">
                   <div class="file-input-button">Seleccionar archivo</div>
-                  <div class="file-input-text-area">{{ archivoVoucher ? archivoVoucher.name : 'Sin archivos seleccionados' }}</div>
+                  <div class="file-input-text-area">{{ archivoVoucher ?
+                    archivoVoucher.name : 'Sin archivos seleccionados' }}</div>
                 </label>
                 <input id="archivoVoucher" type="file" @change="handleFileChange" required class="sr-only">
                 <small class="form-hint">Subir el voucher en JPG, JPEG, PNG O PDF</small>
@@ -190,45 +263,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
 
 useHead({
-  title: 'Inscripción | VII CIISIC',
+  title: 'Estudiantes | VII CIISIC',
   meta: [
     { name: 'description', content: 'Formulario de registro para estudiantes del congreso CIISIC.' }
   ]
 })
 
 // ===========================================================================
+// COMPOSABLES
+// ===========================================================================
+
+const { consultDni, documentTypes } = useConsultation()
+
+// ===========================================================================
 // DATOS ESTÁTICOS Y CONFIGURACIÓN
 // ===========================================================================
 
-const dniDatabase: { [key: string]: { nombres: string; apellidos: string } } = {
-  '12345678': { nombres: 'Juan Alberto', apellidos: 'Pérez García' },
-  '87654321': { nombres: 'Ana María', apellidos: 'López Martinez' },
-  '11223344': { nombres: 'Luis Fernando', apellidos: 'Gonzales Torres' }
-};
+const tiposInscripcion = [
+  { value: 'pregrado_certificado_35', label: 'Estudiantes pregrado - Solo Certificado (S/.35.00)', precio: 'S/. 35.00', tooltip: 'Acceso a todas las ponencias y certificado digital.' },
+  { value: 'pregrado_merch_80', label: 'Pregrado - Certificado + Merchandising (S/.80.00)', precio: 'S/. 80.00', tooltip: 'Incluye certificado, polo del evento y más sorpresas.' },
+  { value: 'docente_certificado_35', label: 'Docentes UNDC - Solo certificado (S/.35.00)', precio: 'S/. 35.00', tooltip: 'Acceso a ponencias y certificado para docentes de la UNDC.' },
+  { value: 'posgrado_merch_120', label: 'Posgrado - Certificado + Merchandising (S/.120.00)', precio: 'S/. 120.00', tooltip: 'Acceso completo, certificado y pack de merchandising premium.' }
+];
 
 // ===========================================================================
 // ESTADO DEL FORMULARIO (REFS)
 // ===========================================================================
 
-const dni = ref<string>('');
-const nombres = ref<string>('');
-const apellidos = ref<string>('');
-const email = ref<string>('');
-const celular = ref<string>('');
-const modalidadDeposito = ref<'banco' | 'billetera'>('banco');
-const fechaPago = ref<string>('');
-const codigoVoucher = ref<string>('');
-const archivoVoucher = ref<File | null>(null);
-const tipoPago = ref<'directo' | 'interbancario' | null>(null);
-const aplicativo = ref<'yape' | 'plin' | null>(null);
-const isSearchingDni = ref(false);
+const documentType = ref<'DNI' | 'CE'>('DNI')
+const documentNumber = ref<string>('')
+const nombres = ref<string>('')
+const apellidos = ref<string>('')
+const email = ref<string>('')
+const celular = ref<string>('')
+const modalidadDeposito = ref<'banco' | 'billetera'>('banco')
+const fechaPago = ref<string>('')
+const tipoInscripcion = ref<string>('')
+const clasificacion = ref<string>('')
+const codigoVoucher = ref<string>('')
+const archivoVoucher = ref<File | null>(null)
+const tipoPago = ref<'directo' | 'interbancario' | null>(null)
+const aplicativo = ref<'yape' | 'plin' | null>(null)
+const isSearchingDni = ref(false)
+const errorMessage = ref<string>('')
+const successMessage = ref<string>('')
 
 // ===========================================================================
 // WATCHERS
@@ -241,30 +324,109 @@ watch(modalidadDeposito, (newVal, oldVal) => {
   }
 });
 
+// Limpiar campos cuando cambie el tipo de documento
+watch(documentType, () => {
+  documentNumber.value = '';
+  nombres.value = '';
+  apellidos.value = '';
+});
+
+// Búsqueda automática cuando se complete el número de documento
+watch(documentNumber, (newValue) => {
+  if (isDocumentNumberComplete() && newValue.length === getSelectedDocumentType()?.maxLength) {
+    handleDocumentSearch();
+  }
+});
+
+// Auto-limpiar mensajes después de un tiempo
+watch([errorMessage, successMessage], () => {
+  if (errorMessage.value || successMessage.value) {
+    setTimeout(() => {
+      errorMessage.value = '';
+      successMessage.value = '';
+    }, 3000);
+  }
+});
+
+// ===========================================================================
+// COMPUTED Y MÉTODOS AUXILIARES
+// ===========================================================================
+
+const getSelectedDocumentType = () => {
+  return documentTypes.find(type => type.value === documentType.value);
+};
+
+const isDocumentNumberComplete = () => {
+  const expectedLength = getSelectedDocumentType()?.maxLength || 8;
+  return documentNumber.value.length === expectedLength;
+};
+
+const getRemainingDigits = () => {
+  const expectedLength = getSelectedDocumentType()?.maxLength || 8;
+  return Math.max(0, expectedLength - documentNumber.value.length);
+};
+
 // ===========================================================================
 // MANEJADORES DE EVENTOS (HANDLERS)
 // ===========================================================================
 
-const handleDniSearch = async () => {
-  if (dni.value.length !== 8) {
-    alert('Por favor, ingrese un DNI válido de 8 dígitos.');
+const handleDocumentInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  // Solo permitir números
+  const numericValue = target.value.replace(/\D/g, '');
+  const maxLength = getSelectedDocumentType()?.maxLength || 8;
+
+  // Limpiar mensajes de error
+  errorMessage.value = '';
+
+  // Limitar la longitud según el tipo de documento
+  documentNumber.value = numericValue.slice(0, maxLength);
+  target.value = documentNumber.value;
+};
+
+const showError = (message: string) => {
+  errorMessage.value = message;
+  successMessage.value = '';
+};
+
+const showSuccess = (message: string) => {
+  successMessage.value = message;
+  errorMessage.value = '';
+};
+
+const handleDocumentSearch = async () => {
+  if (!isDocumentNumberComplete()) {
+    const expectedLength = getSelectedDocumentType()?.maxLength || 8;
+    showError(`Por favor, ingrese un ${documentType.value} válido de ${expectedLength} dígitos.`);
     return;
   }
+
   isSearchingDni.value = true;
   nombres.value = '';
   apellidos.value = '';
+  errorMessage.value = '';
+
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const result = dniDatabase[dni.value];
-    if (result) {
-      nombres.value = result.nombres;
-      apellidos.value = result.apellidos;
+    const result = await consultDni(documentNumber.value, documentType.value);
+
+    if (result && result.success) {
+      nombres.value = result.data.names;
+      apellidos.value = `${result.data.paternalSurname} ${result.data.maternalSurname}`;
+      showSuccess(`${documentType.value} encontrado y datos cargados correctamente.`);
     } else {
-      alert('DNI no encontrado.');
+      showError(`${documentType.value} no encontrado o datos no disponibles.`);
     }
-  } catch (error) {
-    console.error('Error en la búsqueda de DNI:', error);
-    alert('Ocurrió un error al buscar el DNI.');
+  } catch (error: any) {
+    console.error(`Error en la búsqueda de ${documentType.value}:`, error);
+
+    // Mostrar mensaje de error específico
+    if (error.statusCode === 400) {
+      showError(`${documentType.value} inválido. Debe tener ${getSelectedDocumentType()?.maxLength} dígitos numéricos.`);
+    } else if (error.statusCode === 500) {
+      showError('Error del servidor. Inténtelo más tarde.');
+    } else {
+      showError(`Error al buscar el ${documentType.value}. Verifique su conexión e inténtelo nuevamente.`);
+    }
   } finally {
     isSearchingDni.value = false;
   }
@@ -274,12 +436,12 @@ const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files ? target.files.item(0) : null;
   if (file && !['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) {
-    alert('Solo se permiten archivos JPG, PNG o PDF');
+    showError('Solo se permiten archivos JPG, PNG o PDF');
     target.value = '';
     return;
   }
   if (file && file.size > 5 * 1024 * 1024) {
-    alert('El archivo no debe superar los 5MB');
+    showError('El archivo no debe superar los 5MB');
     target.value = '';
     return;
   }
@@ -289,7 +451,8 @@ const handleFileChange = (event: Event) => {
 const handleSubmit = () => {
   const metodoDePagoDetallado = modalidadDeposito.value === 'banco' ? tipoPago.value : aplicativo.value;
   const formData = {
-    dni: dni.value,
+    documentType: documentType.value,
+    documentNumber: documentNumber.value,
     nombres: nombres.value,
     apellidos: apellidos.value,
     email: email.value,
@@ -297,11 +460,13 @@ const handleSubmit = () => {
     modalidadDeposito: modalidadDeposito.value,
     tipoPago: metodoDePagoDetallado,
     fechaPago: fechaPago.value,
+    tipoInscripcion: tipoInscripcion.value,
+    clasificacion: clasificacion.value,
     codigoVoucher: codigoVoucher.value,
     archivoVoucher: archivoVoucher.value ? archivoVoucher.value.name : null,
   };
   console.log('Formulario enviado. Datos:', formData);
-  alert('Inscripción enviada. Revisa la consola para ver los datos.');
+  showSuccess('Inscripción enviada correctamente. Revisa la consola para ver los datos.');
 };
 </script>
 
@@ -313,6 +478,7 @@ const handleSubmit = () => {
   padding-bottom: 3.5rem;
   z-index: 1;
 }
+
 .breadcrumb-area::before {
   content: '';
   position: absolute;
@@ -325,6 +491,7 @@ const handleSubmit = () => {
   background-position: center;
   z-index: -1;
 }
+
 .breadcrumb-container {
   max-width: 1320px;
   margin-left: auto;
@@ -335,6 +502,7 @@ const handleSubmit = () => {
   justify-content: center;
   align-items: center;
 }
+
 .page-title {
   font-size: 2.25rem;
   line-height: 2.5rem;
@@ -343,12 +511,15 @@ const handleSubmit = () => {
   text-transform: uppercase;
   text-align: center;
 }
+
 .form-section {
   padding-top: 3rem;
   padding-bottom: 3rem;
 }
+
 .form-container {
-  max-width: 80rem; /* 1280px */
+  max-width: 80rem;
+  /* 1280px */
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -363,9 +534,112 @@ const handleSubmit = () => {
   row-gap: 2rem;
 }
 
+/* Document Input Group Styling */
+.document-input-group {
+  display: flex;
+  border: 1px solid #475569;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #1e293b;
+  transition: all 300ms;
+  min-height: 48px;
+}
+
+.document-input-group:focus-within {
+  border-color: #45f882;
+  box-shadow: 0 0 0 2px rgba(69, 248, 130, 0.2);
+}
+
+.document-type-container {
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.document-type-select {
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 0.5rem;
+  padding-right: 1.5rem;
+  background-color: #334155;
+  border: none;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.document-type-select:focus {
+  background-color: #475569;
+}
+
+.document-type-arrow {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.document-number-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.document-number-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  outline: none;
+}
+
+.document-number-input::placeholder {
+  color: #94a3b8;
+}
+
+.document-search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 300ms;
+  min-width: 48px;
+  min-height: 48px;
+  flex-shrink: 0;
+  border-radius: 0.375rem;
+}
+
+.document-search-button:hover:not(:disabled) {
+  color: #45f882;
+  background-color: rgba(69, 248, 130, 0.1);
+}
+
+.document-search-button:disabled {
+  color: #64748b;
+  cursor: not-allowed;
+}
+
 .form-group {
   width: 100%;
 }
+
 .form-label {
   display: block;
   font-size: 0.875rem;
@@ -374,6 +648,7 @@ const handleSubmit = () => {
   color: #ffffff;
   margin-bottom: 0.5rem;
 }
+
 .form-input,
 select.form-input {
   width: 100%;
@@ -386,15 +661,18 @@ select.form-input {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
+
 .form-input::placeholder {
   color: #94a3b8;
 }
+
 .form-input:focus,
 select.form-input:focus {
   outline: none;
   border-color: #45f882;
   box-shadow: 0 0 0 2px rgba(69, 248, 130, 0.2);
 }
+
 select.form-input {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -405,27 +683,33 @@ select.form-input {
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
 }
+
 .form-input[readonly] {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
+
 .input-filled {
-  background-color: #334155; /* secondary-700 */
+  background-color: #334155;
+  /* secondary-700 */
 }
 
 .form-input:valid {
   background-color: #334155;
 }
+
 select.form-input:valid {
   background-color: #334155;
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #334155 inset !important;
-    -webkit-text-fill-color: #ffffff !important;
-    transition: background-color 5000s ease-in-out 0s;
+  -webkit-box-shadow: 0 0 0 30px #334155 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
@@ -434,9 +718,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 select.form-input:not(:valid) {
   color: #94a3b8;
 }
+
 input[type="date"]:not(:valid) {
   color: #94a3b8;
 }
+
 select.form-input:valid,
 input[type="date"]:valid {
   color: #ffffff;
@@ -457,11 +743,13 @@ input[type="date"]:valid {
   flex-direction: column;
   gap: 1rem;
 }
+
 .radio-group-horizontal {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem 1.5rem;
 }
+
 .radio-label {
   display: flex;
   align-items: center;
@@ -469,6 +757,7 @@ input[type="date"]:valid {
   font-size: 0.875rem;
   color: #cbd5e1;
 }
+
 .radio-custom-indicator {
   width: 1.25rem;
   height: 1.25rem;
@@ -480,10 +769,12 @@ input[type="date"]:valid {
   justify-content: center;
   transition: all 300ms;
 }
+
 .radio-custom-indicator.selected {
   background-color: #45f882;
   border-color: #45f882;
 }
+
 .radio-dot {
   width: 0.5rem;
   height: 0.5rem;
@@ -503,12 +794,15 @@ input[type="date"]:valid {
   cursor: pointer;
   overflow: hidden;
 }
+
 .file-input-wrapper:hover {
   border-color: #45f882;
 }
+
 .file-input-wrapper.file-input-completed {
   background-color: #334155;
 }
+
 .file-input-button {
   background-color: #475569;
   color: #ffffff;
@@ -516,9 +810,11 @@ input[type="date"]:valid {
   white-space: nowrap;
   transition: background-color 300ms;
 }
+
 .file-input-wrapper:hover .file-input-button {
   background-color: #5a6a7e;
 }
+
 .file-input-text-area {
   padding: 0.75rem 1rem;
   color: #94a3b8;
@@ -527,9 +823,11 @@ input[type="date"]:valid {
   text-overflow: ellipsis;
   flex-grow: 1;
 }
+
 .file-input-wrapper.file-input-completed .file-input-text-area {
   color: #ffffff;
 }
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -575,10 +873,12 @@ input[type="date"]:valid {
   pointer-events: none;
   z-index: 10;
 }
+
 .group:hover .tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(-5px);
 }
+
 .tooltip-arrow {
   position: absolute;
   top: 100%;
@@ -615,6 +915,30 @@ input[type="date"]:valid {
   .page-title {
     font-size: 3rem;
     line-height: 1;
+  }
+}
+
+/* Responsive para el botón de búsqueda */
+@media (max-width: 640px) {
+  .document-search-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.375rem;
+  }
+  
+  .document-input-group {
+    min-height: 44px;
+  }
+  
+  .document-type-select {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  .document-number-input {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
   }
 }
 </style>

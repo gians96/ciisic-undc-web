@@ -20,10 +20,11 @@ export default defineNuxtConfig({
   ssr: true,
   runtimeConfig: {
     // Variables privadas del servidor (no expuestas al cliente)
-    
+    xApiToken: process.env.X_API_TOKEN,
+    xApiUrl: process.env.X_API_URL,
     // Variables públicas (expuestas al cliente)
     public: {
-    appName: 'VII CIISIC 2025',
+      appName: 'VII CIISIC 2025',
       appVersion: '1.0.0'
     }
   },

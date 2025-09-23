@@ -139,7 +139,7 @@ const inscriptionPlans = ref([
     id: 1,
     title: 'Pregrado UNDC [Regular]',
     price: 'S/ 80.00',
-    path: '/estudiantes',
+    path: '/register/estudiantes',
     description: 'Acceso completo para estudiantes de pregrado de la UNDC.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
@@ -156,7 +156,7 @@ const inscriptionPlans = ref([
     id: 2,
     title: 'Docentes y Posgrado UNDC',
     price: 'S/ 120.00',
-    path: '/estudiantes',
+    path: '/register/estudiantes',
     description: 'Plan diseñado para la comunidad académica y de posgrado.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
@@ -173,7 +173,7 @@ const inscriptionPlans = ref([
     id: 3,
     title: 'Público en General [Regular]',
     price: 'S/ 150.00',
-    path: '/general',
+    path: '/register/general',
     description: 'Para profesionales y entusiastas externos a la universidad.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
@@ -190,7 +190,7 @@ const inscriptionPlans = ref([
     id: 4,
     title: 'Público en General [Virtual]',
     price: 'S/ 50.00',
-    path: '/general',
+    path: '/register/general',
     description: 'Asiste desde cualquier parte del mundo y obtén tu certificado.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
