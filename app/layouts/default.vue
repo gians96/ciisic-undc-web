@@ -129,7 +129,7 @@
             class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0"
           >
             <div class="text-gray-400 text-sm">
-              <a href="https://fi.undc.edu.pe" class="text-green-500">Facultad de Ingeniería</a> - Todos los derechos reservados
+              <a href="https://fi.undc.edu.pe" class="text-green-500">Facultad de Ingeniería - 2025</a> | Todos los derechos reservados
              
             </div>
 
