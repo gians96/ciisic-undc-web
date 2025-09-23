@@ -9,6 +9,36 @@ const RATE_WINDOW = 60 * 1000 // 1 minuto en millisegundos
 
 export default defineEventHandler(async (event) => {
   try {
+    // ========================================
+    // VERIFICACIÓN DE CONFIGURACIÓN AL INICIO
+    // ========================================
+    const config = useRuntimeConfig()
+    
+    // Log para debugging en producción
+    console.log('=== API CONSULTATION DEBUG ===')
+    console.log('Environment:', process.env.NODE_ENV)
+    console.log('API Token exists:', !!config.xApiToken)
+    console.log('API URL:', config.xApiUrl)
+    console.log('Config keys:', Object.keys(config))
+    
+    // Verificar variables de entorno
+    if (!config.xApiToken || config.xApiToken === '') {
+      console.error('ERROR: X_API_TOKEN no está configurado')
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.startsWith('X_')))
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Server configuration error: API token not found'
+      })
+    }
+    
+    if (!config.xApiUrl || config.xApiUrl === '') {
+      console.error('ERROR: X_API_URL no está configurado')
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Server configuration error: API URL not found'
+      })
+    }
+
     // Solo permitir métodos POST
     if (getMethod(event) !== 'POST') {
       throw createError({
@@ -114,12 +144,24 @@ export default defineEventHandler(async (event) => {
     }
 
     // Obtener la configuración del runtime (DISPONIBLE EN EL SERVIDOR)
-    const config = useRuntimeConfig()
+
+    // Debug: Log para verificar configuración
+    console.log('API Configuration check:', {
+      hasToken: !!config.xApiToken,
+      hasUrl: !!config.xApiUrl,
+      nodeEnv: process.env.NODE_ENV,
+      envKeys: Object.keys(process.env).filter(k => k.startsWith('X_API'))
+    })
 
     if (!config.xApiToken || !config.xApiUrl) {
+      console.error('❌ Variables de entorno faltantes:', {
+        X_API_TOKEN: config.xApiToken ? 'CONFIGURED' : 'MISSING',
+        X_API_URL: config.xApiUrl || 'MISSING'
+      })
+      
       throw createError({
         statusCode: 500,
-        statusMessage: 'Server configuration error: API credentials not found'
+        statusMessage: 'Server configuration error: API credentials not found. Please configure X_API_TOKEN and X_API_URL environment variables.'
       })
     }
 
