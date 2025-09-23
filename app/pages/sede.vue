@@ -17,7 +17,7 @@
             {{ sedeHero.description }}
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-element" style="animation-delay: 0.4s;">
-            <NuxtLink v-for="(action, index) in sedeHero.actions" :key="index" :to="action.to" :class="action.style">
+            <NuxtLink target="_blank" v-for="(action, index) in sedeHero.actions" :key="index" :to="action.to" :class="action.style">
               {{ action.label }}
             </NuxtLink>
           </div>
