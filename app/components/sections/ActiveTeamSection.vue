@@ -182,6 +182,12 @@ const teamMembers: TeamMember[] = [
     role: "Chair Académico",
     image: "/images/team/c-almidon.webp",
   },
+  {
+    id: "9",
+    name: "Mg. Alex Pacheco",
+    role: "Chair Académico",
+    image: "/images/team/a-pacheco.webp",
+  },
 ];
 
 // ============================================================================
@@ -244,6 +250,14 @@ const viewMember = (memberId: string) => {
 }
 
 .team-member-card:nth-child(4) {
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.team-member-card:nth-child(5) {
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.team-member-card:nth-child(6) {
   animation: fadeInUp 0.6s ease-out 0.4s both;
 }
 
