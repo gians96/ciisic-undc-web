@@ -370,6 +370,15 @@ export interface DniData {
   paternalSurname: string
   maternalSurname: string
   fullName: string
+  birthDate?: string | null
+  gender?: string | null
+  civilStatus?: string | null
+  address?: string | null
+  department?: string | null
+  province?: string | null
+  district?: string | null
+  ubigeo?: string[] | null
+  profession?: string | null
 }
 
 export interface DniMetadata {
