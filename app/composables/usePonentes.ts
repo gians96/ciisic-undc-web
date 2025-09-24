@@ -63,6 +63,24 @@ export const usePonentes = () => {
       linkedin: "https://www.linkedin.com/in/gflores1092/",
       empresa: "CENTRUM PUCP",
       especialidades: ["Gestión", "Estrategia", "Educación"]
+    },
+    {
+      id: 7,
+      nombre: "Ivo Yance",
+      imagen: "/images/ponentes/yance.webp",
+      descripcion: "Hace más de una década, ayudo a universidades e institutos brindándoles a sus estudiantes conocimientos sobre marketing, comunicación y liderazgo.",
+      linkedin: "https://www.linkedin.com/in/ivoyance/",
+      empresa: "Universidad Continental",
+      especialidades: ["Gestión", "Soft Skills", "Educación"]
+    },
+    {
+      id: 8,
+      nombre: "Damián Siré",
+      imagen: "/images/ponentes/sire.webp",
+      descripcion: "My days are dedicated to coding, both professionally and in my personal time, as I genuinely enjoy creating things that others can use.",
+      linkedin: "https://www.linkedin.com/in/damiansire/",
+      empresa: "Google GDE",
+      especialidades: ["Development", "Educación"]
     }
   ]
 
