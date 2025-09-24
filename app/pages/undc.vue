@@ -163,13 +163,9 @@ const inscriptionPlans = ref([
 ])
 
 const merchandising = ref([
-  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpg' },
-  { name: 'TomaTodo', image: '/images/merchandising/tomatodo.jpg' },
-  { name: 'Identificador', image: '/images/merchandising/identificador.jpg' },
-  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpg' },
-  // { name: 'Cuaderno y Lapicero', image: '/images/merchandising/project_04.jpg' },
-  // { name: 'Gorra con Logo', image: '/images/merchandising/project_05.jpg' },
-  // { name: 'Llavero Exclusivo', image: '/images/merchandising/project_06.jpg' },
+  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpeg' },
+  { name: 'TomaTodo', image: '/images/merchandising/tomatodo.jpeg' },
+  { name: 'Identificador', image: '/images/merchandising/identificador.jpeg' },
 ])
 
 // ===========================================================================
