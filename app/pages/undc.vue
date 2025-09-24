@@ -16,13 +16,16 @@
       </div>
     </section>
 
+    <!-- ===========================================================================
+        SECCIÓN DE PLANES (TARJETAS INTERACTIVAS)
+        ============================================================================ -->
     <section class="py-20 md:py-28">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div
             v-for="plan in inscriptionPlans"
             :key="plan.id"
-            @click="navigateToPlan(plan.path)"
+            @click="navigateToPlan(plan)"
             class="bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
           >
             <div class="p-8 flex flex-col h-full">
@@ -52,40 +55,6 @@
         </div>
       </div>
     </section>
-
-    <!--
-    ===========================================================================
-        SECCIÓN DE DETALLES DEL PLAN (ACORDEÓN)
-        ============================================================================
-    <section class="py-20 md:py-28 bg-slate-800">
-      <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold uppercase text-white mb-2">Características de cada Plan</h2>
-          <p class="text-slate-400 max-w-2xl mx-auto">Haz clic en un plan para ver todos los detalles.</p>
-        </div>
-        <div class="max-w-4xl mx-auto">
-          <div v-for="plan in inscriptionPlans" :key="plan.id" class="border border-slate-700 rounded-lg mb-4 overflow-hidden">
-            <button @click="toggleAccordion(plan.id)" class="w-full flex justify-between items-center p-5 text-left text-lg font-semibold text-white bg-slate-800 hover:bg-slate-700/80 transition-colors duration-200">
-              <span>{{ plan.title }}</span>
-              <Icon
-                name="heroicons:chevron-down"
-                class="h-6 w-6 transition-transform duration-300"
-                :class="{ 'rotate-180': activeAccordion === plan.id }"
-              />
-            </button>
-            <div v-if="activeAccordion === plan.id" class="bg-slate-800/50 text-slate-300">
-              <div class="p-6">
-                <h4 class="font-bold text-lg mb-2 text-primary">Requisitos y Procedimiento</h4>
-                <p class="mb-4">{{ plan.details.requirements }}</p>
-                <h4 class="font-bold text-lg mb-2 text-primary">Certificación</h4>
-                <p>{{ plan.details.certification }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    -->
 
     <!-- ===========================================================================
         SECCIÓN DE MERCHANDISING (CARRUSEL)
@@ -121,9 +90,9 @@ import { useRouter } from 'vue-router'
 // ===========================================================================
 const router = useRouter()
 
-const navigateToPlan = (path?: string) => {
-  if (path) {
-    router.push(path)
+const navigateToPlan = (plan: any) => {
+  if (plan.path && plan.value) {
+    router.push(`${plan.path}?plan=${plan.value}`)
   }
 }
 
@@ -145,10 +114,10 @@ const inscriptionPlans = ref([
     id: 1,
     title: 'ESTUDIANTES',
     badge: 'CON KIT',
-    price: 'S/ 120.00',
-    path: '/register/estudiantes',
+    price: 'S/ 100.00',
+    path: '/estudiantes',
     value: 'estudiantes_con_kit',
-    description: 'La experiencia completa para estudiantes de institutos, colegios y otras universidades.',
+    description: 'La experiencia completa para estudiantes de pregrado, incluye todo el merchandising oficial del evento.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
@@ -161,9 +130,9 @@ const inscriptionPlans = ref([
     title: 'ESTUDIANTES',
     badge: 'SIN KIT',
     price: 'S/ 60.00',
-    path: '/register/estudiantes',
+    path: '/estudiantes',
     value: 'estudiantes_sin_kit',
-    description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado.',
+    description: 'Acceso total a las ponencias y certificación, ideal para quienes solo buscan el contenido académico.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
@@ -173,12 +142,12 @@ const inscriptionPlans = ref([
   },
   {
     id: 3,
-    title: 'PUBLICO GENERAL',
+    title: 'PROFESIONALES',
     badge: 'INCLUYE KIT',
-    price: 'S/ 140.00',
-    path: '/register/general',
-    value: 'publico_general_con_kit',
-    description: 'Acceso total con kit para profesionales y cualquier persona interesada en el congreso.',
+    price: 'S/ 120.00',
+    path: '/estudiantes',
+    value: 'profesionales_con_kit',
+    description: 'Un plan completo para docentes, egresados y estudiantes de posgrado de nuestra comunidad.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
