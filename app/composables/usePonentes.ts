@@ -13,7 +13,7 @@ export const usePonentes = () => {
     {
       id: 1,
       nombre: "Eric Liu",
-      imagen: "/images/ponentes/liu.webp",
+      imagen: "/images/ponentes/liu-ciisic.webp",
       descripcion: "Vicepresidente de Relaciones Públicas de Huawei Perú, un cargo desde el cual ha participado en acuerdos de colaboración con universidades peruanas para impulsar el talento digital y el desarrollo de la tecnología en el país. ",
       linkedin: "#",
       empresa: "Huawei Perú",
@@ -22,7 +22,7 @@ export const usePonentes = () => {
     {
       id: 2,
       nombre: "Abigail Kauf",
-      imagen: "/images/ponentes/kauf.webp",
+      imagen: "/images/ponentes/kauf-ciisic.webp",
       descripcion: "Profesional en ciberseguridad con diez años de experiencia. Tiene como objetivo diseñar y aplicar métodos eficientes para optimizar el trabajo diario, convirtiéndolos en un valor agregado para las organizaciones en las que colabora.",
       linkedin: "https://www.linkedin.com/in/abigailkauf/",
       empresa: "UTN Argentina",
@@ -31,7 +31,7 @@ export const usePonentes = () => {
     {
       id: 3,
       nombre: "Gera Flores",
-      imagen: "/images/ponentes/flores.webp",
+      imagen: "/images/ponentes/flores-ciisic.webp",
       descripcion: "Ejecutiva senior con más de 12 años de experiencia liderando áreas de analítica avanzada, inteligencia artificial e inteligencia comercial.",
       linkedin: "https://www.linkedin.com/in/gflores1092/",
       empresa: "CENTRUM PUCP",
@@ -40,7 +40,7 @@ export const usePonentes = () => {
     {
       id: 4,
       nombre: "José Verbel",
-      imagen: "/images/ponentes/verbel.webp",
+      imagen: "/images/ponentes/verbel-ciisic.webp",
       descripcion: "Especialista en ingeniería del software, con experiencia y habilidades en el Desarrollo de Software, Arquitecturas orientadas a servicios, así como también en la Administración y gestión en el Desarrollo de Soluciones de Software empleando metodologías ágiles.",
       linkedin: "https://www.linkedin.com/in/jverbel",
       empresa: "Solati SAS",
@@ -49,7 +49,7 @@ export const usePonentes = () => {
     {
       id: 5,
       nombre: "Jim Dios",
-      imagen: "/images/ponentes/diosluna.webp",
+      imagen: "/images/ponentes/diosluna-ciisic.webp",
       descripcion: "Máster en Ingeniería Informática UAM, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
       linkedin: "https://www.linkedin.com/in/jimdios/",
       empresa: "Universidad de Lima",
@@ -58,7 +58,7 @@ export const usePonentes = () => {
     {
       id: 6,
       nombre: "Damián Siré",
-      imagen: "/images/ponentes/sire.webp",
+      imagen: "/images/ponentes/sire-ciisic.webp",
       descripcion: "My days are dedicated to coding, both professionally and in my personal time, as I genuinely enjoy creating things that others can use.",
       linkedin: "https://www.linkedin.com/in/damiansire/",
       empresa: "Google GDE",
@@ -67,7 +67,7 @@ export const usePonentes = () => {
     {
       id: 7,
       nombre: "Ivo Yance",
-      imagen: "/images/ponentes/yance.webp",
+      imagen: "/images/ponentes/yance-ciisic.webp",
       descripcion: "Hace más de una década, ayudo a universidades e institutos brindándoles a sus estudiantes conocimientos sobre marketing, comunicación y liderazgo.",
       linkedin: "https://www.linkedin.com/in/ivoyance/",
       empresa: "Universidad Continental",
@@ -76,7 +76,7 @@ export const usePonentes = () => {
     {
       id: 8,
       nombre: "Jowel Cabrera",
-      imagen: "/images/ponentes/cabrera.webp",
+      imagen: "/images/ponentes/cabrera-ciisic.webp",
       descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
       linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
       empresa: "Universidad Técnica de Georgia",
