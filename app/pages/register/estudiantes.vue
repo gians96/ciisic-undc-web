@@ -5,15 +5,9 @@
         ============================================================================ -->
     <section class="breadcrumb-area">
       <div class="breadcrumb-container">
-        <h1 class="page-title">INSCRIPCION DE ESTUDIANTES</h1>
+        <h1 class="page-title">INSCRIPCION UNDC</h1>
       </div>
     </section>
-
-    <!-- ===========================================================================
-        SISTEMA DE NOTIFICACIONES
-        ============================================================================ -->
-    <NotificationSystem :error-message="errorMessage" :success-message="successMessage" @clear-error="errorMessage = ''"
-      @clear-success="successMessage = ''" />
 
     <!-- ===========================================================================
         SECCIÓN DEL FORMULARIO
@@ -23,48 +17,37 @@
         <!-- El tag <form> ahora es el contenedor de la rejilla -->
         <form @submit.prevent="handleSubmit" class="student-form">
 
-          <!-- Fila 1: Documento (Tipo + Número), Nombres, Apellidos -->
+          <!-- Fila 1: DNI, Nombres, Apellidos -->
+          <!-- Campo DNI -->
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
-            <label for="documentType" class="form-label">Documento de identidad</label>
-            <div class="document-input-group">
-              <div class="document-type-container">
-                <select id="documentType" v-model="documentType" class="document-type-select" required>
-                  <option v-for="type in documentTypes" :key="type.value" :value="type.value">
-                    {{ type.value }}
-                  </option>
-                </select>
-                <Icon name="heroicons:chevron-down" class="document-type-arrow" />
-              </div>
-              <div class="document-number-container">
-                <input id="documentNumber" v-model="documentNumber" type="text"
-                  :placeholder="getSelectedDocumentType()?.placeholder || 'Número de documento'"
-                  :maxlength="getSelectedDocumentType()?.maxLength || 8"
-                  :pattern="getSelectedDocumentType()?.pattern || '[0-9]{8}'" @input="handleDocumentInput" required
-                  class="document-number-input">
-                <button type="button" @click="handleDocumentSearch"
-                  :disabled="isSearchingDni || !isDocumentNumberComplete()" class="document-search-button"
-                  aria-label="Buscar documento">
-                  <Icon v-if="isSearchingDni" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" />
-                  <Icon v-else name="heroicons:magnifying-glass" class="h-5 w-5" />
-                </button>
-              </div>
+            <label for="dni" class="form-label">DNI</label>
+            <div class="relative">
+              <input id="dni" v-model="dni" type="text" placeholder="Tu número de DNI" required
+                class="form-input pr-12 border-r-0 rounded-r-none" :class="{
+                  '!border-red-600': isDniInvalid,
+                  'focus:!border-red-600': isDniInvalid,
+                  'focus:!ring-red-600/30': isDniInvalid
+                }" pattern="[0-9]{8}" maxlength="8" @focus="isDniFocused = true"
+                @blur="validateDniOnBlur(); isDniFocused = false" @input="isDniInvalid = false">
+              <button type="button" @click="handleDniSearch" :disabled="isSearchingDni || dni.length !== 8"
+                :class="['absolute inset-y-0 right-0 flex items-center rounded-r-lg px-4 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-primary disabled:cursor-not-allowed disabled:text-gray-500 disabled:bg-slate-800 transition-colors border-y border-r', isDniInvalid ? '!border-red-600' : (isDniFocused ? 'border-primary' : 'border-slate-700')]"
+                aria-label="Buscar DNI">
+                <Icon v-if="isSearchingDni" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" />
+                <Icon v-else name="heroicons:magnifying-glass" class="h-5 w-5" />
+              </button>
             </div>
-            <small class="form-hint">
-              {{ getSelectedDocumentType()?.maxLength || 8 }} dígitos.
-              {{ isDocumentNumberComplete() ? 'Presiona la lupa para buscar.' : `Faltan ${getRemainingDigits()}
-              dígitos.` }}
-            </small>
+            <small class="form-hint">De 8 dígitos. Presiona la lupa para buscar.</small>
           </div>
 
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
             <label for="nombres" class="form-label">Nombres</label>
-            <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)" class="form-input"
-              :class="{ 'input-filled': nombres }">
+            <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)" readonly
+              class="form-input" :class="{ 'input-filled': nombres }">
           </div>
 
           <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
             <label for="apellidos" class="form-label">Apellidos</label>
-            <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)"
+            <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)" readonly
               class="form-input" :class="{ 'input-filled': apellidos }">
           </div>
 
@@ -72,14 +55,22 @@
           <div class="form-group col-span-6 md:col-span-3">
             <label for="email" class="form-label">Correo electrónico</label>
             <input id="email" v-model="email" type="email" placeholder="Tu correo electrónico" required
-              class="form-input">
+              class="form-input" :class="{
+                '!border-red-600': isEmailInvalid,
+                'focus:!border-red-600': isEmailInvalid,
+                'focus:!ring-red-600/30': isEmailInvalid
+              }" @blur="validateEmailOnBlur" @input="isEmailInvalid = false">
             <small class="form-hint">Debe ser el correo institucional</small>
           </div>
 
           <div class="form-group col-span-6 md:col-span-3">
             <label for="celular" class="form-label">Celular</label>
             <input id="celular" v-model="celular" type="tel" placeholder="Tu número de celular" required
-              class="form-input" pattern="[9][0-9]{8}" maxlength="9">
+              class="form-input" :class="{
+                '!border-red-600': isCelularInvalid,
+                'focus:!border-red-600': isCelularInvalid,
+                'focus:!ring-red-600/30': isCelularInvalid
+              }" pattern="[0-9]{9}" maxlength="9" @blur="validateCelularOnBlur" @input="isCelularInvalid = false">
             <small class="form-hint">De 9 digitos y sin espacios</small>
           </div>
 
@@ -91,12 +82,20 @@
           <!-- Fila 3: Tipo de Inscripción y Clasificación -->
           <div class="form-group col-span-6 md:col-span-3">
             <label class="form-label">Tipo de inscripción</label>
-            <div class="radio-group">
-              <label v-for="opcion in tiposInscripcion" :key="opcion.value" :for="opcion.value" class="radio-label">
-                <input :id="opcion.value" v-model="tipoInscripcion" type="radio" :value="opcion.value" class="sr-only">
+
+            <div class="radio-group" :class="{ 'opacity-50 pointer-events-none': planFromUrl }">
+              <label v-for="opcion in visibleTiposInscripcion" :key="opcion.id" :for="`inscripcion-${opcion.id}`"
+                class="radio-label">
+                <!-- Radio button -->
+                <input :id="`inscripcion-${opcion.id}`" v-model.number="tipoInscripcion" type="radio"
+                  :value="opcion.value" class="sr-only" :disabled="!!planFromUrl" />
+
+                <!-- Indicador de selección -->
                 <div class="radio-custom-indicator" :class="{ 'selected': tipoInscripcion === opcion.value }">
                   <div v-if="tipoInscripcion === opcion.value" class="radio-dot"></div>
                 </div>
+
+                <!-- Label con nombre + precio -->
                 <div class="relative flex items-center group">
                   <span>{{ opcion.label }}</span>
                   <Icon @click.prevent.stop name="heroicons:information-circle"
@@ -108,23 +107,22 @@
                 </div>
               </label>
             </div>
-            <small class="form-hint">Seleccionar tipo de inscripción</small>
+            <small v-if="!planFromUrl" class="form-hint">Seleccionar tipo de inscripción</small>
           </div>
 
+          <!-- Clasificación -->
           <div class="form-group col-span-6 md:col-span-3">
             <label for="clasificacion" class="form-label">Clasificación</label>
             <select id="clasificacion" v-model="clasificacion" required class="form-input">
               <option value="" disabled selected>Selecciona una opción</option>
-              <option value="docente">DOCENTE</option>
-              <option value="posgrado">POSGRADO</option>
-              <option value="estudiante_ciclo_1">ESTUDIANTE - I CICLO</option>
-              <option value="estudiante_ciclo_3">ESTUDIANTE - III CICLO</option>
-              <option value="estudiante_ciclo_5">ESTUDIANTE - V CICLO</option>
-              <option value="estudiante_ciclo_7">ESTUDIANTE - VII CICLO</option>
-              <option value="estudiante_ciclo_9">ESTUDIANTE - IX CICLO</option>
-              <option value="estudiante_ciclo_10">ESTUDIANTE - X CICLO</option>
+              <option v-for="option in classificationOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
             </select>
-            <small class="form-hint">Indicar el ciclo que perteneces</small>
+
+            <small v-if="clasificacion.startsWith('estudiante')" class="form-hint">
+              Indicar el ciclo que perteneces
+            </small>
           </div>
 
           <!-- Línea Divisoria Blanca -->
@@ -135,85 +133,82 @@
           <!-- Fila 4: Contenedor complejo -->
           <div class="col-span-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
 
-            <!-- Columna Izquierda de Fila 4 -->
+            <!-- Columna Izquierda de Fila 4 (Reestructurada) -->
             <div class="conditional-section flex flex-col justify-center">
               <div class="form-group">
                 <label class="form-label">Modalidad de Depósito</label>
                 <div class="radio-group-horizontal">
-                  <label for="bancoNacion" class="radio-label">
-                    <input id="bancoNacion" v-model="modalidadDeposito" type="radio" value="banco" class="sr-only">
-                    <div class="radio-custom-indicator" :class="{ 'selected': modalidadDeposito === 'banco' }">
-                      <div v-if="modalidadDeposito === 'banco'" class="radio-dot"></div>
+                  <label v-for="metodo in depositMethods" :key="metodo.id" :for="`deposito-${metodo.id}`"
+                    class="radio-label">
+                    <input :id="`deposito-${metodo.id}`" v-model.number="modalidadDeposito" type="radio"
+                      :value="metodo.id" class="sr-only" />
+                    <div class="radio-custom-indicator" :class="{ 'selected': modalidadDeposito === metodo.id }">
+                      <div v-if="modalidadDeposito === metodo.id" class="radio-dot"></div>
                     </div>
                     <div class="relative flex items-center group">
-                      <span>Banco de la Nación</span>
-                      <Icon @click.prevent.stop name="heroicons:information-circle"
-                        class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
-                      <div class="tooltip">
-                        <div>- N° Cuenta: 04-029-958659</div>
-                        <div>(Cendy Girao)</div>
-                        <div class="tooltip-arrow"></div>
-                      </div>
-                    </div>
-                  </label>
-                  <label for="billeteraDigital" class="radio-label">
-                    <input id="billeteraDigital" v-model="modalidadDeposito" type="radio" value="billetera"
-                      class="sr-only">
-                    <div class="radio-custom-indicator" :class="{ 'selected': modalidadDeposito === 'billetera' }">
-                      <div v-if="modalidadDeposito === 'billetera'" class="radio-dot"></div>
-                    </div>
-                    <div class="relative flex items-center group">
-                      <span>Billetera Digital</span>
-                      <Icon @click.prevent.stop name="heroicons:information-circle"
-                        class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
-                      <div class="tooltip">
-                        <div>Número de Yape: 987654321</div>
-                        <div>UNDC</div>
-                        <div class="tooltip-arrow"></div>
-                      </div>
+                      <span>{{ metodo.nombre }}</span>
                     </div>
                   </label>
                 </div>
                 <small class="form-hint">Seleccionar el medio de pago</small>
               </div>
+
+              <!-- Sub-opciones según modalidad seleccionada -->
               <Transition name="fade" mode="out-in">
-                <div v-if="modalidadDeposito === 'banco'" class="form-group mt-4">
+                <!-- Caso: Banco -->
+                <div v-if="modalidadDeposito === 1" class="form-group mt-4">
                   <label class="form-label">Tipo de Pago</label>
                   <div class="radio-group-horizontal">
-                    <label for="pagoDirecto" class="radio-label">
-                      <input id="pagoDirecto" v-model="tipoPago" type="radio" value="directo" class="sr-only">
-                      <div class="radio-custom-indicator" :class="{ 'selected': tipoPago === 'directo' }">
-                        <div v-if="tipoPago === 'directo'" class="radio-dot"></div>
+                    <label v-for="opcion in depositMethods.find((m) => m.id === 1)?.opciones || []" :key="opcion.id"
+                      :for="`opcion-${opcion.id}`" class="radio-label">
+                      <input :id="`opcion-${opcion.id}`" v-model.number="tipoPago" type="radio" :value="opcion.id"
+                        class="sr-only" />
+                      <div class="radio-custom-indicator" :class="{ 'selected': tipoPago === opcion.id }">
+                        <div v-if="tipoPago === opcion.id" class="radio-dot"></div>
                       </div>
-                      <span>Pago Directo</span>
-                    </label>
-                    <label for="pagoInterbancario" class="radio-label">
-                      <input id="pagoInterbancario" v-model="tipoPago" type="radio" value="interbancario"
-                        class="sr-only">
-                      <div class="radio-custom-indicator" :class="{ 'selected': tipoPago === 'interbancario' }">
-                        <div v-if="tipoPago === 'interbancario'" class="radio-dot"></div>
-                      </div>
-                      <span>Pago interbancario</span>
+                      <span>{{ opcion.nombre }}</span>
                     </label>
                   </div>
                   <small class="form-hint">Seleccionar el tipo de pago</small>
+
+                  <!-- ✅ Bloque de datos de cuenta cuando modalidad = Banco -->
+                  <div class="bg-slate-900/70 border border-slate-700 rounded-lg p-4 mt-4">
+                    <h4 class="font-bold text-primary mb-2 text-sm uppercase">
+                      Datos de la cuenta
+                    </h4>
+                    <div class="text-slate-200 space-y-2 text-sm">
+                      <p>
+                        <span class="font-semibold text-slate-400 mr-2">Titular:</span>
+                        JoseMaría Caballa Garay
+                      </p>
+                      <p>
+                        <span class="font-semibold text-slate-400 mr-2">N° Cta:</span>
+                        <span class="font-mono tracking-wider text-white">
+                          255-10957977-0-98
+                        </span>
+                      </p>
+                      <p>
+                        <span class="font-semibold text-slate-400 mr-2">CCI:</span>
+                        <span class="font-mono tracking-wider text-white">
+                          002-25511095797709881
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div v-else-if="modalidadDeposito === 'billetera'" class="form-group mt-4">
+
+                <!-- Caso: Billetera -->
+                <div v-else-if="modalidadDeposito === 2" class="form-group mt-4">
                   <label class="form-label">Aplicativo</label>
                   <div class="radio-group-horizontal">
-                    <label for="yape" class="radio-label">
-                      <input id="yape" v-model="aplicativo" type="radio" value="yape" class="sr-only">
-                      <div class="radio-custom-indicator" :class="{ 'selected': aplicativo === 'yape' }">
-                        <div v-if="aplicativo === 'yape'" class="radio-dot"></div>
+                    <label v-for="opcion in depositMethods.find((m) => m.id === 2)?.opciones || []" :key="opcion.id"
+                      :for="`opcion-${opcion.id}`" class="radio-label">
+                      <input :id="`opcion-${opcion.id}`" v-model.number="aplicativo" type="radio" :value="opcion.id"
+                        class="sr-only" />
+                      <div class="radio-custom-indicator" :class="{ 'selected': aplicativo === opcion.id }">
+                        <div v-if="aplicativo === opcion.id" class="radio-dot"></div>
                       </div>
-                      <span>Yape</span>
-                    </label>
-                    <label for="plin" class="radio-label">
-                      <input id="plin" v-model="aplicativo" type="radio" value="plin" class="sr-only">
-                      <div class="radio-custom-indicator" :class="{ 'selected': aplicativo === 'plin' }">
-                        <div v-if="aplicativo === 'plin'" class="radio-dot"></div>
-                      </div>
-                      <span>Plin</span>
+                      <span>{{ opcion.nombre }}</span>
                     </label>
                   </div>
                   <small class="form-hint">Seleccionar el aplicativo</small>
@@ -263,211 +258,538 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+const config = useRuntimeConfig()
+
+// ===========================================================================
+// DEFINICIÓN DE TIPOS
+// ===========================================================================
+
+interface ApiClassification {
+  id: number;
+  nombre: string;
+}
+
+interface DepositMethod {
+  id: number;
+  nombre: string;
+}
+
+interface PaymentType {
+  id: number;
+  metodoDepositoId: number;
+  nombre: string;
+}
+
+// ===========================================================================
+// LLAMADO A API RENIEC
+// ===========================================================================
+
+const dni = ref("")
+const isDniInvalid = ref(false)
+const isDniFocused = ref(false)
+const isSearchingDni = ref(false)
+const nombres = ref("")
+const apellidos = ref("")
+
+const validateDniOnBlur = () => {
+  if (dni.value.length !== 8) {
+    isDniInvalid.value = true
+  }
+}
+
+const handleDniSearch = async () => {
+  if (dni.value.length !== 8) return
+  isSearchingDni.value = true
+  try {
+    const response = await fetch(`${config.public.API_URL}/api/v1/reniec/dni?number=${dni.value}`)
+    if (!response.ok) throw new Error("Error en la consulta")
+    const data = await response.json()
+    nombres.value = data.first_name
+    apellidos.value = `${data.first_last_name} ${data.second_last_name}`
+  } catch (error) {
+    console.error("Error buscando DNI:", error)
+    isDniInvalid.value = true
+  } finally {
+    isSearchingDni.value = false
+  }
+}
+
+// ===========================================================================
+// GET ENDPOINT TIPO INSCRIPCIÓN
+// ===========================================================================
+
+interface TipoInscripcion {
+  id: number
+  nombre: string
+  precio: number
+  descripcion: string
+  activo: boolean
+}
+
+
+const { data: tiposInscripcion } = await useFetch<TipoInscripcion[]>(
+  `${config.public.API_URL}/api/v1/registration-types`,
+  {
+    default: () => []
+  }
+)
+
+// Computed para adaptarlo al formato que espera tu template
+const visibleTiposInscripcion = computed(() =>
+  (tiposInscripcion.value || []).map((item) => ({
+    id: item.id,
+    value: item.id,
+    label: `${(item.nombre ?? '').toUpperCase()} (S/ ${(item.precio ?? 0).toFixed(2)})`,
+    tooltip: item.descripcion ?? '',
+    type: item.id <= 2 ? 'student' : 'professional'
+  }))
+)
+
+// ===========================================================================
+// GET ENDPOINT CLASIFICACIÓN
+// ===========================================================================
+interface Clasificacion {
+  id: number
+  nombre: string
+}
+
+const { data: classification } = await useFetch<Clasificacion[]>(
+  `${config.public.API_URL}/api/v1/classification`,
+  { default: () => [] }
+)
+
+const classificationOptions = computed(() =>
+  (classification.value || []).map((item) => ({
+    value: item.nombre.toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/-/g, "_"),
+    label: item.nombre
+  }))
+)
+
+// ===========================================================================
+// GET ENDPOINT Metodos de Pago
+// ===========================================================================
+interface MetodoDepositoOpcion {
+  id: number
+  metodoDepositoId: number
+  nombre: string
+}
+
+interface MetodoDeposito {
+  id: number
+  nombre: string
+  opciones: MetodoDepositoOpcion[]
+}
+
+const { data: depositMethodsRaw, pending, error } = await useFetch<MetodoDeposito[]>(
+  `${config.public.API_URL}/api/v1/deposit-method`,
+  { default: () => [] }
+)
+const depositMethods = computed(() => depositMethodsRaw.value || [])
+
+// Estado seleccionado
+const modalidadDeposito = ref<number | null>(null)
+const tipoPago = ref<number | null>(null)
+const aplicativo = ref<number | null>(null)
+
+
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
 
 useHead({
-  title: 'Estudiantes | VII CIISIC',
+  title: 'Registro de Estudiantes - CIISIC',
   meta: [
     { name: 'description', content: 'Formulario de registro para estudiantes del congreso CIISIC.' }
   ]
 })
 
 // ===========================================================================
-// COMPOSABLES
-// ===========================================================================
-
-const { consultDni, documentTypes } = useConsultation()
-
-// ===========================================================================
-// DATOS ESTÁTICOS Y CONFIGURACIÓN
-// ===========================================================================
-
-const tiposInscripcion = [
-  { value: 'pregrado_certificado_35', label: 'Estudiantes pregrado - Solo Certificado (S/.35.00)', precio: 'S/. 35.00', tooltip: 'Acceso a todas las ponencias y certificado digital.' },
-  { value: 'pregrado_merch_80', label: 'Pregrado - Certificado + Merchandising (S/.80.00)', precio: 'S/. 80.00', tooltip: 'Incluye certificado, polo del evento y más sorpresas.' },
-  { value: 'docente_certificado_35', label: 'Docentes UNDC - Solo certificado (S/.35.00)', precio: 'S/. 35.00', tooltip: 'Acceso a ponencias y certificado para docentes de la UNDC.' },
-  { value: 'posgrado_merch_120', label: 'Posgrado - Certificado + Merchandising (S/.120.00)', precio: 'S/. 120.00', tooltip: 'Acceso completo, certificado y pack de merchandising premium.' }
-];
-
-// ===========================================================================
 // ESTADO DEL FORMULARIO (REFS)
 // ===========================================================================
 
-const documentType = ref<'DNI' | 'CE'>('DNI')
-const documentNumber = ref<string>('')
-const nombres = ref<string>('')
-const apellidos = ref<string>('')
-const email = ref<string>('')
-const celular = ref<string>('')
-const modalidadDeposito = ref<'banco' | 'billetera'>('banco')
-const fechaPago = ref<string>('')
-const tipoInscripcion = ref<string>('')
-const clasificacion = ref<string>('')
-const codigoVoucher = ref<string>('')
-const archivoVoucher = ref<File | null>(null)
-const tipoPago = ref<'directo' | 'interbancario' | null>(null)
-const aplicativo = ref<'yape' | 'plin' | null>(null)
-const isSearchingDni = ref(false)
-const errorMessage = ref<string>('')
-const successMessage = ref<string>('')
+const route = useRoute();
+const email = ref<string>('');
+const celular = ref<string>('');
+const selectedDepositMethodId = ref<number | null>(null);
+const fechaPago = ref<string>('');
+const tipoInscripcion = ref<number | null>(null);
+const clasificacion = ref<string>('');
+const codigoVoucher = ref<string>('');
+const archivoVoucher = ref<File | null>(null);
+const selectedPaymentTypeId = ref<number | null>(null);
+const isEmailInvalid = ref(false);
+const isCelularInvalid = ref(false);
+const isCodigoVoucherInvalid = ref(false);
+const isFechaPagoInvalid = ref(false);
+const isClasificacionInvalid = ref(false);
+const planFromUrl = ref<string | null>(null);
+
+const isModalOpen = ref(false);
+const modalImageUrl = ref('');
+
+const openModal = (imageUrl: string) => {
+  modalImageUrl.value = imageUrl;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  modalImageUrl.value = '';
+};
+
+// ===========================================================================
+// LÓGICA DE DATOS DINÁMICOS (API)
+// ===========================================================================
+
+const allPaymentTypes = ref<PaymentType[]>([]);
+
+const { data: fetchedData } = await useAsyncData('formData', async () => {
+  const [registrationData, classificationData, depositMethodData] = await Promise.all([
+    $fetch<ApiClassification[]>('http://localhost:3001/api/v1/classification'),
+    $fetch<DepositMethod[]>('http://localhost:3001/api/v1/deposit-method'),
+    $fetch<PaymentType[]>('http://localhost:3001/api/v1/payment-type')
+  ]);
+  return { registrationData, classificationData, depositMethodData };
+});
+
+if (fetchedData.value) {
+
+
+}
+
+// ===========================================================================
+// LÓGICA CONDICIONAL DEL FORMULARIO
+// ===========================================================================
+
+
+const selectedDepositMethod = computed(() => {
+  return depositMethods.value.find(method => method.id === selectedDepositMethodId.value) || null;
+});
+
+const filteredPaymentTypes = computed(() => {
+  if (!selectedDepositMethodId.value) return [];
+  return allPaymentTypes.value.filter(pt => pt.metodoDepositoId === selectedDepositMethodId.value);
+});
+
 
 // ===========================================================================
 // WATCHERS
 // ===========================================================================
 
-watch(modalidadDeposito, (newVal, oldVal) => {
+watch(tipoInscripcion, () => {
+  clasificacion.value = ''; // Resetea la clasificación al cambiar el tipo de inscripción
+});
+
+watch(selectedDepositMethodId, (newVal, oldVal) => {
   if (newVal !== oldVal) {
-    tipoPago.value = null;
-    aplicativo.value = null;
+    selectedPaymentTypeId.value = null;
   }
 });
 
-// Limpiar campos cuando cambie el tipo de documento
-watch(documentType, () => {
-  documentNumber.value = '';
-  nombres.value = '';
-  apellidos.value = '';
-});
-
-// Búsqueda automática cuando se complete el número de documento
-watch(documentNumber, (newValue) => {
-  if (isDocumentNumberComplete() && newValue.length === getSelectedDocumentType()?.maxLength) {
-    handleDocumentSearch();
-  }
-});
-
-// Auto-limpiar mensajes después de un tiempo
-watch([errorMessage, successMessage], () => {
-  if (errorMessage.value || successMessage.value) {
-    setTimeout(() => {
-      errorMessage.value = '';
-      successMessage.value = '';
-    }, 3000);
+watch(clasificacion, () => {
+  if (isClasificacionInvalid.value) {
+    isClasificacionInvalid.value = false;
   }
 });
 
 // ===========================================================================
-// COMPUTED Y MÉTODOS AUXILIARES
+// LÓGICA DE VALIDACIÓN
 // ===========================================================================
 
-const getSelectedDocumentType = () => {
-  return documentTypes.find(type => type.value === documentType.value);
+const validateEmailOnBlur = () => {
+  if (!email.value) {
+    isEmailInvalid.value = false;
+    return;
+  }
+  isEmailInvalid.value = !email.value.endsWith('@undc.edu.pe');
 };
 
-const isDocumentNumberComplete = () => {
-  const expectedLength = getSelectedDocumentType()?.maxLength || 8;
-  return documentNumber.value.length === expectedLength;
+const validateCelularOnBlur = () => {
+  if (!celular.value) {
+    isCelularInvalid.value = false;
+    return;
+  }
+  const celularPattern = /^[0-9]{9}$/;
+  isCelularInvalid.value = !celularPattern.test(celular.value);
 };
 
-const getRemainingDigits = () => {
-  const expectedLength = getSelectedDocumentType()?.maxLength || 8;
-  return Math.max(0, expectedLength - documentNumber.value.length);
+const validateCodigoVoucherOnBlur = () => {
+  if (!codigoVoucher.value) {
+    isCodigoVoucherInvalid.value = false;
+    return;
+  }
+  const voucherPattern = /^[0-9]+$/;
+  isCodigoVoucherInvalid.value = !voucherPattern.test(codigoVoucher.value);
+};
+
+const validateFechaPagoOnBlur = () => {
+  if (!fechaPago.value) {
+    isFechaPagoInvalid.value = false;
+    return;
+  }
+  const year = fechaPago.value.split('-')[0];
+  isFechaPagoInvalid.value = year !== '2025';
 };
 
 // ===========================================================================
 // MANEJADORES DE EVENTOS (HANDLERS)
 // ===========================================================================
 
-const handleDocumentInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  // Solo permitir números
-  const numericValue = target.value.replace(/\D/g, '');
-  const maxLength = getSelectedDocumentType()?.maxLength || 8;
-
-  // Limpiar mensajes de error
-  errorMessage.value = '';
-
-  // Limitar la longitud según el tipo de documento
-  documentNumber.value = numericValue.slice(0, maxLength);
-  target.value = documentNumber.value;
-};
-
-const showError = (message: string) => {
-  errorMessage.value = message;
-  successMessage.value = '';
-};
-
-const showSuccess = (message: string) => {
-  successMessage.value = message;
-  errorMessage.value = '';
-};
-
-const handleDocumentSearch = async () => {
-  if (!isDocumentNumberComplete()) {
-    const expectedLength = getSelectedDocumentType()?.maxLength || 8;
-    showError(`Por favor, ingrese un ${documentType.value} válido de ${expectedLength} dígitos.`);
-    return;
-  }
-
-  isSearchingDni.value = true;
-  nombres.value = '';
-  apellidos.value = '';
-  errorMessage.value = '';
-
-  try {
-    const result = await consultDni(documentNumber.value, documentType.value);
-
-    if (result && result.success) {
-      nombres.value = result.data.names;
-      apellidos.value = `${result.data.paternalSurname} ${result.data.maternalSurname}`;
-      showSuccess(`${documentType.value} encontrado y datos cargados correctamente.`);
-    } else {
-      showError(`${documentType.value} no encontrado o datos no disponibles.`);
-    }
-  } catch (error: any) {
-    console.error(`Error en la búsqueda de ${documentType.value}:`, error);
-
-    // Mostrar mensaje de error específico
-    if (error.statusCode === 400) {
-      showError(`${documentType.value} inválido. Debe tener ${getSelectedDocumentType()?.maxLength} dígitos numéricos.`);
-    } else if (error.statusCode === 500) {
-      showError('Error del servidor. Inténtelo más tarde.');
-    } else {
-      showError(`Error al buscar el ${documentType.value}. Verifique su conexión e inténtelo nuevamente.`);
-    }
-  } finally {
-    isSearchingDni.value = false;
-  }
-};
-
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files ? target.files.item(0) : null;
   if (file && !['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) {
-    showError('Solo se permiten archivos JPG, PNG o PDF');
+    alert('Solo se permiten archivos JPG, PNG o PDF');
     target.value = '';
     return;
   }
   if (file && file.size > 5 * 1024 * 1024) {
-    showError('El archivo no debe superar los 5MB');
+    alert('El archivo no debe superar los 5MB');
     target.value = '';
     return;
   }
   archivoVoucher.value = file;
 };
 
-const handleSubmit = () => {
-  const metodoDePagoDetallado = modalidadDeposito.value === 'banco' ? tipoPago.value : aplicativo.value;
-  const formData = {
-    documentType: documentType.value,
-    documentNumber: documentNumber.value,
-    nombres: nombres.value,
-    apellidos: apellidos.value,
-    email: email.value,
-    celular: celular.value,
-    modalidadDeposito: modalidadDeposito.value,
-    tipoPago: metodoDePagoDetallado,
-    fechaPago: fechaPago.value,
-    tipoInscripcion: tipoInscripcion.value,
-    clasificacion: clasificacion.value,
-    codigoVoucher: codigoVoucher.value,
-    archivoVoucher: archivoVoucher.value ? archivoVoucher.value.name : null,
-  };
-  console.log('Formulario enviado. Datos:', formData);
-  showSuccess('Inscripción enviada correctamente. Revisa la consola para ver los datos.');
+const resetForm = () => {
+  dni.value = ''
+  nombres.value = ''
+  apellidos.value = ''
+  email.value = ''
+  celular.value = ''
+  tipoInscripcion.value = null
+  clasificacion.value = ''
+  modalidadDeposito.value = null
+  tipoPago.value = null
+  aplicativo.value = null
+  codigoVoucher.value = ''
+  fechaPago.value = ''
+  archivoVoucher.value = null
+
+  // Limpia también estados de validación
+  isDniInvalid.value = false
+  isEmailInvalid.value = false
+  isCelularInvalid.value = false
+  isCodigoVoucherInvalid.value = false
+  isFechaPagoInvalid.value = false
+  isClasificacionInvalid.value = false
+}
+
+
+const handleSubmit = async () => {
+  console.log("🚀 Iniciando proceso de inscripción...");
+
+  try {
+    // ============================
+    // VALIDACIONES BÁSICAS
+    // ============================
+    console.log("📋 Validando datos del formulario...");
+    console.log("Datos actuales:", {
+      nombres: nombres.value,
+      apellidos: apellidos.value,
+      dni: dni.value,
+      email: email.value,
+      clasificacion: clasificacion.value,
+      archivoVoucher: archivoVoucher.value?.name || null,
+      codigoVoucher: codigoVoucher.value,
+      fechaPago: fechaPago.value
+    });
+
+    if (!nombres.value || !apellidos.value) {
+      console.error("❌ Validación falló: nombres o apellidos vacíos");
+      alert('Por favor, realiza una búsqueda de DNI válida antes de registrar.');
+      return;
+    }
+
+    if (!email.value.endsWith('@undc.edu.pe')) {
+      console.error("❌ Validación falló: correo no institucional", email.value);
+      alert('El correo debe ser institucional (@undc.edu.pe).');
+      return;
+    }
+
+    if (!clasificacion.value) {
+      console.error("❌ Validación falló: clasificación no seleccionada");
+      alert('Por favor, selecciona una clasificación.');
+      return;
+    }
+
+    if (!archivoVoucher.value) {
+      console.error("❌ Validación falló: archivo de voucher no adjunto");
+      alert('Debes adjuntar un archivo de voucher.');
+      return;
+    }
+
+    console.log("✅ Validaciones básicas completadas");
+
+    // ============================
+    // 1. SUBIR EL VOUCHER
+    // ============================
+    console.log("📄 Preparando datos del voucher...");
+
+    const formData = new FormData();
+    formData.append("codigo", codigoVoucher.value);
+    formData.append("fechaPago", new Date(fechaPago.value).toISOString());
+    formData.append("file", archivoVoucher.value);
+
+    // Log del FormData (para depuración)
+    console.log("FormData contenido:");
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
+
+    console.log("📤 Enviando voucher al servidor...");
+    const voucherStartTime = Date.now();
+
+    const voucherRes = await fetch(`${config.public.API_URL}/api/v1/voucher`, {
+      method: "POST",
+      body: formData
+    });
+
+    const voucherEndTime = Date.now();
+    console.log(`⏱️ Tiempo de respuesta voucher: ${voucherEndTime - voucherStartTime}ms`);
+    console.log("📋 Status voucher:", voucherRes.status, voucherRes.statusText);
+
+    if (!voucherRes.ok) {
+      const errorText = await voucherRes.text();
+      console.error("❌ Error al registrar voucher:");
+      console.error("Status:", voucherRes.status);
+      console.error("Status Text:", voucherRes.statusText);
+      console.error("Response:", errorText);
+
+      let errorMessage = "Error al registrar el voucher";
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || errorJson.error || errorMessage;
+        console.error("Error parseado:", errorJson);
+      } catch (parseError) {
+        console.error("No se pudo parsear el error como JSON:", parseError);
+      }
+
+      throw new Error(`${errorMessage} (Status: ${voucherRes.status})`);
+    }
+
+    const voucherData = await voucherRes.json();
+    console.log("✅ Voucher registrado exitosamente:", voucherData);
+
+    if (!voucherData.id) {
+      console.error("❌ El voucher no tiene ID:", voucherData);
+      throw new Error("El servidor no devolvió un ID válido para el voucher");
+    }
+
+    // ============================
+    // 2. REGISTRAR INSCRIPCIÓN
+    // ============================
+    console.log("👤 Preparando datos de inscripción...");
+
+    // Buscar clasificación
+    const selectedClassification = classification.value?.find(c =>
+      c.nombre.toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_") === clasificacion.value
+    );
+
+    console.log("🔍 Búsqueda de clasificación:");
+    console.log("Valor seleccionado:", clasificacion.value);
+    console.log("Clasificaciones disponibles:", classification.value);
+    console.log("Clasificación encontrada:", selectedClassification);
+
+    if (!selectedClassification) {
+      console.error("❌ No se encontró la clasificación seleccionada");
+      throw new Error("No se pudo encontrar la clasificación seleccionada");
+    }
+
+    const inscriptionBody = {
+      usuario: {
+        dni: dni.value,
+        nombres: nombres.value,
+        apellidos: apellidos.value,
+        correoElectronico: email.value,
+        celular: celular.value,
+      },
+      tipoInscripcionId: tipoInscripcion.value,
+      clasificacionId: selectedClassification.id,
+      metodoDepositoId: modalidadDeposito.value,
+      tipoPagoId: modalidadDeposito.value === 1 ? tipoPago.value : aplicativo.value,
+      estadoId: 1, // fijo de momento
+      voucherId: voucherData.id
+    };
+
+    console.log("📝 Cuerpo de inscripción preparado:", JSON.stringify(inscriptionBody, null, 2));
+
+    console.log("📤 Enviando inscripción al servidor...");
+    const inscriptionStartTime = Date.now();
+
+    const inscriptionRes = await fetch(`${config.public.API_URL}/api/v1/inscription`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(inscriptionBody)
+    });
+
+    const inscriptionEndTime = Date.now();
+    console.log(`⏱️ Tiempo de respuesta inscripción: ${inscriptionEndTime - inscriptionStartTime}ms`);
+    console.log("📋 Status inscripción:", inscriptionRes.status, inscriptionRes.statusText);
+
+    if (!inscriptionRes.ok) {
+      const errorText = await inscriptionRes.text();
+      console.error("❌ Error al registrar inscripción:");
+      console.error("Status:", inscriptionRes.status);
+      console.error("Status Text:", inscriptionRes.statusText);
+      console.error("Response:", errorText);
+
+      let errorMessage = "Error al registrar la inscripción";
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || errorJson.error || errorMessage;
+        console.error("Error parseado:", errorJson);
+      } catch (parseError) {
+        console.error("No se pudo parsear el error como JSON:", parseError);
+      }
+
+      throw new Error(`${errorMessage} (Status: ${inscriptionRes.status})`);
+    }
+
+    const inscriptionData = await inscriptionRes.json();
+    console.log("✅ Inscripción registrada exitosamente:", inscriptionData);
+
+    const totalTime = Date.now() - (voucherStartTime || Date.now());
+    console.log(`🎉 Proceso completado en ${totalTime}ms`);
+
+    alert("Inscripción realizada con éxito.");
+
+  } catch (error) {
+    console.error("❌ Error en el proceso de inscripción:");
+
+
+    // Log del estado actual de las variables para debugging
+    console.error("Estado actual de variables:", {
+      nombres: nombres?.value,
+      apellidos: apellidos?.value,
+      dni: dni?.value,
+      email: email?.value,
+      clasificacion: clasificacion?.value,
+      codigoVoucher: codigoVoucher?.value,
+      fechaPago: fechaPago?.value,
+      archivoVoucher: archivoVoucher?.value?.name,
+      tipoInscripcion: tipoInscripcion?.value,
+      modalidadDeposito: modalidadDeposito?.value,
+      tipoPago: tipoPago?.value,
+      aplicativo: aplicativo?.value
+    });
+
+
+
+    alert( " Revisa la consola para más detalles.");
+  }
 };
+
 </script>
 
 <style scoped>
@@ -532,108 +854,6 @@ const handleSubmit = () => {
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1.5rem;
   row-gap: 2rem;
-}
-
-/* Document Input Group Styling */
-.document-input-group {
-  display: flex;
-  border: 1px solid #475569;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background-color: #1e293b;
-  transition: all 300ms;
-  min-height: 48px;
-}
-
-.document-input-group:focus-within {
-  border-color: #45f882;
-  box-shadow: 0 0 0 2px rgba(69, 248, 130, 0.2);
-}
-
-.document-type-container {
-  position: relative;
-  flex-shrink: 0;
-  width: 80px;
-  display: flex;
-  align-items: center;
-}
-
-.document-type-select {
-  width: 100%;
-  height: 100%;
-  padding: 0.75rem 0.5rem;
-  padding-right: 1.5rem;
-  background-color: #334155;
-  border: none;
-  color: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-align: center;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  outline: none;
-  cursor: pointer;
-}
-
-.document-type-select:focus {
-  background-color: #475569;
-}
-
-.document-type-arrow {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1rem;
-  height: 1rem;
-  color: #94a3b8;
-  pointer-events: none;
-}
-
-.document-number-container {
-  display: flex;
-  flex: 1;
-  position: relative;
-}
-
-.document-number-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  background-color: transparent;
-  border: none;
-  color: #ffffff;
-  outline: none;
-}
-
-.document-number-input::placeholder {
-  color: #94a3b8;
-}
-
-.document-search-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  background-color: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  transition: color 300ms;
-  min-width: 48px;
-  min-height: 48px;
-  flex-shrink: 0;
-  border-radius: 0.375rem;
-}
-
-.document-search-button:hover:not(:disabled) {
-  color: #45f882;
-  background-color: rgba(69, 248, 130, 0.1);
-}
-
-.document-search-button:disabled {
-  color: #64748b;
-  cursor: not-allowed;
 }
 
 .form-group {
@@ -727,6 +947,8 @@ select.form-input:valid,
 input[type="date"]:valid {
   color: #ffffff;
 }
+
+
 
 .form-hint {
   display: block;
@@ -915,30 +1137,6 @@ input[type="date"]:valid {
   .page-title {
     font-size: 3rem;
     line-height: 1;
-  }
-}
-
-/* Responsive para el botón de búsqueda */
-@media (max-width: 640px) {
-  .document-search-button {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0.375rem;
-  }
-  
-  .document-input-group {
-    min-height: 44px;
-  }
-  
-  .document-type-select {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.25rem;
-    padding-right: 1.25rem;
-  }
-  
-  .document-number-input {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
   }
 }
 </style>
