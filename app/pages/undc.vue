@@ -5,13 +5,16 @@
         ============================================================================ -->
     <section class="relative py-24 z-10 flex items-center justify-center">
       <!-- Background Image -->
-      <div class="absolute inset-0 z-[-2] bg-cover bg-center" style="background-image: url('/images/bg/breadcrumb_bg02.jpg')"></div>
+      <div class="absolute inset-0 z-[-2] bg-cover bg-center"
+        style="background-image: url('/images/bg/breadcrumb_bg02.jpg')"></div>
       <!-- Overlay -->
       <div class="absolute inset-0 z-[-1] bg-slate-900/40"></div>
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider">Planes de Inscripción VII CIISIC - UNDC</h1>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider">Planes de Inscripción VII
+          CIISIC - UNDC</h1>
         <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
-          Elige el plan que mejor se adapte a tus necesidades y sé parte de la septima edición del Congreso Internacional de Ingeniería de Sistemas.
+          Elige el plan que mejor se adapte a tus necesidades y sé parte de la septima edición del Congreso
+          Internacional de Ingeniería de Sistemas.
         </p>
       </div>
     </section>
@@ -22,20 +25,15 @@
     <section class="py-20 md:py-28">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div
-            v-for="plan in inscriptionPlans"
-            :key="plan.id"
-            @click="navigateToPlan(plan)"
-            class="bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-          >
+          <div v-for="plan in inscriptionPlans" :key="plan.id" @click="navigateToPlan(plan)"
+            class="bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
             <div class="p-8 flex flex-col h-full">
               <div class="flex items-center justify-between">
                 <h3 class="text-2xl font-bold text-white uppercase">{{ plan.title }}</h3>
-                <span v-if="plan.badge"
-                      :class="[
-                        'text-xs font-bold uppercase px-3 py-1 rounded-full border',
-                        plan.badge.includes('SIN') ? 'border-amber-400 text-amber-400' : 'border-primary text-primary'
-                      ]">
+                <span v-if="plan.badge" :class="[
+                  'text-xs font-bold uppercase px-3 py-1 rounded-full border',
+                  plan.badge.includes('SIN') ? 'border-amber-400 text-amber-400' : 'border-primary text-primary'
+                ]">
                   {{ plan.badge }}
                 </span>
               </div>
@@ -48,7 +46,9 @@
                 </li>
               </ul>
               <div class="mt-auto">
-                <button class="w-full bg-primary text-black font-semibold py-3 px-4 rounded-lg transition-transform duration-300 hover:scale-105">Inscríbete ahora</button>
+                <button
+                  class="w-full bg-primary text-black font-semibold py-3 px-4 rounded-lg transition-transform duration-300 hover:scale-105">Inscríbete
+                  ahora</button>
               </div>
             </div>
           </div>
@@ -63,14 +63,19 @@
       <div class="container mx-auto px-4">
         <div class="text-center mb-12">
           <h2 class="text-3xl md:text-4xl font-bold uppercase text-white mb-2">Nuestro Merchandising Oficial</h2>
-          <p class="text-slate-400 max-w-2xl mx-auto">Productos de alta calidad para llevar tu experiencia al siguiente nivel.</p>
+          <p class="text-slate-400 max-w-2xl mx-auto">Productos de alta calidad para llevar tu experiencia al siguiente
+            nivel.</p>
         </div>
         <div class="relative">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div v-for="item in merchandising" :key="item.name" class="relative rounded-lg overflow-hidden group">
-              <img :src="item.image" :alt="item.name" class="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
-              <div class="absolute inset-0 bg-black/60 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
-                <p class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">{{ item.name }}</p>
+              <img :src="item.image" :alt="item.name"
+                class="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
+              <div
+                class="absolute inset-0 bg-black/60 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
+                <p
+                  class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
+                  {{ item.name }}</p>
               </div>
             </div>
           </div>
@@ -186,15 +191,21 @@ const toggleAccordion = (id: number) => {
 .overflow-x-auto::-webkit-scrollbar {
   height: 8px;
 }
+
 .overflow-x-auto::-webkit-scrollbar-track {
-  background: #1e293b; /* slate-800 */
+  background: #1e293b;
+  /* slate-800 */
   border-radius: 10px;
 }
+
 .overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #45f882; /* primary */
+  background: #45f882;
+  /* primary */
   border-radius: 10px;
 }
+
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background: #34d399; /* emerald-400 */
+  background: #34d399;
+  /* emerald-400 */
 }
 </style>
