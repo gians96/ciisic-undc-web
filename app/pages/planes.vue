@@ -197,12 +197,9 @@ const hasError = computed(() => !!inscriptionPlansStore.error)
 // DATOS ESTÁTICOS (MERCHANDISING)
 // ===========================================================================
 const merchandising = ref([
+  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpeg' },
   { name: 'TomaTodo', image: '/images/merchandising/tomatodo.jpeg' },
   { name: 'Identificador', image: '/images/merchandising/identificador.jpeg' },
-  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpeg' },
-  // { name: 'Cuaderno y Lapicero', image: '/images/merchandising/project_04.jpg' },
-  // { name: 'Gorra con Logo', image: '/images/merchandising/project_05.jpg' },
-  // { name: 'Llavero Exclusivo', image: '/images/merchandising/project_06.jpg' },
 ])
 
 // ===========================================================================
