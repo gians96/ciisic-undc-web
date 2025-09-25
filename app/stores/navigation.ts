@@ -383,12 +383,12 @@ export const useNavigationStore = defineStore('navigation', () => {
 
   return {
     // Estado
-    currentRoute: readonly(currentRoute),
-    previousRoute: readonly(previousRoute),
-    breadcrumbs: readonly(breadcrumbs),
-    navigationHistory: readonly(navigationHistory),
-    mainNavigation: readonly(mainNavigation),
-    footerNavigation: readonly(footerNavigation),
+    currentRoute,
+    previousRoute,
+    breadcrumbs,
+    navigationHistory,
+    mainNavigation,
+    footerNavigation,
 
     // Getters computados
     currentActiveItem,

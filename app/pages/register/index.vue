@@ -14,7 +14,8 @@
         SISTEMA DE NOTIFICACIONES
         ============================================================================ -->
         <NotificationSystem :error-message="errorMessage" :success-message="successMessage"
-            @clear-error="errorMessage = ''" @clear-success="successMessage = ''" />
+            :show-action-button="!!completedInscriptionId" action-button-text="Ver confirmación"
+            @clear-error="errorMessage = ''" @clear-success="successMessage = ''" @action="goToConfirmation" />
 
 
 
@@ -96,33 +97,34 @@
                                 <div class="plan-card-header">
                                     <div class="plan-title-container">
                                         <h4 class="plan-card-title">{{ plan.title }}</h4>
-                                        <!-- Icono de información con tooltip -->
-                                        <div class="plan-info-tooltip-container">
-                                            <Icon @click.prevent.stop name="heroicons:information-circle"
-                                                class="plan-info-icon" />
-                                            <div class="plan-tooltip">
-                                                <!-- <div class="plan-tooltip-title">{{ plan.title }}</div> -->
-                                                <!-- <div class="plan-tooltip-price">{{ plan.price }}</div> -->
-                                                <div class="plan-tooltip-features">
-                                                    <div v-for="feature in plan.features" :key="feature.text"
-                                                        class="plan-tooltip-feature">
-                                                        <Icon :name="feature.icon" class="plan-feature-icon"
-                                                            :class="{ 'feature-excluded': feature.icon === 'heroicons:x-mark' }" />
-                                                        <span
-                                                            :class="{ 'feature-excluded-text': feature.icon === 'heroicons:x-mark' }">
-                                                            {{ feature.text }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="plan-tooltip-arrow"></div>
-                                            </div>
-                                        </div>
+                                        <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
+                                        }}</span>
+
                                     </div>
                                 </div>
                                 <div class="plan-price-container">
                                     <div class="plan-card-price">{{ plan.price }}</div>
-                                    <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
-                                        }}</span>
+                                    <!-- Icono de información con tooltip -->
+                                    <div class="plan-info-tooltip-container">
+                                        <Icon @click.prevent.stop name="heroicons:information-circle"
+                                            class="plan-info-icon" />
+                                        <div class="plan-tooltip">
+                                            <!-- <div class="plan-tooltip-title">{{ plan.title }}</div> -->
+                                            <!-- <div class="plan-tooltip-price">{{ plan.price }}</div> -->
+                                            <div class="plan-tooltip-features">
+                                                <div v-for="feature in plan.features" :key="feature.text"
+                                                    class="plan-tooltip-feature">
+                                                    <Icon :name="feature.icon" class="plan-feature-icon"
+                                                        :class="{ 'feature-excluded': feature.icon === 'heroicons:x-mark' }" />
+                                                    <span
+                                                        :class="{ 'feature-excluded-text': feature.icon === 'heroicons:x-mark' }">
+                                                        {{ feature.text }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="plan-tooltip-arrow"></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="plan-card-description">{{ plan.description }}</div>
 
@@ -140,28 +142,26 @@
                         </small>
                     </div>
                     <!-- Campo de clasificación para estudiantes con transición avanzada -->
-                    <Transition 
-                        name="height-expand"
-                        @enter="onClassificationEnter"
-                        @leave="onClassificationLeave"
-                        @before-enter="onClassificationBeforeEnter"
-                        @after-enter="onClassificationAfterEnter"
-                        @before-leave="onClassificationBeforeLeave"
-                        @after-leave="onClassificationAfterLeave"
-                    >
+                    <Transition name="height-expand" @enter="onClassificationEnter" @leave="onClassificationLeave"
+                        @before-enter="onClassificationBeforeEnter" @after-enter="onClassificationAfterEnter"
+                        @before-leave="onClassificationBeforeLeave" @after-leave="onClassificationAfterLeave">
                         <div v-if="isStudentPlan" class="classification-container col-span-6 md:col-span-3">
                             <div class="form-group">
                                 <label for="clasificacion" class="form-label">Clasificación</label>
                                 <select id="clasificacion" v-model="clasificacion" required class="form-input">
                                     <option value="" disabled selected>Selecciona una opción</option>
-                                    <option value="docente">DOCENTE</option>
-                                    <option value="posgrado">POSGRADO</option>
-                                    <option value="estudiante_ciclo_1">ESTUDIANTE - I CICLO</option>
-                                    <option value="estudiante_ciclo_3">ESTUDIANTE - III CICLO</option>
-                                    <option value="estudiante_ciclo_5">ESTUDIANTE - V CICLO</option>
-                                    <option value="estudiante_ciclo_7">ESTUDIANTE - VII CICLO</option>
-                                    <option value="estudiante_ciclo_9">ESTUDIANTE - IX CICLO</option>
-                                    <option value="estudiante_ciclo_10">ESTUDIANTE - X CICLO</option>
+                                    <option value="DOCENTE">DOCENTE</option>
+                                    <option value="POSGRADO">POSGRADO</option>
+                                    <option value="ESTUDIANTE - I CICLO">ESTUDIANTE - I CICLO</option>
+                                    <option value="ESTUDIANTE - II CICLO">ESTUDIANTE - II CICLO</option>
+                                    <option value="ESTUDIANTE - III CICLO">ESTUDIANTE - III CICLO</option>
+                                    <option value="ESTUDIANTE - IV CICLO">ESTUDIANTE - IV CICLO</option>
+                                    <option value="ESTUDIANTE - V CICLO">ESTUDIANTE - V CICLO</option>
+                                    <option value="ESTUDIANTE - VI CICLO">ESTUDIANTE - VI CICLO</option>
+                                    <option value="ESTUDIANTE - VII CICLO">ESTUDIANTE - VII CICLO</option>
+                                    <option value="ESTUDIANTE - VIII CICLO">ESTUDIANTE - VIII CICLO</option>
+                                    <option value="ESTUDIANTE - IX CICLO">ESTUDIANTE - IX CICLO</option>
+                                    <option value="ESTUDIANTE - X CICLO">ESTUDIANTE - X CICLO</option>
                                 </select>
                                 <small class="form-hint">Indica el ciclo al que perteneces</small>
                             </div>
@@ -330,17 +330,31 @@ useHead({
 })
 
 // ===========================================================================
+// TYPES E INTERFACES
+// ===========================================================================
+interface PlanFormatted {
+    id: number
+    title: string
+    badge: string
+    price: string
+    value: string
+    description: string
+    features: { icon: string; text: string }[]
+}
+
+// ===========================================================================
 // COMPOSABLES Y ROUTER
 // ===========================================================================
 const { consultDni, documentTypes } = useConsultation()
-const { 
-    createInscription, 
-    initializeCatalogs, 
+const {
+    createInscription,
+    initializeCatalogs,
     mapFormDataToApiData,
     isSubmitting: apiSubmitting,
     error: apiError,
     clearError,
     registrationTypes,
+    classifications,
     depositMethods,
     paymentTypes
 } = useInscription()
@@ -348,60 +362,39 @@ const route = useRoute()
 const router = useRouter()
 
 // ===========================================================================
-// PLANES DE INSCRIPCIÓN
+// STORES
 // ===========================================================================
-const inscriptionPlans = [
-    {
-        id: 1,
-        title: 'ESTUDIANTES CON KIT',
-        badge: 'CON KIT',
-        price: 'S/ 120.00',
-        value: 'estudiantes_con_kit',
-        description: 'La experiencia completa para estudiantes con kit de merchandising oficial.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-        ]
-    },
-    {
-        id: 2,
-        title: 'ESTUDIANTES SIN KIT',
-        badge: 'SIN KIT',
-        price: 'S/ 60.00',
-        value: 'estudiantes_sin_kit',
-        description: 'La opción económica para estudiantes, con acceso a todas las ponencias.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-            { icon: 'heroicons:x-mark', text: 'No incluye Kit' },
-        ]
-    },
-    {
-        id: 3,
-        title: 'PÚBLICO GENERAL',
-        badge: 'INCLUYE KIT',
-        price: 'S/ 140.00',
-        value: 'publico_general_con_kit',
-        description: 'Acceso total con kit para profesionales y cualquier persona interesada.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-        ]
+const inscriptionPlansStore = useInscriptionPlansStore()
+
+// ===========================================================================
+// PLANES DE INSCRIPCIÓN - DATOS DINÁMICOS
+// ===========================================================================
+// Cargar planes al inicializar la página
+const loadingPlans = ref(true)
+
+onMounted(async () => {
+    try {
+        // Intentar cargar planes desde API
+        await inscriptionPlansStore.fetchPlans()
+        console.log('✅ Planes cargados en la página de registro')
+    } catch (error) {
+        console.warn('⚠️ Error cargando planes, usando datos por defecto')
+        // Los datos por defecto ya están disponibles en el store
+    } finally {
+        loadingPlans.value = false
     }
-]
+})
+
+// Computed para obtener los planes desde el store
+const inscriptionPlans = computed(() => inscriptionPlansStore.plansFormatted)
 
 // ===========================================================================
 // COMPUTED Y REACTIVOS
 // ===========================================================================
 const planId = computed(() => parseInt(route.query.planId as string) || 1)
-const selectedPlan = computed(() => inscriptionPlans.find(plan => plan.id === planId.value))
+const selectedPlan = computed(() => inscriptionPlans.value.find((plan: PlanFormatted) => plan.id === planId.value))
 const isStudentPlan = computed(() => planId.value === 1 || planId.value === 2)
-const availablePlans = computed(() => inscriptionPlans)
+const availablePlans = computed(() => inscriptionPlans.value)
 
 // ===========================================================================
 // ESTADO DEL FORMULARIO
@@ -424,6 +417,7 @@ const isSearchingDni = ref(false)
 const isSubmitting = ref(false)
 const errorMessage = ref<string>('')
 const successMessage = ref<string>('')
+const completedInscriptionId = ref<number | null>(null)
 
 // ===========================================================================
 // WATCHERS
@@ -489,7 +483,7 @@ const showError = (message: string) => {
     // Auto-limpiar después de 5 segundos
     setTimeout(() => {
         errorMessage.value = ''
-    }, 5000)
+    }, 2500)
 }
 
 const showSuccess = (message: string) => {
@@ -497,10 +491,36 @@ const showSuccess = (message: string) => {
     errorMessage.value = ''
     console.log('✅ Success:', message)
 
-    // Auto-limpiar después de 3 segundos
+    // Auto-limpiar después de 5 segundos (aumenté el tiempo por si el usuario quiere hacer clic)
     setTimeout(() => {
         successMessage.value = ''
-    }, 3000)
+        completedInscriptionId.value = null
+    }, 2500)
+}
+
+const goToConfirmation = () => {
+    console.log('🔄 Intentando ir a confirmación...', { 
+        inscriptionId: completedInscriptionId.value,
+        hasRouter: !!router 
+    })
+    
+    if (completedInscriptionId.value) {
+        const confirmationUrl = `/confirmation?id=${completedInscriptionId.value}`
+        console.log('🔄 Navegando a:', confirmationUrl)
+        
+        router.push(confirmationUrl).then(() => {
+            console.log('✅ Navegación exitosa')
+            successMessage.value = ''
+            completedInscriptionId.value = null
+        }).catch((error) => {
+            console.error('❌ Error en navegación:', error)
+            // Fallback: intenta con window.location
+            window.location.href = confirmationUrl
+        })
+    } else {
+        console.error('❌ No hay ID de inscripción para redireccionar')
+        showError('Error: No se puede acceder a la página de confirmación. ID de inscripción no encontrado.')
+    }
 }
 
 // ===========================================================================
@@ -654,37 +674,58 @@ const handleSubmit = async () => {
         if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
             console.warn('⚠️ Catálogos no cargados, intentando reinicializar...')
             await initializeCatalogs()
-            
+
             // Dar un momento para que se carguen
             await new Promise(resolve => setTimeout(resolve, 100))
-            
+
             if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
                 throw new Error('No se pudieron cargar los datos necesarios. Recargue la página e intente nuevamente.')
             }
         }
 
-        // Preparar los datos del formulario
+        // Mapeo de tipos de documento del frontend al backend
+        const documentTypeMapped = documentType.value.toLowerCase()
+        
+        // El valor ya está correcto, no necesita mapeo adicional
+        const tipoInscripcionMapped = tipoInscripcion.value
+
+        // Preparar los datos del formulario con mapeo correcto
+        const modalidadDepositoMapped = modalidadDeposito.value === 'banco' ? 'Banco de la Nación' : 'Billetera Digital'
+        
+        let metodoDePagoMapped = ''
+        if (modalidadDeposito.value === 'banco') {
+            metodoDePagoMapped = tipoPago.value === 'directo' ? 'Pago Directo' : 'Pago Interbancario'
+        } else {
+            metodoDePagoMapped = aplicativo.value === 'yape' ? 'Yape' : 'Plin'
+        }
+
         const formData = {
-            documentType: documentType.value,
+            documentType: documentTypeMapped,
             documentNumber: documentNumber.value,
             nombres: nombres.value,
             apellidos: apellidos.value,
             email: email.value,
             celular: celular.value,
             clasificacion: clasificacion.value,
-            tipoInscripcion: tipoInscripcion.value,
-            modalidadDeposito: modalidadDeposito.value,
-            metodoDePago: metodoDePago,
+            tipoInscripcion: tipoInscripcionMapped,
+            modalidadDeposito: modalidadDepositoMapped,
+            metodoDePago: metodoDePagoMapped,
             fechaPago: fechaPago.value,
             codigoVoucher: codigoVoucher.value,
             archivoVoucher: archivoVoucher.value
         }
 
-        console.log('📤 Datos del formulario:', formData)
+        console.log('� Datos del formulario preparados:', formData)
+        console.log('📊 Catálogos disponibles:', {
+            registrationTypes: registrationTypes.value,
+            classifications: classifications.value,
+            depositMethods: depositMethods.value,
+            paymentTypes: paymentTypes.value
+        })
 
         // Mapear datos del formulario a formato de API
         const apiData = mapFormDataToApiData(formData)
-        
+
         console.log('� Datos mapeados para API:', apiData)
 
         // Enviar inscripción
@@ -692,18 +733,40 @@ const handleSubmit = async () => {
 
         console.log('✅ Inscripción completada:', response)
 
-        showSuccess(`🎉 ¡Inscripción completada exitosamente! 
-        Tu número de inscripción es: ${response.data?.id}. 
-        Recibirás un email de confirmación en: ${email.value}`)
+        // Verificar que la respuesta sea exitosa
+        if (!response.success) {
+            console.error('❌ Respuesta del servidor indica fallo:', response)
+            showError(`Error: ${response.message || 'Error desconocido al crear la inscripción'}`)
+            return
+        }
 
-        // Opcional: Redirigir a página de confirmación después de 3 segundos
-        setTimeout(() => {
-            router.push(`/confirmation?id=${response.data?.id}`)
-        }, 3000)
+        // Guardar el ID de la inscripción completada
+        completedInscriptionId.value = response.data?.id || null
+
+        if (!completedInscriptionId.value) {
+            console.error('❌ No se obtuvo ID de inscripción válido:', response)
+            showError('Error: No se pudo obtener el ID de la inscripción. Contacte con soporte.')
+            return
+        }
+
+        console.log('🔄 Redirigiendo inmediatamente a confirmación...', {
+            inscriptionId: completedInscriptionId.value,
+            routerReady: !!router
+        })
+
+        // Redirigir inmediatamente a la página de confirmación
+        try {
+            await router.push(`/confirmation?id=${completedInscriptionId.value}`)
+            console.log('✅ Redirección exitosa')
+        } catch (navigationError) {
+            console.error('❌ Error en navegación con router:', navigationError)
+            // Fallback: usar window.location
+            window.location.href = `/confirmation?id=${completedInscriptionId.value}`
+        }
 
     } catch (error: any) {
         console.error('💥 Error al enviar formulario:', error)
-        
+
         // Mostrar el error específico del composable si existe
         if (apiError.value) {
             showError(apiError.value)
@@ -728,33 +791,33 @@ const onClassificationBeforeEnter = (el: Element) => {
 
 const onClassificationEnter = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-    
+
     // Forzar un reflow para asegurar que el estado inicial se aplique
     void htmlEl.offsetHeight
-    
+
     // Obtener la altura natural del elemento
     htmlEl.style.height = 'auto'
     const height = htmlEl.offsetHeight
     htmlEl.style.height = '0'
-    
+
     // Animar hasta la altura natural
     const animation = htmlEl.animate([
-        { 
-            height: '0px', 
-            opacity: '0', 
-            transform: 'translateY(-20px)' 
+        {
+            height: '0px',
+            opacity: '0',
+            transform: 'translateY(-20px)'
         },
-        { 
-            height: `${height}px`, 
-            opacity: '1', 
-            transform: 'translateY(0)' 
+        {
+            height: `${height}px`,
+            opacity: '1',
+            transform: 'translateY(0)'
         }
     ], {
         duration: 600,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-    
+
     animation.onfinish = () => {
         htmlEl.style.height = 'auto'
         htmlEl.style.overflow = 'visible'
@@ -777,24 +840,24 @@ const onClassificationBeforeLeave = (el: Element) => {
 
 const onClassificationLeave = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-    
+
     const animation = htmlEl.animate([
-        { 
-            height: `${htmlEl.offsetHeight}px`, 
-            opacity: '1', 
-            transform: 'translateY(0)' 
+        {
+            height: `${htmlEl.offsetHeight}px`,
+            opacity: '1',
+            transform: 'translateY(0)'
         },
-        { 
-            height: '0px', 
-            opacity: '0', 
-            transform: 'translateY(-20px)' 
+        {
+            height: '0px',
+            opacity: '0',
+            transform: 'translateY(-20px)'
         }
     ], {
         duration: 500,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-    
+
     animation.onfinish = done
 }
 
@@ -810,20 +873,23 @@ const onClassificationAfterLeave = (el: Element) => {
 // INICIALIZACIÓN
 // ===========================================================================
 onMounted(async () => {
+    // Inicializar catálogos de la API
+    try {
+        console.log('🔄 Inicializando catálogos...')
+        await initializeCatalogs()
+        console.log('✅ Catálogos inicializados')
+    } catch (error) {
+        console.error('💥 Error inicializando catálogos:', error)
+        showError('Error al cargar datos iniciales. Algunos campos podrían no funcionar correctamente.')
+    }
+
+    // Configurar plan seleccionado
     if (!selectedPlan.value) {
         router.push('/register?planId=1')
     } else {
-        // Preseleccionar el tipo de inscripción
+        // Preseleccionar el tipo de inscripción basado en el plan
+        // Usar el value del plan seleccionado
         tipoInscripcion.value = selectedPlan.value.value
-    }
-
-    // Inicializar catálogos de la API
-    try {
-        await initializeCatalogs()
-        console.log('✅ Catálogos cargados desde la API')
-    } catch (error) {
-        console.error('💥 Error cargando catálogos:', error)
-        showError('❌ Error al cargar datos iniciales. Algunas funciones pueden no estar disponibles.')
     }
 })
 </script>
@@ -1167,7 +1233,7 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #334155 inset !important;
     -webkit-text-fill-color: #ffffff !important;
-    transition: background-color 5000s ease-in-out 0s;
+    transition: background-color 2500s ease-in-out 0s;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -1272,7 +1338,7 @@ input[type="date"]:valid {
 }
 
 .plan-card-badge {
-    font-size: 0.5rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
     padding: 0.1rem 0.25rem;
@@ -1515,39 +1581,43 @@ input[type="date"]:valid {
 
 /* TRANSICIONES MEJORADAS PARA CAMPO DE CLASIFICACIÓN */
 .classification-container {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .height-expand-enter-active {
-  transition: none; /* Las transiciones se manejan con JS */
+    transition: none;
+    /* Las transiciones se manejan con JS */
 }
 
 .height-expand-leave-active {
-  transition: none; /* Las transiciones se manejan con JS */
+    transition: none;
+    /* Las transiciones se manejan con JS */
 }
 
 /* Mejores transiciones para elementos que siguen al campo de clasificación */
 .form-section-below-classification {
-  transition: 
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 0.4s ease-out;
-  will-change: transform, margin-top;
-  transform-origin: top center;
+    transition:
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+        margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.4s ease-out;
+    will-change: transform, margin-top;
+    transform-origin: top center;
 }
 
 /* Estilo global para suavizar transiciones en toda la grilla */
 .registration-form {
-  transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.registration-form > * {
-  transition: 
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 0.4s ease-out,
-    margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform;
-}/* Responsive title */
+.registration-form>* {
+    transition:
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.4s ease-out,
+        margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+}
+
+/* Responsive title */
 @media (min-width: 640px) {
     .page-title {
         font-size: 3rem;

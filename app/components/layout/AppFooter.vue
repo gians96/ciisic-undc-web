@@ -41,7 +41,7 @@
           <nav class="space-y-3">
             <NuxtLink to="mailto:congreso@undc.edu.pe" class="footer-link">congreso@undc.edu.pe</NuxtLink>
             <NuxtLink to="https://wa.me/51949026908" class="footer-link">+51 949026908</NuxtLink>
-            <span class="footer-link footer-text">Auditorio "Casa de la Cultura", San Vicente - Cañete</span>
+            <span class="footer-link footer-text">Auditorio "Casa de la Cultura", San Vicente de Cañete - Lima - Perú</span>
 
           </nav>
         </div>

@@ -12,7 +12,16 @@
     <div v-else-if="successMessage" class="notification success-notification">
       <div class="notification-content">
         <Icon name="heroicons:check-circle" class="notification-icon" />
-        <span>{{ successMessage }}</span>
+        <div class="notification-text">
+          <span>{{ successMessage }}</span>
+          <button 
+            v-if="showActionButton" 
+            @click="handleAction"
+            class="notification-action-button"
+          >
+            {{ actionButtonText }}
+          </button>
+        </div>
       </div>
       <button @click="clearSuccess" class="notification-close">
         <Icon name="heroicons:x-mark" class="h-5 w-5" />
@@ -25,16 +34,21 @@
 interface Props {
   errorMessage?: string
   successMessage?: string
+  showActionButton?: boolean
+  actionButtonText?: string
 }
 
 interface Emits {
   (e: 'clear-error'): void
   (e: 'clear-success'): void
+  (e: 'action'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   errorMessage: '',
-  successMessage: ''
+  successMessage: '',
+  showActionButton: false,
+  actionButtonText: 'Ver detalles'
 })
 
 const emit = defineEmits<Emits>()
@@ -45,6 +59,10 @@ const clearError = () => {
 
 const clearSuccess = () => {
   emit('clear-success')
+}
+
+const handleAction = () => {
+  emit('action')
 }
 </script>
 
@@ -83,6 +101,31 @@ const clearSuccess = () => {
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+}
+
+.notification-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.notification-action-button {
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.notification-action-button:hover {
+  background-color: #15803d;
 }
 
 .notification-icon {

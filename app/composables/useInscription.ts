@@ -35,9 +35,9 @@ export const useInscription = () => {
      */
     const getRegistrationTypes = async () => {
         try {
-            const response = await $fetch<ApiResponse<RegistrationType[]>>(`${baseURL}/api/v1/registration-types`)
-            registrationTypes.value = response.data
-            return response.data
+            const response = await $fetch<RegistrationType[]>(`${baseURL}/api/v1/registration-types`)
+            registrationTypes.value = response
+            return response
         } catch (err: any) {
             console.error('Error obteniendo tipos de inscripción:', err)
             error.value = 'Error al cargar tipos de inscripción'
@@ -50,9 +50,9 @@ export const useInscription = () => {
      */
     const getClassifications = async () => {
         try {
-            const response = await $fetch<ApiResponse<Classification[]>>(`${baseURL}/api/v1/classification`)
-            classifications.value = response.data
-            return response.data
+            const response = await $fetch<Classification[]>(`${baseURL}/api/v1/classification`)
+            classifications.value = response
+            return response
         } catch (err: any) {
             console.error('Error obteniendo clasificaciones:', err)
             error.value = 'Error al cargar clasificaciones'
@@ -65,9 +65,9 @@ export const useInscription = () => {
      */
     const getDepositMethods = async () => {
         try {
-            const response = await $fetch<ApiResponse<DepositMethod[]>>(`${baseURL}/api/v1/deposit-method`)
-            depositMethods.value = response.data
-            return response.data
+            const response = await $fetch<DepositMethod[]>(`${baseURL}/api/v1/deposit-method`)
+            depositMethods.value = response
+            return response
         } catch (err: any) {
             console.error('Error obteniendo métodos de depósito:', err)
             error.value = 'Error al cargar métodos de depósito'
@@ -76,17 +76,13 @@ export const useInscription = () => {
     }
 
     /**
-     * Obtiene todos los tipos de pago disponibles para un método de depósito
+     * Obtiene todos los tipos de pago disponibles
      */
-    const getPaymentTypes = async (depositMethodId?: number) => {
+    const getPaymentTypes = async () => {
         try {
-            const url = depositMethodId
-                ? `${baseURL}/api/v1/payment-type?depositMethodId=${depositMethodId}`
-                : `${baseURL}/api/v1/payment-type`
-
-            const response = await $fetch<ApiResponse<PaymentType[]>>(url)
-            paymentTypes.value = response.data
-            return response.data
+            const response = await $fetch<PaymentType[]>(`${baseURL}/api/v1/payment-type`)
+            paymentTypes.value = response
+            return response
         } catch (err: any) {
             console.error('Error obteniendo tipos de pago:', err)
             error.value = 'Error al cargar tipos de pago'
@@ -95,13 +91,13 @@ export const useInscription = () => {
     }
 
     /**
-     * Obtiene todos los estados de inscripción
+     * Obtiene todos los estados de inscripción disponibles
      */
     const getInscriptionStates = async () => {
         try {
-            const response = await $fetch<ApiResponse<InscriptionState[]>>(`${baseURL}/api/v1/inscription-state`)
-            inscriptionStates.value = response.data
-            return response.data
+            const response = await $fetch<InscriptionState[]>(`${baseURL}/api/v1/inscription-state`)
+            inscriptionStates.value = response
+            return response
         } catch (err: any) {
             console.error('Error obteniendo estados de inscripción:', err)
             error.value = 'Error al cargar estados de inscripción'
@@ -126,52 +122,74 @@ export const useInscription = () => {
             // Crear FormData para incluir el archivo del voucher
             const formData = new FormData()
 
-            // Datos del usuario
-            formData.append('documentType', data.documentType)
-            formData.append('documentNumber', data.documentNumber)
-            formData.append('nombres', data.nombres)
-            formData.append('apellidos', data.apellidos)
-            formData.append('email', data.email)
-            formData.append('celular', data.celular)
+            // Datos del usuario (como JSON string)
+            const usuarioData = {
+                dni: data.documentNumber,
+                nombres: data.nombres,
+                apellidos: data.apellidos,
+                correoElectronico: data.email,
+                celular: data.celular
+            }
+            formData.append('usuario', JSON.stringify(usuarioData))
 
-            // Datos de inscripción
+            // Datos del voucher
+            formData.append('codigo', data.codigoVoucher)
+            formData.append('fechaPago', data.fechaPago)
+
+            // Archivo del voucher
+            if (data.archivoVoucher) {
+                formData.append('file', data.archivoVoucher)
+            }
+
+            // IDs de relaciones
             formData.append('tipoInscripcionId', data.tipoInscripcionId.toString())
-
+            
             if (data.clasificacionId) {
                 formData.append('clasificacionId', data.clasificacionId.toString())
             }
-
+            
             formData.append('metodoDepositoId', data.metodoDepositoId.toString())
             formData.append('tipoPagoId', data.tipoPagoId.toString())
 
-            // Datos del voucher
-            formData.append('codigoVoucher', data.codigoVoucher)
-            formData.append('fechaPago', data.fechaPago)
+            console.log('📤 FormData preparado para envío')
 
-            if (data.archivoVoucher) {
-                formData.append('voucherFile', data.archivoVoucher)
-            }
-
-            // Metadata adicional
-            formData.append('timestamp', new Date().toISOString())
-            formData.append('userAgent', navigator.userAgent)
-
-            const response = await $fetch<InscriptionResponse>(`${baseURL}/api/v1/inscriptions`, {
+            const response = await $fetch<InscriptionResponse>(`${baseURL}/api/v1/inscription`, {
                 method: 'POST',
                 body: formData
             })
 
             console.log('✅ Inscripción creada exitosamente:', response)
+            
+            // Verificar que la respuesta tenga el formato esperado
+            if (!response || typeof response.success !== 'boolean') {
+                console.error('⚠️ Respuesta con formato inesperado:', response)
+                throw new Error('Respuesta del servidor con formato inválido')
+            }
+
             return response
 
         } catch (err: any) {
             console.error('💥 Error al crear inscripción:', err)
 
             // Manejo específico de errores
-            if (err.statusCode === 400) {
-                error.value = 'Datos de inscripción inválidos. Verifique la información.'
-            } else if (err.statusCode === 409) {
-                error.value = 'Ya existe una inscripción con este documento o email.'
+            if (err.statusCode === 409) {
+                // Obtener el mensaje específico del servidor
+                const serverMessage = err.data?.message || err.data?.error
+                if (serverMessage && serverMessage.includes('código de voucher')) {
+                    error.value = serverMessage
+                } else if (serverMessage && serverMessage.includes('Ya existe una inscripción registrada')) {
+                    error.value = serverMessage
+                } else {
+                    error.value = 'Ya existe una inscripción con este documento, email o código de voucher.'
+                }
+            } else if (err.statusCode === 400) {
+                // Obtener el mensaje específico del servidor si está disponible
+                const serverMessage = err.data?.message || err.data?.details
+                if (serverMessage) {
+                    error.value = serverMessage
+                } else {
+                    error.value = 'Datos de inscripción inválidos. Verifique la información.'
+                }
             } else if (err.statusCode === 422) {
                 error.value = 'Error de validación. Verifique todos los campos obligatorios.'
             } else if (err.statusCode === 500) {
@@ -194,12 +212,22 @@ export const useInscription = () => {
     /**
      * Obtiene una inscripción específica por su ID
      */
+    const checkVoucherCode = async (codigo: string) => {
+        try {
+            const response = await $fetch<{exists: boolean}>(`${baseURL}/api/v1/voucher/check/${codigo}`)
+            return response.exists
+        } catch (err) {
+            console.error('Error al verificar código de voucher:', err)
+            return false // En caso de error, asumir que no existe
+        }
+    }
+
     const getInscriptionById = async (id: number) => {
         isLoading.value = true
         error.value = null
 
         try {
-            const response = await $fetch(`${baseURL}/api/v1/inscriptions/${id}`)
+            const response = await $fetch(`${baseURL}/api/v1/inscription/${id}`)
             return response
         } catch (err: any) {
             console.error('Error obteniendo inscripción:', err)
@@ -272,40 +300,54 @@ export const useInscription = () => {
         }
 
         // Buscar los IDs correspondientes en los catálogos cargados
-        const tipoInscripcion = registrationTypes.value.find((t: RegistrationType) => t.nombre === formData.tipoInscripcion)
+        const tipoInscripcion = registrationTypes.value.find((t: RegistrationType) => 
+            t.value === formData.tipoInscripcion
+        )
+        
         const clasificacion = formData.clasificacion && classifications.value?.length
             ? classifications.value.find((c: Classification) => c.nombre === formData.clasificacion)
             : null
-        const metodoDeposito = depositMethods.value.find((m: DepositMethod) => m.nombre === formData.modalidadDeposito)
-        const tipoPago = paymentTypes.value.find((p: PaymentType) => p.nombre === formData.metodoDePago)
+            
+        const metodoDeposito = depositMethods.value.find((m: DepositMethod) => 
+            m.nombre === formData.modalidadDeposito
+        )
+        
+        const tipoPago = paymentTypes.value.find((p: PaymentType) => 
+            p.nombre === formData.metodoDePago
+        )
 
         // Validar que se encontraron los registros necesarios
         if (!tipoInscripcion) {
+            console.error('Tipos disponibles por nombre:', registrationTypes.value.map(t => t.nombre))
+            console.error('Tipos disponibles por value:', registrationTypes.value.map(t => t.value))
+            console.error('Buscando tipo:', formData.tipoInscripcion)
             throw new Error(`Tipo de inscripción "${formData.tipoInscripcion}" no encontrado`)
         }
 
         if (!metodoDeposito) {
+            console.error('Métodos disponibles:', depositMethods.value.map(m => m.nombre))
             throw new Error(`Método de depósito "${formData.modalidadDeposito}" no encontrado`)
         }
 
         if (!tipoPago) {
+            console.error('Tipos disponibles:', paymentTypes.value.map(p => p.nombre))
             throw new Error(`Tipo de pago "${formData.metodoDePago}" no encontrado`)
         }
 
         const mappedData: InscriptionData = {
             // Datos del usuario
-            documentType: formData.documentType,
+            documentType: formData.documentType.toUpperCase() as 'DNI' | 'CE',
             documentNumber: formData.documentNumber,
             nombres: formData.nombres,
             apellidos: formData.apellidos,
             email: formData.email,
             celular: formData.celular,
 
-            // IDs para relaciones
-            tipoInscripcionId: tipoInscripcion.id,
-            clasificacionId: clasificacion?.id || null,
-            metodoDepositoId: metodoDeposito.id,
-            tipoPagoId: tipoPago.id,
+            // IDs para relaciones (asegurar que sean números enteros)
+            tipoInscripcionId: parseInt(tipoInscripcion.id.toString(), 10),
+            clasificacionId: clasificacion?.id ? parseInt(clasificacion.id.toString(), 10) : null,
+            metodoDepositoId: parseInt(metodoDeposito.id.toString(), 10),
+            tipoPagoId: parseInt(tipoPago.id.toString(), 10),
 
             // Datos del voucher
             codigoVoucher: formData.codigoVoucher,
@@ -333,6 +375,7 @@ export const useInscription = () => {
         // Métodos principales
         createInscription,
         getInscriptionById,
+        checkVoucherCode,
 
         // Métodos de catálogos
         getRegistrationTypes,

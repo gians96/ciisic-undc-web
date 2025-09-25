@@ -38,8 +38,11 @@
               <p class="text-slate-400 mb-6 text-sm">{{ plan.description }}</p>
               <ul class="space-y-3 text-slate-300 mb-8">
                 <li v-for="item in plan.features" :key="item.text" class="flex items-center">
-                  <Icon :name="item.icon" class="h-5 w-5 text-primary mr-3" />
-                  <span>{{ item.text }}</span>
+                  <Icon :name="item.icon" class="plan-feature-icon"
+                    :class="{ 'feature-excluded': item.icon === 'heroicons:x-mark' }" />
+                  <span :class="{ 'feature-excluded-text': item.icon === 'heroicons:x-mark' }">
+                    {{ item.text }}
+                  </span>
                 </li>
               </ul>
               <div class="mt-auto">
@@ -99,16 +102,20 @@
         </div>
         <div class="relative max-w-5xl mx-auto">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-            <div v-for="item in merchandising" :key="item.name" class="relative rounded-lg overflow-hidden group shadow-xl max-w-sm w-full">
+            <div v-for="item in merchandising" :key="item.name"
+              class="relative rounded-lg overflow-hidden group shadow-xl max-w-sm w-full">
               <img :src="item.image" :alt="item.name"
                 class="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
                 <div class="text-center w-full">
-                  <p class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out mb-2">
+                  <p
+                    class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out mb-2">
                     {{ item.name }}
                   </p>
-                  <div class="w-12 h-0.5 bg-primary mx-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-in-out"></div>
+                  <div
+                    class="w-12 h-0.5 bg-primary mx-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-in-out">
+                  </div>
                 </div>
               </div>
             </div>
@@ -123,74 +130,72 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useInscriptionPlansStore } from '~/stores/inscriptionPlans'
 
 // ===========================================================================
-// ROUTER
+// ROUTER Y STORE
 // ===========================================================================
 const router = useRouter()
+const inscriptionPlansStore = useInscriptionPlansStore()
+
+// ===========================================================================
+// ESTADO REACTIVO
+// ===========================================================================
+const isRefreshing = ref(false)
+
+// ===========================================================================
+// LIFECYCLE HOOKS
+// ===========================================================================
+onMounted(async () => {
+  try {
+    // Cargar planes desde API al acceder a la página
+    await inscriptionPlansStore.fetchPlans()
+    console.log('✅ Planes cargados en la página de planes')
+  } catch (error) {
+    console.warn('⚠️ Error cargando planes en la página de planes:', error)
+    // Los datos por defecto ya están disponibles en el store
+  }
+})
 
 const navigateToPlan = (planId: number) => {
   router.push(`/register?planId=${planId}`)
 }
 
 // ===========================================================================
+// MÉTODOS
+// ===========================================================================
+const refreshPlans = async () => {
+  isRefreshing.value = true
+  try {
+    await inscriptionPlansStore.refreshPlans()
+    console.log('✅ Planes actualizados exitosamente')
+  } catch (error) {
+    console.error('💥 Error actualizando planes:', error)
+  } finally {
+    isRefreshing.value = false
+  }
+}
+
+// ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-  title: 'Planes de Inscripción - VI CIISIC UNDC',
+  title: 'Planes de Inscripción - VII CIISIC UNDC',
   meta: [
-    { name: 'description', content: 'Explora los planes de inscripción para el VI Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+    { name: 'description', content: 'Explora los planes de inscripción para el VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
   ]
 })
 
 // ===========================================================================
-// DATOS ESTÁTICOS
+// COMPUTED
 // ===========================================================================
-const inscriptionPlans = ref([
-  {
-    id: 1,
-    title: 'ESTUDIANTES',
-    badge: 'CON KIT',
-    price: 'S/ 120.00',
-    value: 'estudiantes_con_kit',
-    description: 'La experiencia completa para estudiantes de institutos, colegios y otras universidades.',
-    features: [
-      { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-      { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-      { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-    ]
-  },
-  {
-    id: 2,
-    title: 'ESTUDIANTES',
-    badge: 'SIN KIT',
-    price: 'S/ 60.00',
-    value: 'estudiantes_sin_kit',
-    description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado.',
-    features: [
-      { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-      { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-      { icon: 'heroicons:x-mark', text: 'No incluye Kit' },
-    ]
-  },
-  {
-    id: 3,
-    title: 'PUBLICO GENERAL',
-    badge: 'INCLUYE KIT',
-    price: 'S/ 140.00',
-    value: 'publico_general_con_kit',
-    description: 'Acceso total con kit para profesionales y cualquier persona interesada en el congreso.',
-    features: [
-      { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-      { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-      { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-    ]
-  }
-])
+const inscriptionPlans = computed(() => inscriptionPlansStore.plansFormatted)
+const isLoading = computed(() => inscriptionPlansStore.isLoading)
+const hasError = computed(() => !!inscriptionPlansStore.error)
 
+// ===========================================================================
+// DATOS ESTÁTICOS (MERCHANDISING)
+// ===========================================================================
 const merchandising = ref([
   { name: 'TomaTodo', image: '/images/merchandising/tomatodo.jpeg' },
   { name: 'Identificador', image: '/images/merchandising/identificador.jpeg' },
@@ -235,5 +240,22 @@ const toggleAccordion = (id: number) => {
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
   background: #34d399;
   /* emerald-400 */
+}
+
+.plan-feature-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #45f882;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.plan-feature-icon.feature-excluded {
+  color: #ef4444;
+}
+
+.feature-excluded-text {
+  color: #9ca3af;
+  text-decoration: line-through;
 }
 </style>
