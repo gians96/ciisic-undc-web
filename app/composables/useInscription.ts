@@ -11,8 +11,8 @@ import type {
 } from '@/types/inscription'
 
 export const useInscription = () => {
-    const config = useRuntimeConfig()
-    const baseURL = config.public.apiBaseUrl || 'http://localhost:3000'
+    // const config = useRuntimeConfig() //En el contenedor no funcion
+    const baseURL = process.env.apiBaseUrl || 'http://localhost:3000'
 
     // Estado reactivo
     const isSubmitting = ref(false)

@@ -111,9 +111,9 @@ export const useInscriptionPlansStore = defineStore('inscriptionPlans', {
             this.error = null
 
             try {
-                const config = useRuntimeConfig()
-                const baseURL = config.public.apiBaseUrl || 'http://localhost:3000'
-                
+                // const config = useRuntimeConfig()
+                const baseURL = process.env.apiBaseUrl || 'http://localhost:3000'
+
                 console.log('🔄 Obteniendo planes de inscripción desde API...')
                 
                 const plans = await $fetch<InscriptionPlan[]>(`${baseURL}/api/v1/registration-types`)
