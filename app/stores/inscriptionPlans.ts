@@ -112,7 +112,7 @@ export const useInscriptionPlansStore = defineStore('inscriptionPlans', {
 
             try {
                 // const config = useRuntimeConfig()
-                const baseURL = process.env.apiBaseUrl || 'http://localhost:3000'
+                const baseURL = process.env.API_BASE_URL || 'http://localhost:3000'
 
                 console.log('🔄 Obteniendo planes de inscripción desde API...')
                 

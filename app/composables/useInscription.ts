@@ -12,7 +12,7 @@ import type {
 
 export const useInscription = () => {
     // const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = process.env.apiBaseUrl || 'http://localhost:3000'
+    const baseURL = process.env.API_BASE_URL || 'http://localhost:3000'
 
     // Estado reactivo
     const isSubmitting = ref(false)
