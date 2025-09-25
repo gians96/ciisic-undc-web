@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     xApiUrl: process.env.X_API_URL || '',
     // Variables públicas (expuestas al cliente)
     public: {
-      API_URL: process.env.NUXT_API_URL,
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3000',
       appName: 'VII CIISIC 2025',
       appVersion: '1.0.0'
     }

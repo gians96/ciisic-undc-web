@@ -13,7 +13,7 @@
         <h1 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider">Planes de Inscripción VII
           CIISIC - UNDC</h1>
         <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
-          Elige el plan que mejor se adapte a tus necesidades y sé parte de la septima edición del Congreso
+          Elige el plan que mejor se adapte a tus necesidades y sé parte de la séptima edición del Congreso
           Internacional de Ingeniería de Sistemas.
         </p>
       </div>
@@ -22,7 +22,7 @@
     <section class="py-20 md:py-28">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="plan in inscriptionPlans" :key="plan.id" @click="navigateToPlan(plan.path)"
+          <div v-for="plan in inscriptionPlans" :key="plan.id" @click="navigateToPlan(plan.id)"
             class="bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
             <div class="p-8 flex flex-col h-full">
               <div class="flex items-center justify-between">
@@ -97,16 +97,19 @@
           <p class="text-slate-400 max-w-2xl mx-auto">Productos de alta calidad para llevar tu experiencia al siguiente
             nivel.</p>
         </div>
-        <div class="relative">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div v-for="item in merchandising" :key="item.name" class="relative rounded-lg overflow-hidden group">
+        <div class="relative max-w-5xl mx-auto">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+            <div v-for="item in merchandising" :key="item.name" class="relative rounded-lg overflow-hidden group shadow-xl max-w-sm w-full">
               <img :src="item.image" :alt="item.name"
                 class="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
               <div
-                class="absolute inset-0 bg-black/60 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
-                <p
-                  class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
-                  {{ item.name }}</p>
+                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
+                <div class="text-center w-full">
+                  <p class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out mb-2">
+                    {{ item.name }}
+                  </p>
+                  <div class="w-12 h-0.5 bg-primary mx-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-in-out"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -126,10 +129,8 @@ import { useRouter } from 'vue-router'
 // ===========================================================================
 const router = useRouter()
 
-const navigateToPlan = (path?: string) => {
-  if (path) {
-    router.push(path)
-  }
+const navigateToPlan = (planId: number) => {
+  router.push(`/register?planId=${planId}`)
 }
 
 // ===========================================================================
@@ -151,7 +152,6 @@ const inscriptionPlans = ref([
     title: 'ESTUDIANTES',
     badge: 'CON KIT',
     price: 'S/ 120.00',
-    path: '/general',
     value: 'estudiantes_con_kit',
     description: 'La experiencia completa para estudiantes de institutos, colegios y otras universidades.',
     features: [
@@ -166,7 +166,6 @@ const inscriptionPlans = ref([
     title: 'ESTUDIANTES',
     badge: 'SIN KIT',
     price: 'S/ 60.00',
-    path: '/general',
     value: 'estudiantes_sin_kit',
     description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado.',
     features: [
@@ -181,7 +180,6 @@ const inscriptionPlans = ref([
     title: 'PUBLICO GENERAL',
     badge: 'INCLUYE KIT',
     price: 'S/ 140.00',
-    path: '/general',
     value: 'publico_general_con_kit',
     description: 'Acceso total con kit para profesionales y cualquier persona interesada en el congreso.',
     features: [
