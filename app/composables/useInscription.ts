@@ -12,7 +12,7 @@ import type {
 
 export const useInscription = () => {
     // const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = process.env.API_BASE_URL || 'http://localhost:3000'
+    const baseURL = process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe' || 'http://localhost:3000'
 
     // Estado reactivo
     const isSubmitting = ref(false)
@@ -143,11 +143,11 @@ export const useInscription = () => {
 
             // IDs de relaciones
             formData.append('tipoInscripcionId', data.tipoInscripcionId.toString())
-            
+
             if (data.clasificacionId) {
                 formData.append('clasificacionId', data.clasificacionId.toString())
             }
-            
+
             formData.append('metodoDepositoId', data.metodoDepositoId.toString())
             formData.append('tipoPagoId', data.tipoPagoId.toString())
 
@@ -159,7 +159,7 @@ export const useInscription = () => {
             })
 
             console.log('✅ Inscripción creada exitosamente:', response)
-            
+
             // Verificar que la respuesta tenga el formato esperado
             if (!response || typeof response.success !== 'boolean') {
                 console.error('⚠️ Respuesta con formato inesperado:', response)
@@ -214,7 +214,7 @@ export const useInscription = () => {
      */
     const checkVoucherCode = async (codigo: string) => {
         try {
-            const response = await $fetch<{exists: boolean}>(`${baseURL}/api/v1/voucher/check/${codigo}`)
+            const response = await $fetch<{ exists: boolean }>(`${baseURL}/api/v1/voucher/check/${codigo}`)
             return response.exists
         } catch (err) {
             console.error('Error al verificar código de voucher:', err)
@@ -300,19 +300,19 @@ export const useInscription = () => {
         }
 
         // Buscar los IDs correspondientes en los catálogos cargados
-        const tipoInscripcion = registrationTypes.value.find((t: RegistrationType) => 
+        const tipoInscripcion = registrationTypes.value.find((t: RegistrationType) =>
             t.value === formData.tipoInscripcion
         )
-        
+
         const clasificacion = formData.clasificacion && classifications.value?.length
             ? classifications.value.find((c: Classification) => c.nombre === formData.clasificacion)
             : null
-            
-        const metodoDeposito = depositMethods.value.find((m: DepositMethod) => 
+
+        const metodoDeposito = depositMethods.value.find((m: DepositMethod) =>
             m.nombre === formData.modalidadDeposito
         )
-        
-        const tipoPago = paymentTypes.value.find((p: PaymentType) => 
+
+        const tipoPago = paymentTypes.value.find((p: PaymentType) =>
             p.nombre === formData.metodoDePago
         )
 
