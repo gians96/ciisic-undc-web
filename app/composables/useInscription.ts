@@ -32,18 +32,19 @@ export const useInscription = () => {
 
     /**
      * Obtiene todos los tipos de inscripción disponibles
+     * NOTA: No se usa porque los tipos están hardcodeados en inscriptionPlans
      */
-    const getRegistrationTypes = async () => {
-        try {
-            const response = await $fetch<RegistrationType[]>(`${baseURL}/api/v1/registration-types`)
-            registrationTypes.value = response
-            return response
-        } catch (err: any) {
-            console.error('Error obteniendo tipos de inscripción:', err)
-            error.value = 'Error al cargar tipos de inscripción'
-            throw err
-        }
-    }
+    // const getRegistrationTypes = async () => {
+    //     try {
+    //         const response = await $fetch<RegistrationType[]>(`${baseURL}/api/v1/registration-types`)
+    //         registrationTypes.value = response
+    //         return response
+    //     } catch (err: any) {
+    //         console.error('Error obteniendo tipos de inscripción:', err)
+    //         error.value = 'Error al cargar tipos de inscripción'
+    //         throw err
+    //     }
+    // }
 
     /**
      * Obtiene todas las clasificaciones disponibles
@@ -132,15 +133,6 @@ export const useInscription = () => {
             }
             formData.append('usuario', JSON.stringify(usuarioData))
 
-            // Datos del voucher
-            formData.append('codigo', data.codigoVoucher)
-            formData.append('fechaPago', data.fechaPago)
-
-            // Archivo del voucher
-            if (data.archivoVoucher) {
-                formData.append('file', data.archivoVoucher)
-            }
-
             // IDs de relaciones
             formData.append('tipoInscripcionId', data.tipoInscripcionId.toString())
 
@@ -148,8 +140,41 @@ export const useInscription = () => {
                 formData.append('clasificacionId', data.clasificacionId.toString())
             }
 
-            formData.append('metodoDepositoId', data.metodoDepositoId.toString())
-            formData.append('tipoPagoId', data.tipoPagoId.toString())
+            // Datos de pago del nuevo esquema
+            if (data.modalidadDeposito) {
+                formData.append('modalidadDeposito', data.modalidadDeposito)
+            }
+            
+            if (data.bancoSeleccionado) {
+                formData.append('bancoSeleccionado', data.bancoSeleccionado)
+            }
+            
+            if (data.tipoOperacion) {
+                formData.append('tipoOperacion', data.tipoOperacion)
+            }
+            
+            if (data.billeteraDigital) {
+                formData.append('billeteraDigital', data.billeteraDigital)
+            }
+
+            // Datos principales de la operación
+            formData.append('numeroOperacion', data.numeroOperacion)
+            formData.append('fechaPago', data.fechaPago.toISOString())
+            formData.append('pago', data.pago.toString())
+            
+            // Datos de descuento y email institucional
+            formData.append('esEmailInstitucional', (data.esEmailInstitucional || false).toString())
+            formData.append('hasDiscount', (data.hasDiscount || false).toString())
+            formData.append('descuento', (data.descuento || 0).toString())
+            
+            if (data.estadoId) {
+                formData.append('estadoId', data.estadoId.toString())
+            }
+
+            // Archivo del voucher
+            if (data.archivoVoucher) {
+                formData.append('file', data.archivoVoucher)
+            }
 
             console.log('📤 FormData preparado para envío')
 
@@ -258,7 +283,6 @@ export const useInscription = () => {
 
         try {
             await Promise.all([
-                getRegistrationTypes(),
                 getClassifications(),
                 getDepositMethods(),
                 getPaymentTypes(),
@@ -280,59 +304,24 @@ export const useInscription = () => {
     const mapFormDataToApiData = (formData: any): InscriptionData => {
         console.log('🔍 Mapeando datos del formulario:', formData)
         console.log('📚 Catálogos disponibles:', {
-            registrationTypes: registrationTypes.value?.length || 0,
-            classifications: classifications.value?.length || 0,
-            depositMethods: depositMethods.value?.length || 0,
-            paymentTypes: paymentTypes.value?.length || 0
+            classifications: classifications.value?.length || 0
         })
 
-        // Validar que los catálogos estén cargados
-        if (!registrationTypes.value?.length) {
-            throw new Error('Los tipos de inscripción no están cargados. Recargue la página e intente nuevamente.')
-        }
+        // El tipoInscripcionId viene directamente del planId seleccionado
+        const tipoInscripcionId = formData.planId
 
-        if (!depositMethods.value?.length) {
-            throw new Error('Los métodos de depósito no están cargados. Recargue la página e intente nuevamente.')
-        }
-
-        if (!paymentTypes.value?.length) {
-            throw new Error('Los tipos de pago no están cargados. Recargue la página e intente nuevamente.')
-        }
-
-        // Buscar los IDs correspondientes en los catálogos cargados
-        const tipoInscripcion = registrationTypes.value.find((t: RegistrationType) =>
-            t.value === formData.tipoInscripcion
-        )
-
-        const clasificacion = formData.clasificacion && classifications.value?.length
-            ? classifications.value.find((c: Classification) => c.nombre === formData.clasificacion)
-            : null
-
-        const metodoDeposito = depositMethods.value.find((m: DepositMethod) =>
-            m.nombre === formData.modalidadDeposito
-        )
-
-        const tipoPago = paymentTypes.value.find((p: PaymentType) =>
-            p.nombre === formData.metodoDePago
-        )
+        // El clasificacion ya viene con el ID correcto desde el formulario
+        const clasificacionId = formData.clasificacion ? parseInt(formData.clasificacion.toString(), 10) : null
 
         // Validar que se encontraron los registros necesarios
-        if (!tipoInscripcion) {
-            console.error('Tipos disponibles por nombre:', registrationTypes.value.map(t => t.nombre))
-            console.error('Tipos disponibles por value:', registrationTypes.value.map(t => t.value))
-            console.error('Buscando tipo:', formData.tipoInscripcion)
-            throw new Error(`Tipo de inscripción "${formData.tipoInscripcion}" no encontrado`)
+        if (!tipoInscripcionId) {
+            throw new Error(`Debe seleccionar un plan de inscripción`)
         }
 
-        if (!metodoDeposito) {
-            console.error('Métodos disponibles:', depositMethods.value.map(m => m.nombre))
-            throw new Error(`Método de depósito "${formData.modalidadDeposito}" no encontrado`)
-        }
-
-        if (!tipoPago) {
-            console.error('Tipos disponibles:', paymentTypes.value.map(p => p.nombre))
-            throw new Error(`Tipo de pago "${formData.metodoDePago}" no encontrado`)
-        }
+        // Calcular el precio basado en inscriptionPlans local
+        // Los precios están en inscriptionPlans del componente
+        const isInstitutionalEmail = formData.email && formData.email.toLowerCase().endsWith('@undc.edu.pe')
+        const pago = formData.finalPrice || 0 // El precio ya viene calculado del frontend
 
         const mappedData: InscriptionData = {
             // Datos del usuario
@@ -344,14 +333,25 @@ export const useInscription = () => {
             celular: formData.celular,
 
             // IDs para relaciones (asegurar que sean números enteros)
-            tipoInscripcionId: parseInt(tipoInscripcion.id.toString(), 10),
-            clasificacionId: clasificacion?.id ? parseInt(clasificacion.id.toString(), 10) : null,
-            metodoDepositoId: parseInt(metodoDeposito.id.toString(), 10),
-            tipoPagoId: parseInt(tipoPago.id.toString(), 10),
+            tipoInscripcionId: parseInt(tipoInscripcionId.toString(), 10),
+            clasificacionId: clasificacionId,
 
-            // Datos del voucher
+            // Datos de pago (mapear del formulario al nuevo esquema)
+            modalidadDeposito: formData.modalidadDeposito, // "banco" o "billetera"
+            bancoSeleccionado: formData.bancoSeleccionado, // "bcp" o "interbank"
+            tipoOperacion: formData.tipoPago, // "directo" o "interbancario"
+            billeteraDigital: formData.aplicativo, // "yape" o "plin"
+            file: formData.archivoVoucher?.name || null,
+            numeroOperacion: formData.codigoVoucher,
+            fechaPago: new Date(formData.fechaPago),
+            pago: pago,
+            esEmailInstitucional: isInstitutionalEmail,
+            hasDiscount: formData.hasDiscount || false,
+            descuento: formData.descuento || 0,
+            estadoId: 1, // Estado por defecto 'Pendiente'
+
+            // Legacy: compatibilidad con el código anterior
             codigoVoucher: formData.codigoVoucher,
-            fechaPago: formData.fechaPago,
             archivoVoucher: formData.archivoVoucher
         }
 
@@ -378,7 +378,7 @@ export const useInscription = () => {
         checkVoucherCode,
 
         // Métodos de catálogos
-        getRegistrationTypes,
+        // getRegistrationTypes, // No se usa, está hardcodeado en inscriptionPlans
         getClassifications,
         getDepositMethods,
         getPaymentTypes,

@@ -6,7 +6,8 @@
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
                 <h1 class="page-title">REGISTRO ESTUDIANTES - VII CIISIC</h1>
-                <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica</p>
+                <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas
+                    e Investigación Científica</p>
             </div>
         </section>
 
@@ -90,35 +91,41 @@
                         <label class="form-label">Tipo de inscripción</label>
                         <div class="plan-cards-container">
                             <div v-for="plan in availablePlans" :key="plan.id" @click="selectPlan(plan.id)"
-                                class="plan-card-simple" 
-                                :class="{ 
-                                    'selected': planId === plan.id, 
-                                    'disabled': !isEmailValid 
+                                class="plan-card-simple" :class="{
+                                    'selected': planId === plan.id,
+                                    'disabled': !isEmailValid
                                 }">
                                 <div class="plan-card-header">
                                     <h4 class="plan-card-title">{{ plan.title }}</h4>
-                                    <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge }}</span>
+                                    <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
+                                    }}</span>
                                 </div>
                                 <div class="plan-card-price">{{ plan.price }}</div>
                                 <div class="plan-card-description">{{ plan.description }}</div>
-                                
+
                                 <!-- Lista de características -->
                                 <ul class="plan-features-list">
                                     <li v-for="feature in plan.features" :key="feature.text" class="plan-feature-item">
-                                        <Icon :name="feature.icon" 
-                                              :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-icon excluded' : 'plan-feature-icon included'" />
-                                        <span :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-text excluded' : 'plan-feature-text'">
+                                        <Icon :name="feature.icon"
+                                            :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-icon excluded' : 'plan-feature-icon included'" />
+                                        <span
+                                            :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-text excluded' : 'plan-feature-text'">
                                             {{ feature.text }}
                                         </span>
                                     </li>
                                 </ul>
-
+                                <div class="plan-card-selector">
+                                    <div class="plan-selector-radio" :class="{ 'selected': planId === plan.id }">
+                                        <div v-if="planId === plan.id" class="plan-selector-dot"></div>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
                         <small class="form-hint">
+                            <div>* Descuento con correo institucional @undc.edu.pe</div>
                             <template v-if="!isEmailValid">
-                                Completa tu correo electrónico para habilitar la selección de planes
+                                Completa tu correo electrónico para habilitar la selección de planes,
                             </template>
                             <template v-else>
                                 Selecciona el plan que mejor se adapte a tus necesidades
@@ -126,26 +133,20 @@
                         </small>
                     </div>
                     <!-- Campo de clasificación para estudiantes con transición avanzada -->
-                    <Transition 
-                        name="height-expand"
-                        @enter="onClassificationEnter"
-                        @leave="onClassificationLeave"
-                        @before-enter="onClassificationBeforeEnter"
-                        @after-enter="onClassificationAfterEnter"
-                        @before-leave="onClassificationBeforeLeave"
-                        @after-leave="onClassificationAfterLeave"
-                    >
+                    <Transition name="height-expand" @enter="onClassificationEnter" @leave="onClassificationLeave"
+                        @before-enter="onClassificationBeforeEnter" @after-enter="onClassificationAfterEnter"
+                        @before-leave="onClassificationBeforeLeave" @after-leave="onClassificationAfterLeave">
                         <div v-if="isStudentPlan" class="classification-container col-span-6 md:col-span-3">
                             <div class="form-group">
                                 <label for="clasificacion" class="form-label">Clasificación</label>
                                 <select id="clasificacion" v-model="clasificacion" required class="form-input">
                                     <option value="" disabled selected>Selecciona una opción</option>
-                                    <option value="estudiante_ciclo_1">I CICLO</option>
-                                    <option value="estudiante_ciclo_3">III CICLO</option>
-                                    <option value="estudiante_ciclo_5">V CICLO</option>
-                                    <option value="estudiante_ciclo_7">VII CICLO</option>
-                                    <option value="estudiante_ciclo_9">IX CICLO</option>
-                                    <option value="estudiante_ciclo_10">X CICLO</option>
+                                    <option value=1>I CICLO</option>
+                                    <option value=3>III CICLO</option>
+                                    <option value=5>V CICLO</option>
+                                    <option value=7>VII CICLO</option>
+                                    <option value=9>IX CICLO</option>
+                                    <option value=10>X CICLO</option>
                                 </select>
                                 <small class="form-hint">Indica el ciclo al que perteneces</small>
                             </div>
@@ -184,8 +185,8 @@
                                         </div>
                                     </label>
                                     <label for="bancoInterbank" class="radio-label">
-                                        <input id="bancoInterbank" v-model="bancoSeleccionado" type="radio" value="interbank"
-                                            @change="modalidadDeposito = 'banco'" class="sr-only">
+                                        <input id="bancoInterbank" v-model="bancoSeleccionado" type="radio"
+                                            value="interbank" @change="modalidadDeposito = 'banco'" class="sr-only">
                                         <div class="radio-custom-indicator"
                                             :class="{ 'selected': bancoSeleccionado === 'interbank' }">
                                             <div v-if="bancoSeleccionado === 'interbank'" class="radio-dot"></div>
@@ -228,9 +229,9 @@
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <span>Pago Directo</span>
-                                                <Icon @click.prevent.stop="copiarNumeroCuenta" 
-                                                    name="heroicons:clipboard-document" 
-                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5" 
+                                                <Icon @click.prevent.stop="copiarNumeroCuenta"
+                                                    name="heroicons:clipboard-document"
+                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5"
                                                     title="Copiar número de cuenta" />
                                             </div>
                                         </label>
@@ -243,9 +244,9 @@
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <span>Pago interbancario</span>
-                                                <Icon @click.prevent.stop="copiarCCI" 
-                                                    name="heroicons:clipboard-document" 
-                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5" 
+                                                <Icon @click.prevent.stop="copiarCCI"
+                                                    name="heroicons:clipboard-document"
+                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5"
                                                     title="Copiar CCI" />
                                             </div>
                                         </label>
@@ -275,10 +276,9 @@
                                                 <span>Plin</span>
                                             </label>
                                         </div>
-                                        
+
                                         <!-- Botón QR al lado de los radio buttons -->
-                                        <button type="button" @click="showQrModal = true" 
-                                                class="qr-button-inline">
+                                        <button type="button" @click="showQrModal = true" class="qr-button-inline">
                                             <Icon name="heroicons:qr-code" class="h-4 w-4" />
                                         </button>
                                     </div>
@@ -292,8 +292,8 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
                                 <div class="form-group">
                                     <label for="codigoVoucher" class="form-label">Código del voucher de pago</label>
-                                    <input id="codigoVoucher" v-model="codigoVoucher" type="text"
-                                        placeholder="Código de operación" required class="form-input">
+                                    <input v-model="codigoVoucher" type="text" placeholder="Código de operación"
+                                        required class="form-input">
                                     <small class="form-hint">Digita el código de pago</small>
                                 </div>
                                 <div class="form-group">
@@ -320,9 +320,11 @@
 
                     <!-- Botón de Envío -->
                     <div class="col-span-6 form-section-below-classification">
-                        <button type="submit" class="submit-button" :disabled="isSubmitting">
-                            <Icon v-if="isSubmitting" name="heroicons:arrow-path" class="h-5 w-5 animate-spin mr-2" />
-                            {{ isSubmitting ? 'Procesando...' : 'Completar Inscripción' }}
+                        <button type="submit" class="submit-button" :disabled="isSubmitting || apiSubmitting"
+                            @click.prevent="handleSubmit">
+                            <Icon v-if="isSubmitting || apiSubmitting" name="heroicons:arrow-path"
+                                class="h-5 w-5 animate-spin mr-2" />
+                            {{ (isSubmitting || apiSubmitting) ? 'Procesando...' : 'Completar Inscripción' }}
                         </button>
                     </div>
                 </form>
@@ -342,25 +344,24 @@
                             <Icon name="heroicons:x-mark" class="h-6 w-6" />
                         </button>
                     </div>
-                    
+
                     <div class="qr-modal-content">
                         <div class="qr-modal-image-container">
-                            <img src="/images/qr/plin.jpeg" 
-                                 alt="Código QR para billetera digital" 
-                                 class="qr-modal-image">
+                            <img src="/images/qr/plin.jpeg" alt="Código QR para billetera digital"
+                                class="qr-modal-image">
                         </div>
-                        
+
                         <div class="qr-modal-info">
                             <p class="qr-modal-name">
                                 <strong>Nombre:</strong> Josemaria Caballa Garay
                             </p>
                             <p class="qr-modal-instructions">
-                                Escanea el código QR con tu aplicación Yape o Plin 
+                                Escanea el código QR con tu aplicación Yape o Plin
                                 para realizar el pago de forma rápida y segura.
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="qr-modal-footer">
                         <button @click="showQrModal = false" class="qr-modal-button">
                             Cerrar
@@ -387,14 +388,15 @@ useHead({
 // COMPOSABLES Y ROUTER
 // ===========================================================================
 const { consultDni, documentTypes } = useConsultation()
-const { 
-    createInscription, 
-    initializeCatalogs, 
+const {
+    createInscription,
+    initializeCatalogs,
     mapFormDataToApiData,
     isSubmitting: apiSubmitting,
     error: apiError,
     clearError,
     registrationTypes,
+    classifications,
     depositMethods,
     paymentTypes
 } = useInscription()
@@ -452,7 +454,7 @@ const isInstitutionalEmail = computed(() => {
 const availablePlans = computed(() => {
     return inscriptionPlans.map(plan => ({
         ...plan,
-        price: isInstitutionalEmail.value 
+        price: isInstitutionalEmail.value
             ? `S/ ${plan.institutionalPrice.toFixed(2)}`
             : `S/ ${plan.basePrice.toFixed(2)}`
     }))
@@ -583,13 +585,13 @@ const showSuccess = (message: string) => {
 const copiarNumeroCuenta = async () => {
     try {
         let numeroCuenta = ''
-        
+
         if (bancoSeleccionado.value === 'bcp') {
             numeroCuenta = '255-10957977-0-98'
         } else if (bancoSeleccionado.value === 'interbank') {
             numeroCuenta = '898 3483201070'
         }
-        
+
         await navigator.clipboard.writeText(numeroCuenta)
         showSuccess(`✅ Número de cuenta copiado al portapapeles: ${numeroCuenta}`)
     } catch (error) {
@@ -600,13 +602,13 @@ const copiarNumeroCuenta = async () => {
 const copiarCCI = async () => {
     try {
         let cci = ''
-        
+
         if (bancoSeleccionado.value === 'bcp') {
             cci = '002-25511095797709881'
         } else if (bancoSeleccionado.value === 'interbank') {
             cci = '003-898-01348320107043'
         }
-        
+
         await navigator.clipboard.writeText(cci)
         showSuccess(`✅ CCI copiado al portapapeles: ${cci}`)
     } catch (error) {
@@ -711,6 +713,9 @@ const handleFileChange = (event: Event) => {
 }
 
 const handleSubmit = async () => {
+    // Prevenir múltiples envíos
+    if (isSubmitting.value || apiSubmitting.value) return
+
     if (!planId.value) {
         showError('❌ Por favor selecciona un plan de inscripción')
         return
@@ -762,18 +767,24 @@ const handleSubmit = async () => {
     clearError()
 
     try {
-        // Verificar que los catálogos estén cargados antes de procesar
-        if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
+        // Verificar que los catálogos necesarios estén cargados (solo classifications)
+        if (!classifications.value?.length) {
             console.warn('⚠️ Catálogos no cargados, intentando reinicializar...')
             await initializeCatalogs()
-            
+
             // Dar un momento para que se carguen
             await new Promise(resolve => setTimeout(resolve, 100))
-            
-            if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
+
+            if (!classifications.value?.length) {
                 throw new Error('No se pudieron cargar los datos necesarios. Recargue la página e intente nuevamente.')
             }
         }
+
+        // Calcular el precio final basado en el plan seleccionado
+        const selectedPlanData = selectedPlan.value
+        const basePrice = isInstitutionalEmail.value ? selectedPlanData?.institutionalPrice || 0 : selectedPlanData?.basePrice || 0
+        const originalPrice = selectedPlanData?.basePrice || 0
+        const discount = originalPrice - basePrice
 
         // Preparar los datos del formulario
         const formData = {
@@ -784,19 +795,24 @@ const handleSubmit = async () => {
             email: email.value,
             celular: celular.value,
             clasificacion: clasificacion.value,
-            tipoInscripcion: tipoInscripcion.value,
+            planId: planId.value, // Usar planId directamente
             modalidadDeposito: modalidadDeposito.value,
-            metodoDePago: metodoDePago,
+            bancoSeleccionado: bancoSeleccionado.value,
+            tipoPago: tipoPago.value,
+            aplicativo: aplicativo.value,
             fechaPago: fechaPago.value,
             codigoVoucher: codigoVoucher.value,
-            archivoVoucher: archivoVoucher.value
+            archivoVoucher: archivoVoucher.value,
+            finalPrice: basePrice,
+            hasDiscount: discount > 0,
+            descuento: discount
         }
 
         console.log('📤 Datos del formulario:', formData)
 
         // Mapear datos del formulario a formato de API
         const apiData = mapFormDataToApiData(formData)
-        
+
         console.log('� Datos mapeados para API:', apiData)
 
         // Enviar inscripción
@@ -804,18 +820,20 @@ const handleSubmit = async () => {
 
         console.log('✅ Inscripción completada:', response)
 
-        showSuccess(`🎉 ¡Inscripción completada exitosamente! 
-        Tu número de inscripción es: ${response.data?.id}. 
-        Recibirás un email de confirmación en: ${email.value}`)
-
-        // Opcional: Redirigir a página de confirmación después de 3 segundos
-        setTimeout(() => {
-            router.push(`/confirmation?id=${response.data?.id}`)
-        }, 3000)
+        // Redirigir inmediatamente a página de confirmación
+        if (response.data?.id) {
+            router.push(`/confirmation?id=${response.data.id}`)
+        } else {
+            showSuccess(`🎉 ¡Inscripción completada exitosamente! Recibirás un email de confirmación en: ${email.value}`)
+            // Si por alguna razón no hay ID, redirigir a página principal después de un momento
+            setTimeout(() => {
+                router.push('/')
+            }, 2000)
+        }
 
     } catch (error: any) {
         console.error('💥 Error al enviar formulario:', error)
-        
+
         // Mostrar el error específico del composable si existe
         if (apiError.value) {
             showError(apiError.value)
@@ -840,33 +858,33 @@ const onClassificationBeforeEnter = (el: Element) => {
 
 const onClassificationEnter = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-    
+
     // Forzar un reflow para asegurar que el estado inicial se aplique
     void htmlEl.offsetHeight
-    
+
     // Obtener la altura natural del elemento
     htmlEl.style.height = 'auto'
     const height = htmlEl.offsetHeight
     htmlEl.style.height = '0'
-    
+
     // Animar hasta la altura natural
     const animation = htmlEl.animate([
-        { 
-            height: '0px', 
-            opacity: '0', 
-            transform: 'translateY(-20px)' 
+        {
+            height: '0px',
+            opacity: '0',
+            transform: 'translateY(-20px)'
         },
-        { 
-            height: `${height}px`, 
-            opacity: '1', 
-            transform: 'translateY(0)' 
+        {
+            height: `${height}px`,
+            opacity: '1',
+            transform: 'translateY(0)'
         }
     ], {
         duration: 600,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-    
+
     animation.onfinish = () => {
         htmlEl.style.height = 'auto'
         htmlEl.style.overflow = 'visible'
@@ -889,24 +907,24 @@ const onClassificationBeforeLeave = (el: Element) => {
 
 const onClassificationLeave = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-    
+
     const animation = htmlEl.animate([
-        { 
-            height: `${htmlEl.offsetHeight}px`, 
-            opacity: '1', 
-            transform: 'translateY(0)' 
+        {
+            height: `${htmlEl.offsetHeight}px`,
+            opacity: '1',
+            transform: 'translateY(0)'
         },
-        { 
-            height: '0px', 
-            opacity: '0', 
-            transform: 'translateY(-20px)' 
+        {
+            height: '0px',
+            opacity: '0',
+            transform: 'translateY(-20px)'
         }
     ], {
         duration: 500,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-    
+
     animation.onfinish = done
 }
 
@@ -1345,8 +1363,9 @@ input[type="date"]:valid {
 
 .plan-card-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
+    flex: 1;
 }
 
 .plan-card-title {
@@ -1648,39 +1667,43 @@ input[type="date"]:valid {
 
 /* TRANSICIONES MEJORADAS PARA CAMPO DE CLASIFICACIÓN */
 .classification-container {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .height-expand-enter-active {
-  transition: none; /* Las transiciones se manejan con JS */
+    transition: none;
+    /* Las transiciones se manejan con JS */
 }
 
 .height-expand-leave-active {
-  transition: none; /* Las transiciones se manejan con JS */
+    transition: none;
+    /* Las transiciones se manejan con JS */
 }
 
 /* Mejores transiciones para elementos que siguen al campo de clasificación */
 .form-section-below-classification {
-  transition: 
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 0.4s ease-out;
-  will-change: transform, margin-top;
-  transform-origin: top center;
+    transition:
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+        margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.4s ease-out;
+    will-change: transform, margin-top;
+    transform-origin: top center;
 }
 
 /* Estilo global para suavizar transiciones en toda la grilla */
 .registration-form {
-  transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.registration-form > * {
-  transition: 
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 0.4s ease-out,
-    margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform;
-}/* Responsive title */
+.registration-form>* {
+    transition:
+        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.4s ease-out,
+        margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+}
+
+/* Responsive title */
 @media (min-width: 640px) {
     .page-title {
         font-size: 3rem;
@@ -1914,11 +1937,11 @@ input[type="date"]:valid {
         max-width: 150px;
         padding: 0.5rem;
     }
-    
+
     .qr-image {
         max-width: 120px;
     }
-    
+
     .qr-description {
         font-size: 0.7rem;
         max-width: 150px;
@@ -2106,11 +2129,13 @@ input[type="date"]:valid {
 }
 
 /* Modal Transitions */
-.modal-enter-active, .modal-leave-active {
+.modal-enter-active,
+.modal-leave-active {
     transition: opacity 0.3s ease;
 }
 
-.modal-enter-from, .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
     opacity: 0;
 }
 
@@ -2120,17 +2145,17 @@ input[type="date"]:valid {
         margin: 0.5rem;
         max-width: calc(100vw - 1rem);
     }
-    
+
     .qr-modal-header,
     .qr-modal-content,
     .qr-modal-footer {
         padding: 1rem;
     }
-    
+
     .qr-modal-image {
         max-width: 200px;
     }
-    
+
     .qr-button {
         padding: 0.625rem 1.25rem;
         font-size: 0.8rem;

@@ -539,7 +539,7 @@ const submitForm = async () => {
 
   try {
     // Preparar datos en formato JSON
-    const formData = {
+    const formDmData = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),
@@ -548,11 +548,11 @@ const submitForm = async () => {
       timestamp: new Date().toISOString(),
     }
 
-    console.log(JSON.stringify(formData, null, 2))
+    console.log(JSON.stringify(formDmData, null, 2))
 
     // Para copiar fácilmente el JSON
     if (process.client) {
-      console.log('JSON para copiar:', JSON.stringify(formData))
+      console.log('JSON para copiar:', JSON.stringify(formDmData))
     }
 
     // Aquí puedes enviar al API

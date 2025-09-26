@@ -12,12 +12,23 @@ export interface InscriptionData {
     // IDs para relaciones con la base de datos
     tipoInscripcionId: number
     clasificacionId?: number | null
-    metodoDepositoId: number
-    tipoPagoId: number
 
-    // Datos del voucher
+    // Datos de pago
+    modalidadDeposito?: string // "banco" o "billetera"
+    bancoSeleccionado?: string // "bcp" o "interbank"
+    tipoOperacion?: string // "directo" o "interbancario"
+    billeteraDigital?: string // "yape" o "plin"
+    file?: string // Nombre del archivo
+    numeroOperacion: string // Código de operación
+    fechaPago: Date
+    pago: number // Monto pagado
+    esEmailInstitucional?: boolean
+    hasDiscount?: boolean
+    descuento?: number
+    estadoId?: number
+
+    // Legacy: datos del voucher (para compatibilidad)
     codigoVoucher: string
-    fechaPago: string
     archivoVoucher?: File | null
 }
 
@@ -35,7 +46,7 @@ export interface InscriptionResponse {
             numero: string
             dni: string
         }
-        tipoInscripcion: {
+        tipoInscripcion?: {
             id: number
             nombre: string
             precio: number
@@ -44,12 +55,17 @@ export interface InscriptionResponse {
             id: number
             nombre: string
         }
-        voucher: {
-            id: number
-            codigo: string
-            fechaPago: string
-            filename?: string
-        }
+        modalidadDeposito?: string
+        bancoSeleccionado?: string
+        tipoOperacion?: string
+        billeteraDigital?: string
+        file?: string
+        numeroOperacion: string
+        fechaPago: string
+        pago: number
+        esEmailInstitucional: boolean
+        hasDiscount: boolean
+        descuento: number
         estado: {
             id: number
             nombre: string

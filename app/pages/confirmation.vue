@@ -116,8 +116,8 @@
                             </div>
                             
                             <div class="detail-item">
-                                <span class="detail-label">Precio:</span>
-                                <span class="detail-value">S/ {{ inscription.tipoInscripcion.precio }}.00</span>
+                                <span class="detail-label">Monto pagado:</span>
+                                <span class="detail-value">S/ {{ parseFloat(inscription.pago).toFixed(2) }}</span>
                             </div>
                             
                             <div v-if="inscription.clasificacion" class="detail-item">
@@ -136,8 +136,33 @@
                             </div>
                             
                             <div class="detail-item">
+                                <span class="detail-label">Modalidad de pago:</span>
+                                <span class="detail-value">{{ inscription.modalidadDeposito === 'banco' ? 'Depósito Bancario' : 'Billetera Digital' }}</span>
+                            </div>
+                            
+                            <div v-if="inscription.modalidadDeposito === 'banco'" class="detail-item">
+                                <span class="detail-label">Banco:</span>
+                                <span class="detail-value">{{ inscription.bancoSeleccionado === 'bcp' ? 'BCP' : 'Interbank' }}</span>
+                            </div>
+                            
+                            <div v-if="inscription.modalidadDeposito === 'banco'" class="detail-item">
+                                <span class="detail-label">Tipo de operación:</span>
+                                <span class="detail-value">{{ inscription.tipoOperacion === 'directo' ? 'Depósito Directo' : 'Transferencia Interbancaria' }}</span>
+                            </div>
+                            
+                            <div v-if="inscription.modalidadDeposito === 'billetera'" class="detail-item">
+                                <span class="detail-label">Aplicativo:</span>
+                                <span class="detail-value">{{ inscription.billeteraDigital === 'yape' ? 'Yape' : 'Plin' }}</span>
+                            </div>
+                            
+                            <div class="detail-item">
                                 <span class="detail-label">Código del voucher:</span>
-                                <span class="detail-value">{{ inscription.voucher.codigo }}</span>
+                                <span class="detail-value">{{ inscription.numeroOperacion }}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">Fecha de pago:</span>
+                                <span class="detail-value">{{ formatDate(inscription.fechaPago) }}</span>
                             </div>
                             
                             <div class="detail-item">
@@ -167,10 +192,10 @@
 
                     <!-- Acciones -->
                     <div class="confirmation-actions">
-                        <button @click="downloadPDF" class="btn-secondary">
+                        <!-- <button @click="downloadPDF" class="btn-secondary">
                             <Icon name="heroicons:document-arrow-down" class="h-5 w-5 mr-2" />
                             Descargar comprobante
-                        </button>
+                        </button> -->
                         
                         <NuxtLink to="/" class="btn-primary">
                             <Icon name="heroicons:home" class="h-5 w-5 mr-2" />
