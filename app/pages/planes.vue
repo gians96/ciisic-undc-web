@@ -52,44 +52,6 @@
         </div>
       </div>
     </section>
-
-    <!--
-    ===========================================================================
-        SECCIÓN DE DETALLES DEL PLAN (ACORDEÓN)
-        ============================================================================
-    <section class="py-20 md:py-28 bg-slate-800">
-      <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold uppercase text-white mb-2">Características de cada Plan</h2>
-          <p class="text-slate-400 max-w-2xl mx-auto">Haz clic en un plan para ver todos los detalles.</p>
-        </div>
-        <div class="max-w-4xl mx-auto">
-          <div v-for="plan in inscriptionPlans" :key="plan.id" class="border border-slate-700 rounded-lg mb-4 overflow-hidden">
-            <button @click="toggleAccordion(plan.id)" class="w-full flex justify-between items-center p-5 text-left text-lg font-semibold text-white bg-slate-800 hover:bg-slate-700/80 transition-colors duration-200">
-              <span>{{ plan.title }}</span>
-              <Icon
-                name="heroicons:chevron-down"
-                class="h-6 w-6 transition-transform duration-300"
-                :class="{ 'rotate-180': activeAccordion === plan.id }"
-              />
-            </button>
-            <div v-if="activeAccordion === plan.id" class="bg-slate-800/50 text-slate-300">
-              <div class="p-6">
-                <h4 class="font-bold text-lg mb-2 text-primary">Requisitos y Procedimiento</h4>
-                <p class="mb-4">{{ plan.details.requirements }}</p>
-                <h4 class="font-bold text-lg mb-2 text-primary">Certificación</h4>
-                <p>{{ plan.details.certification }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    -->
-
-    <!-- ===========================================================================
-        SECCIÓN DE MERCHANDISING (CARRUSEL)
-        ============================================================================ -->
     <section class="py-20 md:py-28 bg-slate-800">
       <div class="container mx-auto px-4">
         <div class="text-center mb-12">
