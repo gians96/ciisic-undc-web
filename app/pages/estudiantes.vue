@@ -131,18 +131,11 @@
                             </div>
                         </div>
                         <small class="form-hint">
-                            <div>* Descuento con correo institucional @undc.edu.pe</div>
                             <template v-if="!isEmailValid">
-                                Completa los campos anteriores para habilitar la selección de planes<br>
-                                <span>(Para inscripción de delegaciones comunicarse con: 
-                                    <a href="https://wa.me/51976541722" target="_blank" class="text-green-400 hover:text-green-300 transition-colors underline">976541722</a>)
-                                </span>
+                                Completa los campos anteriores para habilitar la selección de planes
                             </template>
                             <template v-else>
-                                Selecciona el plan que mejor se adapte a tus necesidades<br>
-                                <span>(Para inscripción de delegaciones comunicarse con: 
-                                    <a href="https://wa.me/51976541722" target="_blank" class="text-green-400 hover:text-green-300 transition-colors underline">976541722</a>)
-                                </span>
+                                Selecciona el plan que mejor se adapte a tus necesidades
                             </template>
                         </small>
                     </div>
