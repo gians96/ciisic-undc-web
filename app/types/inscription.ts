@@ -2,7 +2,7 @@
 
 export interface InscriptionData {
     // Datos del usuario
-    documentType: 'DNI' | 'CE'
+    idTipoDocumentoId: 'dni' | 'ce'
     documentNumber: string
     nombres: string
     apellidos: string

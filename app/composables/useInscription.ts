@@ -12,7 +12,7 @@ import type {
 
 export const useInscription = () => {
     const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = config.public.apiBaseUrl || process.env.API_BASE_URL 
+    const baseURL = config.public.apiBaseUrl || process.env.API_BASE_URL
 
     // Estado reactivo
     const isSubmitting = ref(false)
@@ -129,7 +129,8 @@ export const useInscription = () => {
                 nombres: data.nombres,
                 apellidos: data.apellidos,
                 correoElectronico: data.email,
-                celular: data.celular
+                celular: data.celular,
+                idTipoDocumentoId: data.idTipoDocumentoId
             }
             formData.append('usuario', JSON.stringify(usuarioData))
 
@@ -144,15 +145,15 @@ export const useInscription = () => {
             if (data.modalidadDeposito) {
                 formData.append('modalidadDeposito', data.modalidadDeposito)
             }
-            
+
             if (data.bancoSeleccionado) {
                 formData.append('bancoSeleccionado', data.bancoSeleccionado)
             }
-            
+
             if (data.tipoOperacion) {
                 formData.append('tipoOperacion', data.tipoOperacion)
             }
-            
+
             if (data.billeteraDigital) {
                 formData.append('billeteraDigital', data.billeteraDigital)
             }
@@ -161,12 +162,12 @@ export const useInscription = () => {
             formData.append('numeroOperacion', data.numeroOperacion)
             formData.append('fechaPago', data.fechaPago.toISOString())
             formData.append('pago', data.pago.toString())
-            
+
             // Datos de descuento y email institucional
             formData.append('esEmailInstitucional', (data.esEmailInstitucional || false).toString())
             formData.append('hasDiscount', (data.hasDiscount || false).toString())
             formData.append('descuento', (data.descuento || 0).toString())
-            
+
             if (data.estadoId) {
                 formData.append('estadoId', data.estadoId.toString())
             }
@@ -325,7 +326,7 @@ export const useInscription = () => {
 
         const mappedData: InscriptionData = {
             // Datos del usuario
-            documentType: formData.documentType.toUpperCase() as 'DNI' | 'CE',
+            idTipoDocumentoId: formData.documentType.toLowerCase() as 'dni' | 'ce',
             documentNumber: formData.documentNumber,
             nombres: formData.nombres,
             apellidos: formData.apellidos,
