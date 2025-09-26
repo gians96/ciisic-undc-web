@@ -133,7 +133,7 @@
                         </div>
                         <small class="form-hint">
                             <template v-if="!isEmailValid">
-                                Completa tu correo electrónico para habilitar la selección de planes
+                                Completa los campos anteriores para habilitar la selección de planes
                             </template>
                             <template v-else>
                                 Selecciona el plan que mejor se adapte a tus necesidades
