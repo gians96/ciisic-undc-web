@@ -9,8 +9,8 @@ const RATE_WINDOW = 60 * 1000 // 1 minuto en millisegundos
 
 export default defineEventHandler(async (event) => {
   const envs = useRuntimeConfig(event)
-  const xApiToken = envs.xApiToken
-  const xApiUrl = envs.xApiUrl
+  const xApiToken = envs.xApiToken || process.env.X_API_TOKEN
+  const xApiUrl = envs.xApiUrl || process.env.X_API_URL
   console.log('Environment variables:', { xApiToken: xApiToken ? '***' : 'undefined', xApiUrl });
   
   try {

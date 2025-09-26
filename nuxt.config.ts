@@ -1,4 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+// Debug: Mostrar variables de entorno disponibles
+console.log('🔍 Variables de entorno durante la configuración:')
+console.log('API_BASE_URL:', process.env.API_BASE_URL || 'NOT_SET')
+console.log('X_API_TOKEN:', process.env.X_API_TOKEN ? '***SET***' : 'NOT_SET')
+console.log('X_API_URL:', process.env.X_API_URL || 'NOT_SET')
+console.log('NODE_ENV:', process.env.NODE_ENV || 'NOT_SET')
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
@@ -26,7 +34,8 @@ export default defineNuxtConfig({
     public: {
       appName: 'VII CIISIC 2025',
       appVersion: '1.0.0',
-      apiBaseUrl: process.env.API_BASE_URL
+      // Usar el backend correcto como fallback si la variable no está disponible
+      apiBaseUrl: process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe'
     }
   },
   app: {

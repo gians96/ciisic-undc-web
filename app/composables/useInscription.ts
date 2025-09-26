@@ -12,8 +12,7 @@ import type {
 
 export const useInscription = () => {
     const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = config.public.apiBaseUrl
-    // const baseURL = process.env.API_BASE_URL
+    const baseURL = config.public.apiBaseUrl || process.env.API_BASE_URL 
 
     // Estado reactivo
     const isSubmitting = ref(false)
