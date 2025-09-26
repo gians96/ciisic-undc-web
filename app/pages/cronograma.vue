@@ -150,7 +150,7 @@ const days = ref([
     events: [
       {
         time: '08:00 - 09:00',
-        title: 'Inauguración y Registro de asistencia',
+        title: 'Inauguración del ciclo de ponencias y Registro de asistencia',
         type: 'registro',
         typeLabel: 'Inauguración y Registro',
         description: 'Inauguramos el ciclo de ponencias del VII CIISIC.',
@@ -159,7 +159,7 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Aplicaciones de la Ciberseguridad',
+        title: 'Principios de seguridad y el rol del SSDLC en la Ingeniería de Software',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Universidad de Buenos Aires - Argentina',
@@ -241,17 +241,17 @@ const days = ref([
         title: 'Título de Ponencia',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Internacional',
-        speaker: 'Ponente Internacional 2',
-        flag: '🇦🇷'
+        description: 'Google Developer Experts - Uruguay',
+        speaker: 'Damián Siré',
+        flag: '🇺🇾'
       },
       {
         time: '09:45 - 10:30',
         title: 'Título de Ponencia',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Perú',
-        speaker: 'Ponente Nacional 3',
+        description: 'CISCO - Perú',
+        speaker: 'Miguel Garro',
         flag: '🇵🇪'
       },
       {
@@ -265,11 +265,11 @@ const days = ref([
       },
       {
         time: '11:15 - 12:00',
-        title: 'Título de Ponencia',
+        title: 'Habilidades del Futuro',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Perú',
-        speaker: 'Ponente Nacional 4',
+        description: 'Universidad Continental - Perú',
+        speaker: 'Ivo Yance Carlos',
         flag: '🇵🇪'
       },
       {
@@ -317,10 +317,10 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Título de Ponencia',
+        title: 'Más allá del código: Potencia tus habilidades como desarrollador en la era GenAI - Softskills',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Universidad Distrital Francisco José de Caldas - Colombia',
+        description: 'AWS - Colombia',
         speaker: 'Ing. Jose Verbel Tous',
         flag: '🇨🇴'
       },
