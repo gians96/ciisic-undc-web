@@ -592,7 +592,7 @@ onMounted(() => {
     font-weight: 600;
     word-break: break-word;
     overflow-wrap: break-word;
-    max-width: 200px;
+    max-width: 300px;
 }
 
 .detail-value.status {
