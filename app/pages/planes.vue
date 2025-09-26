@@ -25,11 +25,11 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button @click="navigateToPlan('estudiantes')"
                 class="bg-green-400 hover:bg-green-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                Inscripciones para Estudiantes
+                Inscripciones para estudiantes
               </button>
               <button @click="navigateToPlan('general')"
                 class="bg-green-400 hover:bg-green-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                Inscripciones para Público General
+                Inscripciones para profesionales y público general
               </button>
             </div>
             <div class="text-center">
