@@ -59,14 +59,22 @@
 
                     <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
                         <label for="nombres" class="form-label">Nombres</label>
-                        <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)"
-                            class="form-input" :class="{ 'input-filled': nombres }" required>
+                        <input id="nombres" v-model="nombres" type="text" 
+                            :placeholder="nombresEncontrados ? 'Nombres (encontrados automáticamente)' : 'Ingresa tus nombres'"
+                            class="form-input" 
+                            :class="{ 'input-filled': nombres, 'input-readonly': nombresEncontrados }" 
+                            :readonly="nombresEncontrados"
+                            required>
                     </div>
 
                     <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
                         <label for="apellidos" class="form-label">Apellidos</label>
-                        <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)"
-                            class="form-input" :class="{ 'input-filled': apellidos }" required>
+                        <input id="apellidos" v-model="apellidos" type="text" 
+                            :placeholder="nombresEncontrados ? 'Apellidos (encontrados automáticamente)' : 'Ingresa tus apellidos'"
+                            class="form-input" 
+                            :class="{ 'input-filled': apellidos, 'input-readonly': nombresEncontrados }" 
+                            :readonly="nombresEncontrados"
+                            required>
                     </div>
 
                     <!-- Fila 2: Correo, Celular -->
@@ -118,10 +126,16 @@
                         </div>
                         <small class="form-hint">
                             <template v-if="!isEmailValid">
-                                Completa tu correo electrónico para habilitar la selección de planes
+                                Completa los campos anteriores para habilitar la selección de planes<br>
+                                <span>(Para inscripción de delegaciones comunicarse con: 
+                                    <a href="https://wa.me/51976541722" target="_blank" class="text-green-400 hover:text-green-300 transition-colors underline">976541722</a>)
+                                </span>
                             </template>
                             <template v-else>
-                                Selecciona el plan que mejor se adapte a tus necesidades
+                                Selecciona el plan que mejor se adapte a tus necesidades<br>
+                                <span>(Para inscripción de delegaciones comunicarse con: 
+                                    <a href="https://wa.me/51976541722" target="_blank" class="text-green-400 hover:text-green-300 transition-colors underline">976541722</a>)
+                                </span>
                             </template>
                         </small>
                     </div>
@@ -468,6 +482,7 @@ const documentType = ref<'DNI' | 'CE'>('DNI')
 const documentNumber = ref<string>('')
 const nombres = ref<string>('')
 const apellidos = ref<string>('')
+const nombresEncontrados = ref<boolean>(false) // Nueva variable para controlar si se encontraron los nombres
 const email = ref<string>('')
 const celular = ref<string>('')
 const clasificacion = ref<string>('')
@@ -626,6 +641,13 @@ const handleDocumentInput = (event: Event) => {
     errorMessage.value = ''
     documentNumber.value = numericValue.slice(0, maxLength)
     target.value = documentNumber.value
+    
+    // Limpiar nombres y permitir edición cuando se cambia el número de documento
+    if (nombres.value || apellidos.value) {
+        nombres.value = ''
+        apellidos.value = ''
+        nombresEncontrados.value = false
+    }
 }
 
 const handleDocumentSearch = async () => {
@@ -638,6 +660,7 @@ const handleDocumentSearch = async () => {
     isSearchingDni.value = true
     nombres.value = ''
     apellidos.value = ''
+    nombresEncontrados.value = false
     errorMessage.value = ''
 
     try {
@@ -655,6 +678,8 @@ const handleDocumentSearch = async () => {
                 const maternal = result.data.maternalSurname?.trim() || ''
                 apellidos.value = `${paternal} ${maternal}`.trim()
 
+                nombresEncontrados.value = true // Marcar que se encontraron los nombres
+
                 showSuccess(`✅ ${documentType.value} encontrado: ${result.data.fullName || `${nombres.value} ${apellidos.value}`}`)
 
                 console.log('📋 Datos cargados:', {
@@ -664,9 +689,11 @@ const handleDocumentSearch = async () => {
                     documentNumber: documentNumber.value
                 })
             } else {
+                nombresEncontrados.value = false // No se encontraron nombres completos
                 showError(`⚠️ ${documentType.value} encontrado, pero faltan datos personales. Complete manualmente.`)
             }
         } else {
+            nombresEncontrados.value = false // No se encontraron datos
             showError(`❌ No se encontraron datos para el ${documentType.value} ${documentNumber.value}`)
         }
     } catch (error: any) {
@@ -1252,6 +1279,17 @@ select.form-input {
 
 .form-input[readonly] {
     cursor: not-allowed;
+}
+
+.input-readonly {
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+    cursor: not-allowed !important;
+    opacity: 0.8;
+}
+
+.input-readonly::placeholder {
+    color: #6b7280 !important;
 }
 
 .input-filled {
