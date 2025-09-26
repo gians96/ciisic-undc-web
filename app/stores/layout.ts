@@ -36,14 +36,18 @@ export const useLayoutStore = defineStore('layout', () => {
 
   const openMobileMenu = (): void => {
     state.value.isMobileMenuOpen = true
-    // Prevenir scroll del body cuando el menú está abierto
-    document.body.style.overflow = 'hidden'
+    // Prevenir scroll del body cuando el menú está abierto - solo en el cliente
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden'
+    }
   }
 
   const closeMobileMenu = (): void => {
     state.value.isMobileMenuOpen = false
-    // Restaurar scroll del body
-    document.body.style.overflow = ''
+    // Restaurar scroll del body - solo en el cliente
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = ''
+    }
   }
 
   const toggleMobileMenu = (): void => {
@@ -208,22 +212,29 @@ export const useLayoutStore = defineStore('layout', () => {
   // WATCHERS - RESPONSIVIDAD
   // ============================================================================
 
-  // Cerrar menús automáticamente en pantallas grandes
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)')
-    const handleMediaChange = (e: MediaQueryListEvent) => {
-      if (e.matches && state.value.isMobileMenuOpen) {
-        closeMobileMenu()
+  // Cerrar menús automáticamente en pantallas grandes - solo en el cliente
+  const setupMediaQuery = () => {
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(min-width: 1024px)')
+      const handleMediaChange = (e: MediaQueryListEvent) => {
+        if (e.matches && state.value.isMobileMenuOpen) {
+          closeMobileMenu()
+        }
       }
-    }
-    
-    mediaQuery.addEventListener('change', handleMediaChange)
+      
+      mediaQuery.addEventListener('change', handleMediaChange)
 
-    // Limpiar el listener al desmontar
-    onUnmounted(() => {
-      mediaQuery.removeEventListener('change', handleMediaChange)
-    })
+      // Limpiar el listener al desmontar
+      onUnmounted(() => {
+        mediaQuery.removeEventListener('change', handleMediaChange)
+      })
+    }
   }
+
+  // Ejecutar solo en el cliente después de la hidratación
+  onMounted(() => {
+    setupMediaQuery()
+  })
 
   // ============================================================================
   // RETURN

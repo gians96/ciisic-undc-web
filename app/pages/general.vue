@@ -5,7 +5,7 @@
         ============================================================================ -->
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
-                <h1 class="page-title">REGISTRO ESTUDIANTES - VII CIISIC</h1>
+                <h1 class="page-title">REGISTRO GENERAL - VII CIISIC</h1>
                 <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica</p>
             </div>
         </section>
@@ -125,32 +125,6 @@
                             </template>
                         </small>
                     </div>
-                    <!-- Campo de clasificación para estudiantes con transición avanzada -->
-                    <Transition 
-                        name="height-expand"
-                        @enter="onClassificationEnter"
-                        @leave="onClassificationLeave"
-                        @before-enter="onClassificationBeforeEnter"
-                        @after-enter="onClassificationAfterEnter"
-                        @before-leave="onClassificationBeforeLeave"
-                        @after-leave="onClassificationAfterLeave"
-                    >
-                        <div v-if="isStudentPlan" class="classification-container col-span-6 md:col-span-3">
-                            <div class="form-group">
-                                <label for="clasificacion" class="form-label">Clasificación</label>
-                                <select id="clasificacion" v-model="clasificacion" required class="form-input">
-                                    <option value="" disabled selected>Selecciona una opción</option>
-                                    <option value="estudiante_ciclo_1">I CICLO</option>
-                                    <option value="estudiante_ciclo_3">III CICLO</option>
-                                    <option value="estudiante_ciclo_5">V CICLO</option>
-                                    <option value="estudiante_ciclo_7">VII CICLO</option>
-                                    <option value="estudiante_ciclo_9">IX CICLO</option>
-                                    <option value="estudiante_ciclo_10">X CICLO</option>
-                                </select>
-                                <small class="form-hint">Indica el ciclo al que perteneces</small>
-                            </div>
-                        </div>
-                    </Transition>
 
                     <!-- Línea Divisoria -->
                     <div class="col-span-6 form-section-below-classification">
@@ -407,12 +381,12 @@ const router = useRouter()
 const inscriptionPlans = [
     {
         id: 1,
-        title: 'ESTUDIANTES CON KIT',
+        title: 'PROFESIONALES Y PUBLICO EN GENERAL CON KIT',
         badge: 'CON KIT',
-        basePrice: 120.00,
-        institutionalPrice: 100.00,
-        value: 'estudiantes_con_kit',
-        description: 'La experiencia completa para estudiantes con kit de merchandising oficial.',
+        basePrice: 140.00,
+        institutionalPrice: 120.00,
+        value: 'general_con_kit',
+        description: 'La experiencia completa para profesionales y público en general con kit de merchandising oficial.',
         features: [
             { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
             { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
@@ -422,12 +396,12 @@ const inscriptionPlans = [
     },
     {
         id: 2,
-        title: 'ESTUDIANTES SIN KIT',
+        title: 'PROFESIONALES Y PUBLICO EN GENERAL SIN KIT',
         badge: 'SIN KIT',
-        basePrice: 60.00,
-        institutionalPrice: 40.00,
-        value: 'estudiantes_sin_kit',
-        description: 'La opción económica para estudiantes, con acceso a todas las ponencias.',
+        basePrice: 80.00,
+        institutionalPrice: 60.00,
+        value: 'general_sin_kit',
+        description: 'La opción económica para profesionales y público en general, con acceso a todas las ponencias.',
         features: [
             { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
             { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
@@ -723,12 +697,6 @@ const handleSubmit = async () => {
 
     if (!tipoInscripcion.value) {
         showError('❌ Por favor selecciona un tipo de inscripción')
-        return
-    }
-
-    // Validaciones adicionales
-    if (isStudentPlan.value && !clasificacion.value) {
-        showError('❌ Por favor selecciona tu clasificación')
         return
     }
 
@@ -1644,11 +1612,6 @@ input[type="date"]:valid {
 .fade-leave-to {
     opacity: 0;
     transform: translateY(-10px);
-}
-
-/* TRANSICIONES MEJORADAS PARA CAMPO DE CLASIFICACIÓN */
-.classification-container {
-  overflow: hidden;
 }
 
 .height-expand-enter-active {

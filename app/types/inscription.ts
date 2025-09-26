@@ -63,9 +63,12 @@ export interface InscriptionResponse {
 export interface RegistrationType {
     id: number
     nombre: string
+    badge?: string
     precio: number
     descripcion?: string
     activo: boolean
+    caracteristicas?: Array<{icon: string, text: string}> | null
+    value?: string
 }
 
 export interface Classification {

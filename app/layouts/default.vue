@@ -43,15 +43,7 @@
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300"
-              style="
-                clip-path: polygon(
-                  0 0,
-                  calc(100% - 15px) 0,
-                  100% 100%,
-                  15px 100%
-                );
-              "
+              class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
             >
               REGISTRO
             </NuxtLink>
@@ -247,5 +239,15 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Clase para el botón de registro con clip-path */
+.registro-button-clip {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 15px) 0,
+    100% 100%,
+    15px 100%
+  );
 }
 </style>

@@ -112,7 +112,7 @@ const inscriptionPlans = ref([
     title: 'ESTUDIANTES',
     price: 'Desde S/ 60.00',
     value: 'estudiantes',
-    description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado.',
+    description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado digital por 100h.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
@@ -124,7 +124,7 @@ const inscriptionPlans = ref([
     title: 'PROFESIONALES Y PUBLICO GENERAL',
     price: 'Desde S/ 80.00',
     value: 'general',
-    description: 'La opción económica para profesionales y cualquier persona interesada en el congreso, con acceso a todas las ponencias y su certificado.',
+    description: 'La opción económica para profesionales y cualquier persona interesada en el congreso, con acceso a todas las ponencias y su certificado digital por 100h.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:identification', text: 'Carnet de Identificación' },

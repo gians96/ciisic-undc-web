@@ -3,8 +3,9 @@
         <!-- ===========================================================================
         ENCABEZADO DE PÁGINA
         ============================================================================ -->
-        <section class="breadcrumb-area">
-            <div class="breadcrumb-container">
+        
+        <section v-if="!error" class="breadcrumb-area">
+        <div class="breadcrumb-container">
                 <h1 class="page-title">¡INSCRIPCIÓN COMPLETADA!</h1>
                 <p class="page-subtitle">Tu registro ha sido procesado exitosamente</p>
             </div>
@@ -24,15 +25,60 @@
 
                 <!-- Error al cargar -->
                 <div v-else-if="error" class="error-state">
-                    <Icon name="heroicons:exclamation-triangle" class="h-12 w-12 text-red-500 mx-auto mb-4" />
-                    <h2 class="text-xl font-bold text-white mb-2">Error al cargar la información</h2>
-                    <p class="text-gray-300 mb-6">{{ error }}</p>
-                    <button 
-                        @click="loadInscription"
-                        class="btn-primary"
-                    >
-                        Intentar de nuevo
-                    </button>
+                    <div class="error-content">
+                        <div class="error-icon">
+                            <Icon :name="getErrorContent(error).icon" class="h-16 w-16 mx-auto mb-4" />
+                        </div>
+                        
+                        <div class="error-text">
+                            <h2 class="error-title">{{ getErrorContent(error).title }}</h2>
+                            <p class="error-message">{{ getErrorContent(error).message }}</p>
+                            <p class="error-suggestion">{{ getErrorContent(error).suggestion }}</p>
+                        </div>
+
+                        <div class="error-actions">
+                            <button 
+                                v-if="!getErrorContent(error).actionLink"
+                                @click="loadInscription"
+                                class="btn-primary"
+                            >
+                                <Icon name="heroicons:arrow-path" class="h-5 w-5 mr-2" />
+                                {{ getErrorContent(error).actionText }}
+                            </button>
+                            
+                            <NuxtLink 
+                                v-else
+                                :to="getErrorContent(error).actionLink || '/'"
+                                class="btn-primary"
+                            >
+                                <Icon name="heroicons:arrow-right" class="h-5 w-5 mr-2" />
+                                {{ getErrorContent(error).actionText }}
+                            </NuxtLink>
+
+                            <button 
+                                @click="loadInscription"
+                                class="btn-secondary"
+                            >
+                                <Icon name="heroicons:arrow-path" class="h-5 w-5 mr-2" />
+                                Intentar de nuevo
+                            </button>
+                        </div>
+
+                        <!-- Información de contacto -->
+                        <div class="error-help">
+                            <p class="help-text">¿Necesitas ayuda?</p>
+                            <div class="help-options">
+                                <a href="mailto:congreso@undc.edu.pe" class="help-link">
+                                    <Icon name="heroicons:envelope" class="h-4 w-4 mr-1" />
+                                    congreso@undc.edu.pe
+                                </a>
+                                <a href="https://wa.me/51949026908" class="help-link">
+                                    <Icon name="heroicons:phone" class="h-4 w-4 mr-1" />
+                                    +51 949 026 908
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Información de la inscripción -->
@@ -138,7 +184,7 @@
                     <Icon name="heroicons:document-magnifying-glass" class="h-12 w-12 text-gray-500 mx-auto mb-4" />
                     <h2 class="text-xl font-bold text-white mb-2">No se encontró información</h2>
                     <p class="text-gray-300 mb-6">No se pudo cargar la información de la inscripción</p>
-                    <NuxtLink to="/register" class="btn-primary">
+                    <NuxtLink to="/planes" class="btn-primary">
                         Hacer nueva inscripción
                     </NuxtLink>
                 </div>
@@ -153,9 +199,9 @@
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-    title: 'Confirmación de Inscripción - VII CIISIC UNDC',
+    title: 'Confirmación | VII CIISIC',
     meta: [
-        { name: 'description', content: 'Confirmación de inscripción exitosa al VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+        { name: 'description', content: 'Confirmación de inscripción exitosa al VII CIISIC de la UNDC.' }
     ]
 })
 
@@ -177,16 +223,26 @@ const inscriptionId = computed(() => route.query.id as string)
 // ===========================================================================
 const loadInscription = async () => {
     if (!inscriptionId.value) {
-        error.value = 'ID de inscripción no proporcionado'
+        error.value = 'no_id'
         return
     }
 
     try {
         const response: any = await getInscriptionById(parseInt(inscriptionId.value))
         inscription.value = response.data
-    } catch (err) {
+    } catch (err: any) {
         console.error('Error cargando inscripción:', err)
-        error.value = 'No se pudo cargar la información de la inscripción'
+        
+        // Determinar tipo de error específico
+        if (err.response?.status === 404) {
+            error.value = 'not_found'
+        } else if (err.response?.status === 500) {
+            error.value = 'server_error'
+        } else if (!navigator.onLine) {
+            error.value = 'no_connection'
+        } else {
+            error.value = 'general_error'
+        }
     }
 }
 
@@ -205,12 +261,65 @@ const getStatusClass = (status: string) => {
         case 'pendiente':
             return 'status-pending'
         case 'aprobado':
-        case 'confirmado':
             return 'status-approved'
         case 'rechazado':
             return 'status-rejected'
+        case 'en revisión':
+            return 'status-reviewing'
+        case 'cancelado':
+            return 'status-cancelled'
         default:
             return 'status-default'
+    }
+}
+
+const getErrorContent = (errorType: string) => {
+    switch (errorType) {
+        case 'no_id':
+            return {
+                icon: 'heroicons:question-mark-circle',
+                title: '¿Dónde está tu inscripción?',
+                message: 'Parece que llegaste aquí sin un número de inscripción válido.',
+                suggestion: 'Intenta acceder desde el enlace en tu confirmación de registro.',
+                actionText: 'Ir a registro',
+                actionLink: '/planes'
+            }
+        case 'not_found':
+            return {
+                icon: 'heroicons:magnifying-glass',
+                title: 'Inscripción no encontrada',
+                message: `No pudimos encontrar la inscripción #${inscriptionId.value}`,
+                suggestion: 'Verifica que el número de inscripción sea correcto o que tu registro se haya completado exitosamente.',
+                actionText: 'Verificar registro',
+                actionLink: '/planes'
+            }
+        case 'no_connection':
+            return {
+                icon: 'heroicons:wifi',
+                title: 'Sin conexión a internet',
+                message: 'No hay conexión a internet disponible.',
+                suggestion: 'Verifica tu conexión y vuelve a intentarlo.',
+                actionText: 'Reintentar',
+                actionLink: null
+            }
+        case 'server_error':
+            return {
+                icon: 'heroicons:server',
+                title: 'Error del servidor',
+                message: 'Hay un problema temporal en nuestros servidores.',
+                suggestion: 'Por favor, intenta nuevamente en unos minutos.',
+                actionText: 'Reintentar',
+                actionLink: null
+            }
+        default:
+            return {
+                icon: 'heroicons:exclamation-triangle',
+                title: 'Oops, algo salió mal',
+                message: 'Ocurrió un error inesperado al cargar tu inscripción.',
+                suggestion: 'Intenta recargar la página o contacta con soporte si el problema persiste.',
+                actionText: 'Reintentar',
+                actionLink: null
+            }
     }
 }
 
@@ -279,6 +388,92 @@ onMounted(() => {
     padding: 3rem;
 }
 
+/* Error State Styles */
+.error-content {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #1e293b;
+    border: 1px solid #ef4444;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+    margin-bottom: 1.5rem;
+}
+
+.error-icon .iconify {
+    color: #ef4444;
+}
+
+.error-text {
+    margin-bottom: 2rem;
+}
+
+.error-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.75rem;
+}
+
+.error-message {
+    color: #f87171;
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+}
+
+.error-suggestion {
+    color: #cbd5e1;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.error-help {
+    border-top: 1px solid #374151;
+    padding-top: 1.5rem;
+}
+
+.help-text {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.help-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.help-link {
+    display: inline-flex;
+    align-items: center;
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    transition: all 300ms;
+}
+
+.help-link:hover {
+    background-color: #374151;
+    border-color: #60a5fa;
+    transform: translateY(-1px);
+}
+
 /* Confirmation Card */
 .confirmation-card {
     background-color: #1e293b;
@@ -345,27 +540,34 @@ onMounted(() => {
 
 .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 1rem;
 }
 
 .detail-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 1rem;
     background-color: #334155;
     border-radius: 0.5rem;
+    gap: 1rem;
+    min-height: 60px;
 }
 
 .detail-label {
     color: #94a3b8;
     font-weight: 500;
+    min-width: 120px;
+    flex-shrink: 0;
 }
 
 .detail-value {
     color: #ffffff;
     font-weight: 600;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 200px;
 }
 
 .detail-value.status {
@@ -387,6 +589,16 @@ onMounted(() => {
 
 .status-rejected {
     background-color: #dc2626;
+    color: #ffffff;
+}
+
+.status-reviewing {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.status-cancelled {
+    background-color: #6b7280;
     color: #ffffff;
 }
 
@@ -470,11 +682,13 @@ onMounted(() => {
         font-size: 1.75rem;
     }
     
-    .confirmation-card {
+    .confirmation-card,
+    .error-content {
         padding: 1.5rem;
     }
     
-    .confirmation-title {
+    .confirmation-title,
+    .error-title {
         font-size: 1.5rem;
     }
     
@@ -488,8 +702,19 @@ onMounted(() => {
         gap: 0.5rem;
     }
     
-    .confirmation-actions {
+    .confirmation-actions,
+    .error-actions {
         flex-direction: column;
+    }
+    
+    .help-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-icon .iconify {
+        height: 12rem !important;
+        width: 12rem !important;
     }
 }
 </style>

@@ -42,7 +42,6 @@
             <a href="mailto:congreso@undc.edu.pe" class="footer-link">congreso@undc.edu.pe</a>
             <a href="https://wa.me/51949026908" target="_blank" rel="noopener noreferrer" class="footer-link">+51 949026908</a>
             <span class="footer-link footer-text">Auditorio "Casa de la Cultura", San Vicente - Cañete</span>
-
           </nav>
         </div>
       </div>
