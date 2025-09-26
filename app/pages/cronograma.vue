@@ -20,18 +20,46 @@
             CRONOGRAMA DE ACTIVIDADES
           </h1>
 
-          <!-- Navegación de días integrada en el hero -->
-          <div class="flex flex-wrap justify-center gap-3 mb-8 fade-in-element" style="animation-delay: 0.4s;">
-            <div 
-              v-for="day in days" 
-              :key="day.id"
-              @click="selectedDay = day.id"
-              class="day-nav-btn-hero"
-              :class="{ 'active': selectedDay === day.id }"
-            >
-              <div class="font-medium text-sm">{{ day.name }}</div>
-              <div class="text-2xl font-bold">{{ day.date }}</div>
+          <!-- Control de vista (oculto en móvil) -->
+          <div class="hidden md:flex justify-center mb-8 fade-in-element" style="animation-delay: 0.3s;">
+            <div class="view-toggle">
+              <button 
+                @click="viewMode = 'timeline'"
+                class="toggle-btn"
+                :class="{ 'active': viewMode === 'timeline' }"
+              >
+                <span class="icon">📅</span>
+                Línea de Tiempo
+              </button>
+              <button 
+                @click="viewMode = 'calendar'"
+                class="toggle-btn"
+                :class="{ 'active': viewMode === 'calendar' }"
+              >
+                <span class="icon">🗓️</span>
+                Vista Calendario
+              </button>
             </div>
+          </div>
+
+          <!-- Navegación de días integrada en el hero -->
+          <!-- En desktop: solo se muestra si viewMode es timeline -->
+          <!-- En móvil: siempre se muestra -->
+          <div v-if="shouldShowDayNavigation" class="day-navigation-container">
+            <transition name="fade">
+              <div class="flex flex-wrap justify-center gap-3 mb-8" key="timeline-nav">
+                <div 
+                  v-for="day in days" 
+                  :key="day.id"
+                  @click="selectedDay = day.id"
+                  class="day-nav-btn-hero"
+                  :class="{ 'active': selectedDay === day.id }"
+                >
+                  <div class="font-medium text-sm">{{ day.name }}</div>
+                  <div class="text-2xl font-bold">{{ day.date }}</div>
+                </div>
+              </div>
+            </transition>
           </div>
 
           <div class="flex justify-center fade-in-element" style="animation-delay: 0.6s;">
@@ -46,7 +74,8 @@
         
         <div class="space-y-8">
 
-          <div class="day-content">
+          <!-- Vista Timeline -->
+          <div v-if="shouldShowTimeline" class="day-content">
             <transition name="fade" mode="out-in">
               <div :key="selectedDay" class="selected-day-events">
                 <div class="timeline-container max-w-none">
@@ -86,6 +115,82 @@
             </transition>
           </div>
 
+          <!-- Vista Calendar -->
+          <div v-else-if="viewMode === 'calendar' && !isMobile" class="calendar-view">
+            <transition name="fade" mode="out-in">
+              <div class="calendar-grid">
+                <div 
+                  v-for="day in days" 
+                  :key="day.id"
+                  class="calendar-day-card"
+                >
+                  <div class="calendar-day-header">
+                    <h3 class="calendar-day-title">
+                      <span class="day-name">{{ day.name }}</span>
+                      <span class="day-date">{{ day.date }}</span>
+                    </h3>
+                  </div>
+                  
+                  <div class="calendar-events-list">
+                    <template v-for="(event, index) in day.events" :key="index">
+                      <!-- Eventos multi-slot como Gymkana Sistémica -->
+                      <div 
+                        v-if="event.time === '08:00 - 10:30' && event.title === 'Gymkana Sistémica'"
+                        class="calendar-event-item multi-slot-event"
+                        :class="event.type"
+                        :style="{ height: getMultiSlotEventHeight() + 'px' }"
+                      >
+                        <div class="calendar-event-time">{{ event.time }}</div>
+                        <div class="calendar-event-content">
+                          <h4 class="calendar-event-title">{{ event.title }}</h4>
+                          <div v-if="event.speaker" class="calendar-event-speaker">
+                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <span class="calendar-speaker-name">{{ event.speaker }}</span>
+                          </div>
+                          <div class="calendar-event-type">{{ event.description }}</div>
+                        </div>
+                      </div>
+                      <!-- Evento Deporte y Recreación multi-slot -->
+                      <div 
+                        v-else-if="event.time === '10:30 - 13:00' && event.title === 'Deporte y Recreación'"
+                        class="calendar-event-item multi-slot-event"
+                        :class="event.type"
+                        :style="{ height: getDeporteEventHeight() + 'px' }"
+                      >
+                        <div class="calendar-event-time">{{ event.time }}</div>
+                        <div class="calendar-event-content">
+                          <h4 class="calendar-event-title">{{ event.title }}</h4>
+                          <div v-if="event.speaker" class="calendar-event-speaker">
+                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <span class="calendar-speaker-name">{{ event.speaker }}</span>
+                          </div>
+                          <div class="calendar-event-type">{{ event.description }}</div>
+                        </div>
+                      </div>
+                      <!-- Eventos normales -->
+                      <div 
+                        v-else
+                        class="calendar-event-item"
+                        :class="event.type"
+                        :style="{ height: getEventHeight(event) + 'px' }"
+                      >
+                        <div class="calendar-event-time">{{ event.time }}</div>
+                        <div class="calendar-event-content">
+                          <h4 class="calendar-event-title">{{ event.title }}</h4>
+                          <div v-if="event.speaker" class="calendar-event-speaker">
+                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <span class="calendar-speaker-name">{{ event.speaker }}</span>
+                          </div>
+                          <div class="calendar-event-type">{{ event.description }}</div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+
         </div>
 
       </div>
@@ -112,6 +217,8 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 const selectedDay = ref('lunes')
+const viewMode = ref<'timeline' | 'calendar'>('timeline')
+const isMobile = ref(false)
 
 // ============================================================================
 // DATOS DEL CRONOGRAMA
@@ -150,7 +257,7 @@ const days = ref([
     events: [
       {
         time: '08:00 - 09:00',
-        title: 'Inauguración y Registro de asistencia',
+        title: 'Inauguración del ciclo de ponencias y Registro de asistencia',
         type: 'registro',
         typeLabel: 'Inauguración y Registro',
         description: 'Inauguramos el ciclo de ponencias del VII CIISIC.',
@@ -159,7 +266,7 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Aplicaciones de la Ciberseguridad',
+        title: 'Principios de seguridad y el rol del SSDLC en la Ingeniería de Software',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Universidad de Buenos Aires - Argentina',
@@ -241,17 +348,17 @@ const days = ref([
         title: 'Título de Ponencia',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Internacional',
-        speaker: 'Ponente Internacional 2',
-        flag: '🇦🇷'
+        description: 'Google Developer Experts - Uruguay',
+        speaker: 'Damián Siré',
+        flag: '🇺🇾'
       },
       {
         time: '09:45 - 10:30',
         title: 'Título de Ponencia',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Perú',
-        speaker: 'Ponente Nacional 3',
+        description: 'CISCO - Perú',
+        speaker: 'Miguel Garro',
         flag: '🇵🇪'
       },
       {
@@ -265,11 +372,11 @@ const days = ref([
       },
       {
         time: '11:15 - 12:00',
-        title: 'Título de Ponencia',
+        title: 'Habilidades del Futuro',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Institución - Perú',
-        speaker: 'Ponente Nacional 4',
+        description: 'Universidad Continental - Perú',
+        speaker: 'Ivo Yance Carlos',
         flag: '🇵🇪'
       },
       {
@@ -317,10 +424,10 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Título de Ponencia',
+        title: 'Más allá del código: Potencia tus habilidades como desarrollador en la era GenAI - Softskills',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Universidad Distrital Francisco José de Caldas - Colombia',
+        description: 'AWS - Colombia',
         speaker: 'Ing. Jose Verbel Tous',
         flag: '🇨🇴'
       },
@@ -414,19 +521,10 @@ const days = ref([
       },
       {
         time: '14:00 - 18:00',
-        title: 'Deporte y Recreación',
+        title: 'Actividades culturales y deporte',
         type: 'otros',
         typeLabel: 'Deporte',
-        description: 'Competencias deportivas y actividades recreativas para los asistentes.',
-        speaker: null,
-        flag: null
-      },
-      {
-        time: '18:00 - 20:00',
-        title: 'Actividades Culturales',
-        type: 'otros',
-        typeLabel: 'Cultura',
-        description: 'Como cierre del VII CIISIC se presentarán diversas expresiones culturales.',
+        description: 'Se presentarán diversas expresiones culturales y se continuarán con las competencias deportivas.',
         speaker: null,
         flag: null
       },
@@ -441,6 +539,191 @@ const days = ref([
 const getCurrentDay = computed(() => {
   return days.value.find(day => day.id === selectedDay.value) || days.value[0]
 })
+
+const shouldShowTimeline = computed(() => {
+  return viewMode.value === 'timeline' || isMobile.value
+})
+
+const shouldShowDayNavigation = computed(() => {
+  return viewMode.value === 'timeline' || isMobile.value
+})
+
+// Computed para agrupar eventos por franjas horarias
+const eventsByTimeSlot = computed(() => {
+  const timeSlots: Record<string, any[]> = {}
+  
+  days.value.forEach(day => {
+    day.events.forEach(event => {
+      // Excluir eventos multi-slot de la organización normal
+      if (event.time === '08:00 - 10:30' && event.title === 'Gymkana Sistémica') {
+        return
+      }
+      if (event.time === '10:30 - 13:00' && event.title === 'Deporte y Recreación') {
+        return
+      }
+      
+      if (!timeSlots[event.time]) {
+        timeSlots[event.time] = []
+      }
+      timeSlots[event.time]!.push({
+        ...event,
+        dayId: day.id,
+        dayName: day.name
+      })
+    })
+  })
+  
+  return timeSlots
+})
+
+// Computed para calcular el contenido más largo de cada franja horaria
+const maxHeightByTimeSlot = computed(() => {
+  const heights: Record<string, number> = {}
+  
+  Object.keys(eventsByTimeSlot.value).forEach(timeSlot => {
+    const events = eventsByTimeSlot.value[timeSlot]
+    if (!events) return
+    
+    let maxHeight = 120 // altura mínima base
+    
+    events.forEach(event => {
+      // Calcular altura real necesaria para cada evento
+      let eventHeight = 50 // padding base
+      
+      // Altura del tiempo (siempre presente)
+      eventHeight += 26
+      
+      // Altura del título (más conservador)
+      const titleLines = Math.max(1, Math.ceil(event.title.length / 30))
+      eventHeight += titleLines * 20
+      
+      // Altura del speaker si existe
+      if (event.speaker && event.speaker.trim() !== '') {
+        eventHeight += 22
+      }
+      
+      // Altura de la descripción si existe
+      if (event.description && event.description.trim() !== '') {
+        const descLines = Math.max(1, Math.ceil(event.description.length / 40))
+        eventHeight += descLines * 18
+      }
+      
+      // Altura del tipo de evento
+      eventHeight += 18
+      
+      // Espaciado adicional entre elementos (reducido)
+      eventHeight += 15
+      
+      maxHeight = Math.max(maxHeight, eventHeight)
+    })
+    
+    heights[timeSlot] = maxHeight
+  })
+  
+  return heights
+})
+
+// Función para obtener la altura de un evento específico
+const getEventHeight = (event: any) => {
+  const height = maxHeightByTimeSlot.value[event.time] || 120
+  return height
+}
+
+// Función para calcular la altura del evento multi-slot (Gymkana Sistémica)
+const getMultiSlotEventHeight = () => {
+  // Calcular la altura total desde "08:00 - 09:00" hasta "09:45 - 10:30"
+  const timeSlots = ['08:00 - 09:00', '09:00 - 09:45', '09:45 - 10:30']
+  let totalHeight = 0
+  
+  timeSlots.forEach(timeSlot => {
+    totalHeight += (maxHeightByTimeSlot.value[timeSlot] || 120)
+  })
+  
+  // Agregar espacio entre eventos (gap)
+  totalHeight += (timeSlots.length - 1) * 8 // 0.5rem gap = 8px
+  
+  return totalHeight
+}
+
+// Función para calcular la altura del evento "Deporte y Recreación" (10:30 - 13:00)
+const getDeporteEventHeight = () => {
+  // Calcular la altura total desde "10:30 - 11:15" hasta "12:00 - 13:00"
+  const timeSlots = ['10:30 - 11:15', '11:15 - 12:00', '12:00 - 13:00']
+  let totalHeight = 0
+  
+  timeSlots.forEach(timeSlot => {
+    totalHeight += (maxHeightByTimeSlot.value[timeSlot] || 120)
+  })
+  
+  // Agregar espacio entre eventos (gap)
+  totalHeight += (timeSlots.length - 1) * 8 // 0.5rem gap = 8px
+  
+  return totalHeight
+}
+
+// Función helper para obtener todos los eventos de una franja horaria (para debug)
+const getEventsAtTime = (time: string) => {
+  return eventsByTimeSlot.value[time] || []
+}
+
+// Computed para determinar qué eventos ocupan múltiples franjas
+const multiSlotEvents = computed(() => {
+  const multiEvents: Record<string, { startTime: string, endTime: string, event: any, dayId: string }[]> = {}
+  
+  days.value.forEach(day => {
+    day.events.forEach(event => {
+      // Eventos que ocupan múltiples franjas
+      if (event.time === '08:00 - 10:30' && event.title === 'Gymkana Sistémica') {
+        if (!multiEvents[day.id]) multiEvents[day.id] = []
+        multiEvents[day.id]!.push({
+          startTime: '08:00 - 09:00',
+          endTime: '09:45 - 10:30',
+          event: event,
+          dayId: day.id
+        })
+      }
+      
+      // Deporte y Recreación (10:30 - 13:00)
+      if (event.time === '10:30 - 13:00' && event.title === 'Deporte y Recreación') {
+        if (!multiEvents[day.id]) multiEvents[day.id] = []
+        multiEvents[day.id]!.push({
+          startTime: '10:30 - 11:15',
+          endTime: '12:00 - 13:00',
+          event: event,
+          dayId: day.id
+        })
+      }
+    })
+  })
+  
+  return multiEvents
+})
+
+// Función para verificar si un slot está ocupado por un evento multi-slot
+const isSlotOccupiedByMultiEvent = (dayId: string, timeSlot: string) => {
+  const multiEventsForDay = multiSlotEvents.value[dayId] || []
+  return multiEventsForDay.some(multiEvent => {
+    const allTimeSlots = Object.keys(eventsByTimeSlot.value).sort()
+    const startIndex = allTimeSlots.indexOf(multiEvent.startTime)
+    const endIndex = allTimeSlots.indexOf(multiEvent.endTime)
+    const currentIndex = allTimeSlots.indexOf(timeSlot)
+    
+    return currentIndex >= startIndex && currentIndex <= endIndex
+  })
+}
+
+// Función para obtener el evento multi-slot que ocupa un slot específico
+const getMultiEventForSlot = (dayId: string, timeSlot: string) => {
+  const multiEventsForDay = multiSlotEvents.value[dayId] || []
+  return multiEventsForDay.find(multiEvent => {
+    const allTimeSlots = Object.keys(eventsByTimeSlot.value).sort()
+    const startIndex = allTimeSlots.indexOf(multiEvent.startTime)
+    const endIndex = allTimeSlots.indexOf(multiEvent.endTime)
+    const currentIndex = allTimeSlots.indexOf(timeSlot)
+    
+    return currentIndex >= startIndex && currentIndex <= endIndex
+  })
+}
 
 // ============================================================================
 // REFS Y VARIABLES REACTIVAS
@@ -486,14 +769,65 @@ const observeElements = () => {
 // LIFECYCLE
 // ============================================================================
 
+// Watcher para manejar cambios de vista
+watch(viewMode, () => {
+  nextTick(() => {
+    // Forzar la visibilidad de elementos cuando cambie el modo de vista
+    const fadeElements = document.querySelectorAll('.fade-in-element')
+    fadeElements.forEach((el) => {
+      const element = el as HTMLElement
+      element.classList.add('visible')
+    })
+  })
+})
+
+// Función para detectar si es móvil y establecer vista predeterminada
+const checkMobile = () => {
+  if (process.client) {
+    const wasMobile = isMobile.value
+    isMobile.value = window.innerWidth < 768
+    
+    // Solo cambiar la vista si es la primera vez que se detecta el dispositivo
+    // o si se cambia de móvil a desktop o viceversa
+    if (wasMobile !== isMobile.value) {
+      if (isMobile.value) {
+        // En móvil: siempre timeline
+        viewMode.value = 'timeline'
+      } else {
+        // En desktop: predeterminado calendario
+        viewMode.value = 'calendar'
+      }
+    }
+  }
+}
+
 onMounted(() => {
   nextTick(() => {
     observeElements()
+    
+    // Inicializar la detección de móvil y vista predeterminada
+    if (process.client) {
+      const initialIsMobile = window.innerWidth < 768
+      isMobile.value = initialIsMobile
+      
+      // Establecer vista predeterminada según el dispositivo
+      if (initialIsMobile) {
+        viewMode.value = 'timeline'  // Móvil: timeline
+      } else {
+        viewMode.value = 'calendar'  // Desktop: calendario
+      }
+      
+      // Listener para cambios en el tamaño de pantalla
+      window.addEventListener('resize', checkMobile)
+    }
   })
 })
 
 onUnmounted(() => {
   if (observer) observer.disconnect()
+  if (process.client) {
+    window.removeEventListener('resize', checkMobile)
+  }
 })
 
 // ============================================================================
@@ -596,6 +930,12 @@ useHead({
   background: rgba(34, 197, 94, 0.3);
   border-color: #22c55e;
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+.day-navigation-container {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .day-nav-btn {
@@ -937,6 +1277,33 @@ useHead({
   .fade-in-element {
     transform: translateY(20px);
   }
+
+  /* Estilos responsive para vista calendario */
+  .calendar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .calendar-day-card {
+    min-width: unset;
+  }
+  
+  .calendar-day-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .calendar-events-list {
+    padding: 0.75rem;
+  }
+  
+  .toggle-btn {
+    padding: 10px 16px;
+    font-size: 0.8125rem;
+  }
+  
+  .toggle-btn .icon {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -951,6 +1318,70 @@ useHead({
   
   .event-title {
     font-size: 1rem;
+  }
+  
+  /* Estilos móviles para vista calendario */
+  .view-toggle {
+    flex-direction: column;
+    gap: 2px;
+    padding: 3px;
+  }
+  
+  .toggle-btn {
+    justify-content: center;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  
+  .calendar-day-header {
+    padding: 0.5rem;
+  }
+  
+  .day-date {
+    font-size: 1.25rem;
+  }
+  
+  .calendar-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .calendar-event-item {
+    padding: 0.5rem;
+  }
+  
+  .calendar-event-title {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Media query para pantallas grandes - mantener las 5 columnas */
+@media (min-width: 1200px) {
+  .calendar-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .calendar-event-item {
+    padding: 0.625rem;
+    margin-bottom: 0.625rem;
+  }
+  
+  .calendar-event-title {
+    font-size: 0.875rem;
+  }
+  
+  .calendar-event-time {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Media query para pantallas medianas */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .calendar-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
   }
 }
 
@@ -976,6 +1407,231 @@ useHead({
   .day-nav-btn-hero:hover {
     transform: none;
   }
+}
+
+/* ============================================================================
+   CONTROL DE VISTA - TOGGLE BUTTONS
+   ============================================================================ */
+
+.view-toggle {
+  display: flex;
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(156, 163, 175, 1);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.toggle-btn:hover {
+  color: white;
+  background: rgba(51, 65, 85, 0.3);
+}
+
+.toggle-btn.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: rgb(74, 222, 128);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+
+.toggle-btn .icon {
+  font-size: 1.1rem;
+}
+
+/* ============================================================================
+   VISTA CALENDARIO - GRID LAYOUT
+   ============================================================================ */
+
+.calendar-view {
+  width: 100%;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.calendar-day-card {
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.calendar-day-card:hover {
+  background: rgba(51, 65, 85, 0.3);
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.calendar-day-header {
+  background: rgba(34, 197, 94, 0.1);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.calendar-day-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.day-name {
+  color: rgb(74, 222, 128);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.day-date {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.calendar-events-list {
+  padding: 0.5rem;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.calendar-event-item {
+  background: rgba(51, 65, 85, 0.2);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.calendar-event-item:last-child {
+  margin-bottom: 0;
+}
+
+.calendar-event-item:hover {
+  background: rgba(71, 85, 105, 0.3);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+/* Colores por tipo de evento en vista calendario */
+.calendar-event-item.ponencia {
+  border-left: 4px solid rgb(168, 85, 247);
+}
+
+.calendar-event-item.taller {
+  border-left: 4px solid rgb(234, 179, 8);
+}
+
+.calendar-event-item.otros {
+  border-left: 4px solid rgb(99, 102, 241);
+}
+
+.calendar-event-item.ceremonia {
+  border-left: 4px solid rgb(239, 68, 68);
+}
+
+.calendar-event-item.esports {
+  border-left: 4px solid rgb(236, 72, 153);
+}
+
+.calendar-event-item.registro {
+  border-left: 4px solid rgb(59, 130, 246);
+}
+
+.calendar-event-item.investigacion {
+  border-left: 4px solid rgb(249, 115, 22);
+}
+
+/* Estilos para eventos multi-slot - mismo estilo que cards normales */
+.multi-slot-event {
+  background: rgba(51, 65, 85, 0.2);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  border-left: 4px solid rgb(99, 102, 241);
+}
+
+.calendar-event-time {
+  color: rgb(74, 222, 128);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  width: fit-content;
+}
+
+.calendar-event-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+  text-align: left;
+}
+
+.calendar-event-title {
+  color: white;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.calendar-event-speaker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-flag {
+  font-size: 0.875rem;
+}
+
+.calendar-speaker-name {
+  color: rgb(209, 213, 219);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.calendar-event-type {
+  color: rgb(156, 163, 175);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 @media (prefers-contrast: high) {

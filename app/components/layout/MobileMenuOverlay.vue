@@ -84,7 +84,7 @@
                 @click="closeMenu"
                 class="w-full bg-green-500 hover:bg-green-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
               >
-                REGISTRO
+                INSCRIPCIONES
               </NuxtLink>
             </div>
           </div>

@@ -5,8 +5,8 @@
         ============================================================================ -->
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
-                <h1 class="page-title">{{ selectedPlan?.title || 'REGISTRO' }} - VII CIISIC</h1>
-                <p class="page-subtitle">{{ selectedPlan?.description }}</p>
+                <h1 class="page-title">REGISTRO GENERAL - VII CIISIC</h1>
+                <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica</p>
             </div>
         </section>
 
@@ -14,10 +14,7 @@
         SISTEMA DE NOTIFICACIONES
         ============================================================================ -->
         <NotificationSystem :error-message="errorMessage" :success-message="successMessage"
-            :show-action-button="!!completedInscriptionId" action-button-text="Ver confirmación"
-            @clear-error="errorMessage = ''" @clear-success="successMessage = ''" @action="goToConfirmation" />
-
-
+            @clear-error="errorMessage = ''" @clear-success="successMessage = ''" />
 
         <!-- ===========================================================================
         SECCIÓN DEL FORMULARIO
@@ -88,85 +85,46 @@
                     </div>
 
 
-                    <!-- Selección de Tipo de Inscripción - Cards Compactas -->
+                    <!-- Selección de Tipo de Inscripción - Cards Simples -->
                     <div class="form-group col-span-6 form-section-below-classification">
                         <label class="form-label">Tipo de inscripción</label>
                         <div class="plan-cards-container">
                             <div v-for="plan in availablePlans" :key="plan.id" @click="selectPlan(plan.id)"
-                                class="plan-card-compact" :class="{ 'selected': planId === plan.id }">
+                                class="plan-card-simple" 
+                                :class="{ 
+                                    'selected': planId === plan.id, 
+                                    'disabled': !isEmailValid 
+                                }">
                                 <div class="plan-card-header">
-                                    <div class="plan-title-container">
-                                        <h4 class="plan-card-title">{{ plan.title }}</h4>
-                                        <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
-                                            }}</span>
-
-                                    </div>
+                                    <h4 class="plan-card-title">{{ plan.title }}</h4>
+                                    <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge }}</span>
                                 </div>
-                                <div class="plan-price-container">
-                                    <div class="plan-card-price">{{ plan.price }}</div>
-                                    <!-- Icono de información con tooltip -->
-                                    <div class="plan-info-tooltip-container">
-                                        <Icon @click.prevent.stop name="heroicons:information-circle"
-                                            class="plan-info-icon" />
-                                        <div class="plan-tooltip">
-                                            <!-- <div class="plan-tooltip-title">{{ plan.title }}</div> -->
-                                            <!-- <div class="plan-tooltip-price">{{ plan.price }}</div> -->
-                                            <div class="plan-tooltip-features">
-                                                <div v-for="feature in plan.features" :key="feature.text"
-                                                    class="plan-tooltip-feature">
-                                                    <Icon :name="feature.icon" class="plan-feature-icon"
-                                                        :class="{ 'feature-excluded': feature.icon === 'heroicons:x-mark' }" />
-                                                    <span
-                                                        :class="{ 'feature-excluded-text': feature.icon === 'heroicons:x-mark' }">
-                                                        {{ feature.text }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="plan-tooltip-arrow"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="plan-card-price">{{ plan.price }}</div>
                                 <div class="plan-card-description">{{ plan.description }}</div>
+                                
+                                <!-- Lista de características -->
+                                <ul class="plan-features-list">
+                                    <li v-for="feature in plan.features" :key="feature.text" class="plan-feature-item">
+                                        <Icon :name="feature.icon" 
+                                              :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-icon excluded' : 'plan-feature-icon included'" />
+                                        <span :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-text excluded' : 'plan-feature-text'">
+                                            {{ feature.text }}
+                                        </span>
+                                    </li>
+                                </ul>
 
-                                <!-- Icono de selección -->
-                                <div class="plan-card-selector">
-                                    <div class="plan-selector-radio" :class="{ 'selected': planId === plan.id }">
-                                        <div v-if="planId === plan.id" class="plan-selector-dot"></div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
-                        <small class="form-hint">Selecciona el plan que mejor se adapte a tus necesidades - Hover sobre
-                            <Icon name="heroicons:information-circle" class="inline h-4 w-4 text-blue-400" /> para ver
-                            detalles
+                        <small class="form-hint">
+                            <template v-if="!isEmailValid">
+                                Completa tu correo electrónico para habilitar la selección de planes
+                            </template>
+                            <template v-else>
+                                Selecciona el plan que mejor se adapte a tus necesidades
+                            </template>
                         </small>
                     </div>
-                    <!-- Campo de clasificación para estudiantes con transición avanzada -->
-                    <Transition name="height-expand" @enter="onClassificationEnter" @leave="onClassificationLeave"
-                        @before-enter="onClassificationBeforeEnter" @after-enter="onClassificationAfterEnter"
-                        @before-leave="onClassificationBeforeLeave" @after-leave="onClassificationAfterLeave">
-                        <div v-if="isStudentPlan" class="classification-container col-span-6 md:col-span-3">
-                            <div class="form-group">
-                                <label for="clasificacion" class="form-label">Clasificación</label>
-                                <select id="clasificacion" v-model="clasificacion" required class="form-input">
-                                    <option value="" disabled selected>Selecciona una opción</option>
-                                    <option value="DOCENTE">DOCENTE</option>
-                                    <option value="POSGRADO">POSGRADO</option>
-                                    <option value="ESTUDIANTE - I CICLO">ESTUDIANTE - I CICLO</option>
-                                    <option value="ESTUDIANTE - II CICLO">ESTUDIANTE - II CICLO</option>
-                                    <option value="ESTUDIANTE - III CICLO">ESTUDIANTE - III CICLO</option>
-                                    <option value="ESTUDIANTE - IV CICLO">ESTUDIANTE - IV CICLO</option>
-                                    <option value="ESTUDIANTE - V CICLO">ESTUDIANTE - V CICLO</option>
-                                    <option value="ESTUDIANTE - VI CICLO">ESTUDIANTE - VI CICLO</option>
-                                    <option value="ESTUDIANTE - VII CICLO">ESTUDIANTE - VII CICLO</option>
-                                    <option value="ESTUDIANTE - VIII CICLO">ESTUDIANTE - VIII CICLO</option>
-                                    <option value="ESTUDIANTE - IX CICLO">ESTUDIANTE - IX CICLO</option>
-                                    <option value="ESTUDIANTE - X CICLO">ESTUDIANTE - X CICLO</option>
-                                </select>
-                                <small class="form-hint">Indica el ciclo al que perteneces</small>
-                            </div>
-                        </div>
-                    </Transition>
 
                     <!-- Línea Divisoria -->
                     <div class="col-span-6 form-section-below-classification">
@@ -182,40 +140,49 @@
                             <div class="form-group">
                                 <label class="form-label">Modalidad de Depósito</label>
                                 <div class="radio-group-horizontal">
-                                    <label for="bancoNacion" class="radio-label">
-                                        <input id="bancoNacion" v-model="modalidadDeposito" type="radio" value="banco"
-                                            class="sr-only">
+                                    <label for="bancoBcp" class="radio-label">
+                                        <input id="bancoBcp" v-model="bancoSeleccionado" type="radio" value="bcp"
+                                            @change="modalidadDeposito = 'banco'" class="sr-only">
                                         <div class="radio-custom-indicator"
-                                            :class="{ 'selected': modalidadDeposito === 'banco' }">
-                                            <div v-if="modalidadDeposito === 'banco'" class="radio-dot"></div>
+                                            :class="{ 'selected': bancoSeleccionado === 'bcp' }">
+                                            <div v-if="bancoSeleccionado === 'bcp'" class="radio-dot"></div>
                                         </div>
                                         <div class="relative flex items-center group">
-                                            <span>Banco de la Nación</span>
-                                            <Icon @click.prevent.stop name="heroicons:information-circle"
-                                                class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
+                                            <span>Banco BCP</span>
                                             <div class="tooltip">
-                                                <div>- N° Cuenta: 04-029-958659</div>
-                                                <div>(Cendy Girao)</div>
+                                                <div>- N° Cuenta: 255-10957977-0-98</div>
+                                                <div>- CCI: 002-25511095797709881</div>
+                                                <div>(Josemaria Caballa Garay)</div>
+                                                <div class="tooltip-arrow"></div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <label for="bancoInterbank" class="radio-label">
+                                        <input id="bancoInterbank" v-model="bancoSeleccionado" type="radio" value="interbank"
+                                            @change="modalidadDeposito = 'banco'" class="sr-only">
+                                        <div class="radio-custom-indicator"
+                                            :class="{ 'selected': bancoSeleccionado === 'interbank' }">
+                                            <div v-if="bancoSeleccionado === 'interbank'" class="radio-dot"></div>
+                                        </div>
+                                        <div class="relative flex items-center group">
+                                            <span>Banco Interbank</span>
+                                            <div class="tooltip">
+                                                <div>- N° Cuenta: 898 3483201070</div>
+                                                <div>- CCI: 003-898-01348320107043</div>
+                                                <div>(Josemaria Caballa Garay)</div>
                                                 <div class="tooltip-arrow"></div>
                                             </div>
                                         </div>
                                     </label>
                                     <label for="billeteraDigital" class="radio-label">
                                         <input id="billeteraDigital" v-model="modalidadDeposito" type="radio"
-                                            value="billetera" class="sr-only">
+                                            value="billetera" @change="bancoSeleccionado = null" class="sr-only">
                                         <div class="radio-custom-indicator"
                                             :class="{ 'selected': modalidadDeposito === 'billetera' }">
                                             <div v-if="modalidadDeposito === 'billetera'" class="radio-dot"></div>
                                         </div>
                                         <div class="relative flex items-center group">
                                             <span>Billetera Digital</span>
-                                            <Icon @click.prevent.stop name="heroicons:information-circle"
-                                                class="ml-2 text-gray-400 cursor-pointer h-6 w-6" />
-                                            <div class="tooltip">
-                                                <div>Número de Yape: 987654321</div>
-                                                <div>UNDC</div>
-                                                <div class="tooltip-arrow"></div>
-                                            </div>
                                         </div>
                                     </label>
                                 </div>
@@ -223,7 +190,7 @@
                             </div>
 
                             <Transition name="fade" mode="out-in">
-                                <div v-if="modalidadDeposito === 'banco'" class="form-group mt-4">
+                                <div v-if="modalidadDeposito === 'banco' && bancoSeleccionado" class="form-group mt-4">
                                     <label class="form-label">Tipo de Pago</label>
                                     <div class="radio-group-horizontal">
                                         <label for="pagoDirecto" class="radio-label">
@@ -233,7 +200,13 @@
                                                 :class="{ 'selected': tipoPago === 'directo' }">
                                                 <div v-if="tipoPago === 'directo'" class="radio-dot"></div>
                                             </div>
-                                            <span>Pago Directo</span>
+                                            <div class="flex items-center gap-2">
+                                                <span>Pago Directo</span>
+                                                <Icon @click.prevent.stop="copiarNumeroCuenta" 
+                                                    name="heroicons:clipboard-document" 
+                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5" 
+                                                    title="Copiar número de cuenta" />
+                                            </div>
                                         </label>
                                         <label for="pagoInterbancario" class="radio-label">
                                             <input id="pagoInterbancario" v-model="tipoPago" type="radio"
@@ -242,32 +215,46 @@
                                                 :class="{ 'selected': tipoPago === 'interbancario' }">
                                                 <div v-if="tipoPago === 'interbancario'" class="radio-dot"></div>
                                             </div>
-                                            <span>Pago interbancario</span>
+                                            <div class="flex items-center gap-2">
+                                                <span>Pago interbancario</span>
+                                                <Icon @click.prevent.stop="copiarCCI" 
+                                                    name="heroicons:clipboard-document" 
+                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5" 
+                                                    title="Copiar CCI" />
+                                            </div>
                                         </label>
                                     </div>
                                     <small class="form-hint">Selecciona el tipo de pago</small>
                                 </div>
                                 <div v-else-if="modalidadDeposito === 'billetera'" class="form-group mt-4">
                                     <label class="form-label">Aplicativo</label>
-                                    <div class="radio-group-horizontal">
-                                        <label for="yape" class="radio-label">
-                                            <input id="yape" v-model="aplicativo" type="radio" value="yape"
-                                                class="sr-only">
-                                            <div class="radio-custom-indicator"
-                                                :class="{ 'selected': aplicativo === 'yape' }">
-                                                <div v-if="aplicativo === 'yape'" class="radio-dot"></div>
-                                            </div>
-                                            <span>Yape</span>
-                                        </label>
-                                        <label for="plin" class="radio-label">
-                                            <input id="plin" v-model="aplicativo" type="radio" value="plin"
-                                                class="sr-only">
-                                            <div class="radio-custom-indicator"
-                                                :class="{ 'selected': aplicativo === 'plin' }">
-                                                <div v-if="aplicativo === 'plin'" class="radio-dot"></div>
-                                            </div>
-                                            <span>Plin</span>
-                                        </label>
+                                    <div class="radio-group-with-qr">
+                                        <div class="radio-group-horizontal">
+                                            <label for="yape" class="radio-label">
+                                                <input id="yape" v-model="aplicativo" type="radio" value="yape"
+                                                    class="sr-only">
+                                                <div class="radio-custom-indicator"
+                                                    :class="{ 'selected': aplicativo === 'yape' }">
+                                                    <div v-if="aplicativo === 'yape'" class="radio-dot"></div>
+                                                </div>
+                                                <span>Yape</span>
+                                            </label>
+                                            <label for="plin" class="radio-label">
+                                                <input id="plin" v-model="aplicativo" type="radio" value="plin"
+                                                    class="sr-only">
+                                                <div class="radio-custom-indicator"
+                                                    :class="{ 'selected': aplicativo === 'plin' }">
+                                                    <div v-if="aplicativo === 'plin'" class="radio-dot"></div>
+                                                </div>
+                                                <span>Plin</span>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Botón QR al lado de los radio buttons -->
+                                        <button type="button" @click="showQrModal = true" 
+                                                class="qr-button-inline">
+                                            <Icon name="heroicons:qr-code" class="h-4 w-4" />
+                                        </button>
                                     </div>
                                     <small class="form-hint">Selecciona el aplicativo</small>
                                 </div>
@@ -315,6 +302,47 @@
                 </form>
             </div>
         </section>
+
+        <!-- Modal para mostrar QR -->
+        <Transition name="modal" appear>
+            <div v-if="showQrModal" class="qr-modal-overlay" @click="showQrModal = false">
+                <div class="qr-modal-container" @click.stop>
+                    <div class="qr-modal-header">
+                        <h3 class="qr-modal-title">
+                            <Icon name="heroicons:qr-code" class="h-6 w-6 mr-2" />
+                            Código QR para Billetera Digital
+                        </h3>
+                        <button @click="showQrModal = false" class="qr-modal-close">
+                            <Icon name="heroicons:x-mark" class="h-6 w-6" />
+                        </button>
+                    </div>
+                    
+                    <div class="qr-modal-content">
+                        <div class="qr-modal-image-container">
+                            <img src="/images/qr/plin.jpeg" 
+                                 alt="Código QR para billetera digital" 
+                                 class="qr-modal-image">
+                        </div>
+                        
+                        <div class="qr-modal-info">
+                            <p class="qr-modal-name">
+                                <strong>Nombre:</strong> Josemaria Caballa Garay
+                            </p>
+                            <p class="qr-modal-instructions">
+                                Escanea el código QR con tu aplicación Yape o Plin 
+                                para realizar el pago de forma rápida y segura.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="qr-modal-footer">
+                        <button @click="showQrModal = false" class="qr-modal-button">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -323,38 +351,24 @@
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-    title: 'Registro - VII CIISIC UNDC',
+    title: 'Registro | VII CIISIC',
     meta: [
-        { name: 'description', content: 'Formulario de registro para el VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+        { name: 'description', content: 'Formulario de registro para el VII CIISIC la UNDC.' }
     ]
 })
-
-// ===========================================================================
-// TYPES E INTERFACES
-// ===========================================================================
-interface PlanFormatted {
-    id: number
-    title: string
-    badge: string
-    price: string
-    value: string
-    description: string
-    features: { icon: string; text: string }[]
-}
 
 // ===========================================================================
 // COMPOSABLES Y ROUTER
 // ===========================================================================
 const { consultDni, documentTypes } = useConsultation()
-const {
-    createInscription,
-    initializeCatalogs,
+const { 
+    createInscription, 
+    initializeCatalogs, 
     mapFormDataToApiData,
     isSubmitting: apiSubmitting,
     error: apiError,
     clearError,
     registrationTypes,
-    classifications,
     depositMethods,
     paymentTypes
 } = useInscription()
@@ -378,39 +392,64 @@ const searchConsultation = async (number: string) => {
 }
 
 // ===========================================================================
-// STORES
+// PLANES DE INSCRIPCIÓN
 // ===========================================================================
-const inscriptionPlansStore = useInscriptionPlansStore()
-
-// ===========================================================================
-// PLANES DE INSCRIPCIÓN - DATOS DINÁMICOS
-// ===========================================================================
-// Cargar planes al inicializar la página
-const loadingPlans = ref(true)
-
-onMounted(async () => {
-    try {
-        // Intentar cargar planes desde API
-        await inscriptionPlansStore.fetchPlans()
-        console.log('✅ Planes cargados en la página de registro')
-    } catch (error) {
-        console.warn('⚠️ Error cargando planes, usando datos por defecto')
-        // Los datos por defecto ya están disponibles en el store
-    } finally {
-        loadingPlans.value = false
-    }
-})
-
-// Computed para obtener los planes desde el store
-const inscriptionPlans = computed(() => inscriptionPlansStore.plansFormatted)
+const inscriptionPlans = [
+    {
+        id: 1,
+        title: 'PROFESIONALES Y PUBLICO EN GENERAL CON KIT',
+        badge: 'CON KIT',
+        basePrice: 140.00,
+        institutionalPrice: 120.00,
+        value: 'general_con_kit',
+        description: 'La experiencia completa para profesionales y público en general con kit de merchandising oficial.',
+        features: [
+            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
+            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
+            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
+            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
+        ]
+    },
+    {
+        id: 2,
+        title: 'PROFESIONALES Y PUBLICO EN GENERAL SIN KIT',
+        badge: 'SIN KIT',
+        basePrice: 80.00,
+        institutionalPrice: 60.00,
+        value: 'general_sin_kit',
+        description: 'La opción económica para profesionales y público en general, con acceso a todas las ponencias.',
+        features: [
+            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
+            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
+            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
+            { icon: 'heroicons:x-mark', text: 'No incluye Kit' },
+        ]
+    },
+]
 
 // ===========================================================================
 // COMPUTED Y REACTIVOS
 // ===========================================================================
-const planId = computed(() => parseInt(route.query.planId as string) || 1)
-const selectedPlan = computed(() => inscriptionPlans.value.find((plan: PlanFormatted) => plan.id === planId.value))
+const isEmailValid = computed(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return email.value && emailRegex.test(email.value)
+})
+
+const isInstitutionalEmail = computed(() => {
+    return email.value && email.value.toLowerCase().endsWith('@undc.edu.pe')
+})
+
+const availablePlans = computed(() => {
+    return inscriptionPlans.map(plan => ({
+        ...plan,
+        price: isInstitutionalEmail.value 
+            ? `S/ ${plan.institutionalPrice.toFixed(2)}`
+            : `S/ ${plan.basePrice.toFixed(2)}`
+    }))
+})
+
+const selectedPlan = computed(() => planId.value ? availablePlans.value.find(plan => plan.id === planId.value) : null)
 const isStudentPlan = computed(() => planId.value === 1 || planId.value === 2)
-const availablePlans = computed(() => inscriptionPlans.value)
 
 // ===========================================================================
 // ESTADO DEL FORMULARIO
@@ -423,7 +462,9 @@ const email = ref<string>('')
 const celular = ref<string>('')
 const clasificacion = ref<string>('')
 const tipoInscripcion = ref<string>('')
+const planId = ref<number | null>(null) // Sin plan preseleccionado
 const modalidadDeposito = ref<'banco' | 'billetera'>('banco')
+const bancoSeleccionado = ref<'bcp' | 'interbank' | null>('bcp')
 const tipoPago = ref<'directo' | 'interbancario' | null>(null)
 const aplicativo = ref<'yape' | 'plin' | null>(null)
 const fechaPago = ref<string>('')
@@ -433,17 +474,17 @@ const isSearchingDni = ref(false)
 const isSubmitting = ref(false)
 const errorMessage = ref<string>('')
 const successMessage = ref<string>('')
-const completedInscriptionId = ref<number | null>(null)
+const showQrModal = ref(false)
 
 // ===========================================================================
 // WATCHERS
 // ===========================================================================
-watch(planId, (newPlanId) => {
-    if (!selectedPlan.value) {
-        router.push('/register?planId=1')
-    } else {
-        // Preseleccionar el tipo de inscripción basado en el planId
+watch(planId, () => {
+    // Preseleccionar el tipo de inscripción basado en el planId
+    if (selectedPlan.value) {
         tipoInscripcion.value = selectedPlan.value.value
+    } else {
+        tipoInscripcion.value = ''
     }
 }, { immediate: true })
 
@@ -474,7 +515,11 @@ const getBadgeClass = (badge: string) => {
 }
 
 const getEmailHint = () => {
-    return isStudentPlan.value ? 'Debe ser el correo institucional' : 'Tu correo electrónico'
+    if (!email.value) return 'Ingresa tu correo electrónico'
+    if (isInstitutionalEmail.value) {
+        return 'Correo institucional - Se aplicará descuento UNDC'
+    }
+    return 'Correo válido'
 }
 
 const getSelectedDocumentType = () => {
@@ -491,6 +536,14 @@ const getRemainingDigits = () => {
     return Math.max(0, expectedLength - documentNumber.value.length)
 }
 
+const selectPlan = (id: number) => {
+    if (!isEmailValid.value) {
+        showError('❌ Por favor completa correctamente tu correo electrónico antes de seleccionar un plan')
+        return
+    }
+    planId.value = id
+}
+
 const showError = (message: string) => {
     errorMessage.value = message
     successMessage.value = ''
@@ -499,7 +552,7 @@ const showError = (message: string) => {
     // Auto-limpiar después de 5 segundos
     setTimeout(() => {
         errorMessage.value = ''
-    }, 2500)
+    }, 5000)
 }
 
 const showSuccess = (message: string) => {
@@ -507,45 +560,53 @@ const showSuccess = (message: string) => {
     errorMessage.value = ''
     console.log('✅ Success:', message)
 
-    // Auto-limpiar después de 5 segundos (aumenté el tiempo por si el usuario quiere hacer clic)
+    // Auto-limpiar después de 3 segundos
     setTimeout(() => {
         successMessage.value = ''
-        completedInscriptionId.value = null
-    }, 2500)
+    }, 3000)
 }
 
-const goToConfirmation = () => {
-    console.log('🔄 Intentando ir a confirmación...', {
-        inscriptionId: completedInscriptionId.value,
-        hasRouter: !!router
-    })
+// ===========================================================================
+// FUNCIONES DE PORTAPAPELES
+// ===========================================================================
 
-    if (completedInscriptionId.value) {
-        const confirmationUrl = `/confirmation?id=${completedInscriptionId.value}`
-        console.log('🔄 Navegando a:', confirmationUrl)
+const copiarNumeroCuenta = async () => {
+    try {
+        let numeroCuenta = ''
+        
+        if (bancoSeleccionado.value === 'bcp') {
+            numeroCuenta = '255-10957977-0-98'
+        } else if (bancoSeleccionado.value === 'interbank') {
+            numeroCuenta = '898 3483201070'
+        }
+        
+        await navigator.clipboard.writeText(numeroCuenta)
+        showSuccess(`✅ Número de cuenta copiado al portapapeles: ${numeroCuenta}`)
+    } catch (error) {
+        showError('❌ Error al copiar al portapapeles')
+    }
+}
 
-        router.push(confirmationUrl).then(() => {
-            console.log('✅ Navegación exitosa')
-            successMessage.value = ''
-            completedInscriptionId.value = null
-        }).catch((error) => {
-            console.error('❌ Error en navegación:', error)
-            // Fallback: intenta con window.location
-            window.location.href = confirmationUrl
-        })
-    } else {
-        console.error('❌ No hay ID de inscripción para redireccionar')
-        showError('Error: No se puede acceder a la página de confirmación. ID de inscripción no encontrado.')
+const copiarCCI = async () => {
+    try {
+        let cci = ''
+        
+        if (bancoSeleccionado.value === 'bcp') {
+            cci = '002-25511095797709881'
+        } else if (bancoSeleccionado.value === 'interbank') {
+            cci = '003-898-01348320107043'
+        }
+        
+        await navigator.clipboard.writeText(cci)
+        showSuccess(`✅ CCI copiado al portapapeles: ${cci}`)
+    } catch (error) {
+        showError('❌ Error al copiar al portapapeles')
     }
 }
 
 // ===========================================================================
 // MANEJADORES DE EVENTOS
 // ===========================================================================
-const selectPlan = (newPlanId: number) => {
-    // Cambiar la URI como en Digital Ocean
-    router.push(`/register?planId=${newPlanId}`)
-}
 
 const handleDocumentInput = (event: Event) => {
     const target = event.target as HTMLInputElement
@@ -640,6 +701,11 @@ const handleFileChange = (event: Event) => {
 }
 
 const handleSubmit = async () => {
+    if (!planId.value) {
+        showError('❌ Por favor selecciona un plan de inscripción')
+        return
+    }
+
     if (!selectedPlan.value) {
         showError('❌ Plan no válido')
         return
@@ -647,12 +713,6 @@ const handleSubmit = async () => {
 
     if (!tipoInscripcion.value) {
         showError('❌ Por favor selecciona un tipo de inscripción')
-        return
-    }
-
-    // Validaciones adicionales
-    if (isStudentPlan.value && !clasificacion.value) {
-        showError('❌ Por favor selecciona tu clasificación')
         return
     }
 
@@ -690,58 +750,37 @@ const handleSubmit = async () => {
         if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
             console.warn('⚠️ Catálogos no cargados, intentando reinicializar...')
             await initializeCatalogs()
-
+            
             // Dar un momento para que se carguen
             await new Promise(resolve => setTimeout(resolve, 100))
-
+            
             if (!registrationTypes.value?.length || !depositMethods.value?.length || !paymentTypes.value?.length) {
                 throw new Error('No se pudieron cargar los datos necesarios. Recargue la página e intente nuevamente.')
             }
         }
 
-        // Mapeo de tipos de documento del frontend al backend
-        const documentTypeMapped = documentType.value.toLowerCase()
-
-        // El valor ya está correcto, no necesita mapeo adicional
-        const tipoInscripcionMapped = tipoInscripcion.value
-
-        // Preparar los datos del formulario con mapeo correcto
-        const modalidadDepositoMapped = modalidadDeposito.value === 'banco' ? 'Banco de la Nación' : 'Billetera Digital'
-
-        let metodoDePagoMapped = ''
-        if (modalidadDeposito.value === 'banco') {
-            metodoDePagoMapped = tipoPago.value === 'directo' ? 'Pago Directo' : 'Pago Interbancario'
-        } else {
-            metodoDePagoMapped = aplicativo.value === 'yape' ? 'Yape' : 'Plin'
-        }
-
+        // Preparar los datos del formulario
         const formData = {
-            documentType: documentTypeMapped,
+            documentType: documentType.value,
             documentNumber: documentNumber.value,
             nombres: nombres.value,
             apellidos: apellidos.value,
             email: email.value,
             celular: celular.value,
             clasificacion: clasificacion.value,
-            tipoInscripcion: tipoInscripcionMapped,
-            modalidadDeposito: modalidadDepositoMapped,
-            metodoDePago: metodoDePagoMapped,
+            tipoInscripcion: tipoInscripcion.value,
+            modalidadDeposito: modalidadDeposito.value,
+            metodoDePago: metodoDePago,
             fechaPago: fechaPago.value,
             codigoVoucher: codigoVoucher.value,
             archivoVoucher: archivoVoucher.value
         }
 
-        console.log('� Datos del formulario preparados:', formData)
-        console.log('📊 Catálogos disponibles:', {
-            registrationTypes: registrationTypes.value,
-            classifications: classifications.value,
-            depositMethods: depositMethods.value,
-            paymentTypes: paymentTypes.value
-        })
+        console.log('📤 Datos del formulario:', formData)
 
         // Mapear datos del formulario a formato de API
         const apiData = mapFormDataToApiData(formData)
-
+        
         console.log('� Datos mapeados para API:', apiData)
 
         // Enviar inscripción
@@ -749,40 +788,18 @@ const handleSubmit = async () => {
 
         console.log('✅ Inscripción completada:', response)
 
-        // Verificar que la respuesta sea exitosa
-        if (!response.success) {
-            console.error('❌ Respuesta del servidor indica fallo:', response)
-            showError(`Error: ${response.message || 'Error desconocido al crear la inscripción'}`)
-            return
-        }
+        showSuccess(`🎉 ¡Inscripción completada exitosamente! 
+        Tu número de inscripción es: ${response.data?.id}. 
+        Recibirás un email de confirmación en: ${email.value}`)
 
-        // Guardar el ID de la inscripción completada
-        completedInscriptionId.value = response.data?.id || null
-
-        if (!completedInscriptionId.value) {
-            console.error('❌ No se obtuvo ID de inscripción válido:', response)
-            showError('Error: No se pudo obtener el ID de la inscripción. Contacte con soporte.')
-            return
-        }
-
-        console.log('🔄 Redirigiendo inmediatamente a confirmación...', {
-            inscriptionId: completedInscriptionId.value,
-            routerReady: !!router
-        })
-
-        // Redirigir inmediatamente a la página de confirmación
-        try {
-            await router.push(`/confirmation?id=${completedInscriptionId.value}`)
-            console.log('✅ Redirección exitosa')
-        } catch (navigationError) {
-            console.error('❌ Error en navegación con router:', navigationError)
-            // Fallback: usar window.location
-            window.location.href = `/confirmation?id=${completedInscriptionId.value}`
-        }
+        // Opcional: Redirigir a página de confirmación después de 3 segundos
+        setTimeout(() => {
+            router.push(`/confirmation?id=${response.data?.id}`)
+        }, 3000)
 
     } catch (error: any) {
         console.error('💥 Error al enviar formulario:', error)
-
+        
         // Mostrar el error específico del composable si existe
         if (apiError.value) {
             showError(apiError.value)
@@ -807,33 +824,33 @@ const onClassificationBeforeEnter = (el: Element) => {
 
 const onClassificationEnter = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-
+    
     // Forzar un reflow para asegurar que el estado inicial se aplique
     void htmlEl.offsetHeight
-
+    
     // Obtener la altura natural del elemento
     htmlEl.style.height = 'auto'
     const height = htmlEl.offsetHeight
     htmlEl.style.height = '0'
-
+    
     // Animar hasta la altura natural
     const animation = htmlEl.animate([
-        {
-            height: '0px',
-            opacity: '0',
-            transform: 'translateY(-20px)'
+        { 
+            height: '0px', 
+            opacity: '0', 
+            transform: 'translateY(-20px)' 
         },
-        {
-            height: `${height}px`,
-            opacity: '1',
-            transform: 'translateY(0)'
+        { 
+            height: `${height}px`, 
+            opacity: '1', 
+            transform: 'translateY(0)' 
         }
     ], {
         duration: 600,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-
+    
     animation.onfinish = () => {
         htmlEl.style.height = 'auto'
         htmlEl.style.overflow = 'visible'
@@ -856,24 +873,24 @@ const onClassificationBeforeLeave = (el: Element) => {
 
 const onClassificationLeave = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement
-
+    
     const animation = htmlEl.animate([
-        {
-            height: `${htmlEl.offsetHeight}px`,
-            opacity: '1',
-            transform: 'translateY(0)'
+        { 
+            height: `${htmlEl.offsetHeight}px`, 
+            opacity: '1', 
+            transform: 'translateY(0)' 
         },
-        {
-            height: '0px',
-            opacity: '0',
-            transform: 'translateY(-20px)'
+        { 
+            height: '0px', 
+            opacity: '0', 
+            transform: 'translateY(-20px)' 
         }
     ], {
         duration: 500,
         easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         fill: 'forwards'
     })
-
+    
     animation.onfinish = done
 }
 
@@ -891,21 +908,11 @@ const onClassificationAfterLeave = (el: Element) => {
 onMounted(async () => {
     // Inicializar catálogos de la API
     try {
-        console.log('🔄 Inicializando catálogos...')
         await initializeCatalogs()
-        console.log('✅ Catálogos inicializados')
+        console.log('✅ Catálogos cargados desde la API')
     } catch (error) {
-        console.error('💥 Error inicializando catálogos:', error)
-        showError('Error al cargar datos iniciales. Algunos campos podrían no funcionar correctamente.')
-    }
-
-    // Configurar plan seleccionado
-    if (!selectedPlan.value) {
-        router.push('/register?planId=1')
-    } else {
-        // Preseleccionar el tipo de inscripción basado en el plan
-        // Usar el value del plan seleccionado
-        tipoInscripcion.value = selectedPlan.value.value
+        console.error('💥 Error cargando catálogos:', error)
+        showError('❌ Error al cargar datos iniciales. Algunas funciones pueden no estar disponibles.')
     }
 })
 </script>
@@ -1249,7 +1256,7 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #334155 inset !important;
     -webkit-text-fill-color: #ffffff !important;
-    transition: background-color 2500s ease-in-out 0s;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -1284,13 +1291,11 @@ input[type="date"]:valid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1rem;
-    margin-bottom: 1rem;
     /* Permitir overflow para tooltips */
     overflow: visible;
-    padding-bottom: 2rem;
 }
 
-.plan-card-compact {
+.plan-card-simple {
     position: relative;
     background-color: #1e293b;
     border: 2px solid #475569;
@@ -1298,35 +1303,34 @@ input[type="date"]:valid {
     padding: 1.5rem;
     cursor: pointer;
     transition: all 300ms ease;
-    min-height: 140px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    z-index: 1;
+    gap: 1rem;
 }
 
-.plan-card-compact:hover {
+.plan-card-simple:hover:not(.disabled) {
     border-color: #64748b;
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    z-index: 10;
 }
 
-.plan-card-compact:hover .plan-info-tooltip-container {
-    z-index: 9999;
-}
-
-.plan-card-compact.selected {
+.plan-card-simple.selected {
     border-color: #45f882;
     background-color: rgba(69, 248, 130, 0.05);
     box-shadow: 0 0 0 1px rgba(69, 248, 130, 0.2);
 }
 
+.plan-card-simple.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(0.3);
+}
+
 .plan-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.75rem;
+    align-items: center;
 }
 
 .plan-card-title {
@@ -1338,13 +1342,6 @@ input[type="date"]:valid {
     line-height: 1.2;
 }
 
-.plan-price-container {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
-}
-
 .plan-card-price {
     font-size: 1.75rem;
     font-weight: 800;
@@ -1354,7 +1351,7 @@ input[type="date"]:valid {
 }
 
 .plan-card-badge {
-    font-size: 0.65rem;
+    font-size: 0.5rem;
     font-weight: 700;
     text-transform: uppercase;
     padding: 0.1rem 0.25rem;
@@ -1371,9 +1368,47 @@ input[type="date"]:valid {
 .plan-card-description {
     font-size: 0.85rem;
     color: #94a3b8;
+    line-height: 1.4;
+}
+
+/* Lista de características del plan */
+.plan-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.plan-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.plan-feature-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.plan-feature-icon.included {
+    color: #45f882;
+}
+
+.plan-feature-icon.excluded {
+    color: #ef4444;
+}
+
+.plan-feature-text {
+    font-size: 0.875rem;
+    color: #cbd5e1;
     line-height: 1.3;
-    margin-bottom: 1rem;
-    flex-grow: 1;
+}
+
+.plan-feature-text.excluded {
+    color: #94a3b8;
 }
 
 .plan-card-selector {
@@ -1595,45 +1630,36 @@ input[type="date"]:valid {
     transform: translateY(-10px);
 }
 
-/* TRANSICIONES MEJORADAS PARA CAMPO DE CLASIFICACIÓN */
-.classification-container {
-    overflow: hidden;
-}
-
 .height-expand-enter-active {
-    transition: none;
-    /* Las transiciones se manejan con JS */
+  transition: none; /* Las transiciones se manejan con JS */
 }
 
 .height-expand-leave-active {
-    transition: none;
-    /* Las transiciones se manejan con JS */
+  transition: none; /* Las transiciones se manejan con JS */
 }
 
 /* Mejores transiciones para elementos que siguen al campo de clasificación */
 .form-section-below-classification {
-    transition:
-        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-        margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-        opacity 0.4s ease-out;
-    will-change: transform, margin-top;
-    transform-origin: top center;
+  transition: 
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    margin-top 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.4s ease-out;
+  will-change: transform, margin-top;
+  transform-origin: top center;
 }
 
 /* Estilo global para suavizar transiciones en toda la grilla */
 .registration-form {
-    transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.registration-form>* {
-    transition:
-        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-        opacity 0.4s ease-out,
-        margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    will-change: transform;
-}
-
-/* Responsive title */
+.registration-form > * {
+  transition: 
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.4s ease-out,
+    margin 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}/* Responsive title */
 @media (min-width: 640px) {
     .page-title {
         font-size: 3rem;
@@ -1648,9 +1674,8 @@ input[type="date"]:valid {
         gap: 0.75rem;
     }
 
-    .plan-card-compact {
+    .plan-card-simple {
         padding: 1rem;
-        min-height: 120px;
     }
 
     .plan-card-title {
@@ -1685,7 +1710,7 @@ input[type="date"]:valid {
 
 @media (min-width: 1024px) {
     .plan-cards-container {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -1697,113 +1722,7 @@ input[type="date"]:valid {
     flex: 1;
 }
 
-.plan-info-tooltip-container {
-    position: relative;
-    display: inline-block;
-    /* Asegurar que el tooltip tenga espacio suficiente */
-    overflow: visible;
-}
 
-.plan-info-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: #93a4bd;
-    cursor: help;
-    transition: color 300ms;
-    flex-shrink: 0;
-}
-
-.plan-info-icon:hover {
-    color: #45f882;
-}
-
-.plan-tooltip {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 0.75rem;
-    padding: 1rem;
-    background-color: #111827;
-    border: 1px solid #374151;
-    color: #ffffff;
-    border-radius: 0.75rem;
-    min-width: 250px;
-    max-width: 320px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    z-index: 20;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    /* Evitar que se corte en los bordes */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.plan-info-tooltip-container:hover .plan-tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(8px);
-    pointer-events: auto;
-}
-
-.plan-tooltip-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #45f882;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    text-align: center;
-}
-
-.plan-tooltip-price {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #45f882;
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.plan-tooltip-features {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.plan-tooltip-feature {
-    display: flex;
-    align-items: center;
-    color: #e5e7eb;
-    font-size: 0.825rem;
-}
-
-.plan-feature-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #45f882;
-    margin-right: 0.5rem;
-    flex-shrink: 0;
-}
-
-.plan-feature-icon.feature-excluded {
-    color: #ef4444;
-}
-
-.feature-excluded-text {
-    color: #9ca3af;
-    text-decoration: line-through;
-}
-
-.plan-tooltip-arrow {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #111827;
-}
 
 /* Responsive para el botón de búsqueda */
 @media (max-width: 640px) {
@@ -1927,6 +1846,273 @@ input[type="date"]:valid {
         width: 0.8rem;
         height: 0.8rem;
         margin-right: 0.3rem;
+    }
+}
+
+/* QR Image Styling */
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.qr-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #334155;
+    border: 2px solid #475569;
+    border-radius: 0.75rem;
+    max-width: 180px;
+    width: 100%;
+}
+
+.qr-image {
+    width: 100%;
+    height: auto;
+    max-width: 150px;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 0.375rem;
+}
+
+.qr-description {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+    line-height: 1.3;
+    max-width: 180px;
+}
+
+/* Responsive para la imagen QR */
+@media (max-width: 768px) {
+    .qr-image-container {
+        max-width: 150px;
+        padding: 0.5rem;
+    }
+    
+    .qr-image {
+        max-width: 120px;
+    }
+    
+    .qr-description {
+        font-size: 0.7rem;
+        max-width: 150px;
+    }
+}
+
+/* QR Button Styling */
+.qr-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #45f882;
+    color: #000000;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.qr-button:hover {
+    background-color: #34d399;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(69, 248, 130, 0.3);
+}
+
+/* QR Button Inline (al lado de radio buttons) */
+.radio-group-with-qr {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.qr-button-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background-color: #45f882;
+    color: #000000;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+}
+
+.qr-button-inline:hover {
+    background-color: #34d399;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(69, 248, 130, 0.3);
+}
+
+/* QR Modal Styling */
+.qr-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.qr-modal-container {
+    background-color: #0f172a;
+    border: 2px solid #1e293b;
+    border-radius: 1rem;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.qr-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #1e293b;
+}
+
+.qr-modal-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.qr-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 300ms;
+}
+
+.qr-modal-close:hover {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.qr-modal-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.qr-modal-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.qr-modal-image {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.qr-modal-info {
+    text-align: center;
+    color: #cbd5e1;
+}
+
+.qr-modal-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.qr-modal-instructions {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    max-width: 350px;
+}
+
+.qr-modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    justify-content: center;
+}
+
+.qr-modal-button {
+    padding: 0.75rem 2rem;
+    background-color: #1e293b;
+    color: #ffffff;
+    font-weight: 500;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 300ms;
+}
+
+.qr-modal-button:hover {
+    background-color: #334155;
+}
+
+/* Modal Transitions */
+.modal-enter-active, .modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+    opacity: 0;
+}
+
+/* Responsive para el modal */
+@media (max-width: 640px) {
+    .qr-modal-container {
+        margin: 0.5rem;
+        max-width: calc(100vw - 1rem);
+    }
+    
+    .qr-modal-header,
+    .qr-modal-content,
+    .qr-modal-footer {
+        padding: 1rem;
+    }
+    
+    .qr-modal-image {
+        max-width: 200px;
+    }
+    
+    .qr-button {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.8rem;
     }
 }
 </style>

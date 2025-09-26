@@ -68,13 +68,13 @@
                         <div class="error-help">
                             <p class="help-text">¿Necesitas ayuda?</p>
                             <div class="help-options">
-                                <a href="mailto:soporte@ciisic.undc.edu.pe" class="help-link">
+                                <a href="mailto:congreso@undc.edu.pe" class="help-link">
                                     <Icon name="heroicons:envelope" class="h-4 w-4 mr-1" />
-                                    soporte@ciisic.undc.edu.pe
+                                    congreso@undc.edu.pe
                                 </a>
-                                <a href="https://wa.me/+51987654321" class="help-link">
+                                <a href="https://wa.me/51949026908" class="help-link">
                                     <Icon name="heroicons:phone" class="h-4 w-4 mr-1" />
-                                    +51 987 654 321
+                                    +51 949 026 908
                                 </a>
                             </div>
                         </div>
@@ -184,7 +184,7 @@
                     <Icon name="heroicons:document-magnifying-glass" class="h-12 w-12 text-gray-500 mx-auto mb-4" />
                     <h2 class="text-xl font-bold text-white mb-2">No se encontró información</h2>
                     <p class="text-gray-300 mb-6">No se pudo cargar la información de la inscripción</p>
-                    <NuxtLink to="/register" class="btn-primary">
+                    <NuxtLink to="/planes" class="btn-primary">
                         Hacer nueva inscripción
                     </NuxtLink>
                 </div>
@@ -199,9 +199,9 @@
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-    title: 'Confirmación de Inscripción - VII CIISIC UNDC',
+    title: 'Confirmación | VII CIISIC',
     meta: [
-        { name: 'description', content: 'Confirmación de inscripción exitosa al VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+        { name: 'description', content: 'Confirmación de inscripción exitosa al VII CIISIC de la UNDC.' }
     ]
 })
 
@@ -282,7 +282,7 @@ const getErrorContent = (errorType: string) => {
                 message: 'Parece que llegaste aquí sin un número de inscripción válido.',
                 suggestion: 'Intenta acceder desde el enlace en tu confirmación de registro.',
                 actionText: 'Ir a registro',
-                actionLink: '/register'
+                actionLink: '/planes'
             }
         case 'not_found':
             return {
@@ -291,7 +291,7 @@ const getErrorContent = (errorType: string) => {
                 message: `No pudimos encontrar la inscripción #${inscriptionId.value}`,
                 suggestion: 'Verifica que el número de inscripción sea correcto o que tu registro se haya completado exitosamente.',
                 actionText: 'Verificar registro',
-                actionLink: '/register'
+                actionLink: '/planes'
             }
         case 'no_connection':
             return {

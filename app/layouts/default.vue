@@ -45,7 +45,7 @@
               to="/planes"
               class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
             >
-              REGISTRO
+              INSCRIPCIONES
             </NuxtLink>
           </div>
         </div>
