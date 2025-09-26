@@ -275,29 +275,29 @@ const days = ref([
       },
       {
         time: '09:45 - 10:30',
+        title: 'Equipos interdisciplinares en la era de la realidad virtual: Innovación y colaboración en Ingeniería de Sistemas',
+        type: 'ponencia',
+        typeLabel: 'Ponencia',
+        description: 'Universidad Católica de Ávila - España',
+        speaker: 'Dr. Diego Vergara Rodríguez',
+        flag: '🇪🇸'
+      },
+      {
+        time: '10:30 - 11:15',
+        title: 'Ingenieros de Sistemas de Siglo XXI: Comunicación, liderazgo ágil y competencias humanas para un futuro exitoso',
+        type: 'ponencia',
+        typeLabel: 'Ponencia',
+        description: 'Universidad Católica de Ávila - España',
+        speaker: 'Dr. Pablo Fernández Arias',
+        flag: '🇪🇸'
+      },
+      {
+        time: '11:15 - 12:00',
         title: 'Agentes de Inteligencia Artificial',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'CENTRUM PUCP - Perú',
         speaker: 'Mg. Gera Flores',
-        flag: '🇵🇪'
-      },
-      {
-        time: '10:30 - 11:15',
-        title: 'Break',
-        type: 'otros',
-        typeLabel: 'Receso',
-        description: 'Espacio de descanso acompañado de dinámicas y sorteo entre los participantes.',
-        speaker: null,
-        flag: null
-      },
-      {
-        time: '11:15 - 12:00',
-        title: 'Título de Ponencia',
-        type: 'ponencia',
-        typeLabel: 'Ponencia',
-        description: 'Institución - Perú',
-        speaker: 'Ponente Nacional 2',
         flag: '🇵🇪'
       },
       {
@@ -442,12 +442,12 @@ const days = ref([
       },
       {
         time: '10:30 - 11:15',
-        title: 'Break',
-        type: 'otros',
-        typeLabel: 'Receso',
-        description: 'Espacio de descanso acompañado de dinámicas y sorteo entre los participantes.',
-        speaker: null,
-        flag: null
+        title: 'Título por confirmar',
+        type: 'ponencia',
+        typeLabel: 'Ponencia',
+        description: 'Universidad Nacional Mayor de San Marcos - Perú',
+        speaker: 'Dr. Ciro Rodriguez Rodriguez',
+        flag: '🇵🇪'
       },
       {
         time: '11:15 - 12:00',

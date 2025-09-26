@@ -60,14 +60,22 @@
 
                     <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
                         <label for="nombres" class="form-label">Nombres</label>
-                        <input id="nombres" v-model="nombres" type="text" placeholder="Nombres (autocompletado)"
-                            class="form-input" :class="{ 'input-filled': nombres }" required>
+                        <input id="nombres" v-model="nombres" type="text" 
+                            :placeholder="nombresEncontrados ? 'Nombres (encontrados automáticamente)' : 'Ingresa tus nombres'"
+                            class="form-input" 
+                            :class="{ 'input-filled': nombres, 'input-readonly': nombresEncontrados }" 
+                            :readonly="nombresEncontrados"
+                            required>
                     </div>
 
                     <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
                         <label for="apellidos" class="form-label">Apellidos</label>
-                        <input id="apellidos" v-model="apellidos" type="text" placeholder="Apellidos (autocompletado)"
-                            class="form-input" :class="{ 'input-filled': apellidos }" required>
+                        <input id="apellidos" v-model="apellidos" type="text" 
+                            :placeholder="nombresEncontrados ? 'Apellidos (encontrados automáticamente)' : 'Ingresa tus apellidos'"
+                            class="form-input" 
+                            :class="{ 'input-filled': apellidos, 'input-readonly': nombresEncontrados }" 
+                            :readonly="nombresEncontrados"
+                            required>
                     </div>
 
                     <!-- Fila 2: Correo, Celular -->
@@ -91,9 +99,10 @@
                         <label class="form-label">Tipo de inscripción</label>
                         <div class="plan-cards-container">
                             <div v-for="plan in availablePlans" :key="plan.id" @click="selectPlan(plan.id)"
-                                class="plan-card-simple" :class="{
-                                    'selected': planId === plan.id,
-                                    'disabled': !isEmailValid
+                                class="plan-card-simple" 
+                                :class="{ 
+                                    'selected': planId === plan.id, 
+                                    'disabled': !isEmailValid 
                                 }">
                                 <div class="plan-card-header">
                                     <h4 class="plan-card-title">{{ plan.title }}</h4>
@@ -123,12 +132,11 @@
                             </div>
                         </div>
                         <small class="form-hint">
-                            <div>* Descuento con correo institucional @undc.edu.pe</div>
                             <template v-if="!isEmailValid">
-                                * Completa tu correo electrónico para habilitar la selección de planes
+                                Completa tu correo electrónico para habilitar la selección de planes
                             </template>
                             <template v-else>
-                                * Selecciona el plan que mejor se adapte a tus necesidades
+                                Selecciona el plan que mejor se adapte a tus necesidades
                             </template>
                         </small>
                     </div>
@@ -446,6 +454,14 @@ const isEmailValid = computed(() => {
     return email.value && emailRegex.test(email.value)
 })
 
+const isFormValid = computed(() => {
+    return documentNumber.value && 
+           nombres.value && 
+           apellidos.value && 
+           isEmailValid.value && 
+           celular.value
+})
+
 const isInstitutionalEmail = computed(() => {
     return email.value && email.value.toLowerCase().endsWith('@undc.edu.pe')
 })
@@ -469,6 +485,7 @@ const documentType = ref<'DNI' | 'CE'>('DNI')
 const documentNumber = ref<string>('')
 const nombres = ref<string>('')
 const apellidos = ref<string>('')
+const nombresEncontrados = ref<boolean>(false) // Nueva variable para controlar si se encontraron los nombres
 const email = ref<string>('')
 const celular = ref<string>('')
 const clasificacion = ref<string>('')
@@ -510,6 +527,7 @@ watch(documentType, () => {
     documentNumber.value = ''
     nombres.value = ''
     apellidos.value = ''
+    nombresEncontrados.value = false
 })
 
 watch(documentNumber, (newValue) => {
@@ -548,8 +566,8 @@ const getRemainingDigits = () => {
 }
 
 const selectPlan = (id: number) => {
-    if (!isEmailValid.value) {
-        showError('❌ Por favor completa correctamente tu correo electrónico antes de seleccionar un plan')
+    if (!isFormValid.value) {
+        showError('❌ Por favor completa todos los campos anteriores antes de seleccionar un plan')
         return
     }
     planId.value = id
@@ -639,6 +657,7 @@ const handleDocumentSearch = async () => {
     isSearchingDni.value = true
     nombres.value = ''
     apellidos.value = ''
+    nombresEncontrados.value = false
     errorMessage.value = ''
 
     try {
@@ -656,6 +675,8 @@ const handleDocumentSearch = async () => {
                 const maternal = result.data.maternalSurname?.trim() || ''
                 apellidos.value = `${paternal} ${maternal}`.trim()
 
+                nombresEncontrados.value = true // Marcar que se encontraron los nombres
+
                 showSuccess(`✅ ${documentType.value} encontrado: ${result.data.fullName || `${nombres.value} ${apellidos.value}`}`)
 
                 console.log('📋 Datos cargados:', {
@@ -665,9 +686,11 @@ const handleDocumentSearch = async () => {
                     documentNumber: documentNumber.value
                 })
             } else {
+                nombresEncontrados.value = false // No se encontraron nombres completos
                 showError(`⚠️ ${documentType.value} encontrado, pero faltan datos personales. Complete manualmente.`)
             }
         } else {
+            nombresEncontrados.value = false // No se encontraron datos
             showError(`❌ No se encontraron datos para el ${documentType.value} ${documentNumber.value}`)
         }
     } catch (error: any) {
@@ -1263,6 +1286,13 @@ select.form-input {
 
 .form-input[readonly] {
     cursor: not-allowed;
+}
+
+.input-readonly {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+    cursor: not-allowed !important;
+    opacity: 0.8;
 }
 
 .input-filled {

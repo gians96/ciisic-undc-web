@@ -38,6 +38,15 @@ export const usePonentes = () => {
       especialidades: ["Gestión", "Estrategia", "Educación"]
     },
     {
+      id: 5,
+      nombre: "Diego Vergara",
+      imagen: "/images/ponentes/vergara-ciisic.webp",
+      descripcion: "Doctor por la Universidad de Salamanca, en el programa de doctorado de Ingeniería Mecánica y de Materiales. Ingeniero de Materiales e Ingeniero Técnico de Obras Públicas. Su campo de investigación en innovación docente está relacionado con el desarrollo de recursos virtuales con aplicación directa en la docencia de diversas asignaturas de ingeniería.",
+      linkedin: "https://www.linkedin.com/in/diego-vergara-rodr%C3%ADguez-ba8753121/",
+      empresa: "Universidad Católica de Ávila",
+      especialidades: ["Innovación", "Educación", "Investigación"]
+    },
+    {
       id: 4,
       nombre: "José Verbel",
       imagen: "/images/ponentes/verbel-ciisic.webp",
@@ -47,16 +56,16 @@ export const usePonentes = () => {
       especialidades: ["Desarrollo", "Tecnología Empresarial", "Software"]
     },
     {
-      id: 5,
-      nombre: "Jim Dios",
-      imagen: "/images/ponentes/diosluna-ciisic.webp",
-      descripcion: "Máster en Ingeniería Informática UAM, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
-      linkedin: "https://www.linkedin.com/in/jimdios/",
-      empresa: "Universidad de Lima",
-      especialidades: ["Investigación", "Sistemas de Información"]
+      id: 6,
+      nombre: "Pablo Fernández",
+      imagen: "/images/ponentes/fernandez-ciisic.webp",
+      descripcion: "Ingeniero Industrial con Doctorado y amplia experiencia en los sectores de Desarrollo Tecnológico e Innovación y Líder Tecnológico, adquiriendo sólidas capacidades de comunicación, negociación y gestión de proyectos.",
+      linkedin: "https://www.linkedin.com/in/pabloferarias/",
+      empresa: "Universidad Católica de Ávila",
+      especialidades: ["Innovación", "Educación", "Investigación"]
     },
     {
-      id: 6,
+      id: 7,
       nombre: "Damián Siré",
       imagen: "/images/ponentes/sire-ciisic.webp",
       descripcion: "My days are dedicated to coding, both professionally and in my personal time, as I genuinely enjoy creating things that others can use.",
@@ -65,25 +74,7 @@ export const usePonentes = () => {
       especialidades: ["Development", "Educación"]
     },
     {
-      id: 7,
-      nombre: "Ivo Yance",
-      imagen: "/images/ponentes/yance-ciisic.webp",
-      descripcion: "Hace más de una década, ayudo a universidades e institutos brindándoles a sus estudiantes conocimientos sobre marketing, comunicación y liderazgo.",
-      linkedin: "https://www.linkedin.com/in/ivoyance/",
-      empresa: "Universidad Continental",
-      especialidades: ["Gestión", "Soft Skills", "Educación"]
-    },
-    {
       id: 8,
-      nombre: "Jowel Cabrera",
-      imagen: "/images/ponentes/cabrera-ciisic.webp",
-      descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
-      linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
-      empresa: "Universidad Técnica de Georgia",
-      especialidades: ["Investigación", "Tecnologías Emergentes"]
-    },
-    {
-      id: 9,
       nombre: "Ciro Rodríguez",
       imagen: "/images/ponentes/rodriguez-ciisic.webp",
       descripcion: "Miembro Senior del IEEE. Profesor principal de la UNMSM y de la Universidad Nacional Federico Villarreal, Investigador reconocido por el RENACYT.",
@@ -92,7 +83,34 @@ export const usePonentes = () => {
       especialidades: ["Investigación", "Educación", "Sistemas de Información"]
     },
     {
+      id: 9,
+      nombre: "Jim Dios",
+      imagen: "/images/ponentes/diosluna-ciisic.webp",
+      descripcion: "Máster en Ingeniería Informática UAM, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
+      linkedin: "https://www.linkedin.com/in/jimdios/",
+      empresa: "Universidad de Lima",
+      especialidades: ["Investigación", "Sistemas de Información"]
+    },
+    {
       id: 10,
+      nombre: "Jowel Cabrera",
+      imagen: "/images/ponentes/cabrera-ciisic.webp",
+      descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
+      linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
+      empresa: "Universidad Técnica de Georgia",
+      especialidades: ["Investigación", "Tecnologías Emergentes"]
+    },
+    {
+      id: 11,
+      nombre: "Ivo Yance",
+      imagen: "/images/ponentes/yance-ciisic.webp",
+      descripcion: "Hace más de una década, ayudo a universidades e institutos brindándoles a sus estudiantes conocimientos sobre marketing, comunicación y liderazgo.",
+      linkedin: "https://www.linkedin.com/in/ivoyance/",
+      empresa: "Universidad Continental",
+      especialidades: ["Gestión", "Soft Skills", "Educación"]
+    },
+    {
+      id: 12,
       nombre: "Miguel Garro",
       imagen: "/images/ponentes/garro-ciisic.webp",
       descripcion: "Cybersecurity Technical Solutions Architect en Cisco Systems, Ingeniero informático de la Universidad Castro Carazo de Costa Rica.",
