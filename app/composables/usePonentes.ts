@@ -81,6 +81,24 @@ export const usePonentes = () => {
       linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
       empresa: "Universidad Técnica de Georgia",
       especialidades: ["Investigación", "Tecnologías Emergentes"]
+    },
+    {
+      id: 9,
+      nombre: "Ciro Rodríguez",
+      imagen: "/images/ponentes/rodriguez-ciisic.webp",
+      descripcion: "Miembro Senior del IEEE. Profesor principal de la UNMSM y de la Universidad Nacional Federico Villarreal, Investigador reconocido por el RENACYT.",
+      linkedin: "https://www.linkedin.com/in/ciro-rodriguez-917bb44/",
+      empresa: "Universidad Nacional Mayor de San Marcos",
+      especialidades: ["Investigación", "Educación", "Sistemas de Información"]
+    },
+    {
+      id: 10,
+      nombre: "Miguel Garro",
+      imagen: "/images/ponentes/garro-ciisic.webp",
+      descripcion: "Cybersecurity Technical Solutions Architect en Cisco Systems, Ingeniero informático de la Universidad Castro Carazo de Costa Rica.",
+      linkedin: "https://www.linkedin.com/in/miguel-garro/",
+      empresa: "Cisco Systems",
+      especialidades: ["Ciberseguridad", "Redes", "Telecomunicaciones"]
     }
   ]
 
