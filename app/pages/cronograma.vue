@@ -28,7 +28,7 @@
                 class="toggle-btn"
                 :class="{ 'active': viewMode === 'timeline' }"
               >
-                <span class="icon">📅</span>
+                <Icon name="heroicons:clock" class="icon w-5 h-5" />
                 Línea de Tiempo
               </button>
               <button 
@@ -36,7 +36,7 @@
                 class="toggle-btn"
                 :class="{ 'active': viewMode === 'calendar' }"
               >
-                <span class="icon">🗓️</span>
+                <Icon name="heroicons:calendar-days" class="icon w-5 h-5" />
                 Vista Calendario
               </button>
             </div>
@@ -297,7 +297,7 @@ const days = ref([
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'CENTRUM PUCP - Perú',
-        speaker: 'Mg. Gera Flores',
+        speaker: 'Mg. Gera Flores Sempertegui',
         flag: '🇵🇪'
       },
       {
@@ -349,7 +349,7 @@ const days = ref([
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Google Developer Experts - Uruguay',
-        speaker: 'Damián Siré',
+        speaker: 'Ing. Damián Siré',
         flag: '🇺🇾'
       },
       {
@@ -358,7 +358,7 @@ const days = ref([
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'CISCO - Perú',
-        speaker: 'Miguel Garro',
+        speaker: 'Ing. Miguel Garro',
         flag: '🇵🇪'
       },
       {
@@ -376,7 +376,7 @@ const days = ref([
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Universidad Continental - Perú',
-        speaker: 'Ivo Yance Carlos',
+        speaker: 'Mg. Ivo Yance Carlos',
         flag: '🇵🇪'
       },
       {
