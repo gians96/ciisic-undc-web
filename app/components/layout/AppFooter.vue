@@ -39,8 +39,8 @@
         <div class="lg:col-span-2 space-y-6">
           <h3 class="text-white font-bold text-xl tracking-wider">CONTACTO</h3>
           <nav class="space-y-3">
-            <NuxtLink to="mailto:congreso@undc.edu.pe" class="footer-link">congreso@undc.edu.pe</NuxtLink>
-            <NuxtLink to="https://wa.me/51949026908" class="footer-link">+51 949026908</NuxtLink>
+            <a href="mailto:congreso@undc.edu.pe" class="footer-link">congreso@undc.edu.pe</a>
+            <a href="https://wa.me/51949026908" target="_blank" rel="noopener noreferrer" class="footer-link">+51 949026908</a>
             <span class="footer-link footer-text">Auditorio "Casa de la Cultura", San Vicente - Cañete</span>
 
           </nav>

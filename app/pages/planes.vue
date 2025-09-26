@@ -21,25 +21,22 @@
 
     <section class="py-20 md:py-28">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="plan in inscriptionPlans" :key="plan.id" @click="navigateToPlan(plan.id)"
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div v-for="plan in inscriptionPlans" :key="plan.id" @click="navigateToPlan(plan.value)"
             class="bg-slate-800/50 border border-slate-700 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
             <div class="p-8 flex flex-col h-full">
               <div class="flex items-center justify-between">
                 <h3 class="text-2xl font-bold text-white uppercase">{{ plan.title }}</h3>
-                <span v-if="plan.badge" :class="[
-                  'text-xs font-bold uppercase px-3 py-1 rounded-full border',
-                  plan.badge.includes('SIN') ? 'border-amber-400 text-amber-400' : 'border-primary text-primary'
-                ]">
-                  {{ plan.badge }}
-                </span>
               </div>
               <div class="text-4xl font-extrabold text-primary my-4">{{ plan.price }}</div>
               <p class="text-slate-400 mb-6 text-sm">{{ plan.description }}</p>
               <ul class="space-y-3 text-slate-300 mb-8">
-                <li v-for="item in plan.features" :key="item.text" class="flex items-center">
-                  <Icon :name="item.icon" class="h-5 w-5 text-primary mr-3" />
-                  <span>{{ item.text }}</span>
+                <li v-for="feature in plan.features" :key="feature.text" class="flex items-center">
+                  <Icon :name="feature.icon" 
+                        :class="feature.icon === 'heroicons:x-mark' ? 'h-5 w-5 text-red-400 mr-3' : 'h-5 w-5 text-primary mr-3'" />
+                  <span :class="feature.icon === 'heroicons:x-mark' ? 'text-slate-400' : 'text-slate-300'">
+                    {{ feature.text }}
+                  </span>
                 </li>
               </ul>
               <div class="mt-auto">
@@ -84,24 +81,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 // ===========================================================================
 // ROUTER
 // ===========================================================================
-const router = useRouter()
-
-const navigateToPlan = (planId: number) => {
-  router.push(`/register?planId=${planId}`)
+const navigateToPlan = (planValue: string) => {
+  if (planValue === 'estudiantes') {
+    navigateTo('/estudiantes')
+  } else if (planValue === 'general') {
+    navigateTo('/general')
+  }
 }
 
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-  title: 'Planes de Inscripción - VI CIISIC UNDC',
+  title: 'Planes | VII CIISIC',
   meta: [
-    { name: 'description', content: 'Explora los planes de inscripción para el VI Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+    { name: 'description', content: 'Explora los planes de inscripción para el VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
   ]
 })
 
@@ -112,43 +110,25 @@ const inscriptionPlans = ref([
   {
     id: 1,
     title: 'ESTUDIANTES',
-    badge: 'CON KIT',
-    price: 'S/ 120.00',
-    value: 'estudiantes_con_kit',
-    description: 'La experiencia completa para estudiantes de institutos, colegios y otras universidades.',
-    features: [
-      { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-      { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-      { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-    ]
-  },
-  {
-    id: 2,
-    title: 'ESTUDIANTES',
-    badge: 'SIN KIT',
-    price: 'S/ 60.00',
-    value: 'estudiantes_sin_kit',
+    price: 'Desde S/ 60.00',
+    value: 'estudiantes',
     description: 'La opción económica para estudiantes, con acceso a todas las ponencias y su certificado.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
       { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-      { icon: 'heroicons:x-mark', text: 'No incluye Kit' },
+      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' }
     ]
   },
   {
-    id: 3,
-    title: 'PUBLICO GENERAL',
-    badge: 'INCLUYE KIT',
-    price: 'S/ 140.00',
-    value: 'publico_general_con_kit',
-    description: 'Acceso total con kit para profesionales y cualquier persona interesada en el congreso.',
+    id: 2,
+    title: 'PROFESIONALES Y PUBLICO GENERAL',
+    price: 'Desde S/ 80.00',
+    value: 'general',
+    description: 'La opción económica para profesionales y cualquier persona interesada en el congreso, con acceso a todas las ponencias y su certificado.',
     features: [
       { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-      { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
       { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
+      { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' }
     ]
   }
 ])
@@ -156,7 +136,7 @@ const inscriptionPlans = ref([
 const merchandising = ref([
   { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.jpeg' },
   { name: 'TomaTodo', image: '/images/merchandising/tomatodo.jpeg' },
-  { name: 'Identificador', image: '/images/merchandising/identificador.jpeg' },
+  { name: 'Identificador', image: '/images/merchandising/identificador.jpeg' }
 ])
 
 // ===========================================================================
