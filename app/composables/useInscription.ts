@@ -11,8 +11,9 @@ import type {
 } from '@/types/inscription'
 
 export const useInscription = () => {
-    // const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe' || 'http://localhost:3000'
+    const config = useRuntimeConfig() //En el contenedor no funcion
+    const baseURL = config.public.apiBaseUrl
+    // const baseURL = process.env.API_BASE_URL
 
     // Estado reactivo
     const isSubmitting = ref(false)

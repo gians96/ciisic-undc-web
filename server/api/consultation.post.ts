@@ -8,30 +8,15 @@ const RATE_LIMIT = 10 // máximo 10 requests por minuto por IP
 const RATE_WINDOW = 60 * 1000 // 1 minuto en millisegundos
 
 export default defineEventHandler(async (event) => {
+  const envs = useRuntimeConfig(event)
+  const xApiToken = envs.xApiToken
+  const xApiUrl = envs.xApiUrl
+  console.log('Environment variables:', { xApiToken: xApiToken ? '***' : 'undefined', xApiUrl });
+  
   try {
-    // ========================================
-    // VERIFICACIÓN DE CONFIGURACIÓN AL INICIO
-    // ========================================
-    
-    // Intentar obtener variables de múltiples fuentes
-    let apiToken = process.env.X_API_TOKEN || 
-                   process.env.NUXT_X_API_TOKEN || 
-                   process.env.RUNTIME_X_API_TOKEN
-    
-    let apiUrl = process.env.X_API_URL || 
-                 process.env.NUXT_X_API_URL || 
-                 process.env.RUNTIME_X_API_URL || 
-                 'https://api-test.nube-tec.com/api/v1/consultation'
-    
-    // Log para debugging en producción
-    console.log('=== API CONSULTATION DEBUG ===')
-    console.log('Environment:', process.env.NODE_ENV)
-    console.log('API Token exists:', !!apiToken)
-    console.log('API URL:', apiUrl)
-    console.log('Token source:', apiToken ? 'FOUND' : 'NOT_FOUND')
-    
+
     // Verificar variables de entorno
-    if (!apiToken || apiToken === '') {
+    if (!xApiToken || xApiToken === '') {
       console.error('ERROR: No se encontró token de API en ninguna variable')
       console.error('Checked variables: X_API_TOKEN, NUXT_X_API_TOKEN, RUNTIME_X_API_TOKEN')
       throw createError({
@@ -39,8 +24,8 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Server configuration error: API token not found'
       })
     }
-    
-    if (!apiUrl || apiUrl === '') {
+
+    if (!xApiUrl || xApiUrl === '') {
       console.error('ERROR: No se encontró URL de API')
       throw createError({
         statusCode: 500,
@@ -59,12 +44,12 @@ export default defineEventHandler(async (event) => {
     // ========================================
     // RATE LIMITING POR IP
     // ========================================
-    const clientIP = getHeader(event, 'x-forwarded-for') || 
-                     getHeader(event, 'x-real-ip') || 
-                     event.node.req.socket.remoteAddress || 
-                     'unknown'
+    const clientIP = getHeader(event, 'x-forwarded-for') ||
+      getHeader(event, 'x-real-ip') ||
+      event.node.req.socket.remoteAddress ||
+      'unknown'
     const now = Date.now()
-    
+
     // Limpiar cache viejo y verificar rate limit
     const userCache = requestCache.get(clientIP)
     if (userCache) {
@@ -73,7 +58,7 @@ export default defineEventHandler(async (event) => {
         userCache.count = 0
         userCache.lastReset = now
       }
-      
+
       // Verificar si excede el límite
       if (userCache.count >= RATE_LIMIT) {
         throw createError({
@@ -81,7 +66,7 @@ export default defineEventHandler(async (event) => {
           statusMessage: `Demasiadas consultas desde esta IP. Límite: ${RATE_LIMIT} por minuto. Intente nuevamente más tarde.`
         })
       }
-      
+
       userCache.count++
     } else {
       // Primera consulta de esta IP
@@ -93,11 +78,11 @@ export default defineEventHandler(async (event) => {
     // ========================================
     const origin = getHeader(event, 'origin')
     const referer = getHeader(event, 'referer')
-    
+
     // En desarrollo permitir localhost, en producción validar dominio
     if (process.env.NODE_ENV === 'production') {
       const allowedOrigins = [
-        'https://ciisic-vii.episundc.pe', 
+        'https://ciisic-vii.episundc.pe',
         'https://ciisic.vercel.app',
         'http://localhost:3000',
         'http://localhost:3001'
@@ -135,7 +120,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const expectedLength = documentType === 'DNI' ? 8 : 9
-    
+
     if (documentNumber.length !== expectedLength || !/^\d+$/.test(documentNumber)) {
       throw createError({
         statusCode: 400,
@@ -154,14 +139,14 @@ export default defineEventHandler(async (event) => {
 
     // Construir la URL según el tipo de documento
     const endpoint = documentType === 'DNI' ? 'dni' : 'ce'
-    const requestUrl = `${apiUrl}/${endpoint}/${documentNumber}`
-    
+    const requestUrl = `${xApiUrl}/${endpoint}/${documentNumber}`
+
     console.log('Making request to:', requestUrl)
 
     // Hacer la petición a la API externa desde el servidor
     const response = await $fetch(requestUrl, {
       headers: {
-        'X-API-Token': apiToken,
+        'X-API-Token': xApiToken,
         'Content-Type': 'application/json'
       }
     })
@@ -171,13 +156,13 @@ export default defineEventHandler(async (event) => {
 
     // Retornar la respuesta
     return response
-    
+
   } catch (error: any) {
-    const clientIP = getHeader(event, 'x-forwarded-for') || 
-                     getHeader(event, 'x-real-ip') || 
-                     event.node.req.socket.remoteAddress || 
-                     'unknown'
-    
+    const clientIP = getHeader(event, 'x-forwarded-for') ||
+      getHeader(event, 'x-real-ip') ||
+      event.node.req.socket.remoteAddress ||
+      'unknown'
+
     // Log de errores para monitoreo de seguridad
     if (error.statusCode === 429) {
       console.warn(`[SECURITY] Rate limit exceeded from IP: ${clientIP}`)
@@ -186,7 +171,7 @@ export default defineEventHandler(async (event) => {
     } else {
       console.error(`[${clientIP}] ❌ Error in document consultation:`, error.message)
     }
-    
+
     // Si es un error de $fetch, mantener el código de estado
     if (error.status || error.statusCode) {
       throw createError({
@@ -194,7 +179,8 @@ export default defineEventHandler(async (event) => {
         statusMessage: error.message || 'External API error'
       })
     }
-    
+
+    // Error genérico del servidor
     // Error genérico del servidor
     throw createError({
       statusCode: 500,

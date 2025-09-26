@@ -98,7 +98,7 @@
                                     <div class="plan-title-container">
                                         <h4 class="plan-card-title">{{ plan.title }}</h4>
                                         <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
-                                        }}</span>
+                                            }}</span>
 
                                     </div>
                                 </div>
@@ -360,6 +360,22 @@ const {
 } = useInscription()
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
+
+const searchConsultation = async (number: string) => {
+    if (import.meta.server) {
+        const documentType = number.length === 8 ? 'DNI' : 'CE'
+        // / Hacer la petición a la API externa desde el servidor
+        const endpoint = documentType === 'DNI' ? 'dni' : 'ce'
+        const requestUrl = `${config.xApiUrl}/${endpoint}/${number}`
+        const response = await $fetch(requestUrl, {
+            headers: {
+                'X-API-Token': config.xApiToken,
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+}
 
 // ===========================================================================
 // STORES
@@ -499,15 +515,15 @@ const showSuccess = (message: string) => {
 }
 
 const goToConfirmation = () => {
-    console.log('🔄 Intentando ir a confirmación...', { 
+    console.log('🔄 Intentando ir a confirmación...', {
         inscriptionId: completedInscriptionId.value,
-        hasRouter: !!router 
+        hasRouter: !!router
     })
-    
+
     if (completedInscriptionId.value) {
         const confirmationUrl = `/confirmation?id=${completedInscriptionId.value}`
         console.log('🔄 Navegando a:', confirmationUrl)
-        
+
         router.push(confirmationUrl).then(() => {
             console.log('✅ Navegación exitosa')
             successMessage.value = ''
@@ -685,13 +701,13 @@ const handleSubmit = async () => {
 
         // Mapeo de tipos de documento del frontend al backend
         const documentTypeMapped = documentType.value.toLowerCase()
-        
+
         // El valor ya está correcto, no necesita mapeo adicional
         const tipoInscripcionMapped = tipoInscripcion.value
 
         // Preparar los datos del formulario con mapeo correcto
         const modalidadDepositoMapped = modalidadDeposito.value === 'banco' ? 'Banco de la Nación' : 'Billetera Digital'
-        
+
         let metodoDePagoMapped = ''
         if (modalidadDeposito.value === 'banco') {
             metodoDePagoMapped = tipoPago.value === 'directo' ? 'Pago Directo' : 'Pago Interbancario'
