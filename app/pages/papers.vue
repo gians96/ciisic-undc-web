@@ -64,7 +64,7 @@
           
           <!-- Columna de Imagen (6 columnas) -->
           <div class="col-span-12 lg:col-span-6 flex justify-center items-center">
-            <div class="w-full lg:w-[70%] h-auto">
+            <div class="w-full lg:w-[75%] h-auto">
               <img 
                 src="/images/eventos/papers.webp" 
                 alt="Formato IEEE Papers" 

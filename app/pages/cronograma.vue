@@ -1631,7 +1631,6 @@ useHead({
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 @media (prefers-contrast: high) {
