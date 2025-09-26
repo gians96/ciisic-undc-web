@@ -363,10 +363,10 @@ const days = ref([
       },
       {
         time: '10:30 - 11:15',
-        title: 'Break',
-        type: 'otros',
-        typeLabel: 'Receso',
-        description: 'Espacio de descanso acompañado de dinámicas y sorteo entre los participantes.',
+        title: 'Huawei Academy',
+        type: 'taller',
+        typeLabel: 'Ponencia',
+        description: 'Espacio de aprendizaje interactivo para descubrir oportunidades de capacitación dentro del ecosistema Huawei Academy.',
         speaker: null,
         flag: null
       },
