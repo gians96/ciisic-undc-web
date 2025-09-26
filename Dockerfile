@@ -11,6 +11,14 @@ RUN bun install --frozen-lockfile
 # Copy the entire project
 COPY . .
 
+# Build arguments para variables públicas de entorno
+ARG API_BASE_URL
+ARG NODE_ENV=production
+
+# Set environment variables para el proceso de build (solo las públicas)
+ENV API_BASE_URL=$API_BASE_URL
+ENV NODE_ENV=$NODE_ENV
+
 # Prepare and build with Bun
 RUN bun --bun run postinstall
 RUN bun --bun run build
@@ -27,6 +35,11 @@ RUN npm install --only=production
 
 # Copy the built application from builder stage
 COPY --from=builder /app/.output ./.output
+
+# Runtime environment variables (serán establecidas por Dokploy)
+ENV NODE_ENV=production
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
 
 # Expose port
 EXPOSE 3000/tcp
