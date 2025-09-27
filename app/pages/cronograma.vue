@@ -345,7 +345,7 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Título de Ponencia',
+        title: 'Título por confirmar',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Google Developer Experts - Uruguay',
@@ -354,10 +354,10 @@ const days = ref([
       },
       {
         time: '09:45 - 10:30',
-        title: 'Título de Ponencia',
+        title: 'Soluciones de seguridad utilizando tecnología de Cisco Sourcefireor',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'CISCO - Perú',
+        description: 'CISCO Systems - Perú',
         speaker: 'Ing. Miguel Garro',
         flag: '🇵🇪'
       },
@@ -442,7 +442,7 @@ const days = ref([
       },
       {
         time: '10:30 - 11:15',
-        title: 'Título por confirmar',
+        title: 'Inteligencia artificial generativa y equidad social: Potencialidades y barreras',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Universidad Nacional Mayor de San Marcos - Perú',
@@ -454,7 +454,7 @@ const days = ref([
         title: 'Metodología de la investigación para Ingeniería de Sistemas',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Universidad Tecnica de Georgia',
+        description: 'Universidad Peruana Los Andes - Perú',
         speaker: 'Mg. Jowel Cabrera Padilla',
         flag: '🇵🇪'
       },
