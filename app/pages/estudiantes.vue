@@ -354,7 +354,7 @@
 
                     <div class="qr-modal-content">
                         <div class="qr-modal-image-container">
-                            <img src="/images/qr/plin.jpeg" alt="Código QR para billetera digital"
+                            <img src="/images/qr/plin.webp" alt="Código QR para billetera digital"
                                 class="qr-modal-image">
                         </div>
 
