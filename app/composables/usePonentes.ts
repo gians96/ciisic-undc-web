@@ -85,7 +85,7 @@ export const usePonentes = () => {
     {
       id: 9,
       nombre: "Jim Dios",
-      imagen: "/images/ponentes/diosluna-ciisic.webp",
+      imagen: "/images/ponentes/dios-luna-ciisic.webp",
       descripcion: "Máster en Ingeniería Informática UAM, con amplia experiencia participando y gestionando proyectos multidisciplinarios a corto y mediano plazo.",
       linkedin: "https://www.linkedin.com/in/jimdios/",
       empresa: "Universidad de Lima",
