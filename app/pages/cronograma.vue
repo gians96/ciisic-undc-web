@@ -354,12 +354,12 @@ const days = ref([
       },
       {
         time: '09:45 - 10:30',
-        title: 'Soluciones de seguridad utilizando tecnología de Cisco Sourcefireor',
+        title: 'Soluciones de seguridad utilizando tecnología de Cisco Sourcefire',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'CISCO Systems - Perú',
+        description: 'CISCO Systems - Chile',
         speaker: 'Ing. Miguel Garro',
-        flag: '🇵🇪'
+        flag: '🇨🇱'
       },
       {
         time: '10:30 - 11:15',
@@ -436,7 +436,7 @@ const days = ref([
         title: 'Analítica del aprendizaje en entornos virtuales: un enfoque actual',
         type: 'ponencia',
         typeLabel: 'Ponencia',
-        description: 'Universidad Autónoma de Madrid - España',
+        description: 'Universidad de Lima - Perú',
         speaker: 'Mg. Jim Dios Luna',
         flag: '🇵🇪'
       },
