@@ -302,12 +302,12 @@ const days = ref([
       },
       {
         time: '12:00 - 13:00',
-        title: 'EasyChair',
-        type: 'investigacion',
-        typeLabel: 'Papers',
-        description: 'Difusión de investigaciones académicas.',
-        speaker: null,
-        flag: null
+        title: 'Espacio de aprendizaje interactivo dentro del ecosistema Huawei Academy',
+        type: 'ponencia',
+        typeLabel: 'Ponencia',
+        description: 'Huawei - Perú',
+        speaker: 'Nadim Alvarez Saleme',
+        flag: '🇵🇪'
       },
       {
         time: '13:00 - 14:00',
@@ -362,11 +362,11 @@ const days = ref([
         flag: '🇨🇱'
       },
       {
-        time: '10:30 - 11:15',
-        title: 'Huawei Academy',
-        type: 'taller',
-        typeLabel: 'Ponencia',
-        description: 'Espacio de aprendizaje interactivo para descubrir oportunidades de capacitación dentro del ecosistema Huawei Academy.',
+        time: '13:00 - 14:00',
+        title: 'Break',
+        type: 'otros',
+        typeLabel: 'Receso',
+        description: 'Espacio de descanso.',
         speaker: null,
         flag: null
       },
