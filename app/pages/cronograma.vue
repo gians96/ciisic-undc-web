@@ -362,7 +362,7 @@ const days = ref([
         flag: '🇨🇱'
       },
       {
-        time: '13:00 - 14:00',
+        time: '10:30 - 11:15',
         title: 'Break',
         type: 'otros',
         typeLabel: 'Receso',
