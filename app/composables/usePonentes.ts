@@ -12,10 +12,10 @@ export const usePonentes = () => {
   const ponentes: Ponente[] = [
     {
       id: 1,
-      nombre: "Eric Liu",
-      imagen: "/images/ponentes/liu-ciisic.webp",
-      descripcion: "Vicepresidente de Relaciones Públicas de Huawei Perú, un cargo desde el cual ha participado en acuerdos de colaboración con universidades peruanas para impulsar el talento digital y el desarrollo de la tecnología en el país. ",
-      linkedin: "#",
+      nombre: "Nadim Alvarez",
+      imagen: "/images/ponentes/alvarez-ciisic.webp",
+      descripcion: "Latam Regional Vertical Solutions Manager en Huawei, con más de 13 años de experiencia en ventas técnicas y soluciones IT/OT, especializado en networking, datacenter y proyectos end-to-end que impulsan innovación y satisfacción del cliente.",
+      linkedin: "https://www.linkedin.com/in/nadimalvarezsaleme/",
       empresa: "Huawei Perú",
       especialidades: ["Telecomunicaciones", "IoT", "Cloud Computing"]
     },
