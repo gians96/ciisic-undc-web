@@ -733,8 +733,31 @@ const handleFileChange = (event: Event) => {
 }
 
 const handleSubmit = async () => {
+
     // Prevenir múltiples envíos
     if (isSubmitting.value || apiSubmitting.value) return
+
+    // Validación de campos obligatorios
+    if (!documentType.value || !documentNumber.value) {
+        showError('❌ El campo Documento de identidad es obligatorio')
+        return
+    }
+    if (!nombres.value) {
+        showError('❌ El campo Nombres es obligatorio')
+        return
+    }
+    if (!apellidos.value) {
+        showError('❌ El campo Apellidos es obligatorio')
+        return
+    }
+    if (!email.value) {
+        showError('❌ El campo Correo electrónico es obligatorio')
+        return
+    }
+    if (!celular.value) {
+        showError('❌ El campo Celular es obligatorio')
+        return
+    }
 
     if (!planId.value) {
         showError('❌ Por favor selecciona un plan de inscripción')
