@@ -37,17 +37,7 @@
                         </div>
 
                         <div class="error-actions">
-                            <button 
-                                v-if="!getErrorContent(error).actionLink"
-                                @click="loadInscription"
-                                class="btn-primary"
-                            >
-                                <Icon name="heroicons:arrow-path" class="h-5 w-5 mr-2" />
-                                {{ getErrorContent(error).actionText }}
-                            </button>
-                            
                             <NuxtLink 
-                                v-else
                                 :to="getErrorContent(error).actionLink || '/'"
                                 class="btn-primary"
                             >
@@ -55,13 +45,13 @@
                                 {{ getErrorContent(error).actionText }}
                             </NuxtLink>
 
-                            <button 
-                                @click="loadInscription"
+                            <NuxtLink 
+                                to="/planes"
                                 class="btn-secondary"
                             >
                                 <Icon name="heroicons:arrow-path" class="h-5 w-5 mr-2" />
-                                Intentar de nuevo
-                            </button>
+                                Nueva inscripción
+                            </NuxtLink>
                         </div>
 
                         <!-- Información de contacto -->
@@ -319,8 +309,8 @@ const getErrorContent = (errorType: string) => {
                 title: 'Sin conexión a internet',
                 message: 'No hay conexión a internet disponible.',
                 suggestion: 'Verifica tu conexión y vuelve a intentarlo.',
-                actionText: 'Reintentar',
-                actionLink: null
+                actionText: 'Volver a planes',
+                actionLink: '/planes'
             }
         case 'server_error':
             return {
@@ -328,8 +318,8 @@ const getErrorContent = (errorType: string) => {
                 title: 'Error del servidor',
                 message: 'Hay un problema temporal en nuestros servidores.',
                 suggestion: 'Por favor, intenta nuevamente en unos minutos.',
-                actionText: 'Reintentar',
-                actionLink: null
+                actionText: 'Volver a planes',
+                actionLink: '/planes'
             }
         case 'no_data':
             return {
