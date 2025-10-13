@@ -13,6 +13,7 @@ import type {
 export const useInscription = () => {
     const config = useRuntimeConfig() //En el contenedor no funcion
     const baseURL = config.public.apiBaseUrl || process.env.API_BASE_URL
+    const inscriptionStore = useInscriptionStore()
 
     // Estado reactivo
     const isSubmitting = ref(false)
@@ -190,6 +191,11 @@ export const useInscription = () => {
             if (!response || typeof response.success !== 'boolean') {
                 console.error('⚠️ Respuesta con formato inesperado:', response)
                 throw new Error('Respuesta del servidor con formato inválido')
+            }
+
+            // Guardar la inscripción en el store para usarla en la página de confirmación
+            if (response.success && response.data) {
+                inscriptionStore.setInscription(response.data)
             }
 
             return response

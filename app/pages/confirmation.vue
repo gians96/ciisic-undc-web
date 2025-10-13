@@ -234,7 +234,8 @@ useHead({
 // COMPOSABLES
 // ===========================================================================
 const route = useRoute()
-const { getInscriptionById, isLoading } = useInscription()
+const inscriptionStore = useInscriptionStore()
+const isLoading = ref(false)
 
 // ===========================================================================
 // ESTADO REACTIVO
@@ -247,28 +248,22 @@ const inscriptionId = computed(() => route.query.id as string)
 // MÉTODOS
 // ===========================================================================
 const loadInscription = async () => {
+    // Primero intentar cargar desde el store (datos recién creados)
+    if (inscriptionStore.hasInscription) {
+        inscription.value = inscriptionStore.currentInscription
+        console.log('✅ Inscripción cargada desde el store:', inscription.value)
+        return
+    }
+
+    // Si no hay datos en el store, mostrar error
     if (!inscriptionId.value) {
         error.value = 'no_id'
         return
     }
 
-    try {
-        const response: any = await getInscriptionById(parseInt(inscriptionId.value))
-        inscription.value = response.data
-    } catch (err: any) {
-        console.error('Error cargando inscripción:', err)
-        
-        // Determinar tipo de error específico
-        if (err.response?.status === 404) {
-            error.value = 'not_found'
-        } else if (err.response?.status === 500) {
-            error.value = 'server_error'
-        } else if (!navigator.onLine) {
-            error.value = 'no_connection'
-        } else {
-            error.value = 'general_error'
-        }
-    }
+    // Si llegamos aquí es porque no hay datos en el store y hay un ID en la URL
+    // Esto significa que el usuario recargó la página o llegó por link directo
+    error.value = 'no_data'
 }
 
 const formatDate = (dateString: string) => {
@@ -335,6 +330,15 @@ const getErrorContent = (errorType: string) => {
                 suggestion: 'Por favor, intenta nuevamente en unos minutos.',
                 actionText: 'Reintentar',
                 actionLink: null
+            }
+        case 'no_data':
+            return {
+                icon: 'heroicons:arrow-path',
+                title: 'Sesión expirada',
+                message: 'Los datos de tu inscripción ya no están disponibles en esta sesión.',
+                suggestion: 'Si acabas de registrarte, por favor verifica tu email para la confirmación. Si necesitas consultar tu inscripción, contacta con soporte.',
+                actionText: 'Ir al inicio',
+                actionLink: '/'
             }
         default:
             return {
