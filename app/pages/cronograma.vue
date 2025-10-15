@@ -345,7 +345,7 @@ const days = ref([
       },
       {
         time: '09:00 - 09:45',
-        title: 'Título por confirmar',
+        title: 'Y si creamos un navegador desde cero? Aprende cómo funcionan los navegadores',
         type: 'ponencia',
         typeLabel: 'Ponencia',
         description: 'Google Developer Experts - Uruguay',

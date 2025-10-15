@@ -97,7 +97,7 @@ export const usePonentes = () => {
       imagen: "/images/ponentes/cabrera-ciisic.webp",
       descripcion: "Docente Universitario en Gestión de TI, Cibernética Organizacional y Pensamiento Sistémico Blando. Aficionado al Software Libre y procura difundir su Uso.",
       linkedin: "https://www.linkedin.com/in/jowel-cabrera-padilla-b5a85470/",
-      empresa: "Universidad Técnica de Georgia",
+      empresa: "Universidad Peruana Los Andes - Perú",
       especialidades: ["Investigación", "Tecnologías Emergentes"]
     },
     {
