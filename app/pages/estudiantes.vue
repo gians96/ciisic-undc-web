@@ -415,21 +415,6 @@ const router = useRouter()
 // ===========================================================================
 const inscriptionPlans = [
     {
-        id: 1,
-        title: 'ESTUDIANTES CON KIT',
-        badge: 'CON KIT',
-        basePrice: 120.00,
-        institutionalPrice: 100.00,
-        value: 'estudiantes_con_kit',
-        description: 'La experiencia completa para estudiantes con kit de merchandising oficial.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-        ]
-    },
-    {
         id: 2,
         title: 'ESTUDIANTES SIN KIT',
         badge: 'SIN KIT',

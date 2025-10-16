@@ -415,21 +415,6 @@ const searchConsultation = async (number: string) => {
 // ===========================================================================
 const inscriptionPlans = [
     {
-        id: 3,
-        title: 'PROFESIONALES Y PUBLICO EN GENERAL CON KIT',
-        badge: 'CON KIT',
-        basePrice: 140.00,
-        institutionalPrice: 120.00,
-        value: 'general_con_kit',
-        description: 'La experiencia completa para profesionales y público en general con kit de merchandising oficial.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-        ]
-    },
-    {
         id: 4,
         title: 'PROFESIONALES Y PUBLICO EN GENERAL SIN KIT',
         badge: 'SIN KIT',
