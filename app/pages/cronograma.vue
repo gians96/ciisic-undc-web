@@ -100,7 +100,7 @@
                         <h3 class="event-title">{{ event.title }}</h3>
                         <div v-if="event.speaker" class="event-speaker">
                           <div class="speaker-info">
-                            <span class="flag-emoji">{{ event.flag }}</span>
+                            <FlagIcon v-if="event.flag" :country="event.flag as any" size="sm" />
                             <span class="speaker-name">{{ event.speaker }}</span>
                           </div>
                         </div>
@@ -144,7 +144,7 @@
                         <div class="calendar-event-content">
                           <h4 class="calendar-event-title">{{ event.title }}</h4>
                           <div v-if="event.speaker" class="calendar-event-speaker">
-                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <FlagIcon v-if="event.flag" :country="event.flag as any" size="sm" />
                             <span class="calendar-speaker-name">{{ event.speaker }}</span>
                           </div>
                           <div class="calendar-event-type">{{ event.description }}</div>
@@ -161,7 +161,7 @@
                         <div class="calendar-event-content">
                           <h4 class="calendar-event-title">{{ event.title }}</h4>
                           <div v-if="event.speaker" class="calendar-event-speaker">
-                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <FlagIcon v-if="event.flag" :country="event.flag as any" size="sm" />
                             <span class="calendar-speaker-name">{{ event.speaker }}</span>
                           </div>
                           <div class="calendar-event-type">{{ event.description }}</div>
@@ -178,7 +178,7 @@
                         <div class="calendar-event-content">
                           <h4 class="calendar-event-title">{{ event.title }}</h4>
                           <div v-if="event.speaker" class="calendar-event-speaker">
-                            <span v-if="event.flag" class="calendar-flag">{{ event.flag }}</span>
+                            <FlagIcon v-if="event.flag" :country="event.flag as any" size="sm" />
                             <span class="calendar-speaker-name">{{ event.speaker }}</span>
                           </div>
                           <div class="calendar-event-type">{{ event.description }}</div>
@@ -271,7 +271,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad de Buenos Aires - Argentina',
         speaker: 'Mg. Abigail Kauf',
-        flag: '🇦🇷'
+        flag: 'AR'
       },
       {
         time: '09:45 - 10:30',
@@ -280,7 +280,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad Católica de Ávila - España',
         speaker: 'Dr. Diego Vergara Rodríguez',
-        flag: '🇪🇸'
+        flag: 'ES'
       },
       {
         time: '10:30 - 11:15',
@@ -289,7 +289,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad Católica de Ávila - España',
         speaker: 'Dr. Pablo Fernández Arias',
-        flag: '🇪🇸'
+        flag: 'ES'
       },
       {
         time: '11:15 - 12:00',
@@ -298,7 +298,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'CENTRUM PUCP - Perú',
         speaker: 'Mg. Gera Flores Sempertegui',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '12:00 - 13:00',
@@ -307,7 +307,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Huawei - Perú',
         speaker: 'Nadim Alvarez Saleme',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '13:00 - 14:00',
@@ -350,7 +350,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Google Developer Experts - Uruguay',
         speaker: 'Ing. Damián Siré',
-        flag: '🇺🇾'
+        flag: 'UY'
       },
       {
         time: '09:45 - 10:30',
@@ -359,7 +359,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'CISCO Systems - Chile',
         speaker: 'Ing. Miguel Garro',
-        flag: '🇨🇱'
+        flag: 'CL'
       },
       {
         time: '10:30 - 11:15',
@@ -377,7 +377,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad Continental - Perú',
         speaker: 'Mg. Ivo Yance Carlos',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '12:00 - 13:00',
@@ -429,7 +429,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'AWS - Colombia',
         speaker: 'Ing. Jose Verbel Tous',
-        flag: '🇨🇴'
+        flag: 'CO'
       },
       {
         time: '09:45 - 10:30',
@@ -438,7 +438,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad de Lima - Perú',
         speaker: 'Mg. Jim Dios Luna',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '10:30 - 11:15',
@@ -447,7 +447,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad Nacional Mayor de San Marcos - Perú',
         speaker: 'Dr. Ciro Rodriguez Rodriguez',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '11:15 - 12:00',
@@ -456,7 +456,7 @@ const days = ref([
         typeLabel: 'Ponencia',
         description: 'Universidad Peruana Los Andes - Perú',
         speaker: 'Mg. Jowel Cabrera Padilla',
-        flag: '🇵🇪'
+        flag: 'PE'
       },
       {
         time: '12:00 - 13:00',
@@ -1153,10 +1153,6 @@ useHead({
   gap: 0.75rem;
 }
 
-.flag-emoji {
-  font-size: 1.125rem;
-}
-
 .speaker-name {
   color: rgb(209, 213, 219);
   font-size: 0.875rem;
@@ -1614,10 +1610,6 @@ useHead({
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.calendar-flag {
-  font-size: 0.875rem;
 }
 
 .calendar-speaker-name {
