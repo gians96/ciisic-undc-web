@@ -7,7 +7,7 @@
           Comité General
         </h2>
         <!-- Línea decorativa verde -->
-        <div class="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
+        <div class="w-20 h-1 bg-primary-500 mx-auto rounded-full"></div>
       </div>
 
       <!-- Grid de miembros del equipo -->
@@ -18,14 +18,14 @@
           class="team-member-card group"
         >
           <div
-            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden"
+            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-primary-500/50 transition-all duration-300 overflow-hidden"
           >
             <div
-              class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"
+              class="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-primary-500/5"
             ></div>
             <div class="relative z-10 flex justify-center mb-6">
               <div
-                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden"
+                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-primary-500 flex items-center justify-center overflow-hidden"
               >
                 <img
                   v-if="member.image"
@@ -41,16 +41,16 @@
                 {{ member.name }}
               </h3>
               <p
-                class="text-green-500 text-sm font-medium uppercase tracking-wider"
+                class="text-primary-500 text-sm font-medium uppercase tracking-wider"
               >
                 {{ member.role }}
               </p>
             </div>
             <div
-              class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"
+              class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full opacity-60"
             ></div>
             <div
-              class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"
+              class="absolute bottom-4 left-4 w-1 h-1 bg-primary-500 rounded-full opacity-40"
             ></div>
           </div>
         </div>
@@ -64,7 +64,7 @@
           Comité General de Estudiantes
         </h2>
         <!-- Línea decorativa verde -->
-        <div class="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
+        <div class="w-20 h-1 bg-primary-500 mx-auto rounded-full"></div>
       </div>
 
       <!-- Grid de miembros del equipo -->
@@ -75,14 +75,14 @@
           class="team-member-card group"
         >
           <div
-            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-green-500/50 transition-all duration-300 overflow-hidden"
+            class="relative bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-primary-500/50 transition-all duration-300 overflow-hidden"
           >
             <div
-              class="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5"
+              class="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-primary-500/5"
             ></div>
             <div class="relative z-10 flex justify-center mb-6">
               <div
-                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-green-500 flex items-center justify-center overflow-hidden"
+                class="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full border-4 border-primary-500 flex items-center justify-center overflow-hidden"
               >
                 <img
                   v-if="member.image"
@@ -98,16 +98,16 @@
                 {{ member.name }}
               </h3>
               <p
-                class="text-green-500 text-sm font-medium uppercase tracking-wider"
+                class="text-primary-500 text-sm font-medium uppercase tracking-wider"
               >
                 {{ member.role }}
               </p>
             </div>
             <div
-              class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full opacity-60"
+              class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full opacity-60"
             ></div>
             <div
-              class="absolute bottom-4 left-4 w-1 h-1 bg-green-500 rounded-full opacity-40"
+              class="absolute bottom-4 left-4 w-1 h-1 bg-primary-500 rounded-full opacity-40"
             ></div>
           </div>
         </div>
@@ -217,22 +217,22 @@ const viewMember = (memberId: string) => {
 
 .team-member-card:hover .bg-slate-800 {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.2);
 }
 
 /* Efectos de brillo para los avatares */
 .team-member-card:hover .rounded-full {
-  box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 30px rgba(0, 217, 232, 0.5);
   animation: pulse-glow 2s infinite;
 }
 
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+    box-shadow: 0 0 20px rgba(0, 217, 232, 0.5);
   }
   50% {
-    box-shadow: 0 0 40px rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 40px rgba(0, 217, 232, 0.8);
   }
 }
 
@@ -282,12 +282,12 @@ const viewMember = (memberId: string) => {
   bottom: 0;
   background: radial-gradient(
       circle at 20% 20%,
-      rgba(34, 197, 94, 0.1) 0%,
+      rgba(0, 217, 232, 0.1) 0%,
       transparent 30%
     ),
     radial-gradient(
       circle at 80% 80%,
-      rgba(34, 197, 94, 0.05) 0%,
+      rgba(0, 217, 232, 0.05) 0%,
       transparent 30%
     );
   opacity: 0;
@@ -342,18 +342,18 @@ const viewMember = (memberId: string) => {
 
 /* Focus states */
 .team-member-card:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 
 /* Efectos especiales para los bordes */
-.team-member-card .border-green-500 {
-  background: linear-gradient(45deg, #22c55e, #16a34a);
+.team-member-card .border-primary-500 {
+  background: linear-gradient(45deg, #00d9e8, #075bcb);
   padding: 2px;
   border-radius: 50%;
 }
 
-.team-member-card .border-green-500 > div {
+.team-member-card .border-primary-500 > div {
   border-radius: 50%;
   background: linear-gradient(135deg, #475569, #64748b);
 }

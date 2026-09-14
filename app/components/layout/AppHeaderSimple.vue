@@ -13,7 +13,7 @@
               class="w-10 h-10 object-contain"
             />
             <span class="text-white font-bold text-xl tracking-wider"
-              >VII CIISIC</span
+              >VIII CIISIC</span
             >
           </NuxtLink>
         </div>
@@ -77,7 +77,7 @@
           <!-- Botón Sign In -->
           <NuxtLink
             to="/login"
-            class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 clip-path-btn"
+            class="hidden lg:inline-block bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 clip-path-btn"
           >
             SIGN IN
           </NuxtLink>
@@ -110,7 +110,7 @@
           :key="item.href"
           :to="item.href"
           @click="closeMobileMenu"
-          class="block py-2 text-gray-300 hover:text-green-500 font-medium uppercase tracking-wider transition-colors duration-200"
+          class="block py-2 text-gray-300 hover:text-primary-500 font-medium uppercase tracking-wider transition-colors duration-200"
         >
           {{ item.label }}
         </NuxtLink>
@@ -119,7 +119,7 @@
         <NuxtLink
           to="/login"
           @click="closeMobileMenu"
-          class="block mt-4 bg-green-500 text-black px-4 py-2 font-bold uppercase text-center transition-colors duration-200"
+          class="block mt-4 bg-primary-500 text-black px-4 py-2 font-bold uppercase text-center transition-colors duration-200"
         >
           SIGN IN
         </NuxtLink>
@@ -186,12 +186,12 @@ watch(
 }
 
 .nav-link:hover {
-  color: #22c55e;
+  color: #00d9e8;
   transform: translateY(-1px);
 }
 
 .nav-link.active {
-  color: #22c55e;
+  color: #00d9e8;
 }
 
 .nav-link::after {
@@ -201,7 +201,7 @@ watch(
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
+  background: linear-gradient(90deg, #00d9e8, #075bcb);
   transition: width 0.3s ease;
 }
 
@@ -247,7 +247,7 @@ header {
 /* Focus styles */
 .nav-link:focus,
 button:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 </style>

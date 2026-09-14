@@ -12,7 +12,7 @@
             Contáctanos
           </h1>
           <p class="text-xl text-gray-300 mb-2">
-            ¿Tienes una pregunta, sugerencia o quieres formar parte del VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica? 
+            ¿Tienes una pregunta, sugerencia o quieres formar parte del VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica?
             Estamos aquí para ayudarte.
           </p>
         </div>
@@ -290,19 +290,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Contacto | VII CIISIC',
+  title: 'Contacto | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Contáctanos para resolver tus dudas sobre el VII CIISIC. Soporte técnico, patrocinios, torneos y más. Estamos aquí para ayudarte.'
+      content: 'Contáctanos para resolver tus dudas sobre el VIII CIISIC. Soporte técnico, patrocinios, torneos y más. Estamos aquí para ayudarte.'
     },
     {
       property: 'og:title',
-      content: 'Contacto | VII CIISIC'
+      content: 'Contacto | VIII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Contáctanos para resolver tus dudas sobre el VII CIISIC. Soporte técnico, patrocinios, torneos y más.'
+      content: 'Contáctanos para resolver tus dudas sobre el VIII CIISIC. Soporte técnico, patrocinios, torneos y más.'
     },
     {
       property: 'og:type',
@@ -548,23 +548,8 @@ const submitForm = async () => {
       timestamp: new Date().toISOString(),
     }
 
-    console.log(JSON.stringify(formDmData, null, 2))
-
-    // Para copiar fácilmente el JSON
-    if (process.client) {
-      console.log('JSON para copiar:', JSON.stringify(formDmData))
-    }
-
-    // Aquí puedes enviar al API
-    // const response = await $fetch('/api/contact', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(formData)
-    // })
-
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    const { request } = useApi()
+    await request('/api/v1/contact', { method: 'POST', body: formDmData })
     
     // Guardar tiempo de envío para cooldown
     saveSubmissionTime()
@@ -583,8 +568,7 @@ const submitForm = async () => {
       errors[key as keyof typeof errors] = ''
     })
     
-  } catch (error) {
-    console.error('Error al enviar formulario:', error)
+  } catch {
     layoutStore.showError(
       'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.',
       'Error'
@@ -627,7 +611,7 @@ onUnmounted(() => {
 /* Form Styles */
 .form-input:focus {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 217, 232, 0.1);
 }
 
 .form-textarea {
@@ -637,7 +621,7 @@ onUnmounted(() => {
 /* Social Links Hover Effects */
 .social-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(69, 248, 130, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 217, 232, 0.2);
 }
 
 /* Contact Info Cards */
@@ -647,7 +631,7 @@ onUnmounted(() => {
 }
 
 .contact-info-card:hover {
-  border-color: #45f882;
+  border-color: #00d9e8;
   transform: translateY(-2px);
 }
 
@@ -702,8 +686,8 @@ onUnmounted(() => {
   .form-input:focus,
   .form-textarea:focus,
   .form-select:focus {
-    border-color: #45f882;
-    box-shadow: 0 0 0 2px #45f882;
+    border-color: #00d9e8;
+    box-shadow: 0 0 0 2px #00d9e8;
   }
 }
 
@@ -731,7 +715,7 @@ onUnmounted(() => {
 
 /* Success/Error Messages */
 .message-success {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
   color: #000000;
 }
 

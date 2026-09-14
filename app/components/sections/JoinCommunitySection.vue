@@ -2,20 +2,20 @@
   <section class="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
     <!-- Background Effects -->
     <div class="absolute inset-0">
-      <div class="absolute top-20 left-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-20 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl"></div>
       <div class="absolute bottom-20 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
     </div>
 
     <div class="container mx-auto px-6 relative z-10">
       <!-- Section Header -->
       <div class="text-center mb-16">
-        <div class="inline-flex items-center gap-2 bg-green-500/20 px-4 py-2 rounded-full mb-6">
-          <Icon name="heroicons:users" class="w-5 h-5 text-green-400" />
-          <span class="text-green-400 font-medium">Join Community</span>
+        <div class="inline-flex items-center gap-2 bg-primary-500/20 px-4 py-2 rounded-full mb-6">
+          <Icon name="heroicons:users" class="w-5 h-5 text-primary-400" />
+          <span class="text-primary-400 font-medium">Join Community</span>
         </div>
         
         <h2 class="text-4xl lg:text-5xl font-bold text-white mb-6">
-          Join Our <span class="text-green-400">Gaming</span> Community
+          Join Our <span class="text-primary-400">Gaming</span> Community
         </h2>
         
         <p class="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
@@ -31,8 +31,8 @@
           <div class="grid grid-cols-2 gap-6">
             <!-- Active Members -->
             <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 text-center">
-              <div class="w-16 h-16 bg-green-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Icon name="heroicons:user-group" class="w-8 h-8 text-green-400" />
+              <div class="w-16 h-16 bg-primary-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Icon name="heroicons:user-group" class="w-8 h-8 text-primary-400" />
               </div>
               <div class="text-3xl font-bold text-white mb-2">5,247</div>
               <div class="text-slate-400">Active Members</div>
@@ -72,8 +72,8 @@
             
             <div v-for="benefit in communityBenefits" :key="benefit.id" 
                  class="flex items-center gap-4 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
-              <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Icon :name="benefit.icon" class="w-5 h-5 text-green-400" />
+              <div class="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Icon :name="benefit.icon" class="w-5 h-5 text-primary-400" />
               </div>
               <div>
                 <div class="font-semibold text-white">{{ benefit.title }}</div>
@@ -102,7 +102,7 @@
           <div class="space-y-4 mb-8">
             <div v-for="feature in discordFeatures" :key="feature.id"
                  class="flex items-center gap-3">
-              <Icon name="heroicons:check-circle" class="w-6 h-6 text-green-400 flex-shrink-0" />
+              <Icon name="heroicons:check-circle" class="w-6 h-6 text-primary-400 flex-shrink-0" />
               <span class="text-slate-200">{{ feature.text }}</span>
             </div>
           </div>

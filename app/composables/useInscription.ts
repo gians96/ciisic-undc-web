@@ -11,8 +11,7 @@ import type {
 } from '@/types/inscription'
 
 export const useInscription = () => {
-    const config = useRuntimeConfig() //En el contenedor no funcion
-    const baseURL = config.public.apiBaseUrl || process.env.API_BASE_URL
+    const { request } = useApi()
     const inscriptionStore = useInscriptionStore()
 
     // Estado reactivo
@@ -52,11 +51,10 @@ export const useInscription = () => {
      */
     const getClassifications = async () => {
         try {
-            const response = await $fetch<Classification[]>(`${baseURL}/api/v1/classification`)
+            const response = await request<Classification[]>('/api/v1/classification')
             classifications.value = response
             return response
         } catch (err: any) {
-            console.error('Error obteniendo clasificaciones:', err)
             error.value = 'Error al cargar clasificaciones'
             throw err
         }
@@ -67,11 +65,10 @@ export const useInscription = () => {
      */
     const getDepositMethods = async () => {
         try {
-            const response = await $fetch<DepositMethod[]>(`${baseURL}/api/v1/deposit-method`)
+            const response = await request<DepositMethod[]>('/api/v1/deposit-method')
             depositMethods.value = response
             return response
         } catch (err: any) {
-            console.error('Error obteniendo métodos de depósito:', err)
             error.value = 'Error al cargar métodos de depósito'
             throw err
         }
@@ -82,11 +79,10 @@ export const useInscription = () => {
      */
     const getPaymentTypes = async () => {
         try {
-            const response = await $fetch<PaymentType[]>(`${baseURL}/api/v1/payment-type`)
+            const response = await request<PaymentType[]>('/api/v1/payment-type')
             paymentTypes.value = response
             return response
         } catch (err: any) {
-            console.error('Error obteniendo tipos de pago:', err)
             error.value = 'Error al cargar tipos de pago'
             throw err
         }
@@ -97,11 +93,10 @@ export const useInscription = () => {
      */
     const getInscriptionStates = async () => {
         try {
-            const response = await $fetch<InscriptionState[]>(`${baseURL}/api/v1/inscription-state`)
+            const response = await request<InscriptionState[]>('/api/v1/inscription-state')
             inscriptionStates.value = response
             return response
         } catch (err: any) {
-            console.error('Error obteniendo estados de inscripción:', err)
             error.value = 'Error al cargar estados de inscripción'
             throw err
         }
@@ -119,8 +114,6 @@ export const useInscription = () => {
         error.value = null
 
         try {
-            console.log('📤 Enviando inscripción:', data)
-
             // Crear FormData para incluir el archivo del voucher
             const formData = new FormData()
 
@@ -178,18 +171,13 @@ export const useInscription = () => {
                 formData.append('file', data.archivoVoucher)
             }
 
-            console.log('📤 FormData preparado para envío')
-
-            const response = await $fetch<InscriptionResponse>(`${baseURL}/api/v1/inscription`, {
+            const response = await request<InscriptionResponse>('/api/v1/inscription', {
                 method: 'POST',
                 body: formData
             })
 
-            console.log('✅ Inscripción creada exitosamente:', response)
-
             // Verificar que la respuesta tenga el formato esperado
             if (!response || typeof response.success !== 'boolean') {
-                console.error('⚠️ Respuesta con formato inesperado:', response)
                 throw new Error('Respuesta del servidor con formato inválido')
             }
 
@@ -201,8 +189,6 @@ export const useInscription = () => {
             return response
 
         } catch (err: any) {
-            console.error('💥 Error al crear inscripción:', err)
-
             // Manejo específico de errores
             if (err.statusCode === 409) {
                 // Obtener el mensaje específico del servidor
@@ -238,39 +224,6 @@ export const useInscription = () => {
     }
 
     // ===========================================================================
-    // OBTENER INSCRIPCIÓN POR ID
-    // ===========================================================================
-
-    /**
-     * Obtiene una inscripción específica por su ID
-     */
-    const checkVoucherCode = async (codigo: string) => {
-        try {
-            const response = await $fetch<{ exists: boolean }>(`${baseURL}/api/v1/voucher/check/${codigo}`)
-            return response.exists
-        } catch (err) {
-            console.error('Error al verificar código de voucher:', err)
-            return false // En caso de error, asumir que no existe
-        }
-    }
-
-    const getInscriptionById = async (id: number) => {
-        isLoading.value = true
-        error.value = null
-
-        try {
-            const response = await $fetch(`${baseURL}/api/v1/inscription/${id}`)
-            return response
-        } catch (err: any) {
-            console.error('Error obteniendo inscripción:', err)
-            error.value = 'Error al obtener la inscripción'
-            throw err
-        } finally {
-            isLoading.value = false
-        }
-    }
-
-    // ===========================================================================
     // UTILIDADES
     // ===========================================================================
 
@@ -296,9 +249,7 @@ export const useInscription = () => {
                 getInscriptionStates()
             ])
 
-            console.log('✅ Catálogos inicializados correctamente')
         } catch (err) {
-            console.error('💥 Error inicializando catálogos:', err)
             error.value = 'Error al cargar datos iniciales'
         } finally {
             isLoading.value = false
@@ -309,11 +260,6 @@ export const useInscription = () => {
      * Mapea los valores del formulario a los IDs de la base de datos
      */
     const mapFormDataToApiData = (formData: any): InscriptionData => {
-        console.log('🔍 Mapeando datos del formulario:', formData)
-        console.log('📚 Catálogos disponibles:', {
-            classifications: classifications.value?.length || 0
-        })
-
         // El tipoInscripcionId viene directamente del planId seleccionado
         const tipoInscripcionId = formData.planId
 
@@ -362,7 +308,6 @@ export const useInscription = () => {
             archivoVoucher: formData.archivoVoucher
         }
 
-        console.log('✅ Datos mapeados correctamente:', mappedData)
         return mappedData
     }
 
@@ -381,8 +326,6 @@ export const useInscription = () => {
 
         // Métodos principales
         createInscription,
-        getInscriptionById,
-        checkVoucherCode,
 
         // Métodos de catálogos
         // getRegistrationTypes, // No se usa, está hardcodeado en inscriptionPlans

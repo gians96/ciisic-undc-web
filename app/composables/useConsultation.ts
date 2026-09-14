@@ -37,8 +37,6 @@ export const useConsultation = () => {
         throw new Error(`${documentType} debe tener ${expectedLength} dígitos numéricos`)
       }
 
-      console.log(`Consultando ${documentType}: ${documentNumber}`)
-
       // Hacer la petición al endpoint del servidor
       const response = await $fetch<DniConsultationResponse>('/api/consultation', {
         method: 'POST',
@@ -48,11 +46,9 @@ export const useConsultation = () => {
         }
       })
       
-      console.log('Respuesta del servidor:', response)
       return response
       
     } catch (error) {
-      console.error(`Error consultando ${documentType}:`, error)
       throw error
     }
   }

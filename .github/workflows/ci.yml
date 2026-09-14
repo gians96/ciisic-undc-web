@@ -1,0 +1,25 @@
+name: CI - Frontend CIISIC
+
+on:
+  push:
+    branches: [rama-beni, staging]
+  pull_request:
+    branches: [rama-beni, staging]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
+        env:
+          NUXT_PUBLIC_API_BASE_URL: http://localhost:3000
+          NUXT_BACKEND_BASE_URL: http://localhost:3000
+

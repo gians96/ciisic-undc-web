@@ -15,7 +15,7 @@
                 class="w-10 h-10 object-contain"
               />
               <span class="text-white font-bold text-3xl tracking-wider"
-                >VII CIISIC</span
+                >VIII CIISIC</span
               >
             </NuxtLink>
           </div>
@@ -43,7 +43,7 @@
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
+              class="hidden lg:inline-block bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
             >
               INSCRIPCIONES
             </NuxtLink>
@@ -91,10 +91,10 @@ const route = useRoute();
 // ============================================================================
 
 useSeoMeta({
-  title: "VII CIISIC | UNDC",
-  description: "Plataforma con información sobre el VII CIISIC",
-  ogTitle: "VII CIISIC | UNDC",
-  ogDescription: "Plataforma con información sobre el VII CIISIC",
+  title: "VIII CIISIC 2026 | UNDC",
+  description: "VIII CIISIC de la UNDC, del 26 al 30 de octubre de 2026",
+  ogTitle: "VIII CIISIC 2026 | UNDC",
+  ogDescription: "VIII CIISIC de la UNDC, del 26 al 30 de octubre de 2026",
   ogImage: "/images/logo/preloader.png",
   twitterCard: "summary_large_image",
 });
@@ -159,12 +159,12 @@ useHead({
 }
 
 .nav-link:hover {
-  color: #22c55e;
+  color: #00d9e8;
   transform: translateY(-1px);
 }
 
 .nav-link.router-link-active {
-  color: #22c55e;
+  color: #00d9e8;
 }
 
 .nav-link::after {
@@ -174,7 +174,7 @@ useHead({
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
+  background: linear-gradient(90deg, #00d9e8, #075bcb);
   transition: width 0.3s ease;
 }
 
@@ -215,7 +215,7 @@ html {
 
 /* Estilos para el focus del teclado */
 :focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 

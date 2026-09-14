@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 hover:transform memorias-card mb-12 mx-4"
+    class="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300 hover:transform memorias-card mb-12 mx-4"
   >
     <div class="relative mb-6">
       <img
@@ -36,7 +36,7 @@
           </p>
         </div>
         <!-- <button
-          class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 focus:outline-2 focus:outline-green-500 focus:outline-offset-2"
+          class="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 focus:outline-2 focus:outline-primary-500 focus:outline-offset-2"
         >
           Detalles →
         </button> -->
@@ -72,7 +72,7 @@ const informacion = computed(() => {
     case 1:
       return { texto: "Congreso", color: "bg-orange-500", fondo: "from-orange-400 to-orange-600" };
     case 2:
-      return { texto: "eSport", color: "bg-green-500", fondo: "from-green-400 to-green-600" };
+      return { texto: "eSport", color: "bg-primary-500", fondo: "from-primary-400 to-primary-600" };
     case 3:
       return { texto: "Reinado", color: "bg-purple-500 text-white", fondo: "from-purple-400 to-purple-600" };
     case 4:
@@ -90,7 +90,7 @@ const informacion = computed(() => {
 }
 
 .memorias-card:hover {
-  box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.1);
 }
 
 /* Efectos de hover para las cartas */
@@ -142,7 +142,7 @@ const informacion = computed(() => {
 
 /* Focus states mejorados */
 button:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 </style>

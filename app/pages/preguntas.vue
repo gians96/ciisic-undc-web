@@ -12,7 +12,7 @@
             Preguntas <span class="text-primary">Frecuentes</span>
           </h1>
           <p class="text-xl text-gray-300 mb-8">
-            Encuentra respuestas a las preguntas más comunes sobre el VII CIISIC 2025
+            Encuentra respuestas a las preguntas más comunes sobre el VIII CIISIC 2026
           </p>
         </div>
 
@@ -114,11 +114,11 @@
 // ============================================================================
 
 useHead({
-  title: 'Preguntas Frecuentes | VII CIISIC',
+  title: 'Preguntas Frecuentes | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Encuentra respuestas a las preguntas más frecuentes sobre el VII CIISIC 2025, ponentes, registro, pagos y más información del congreso.'
+      content: 'Encuentra respuestas a las preguntas más frecuentes sobre el VIII CIISIC 2026, ponentes, registro, pagos y más información del congreso.'
     }
   ]
 })
@@ -148,7 +148,7 @@ const faqs = ref([
   {
     id: 1,
     category: 'registro',
-    question: '¿Cómo me registro para el VII CIISIC 2025?',
+    question: '¿Cómo me registro para el VIII CIISIC 2026?',
     answer: 'Puedes registrarte a través de nuestra página web en la sección de registro. Solo necesitas completar el formulario con tus datos personales, seleccionar el tipo de inscripción y realizar el pago correspondiente. Una vez confirmado el pago, recibirás un email de confirmación con todos los detalles.'
   },
   {
@@ -167,7 +167,7 @@ const faqs = ref([
     id: 4,
     category: 'evento',
     question: '¿Cuándo y dónde se realizará el congreso?',
-    answer: 'El VII CIISIC 2025 se realizará del 20 al 24 de octubre de 2025 en las instalaciones del Auditorio "Casa de la Cultura", en San Vicente de Cañete. El evento incluye conferencias magistrales, presentación de trabajos de investigación y networking académico y profesional.'
+    answer: 'El VIII CIISIC 2026 se realizará del 26 al 30 de octubre de 2026 en las instalaciones del Auditorio "Casa de la Cultura", en San Vicente de Cañete. El evento incluirá conferencias, presentación de trabajos de investigación y espacios de integración académica y profesional.'
   },
   {
     id: 5,
@@ -179,7 +179,7 @@ const faqs = ref([
     id: 6,
     category: 'registro',
     question: '¿Hasta cuándo puedo registrarme?',
-    answer: 'Las inscripciones están abiertas hasta el 19 de octubre de 2025. Te recomendamos registrarte con anticipación para asegurar tu lugar para no perderte de este increíble evento.'
+    answer: 'La fecha de cierre de inscripciones será anunciada por los canales oficiales. Te recomendamos registrarte con anticipación cuando se publique la convocatoria.'
   },
   {
     id: 7,
@@ -266,20 +266,20 @@ const toggleFaq = (faqId: number) => {
 /* FAQ Card Hover Effects */
 .faq-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 217, 232, 0.1);
 }
 
 /* Search Input Focus */
 .search-input:focus {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 217, 232, 0.1);
 }
 
 /* Category Button Active State */
 .category-active {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 217, 232, 0.3);
 }
 
 /* Responsive Design */

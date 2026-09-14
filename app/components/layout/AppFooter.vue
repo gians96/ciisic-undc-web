@@ -2,7 +2,7 @@
   <!-- Footer Detallado -->
   <footer class="bg-slate-800 border-t border-slate-700 relative overflow-hidden">
     <!-- Background Pattern -->
-    <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-blue-500/5"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-blue-500/5"></div>
 
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16 relative">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -10,7 +10,7 @@
           <div class="flex items-center space-x-3">
             <NuxtLink to="/" class="flex items-center space-x-3">
               <NuxtImg src="images/logo/preloader.png" alt="Logo CIISIC" class="w-10 h-10 object-contain" />
-              <span class="text-white font-bold text-xl tracking-wider">VII CIISIC</span>
+              <span class="text-white font-bold text-xl tracking-wider">VIII CIISIC</span>
             </NuxtLink>
           </div>
           <p class="text-gray-400 leading-relaxed">
@@ -49,7 +49,7 @@
       <div class="mt-16 pt-8 border-t border-slate-700">
         <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           <div class="text-gray-400 text-sm">
-            <a href="https://fi.undc.edu.pe" class="text-green-500">Facultad de Ingeniería - 2025</a> | Todos los
+            <a href="https://fi.undc.edu.pe" class="text-primary-500">Facultad de Ingeniería - 2026</a> | Todos los
             derechos reservados
 
           </div>
@@ -96,7 +96,7 @@
 }
 
 .footer-link:hover {
-  color: #22c55e;
+  color: #00d9e8;
   padding-left: 8px;
   transform: translateX(4px);
 }
@@ -109,7 +109,7 @@
   transform: translateY(-50%);
   width: 0;
   height: 2px;
-  background: #22c55e;
+  background: #00d9e8;
   transition: width 0.3s ease;
 }
 
@@ -136,7 +136,7 @@
 footer a[href="#"]:hover {
   transform: scale(1.1) rotate(5deg);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 217, 232, 0.3);
 }
 
 /* Newsletter Input */
@@ -148,7 +148,7 @@ footer input[type="email"] {
 
 footer input[type="email"]:focus {
   background: rgba(51, 65, 85, 0.8);
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 20px rgba(0, 217, 232, 0.2);
 }
 
 /* Footer Grid Animation */

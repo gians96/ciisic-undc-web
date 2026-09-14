@@ -24,9 +24,9 @@
 <script setup lang="ts">
 // Page metadata
 useHead({
-  title: 'VII CIISIC | UNDC',
+  title: 'VIII CIISIC 2026 | UNDC',
   meta: [
-    { name: 'description', content: 'Sistema de informacion del VII CIISIC' }
+    { name: 'description', content: 'VIII CIISIC de la UNDC, del 26 al 30 de octubre de 2026 en San Vicente de Cañete.' }
   ]
 })
 </script>

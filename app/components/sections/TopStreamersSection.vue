@@ -8,12 +8,12 @@
           TOP RATED STREAMERS
         </h2>
         <!-- Línea decorativa verde -->
-        <div class="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
+        <div class="w-20 h-1 bg-primary-500 mx-auto rounded-full"></div>
       </div>
 
       <!-- Botones de acción -->
       <div class="flex justify-center space-x-6 mb-16">
-        <button class="btn-hero bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300">
+        <button class="btn-hero bg-transparent border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-black px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300">
           <span class="flex items-center">
             <Icon name="heroicons:play" class="w-5 h-5 mr-2" />
             BUY HERO
@@ -35,102 +35,102 @@
           <!-- Streamer 1 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 🎮
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Gamer Pro</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
           <!-- Streamer 2 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 🎯
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Ace Sniper</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
           <!-- Streamer 3 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 ⚡
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Lightning</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
           <!-- Streamer 4 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 🏆
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Champion</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
           <!-- Streamer 5 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 🎭
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Phantom</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
           <!-- Streamer 6 -->
           <div class="streamer-card group">
             <div class="relative">
-              <div class="w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-green-500 transition-colors duration-300">
+              <div class="w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full flex items-center justify-center text-2xl border-4 border-slate-700 group-hover:border-primary-500 transition-colors duration-300">
                 🚀
               </div>
               <!-- Indicador online -->
-              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
                 <div class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
             <div class="mt-3 text-center">
               <p class="text-white text-sm font-medium">Rocket</p>
-              <p class="text-green-500 text-xs">ONLINE</p>
+              <p class="text-primary-500 text-xs">ONLINE</p>
             </div>
           </div>
 
@@ -260,10 +260,10 @@ const viewStreamer = (streamerId: string) => {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 20px rgba(0, 217, 232, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 30px rgba(0, 217, 232, 0.6);
   }
 }
 
@@ -346,7 +346,7 @@ const viewStreamer = (streamerId: string) => {
 .btn-hero:focus,
 .btn-nft:focus,
 .streamer-card:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 </style>

@@ -2,10 +2,10 @@
   <section class="py-20 bg-slate-900 relative overflow-hidden">
     <div class="absolute inset-0">
       <div
-        class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-green-500 to-transparent transform -skew-y-2 opacity-20"
+        class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary-500 to-transparent transform -skew-y-2 opacity-20"
       ></div>
       <div
-        class="absolute bottom-0 right-0 w-full h-32 bg-gradient-to-l from-green-500 to-transparent transform skew-y-2 opacity-20"
+        class="absolute bottom-0 right-0 w-full h-32 bg-gradient-to-l from-primary-500 to-transparent transform skew-y-2 opacity-20"
       ></div>
     </div>
 
@@ -13,7 +13,7 @@
       <Slide>
         <template #title>
           Memorias
-          <span class="text-green-500">{{ anioAnterior }}</span>
+          <span class="text-primary-500">{{ anioAnterior }}</span>
         </template>
         <CardImagenes
           v-for="(card, index) in cards"

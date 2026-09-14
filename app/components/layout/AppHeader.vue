@@ -16,7 +16,7 @@
               class="w-10 h-10 object-contain"
             />
             <span class="text-white font-bold text-xl tracking-wider"
-              >VII CIISIC</span
+              >VIII CIISIC</span
             >
           </NuxtLink>
         </div>
@@ -275,7 +275,7 @@ header {
 
 /* Estilos para el indicador de progreso */
 .scroll-progress {
-  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #6aff8e 100%);
+  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #0b75e5 100%);
 }
 
 /* Estilos de hover para los links de navegación */
@@ -290,7 +290,7 @@ header {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #6aff8e 100%);
+  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #0b75e5 100%);
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }
@@ -301,7 +301,7 @@ header {
 
 /* Efectos para el logo */
 .logo-link:hover .logo-img {
-  filter: drop-shadow(0 0 10px rgba(69, 248, 130, 0.5));
+  filter: drop-shadow(0 0 10px rgba(0, 217, 232, 0.5));
 }
 
 /* Responsive adjustments */

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 
-const targetDate = new Date("2025-10-20T00:00:00").getTime();
+const targetDate = new Date("2026-10-26T00:00:00").getTime();
 const days = ref(0);
 const hours = ref(0);
 const minutes = ref(0);
@@ -46,19 +46,19 @@ onUnmounted(() => {
     </h2>
     <div class="flex gap-3 sm:gap-4 text-center">
       <div class="flex flex-col items-center">
-        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ days }}</span>
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-primary-400">{{ days }}</span>
         <span class="text-gray-300 text-sm sm:text-base">Días</span>
       </div>
       <div class="flex flex-col items-center">
-        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ hours }}</span>
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-primary-400">{{ hours }}</span>
         <span class="text-gray-300 text-sm sm:text-base">Horas</span>
       </div>
       <div class="flex flex-col items-center">
-        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ minutes }}</span>
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-primary-400">{{ minutes }}</span>
         <span class="text-gray-300 text-sm sm:text-base">Min</span>
       </div>
       <div class="flex flex-col items-center">
-        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-green-400">{{ seconds }}</span>
+        <span class="block text-4xl sm:text-5xl lg:text-5xl font-bold text-primary-400">{{ seconds }}</span>
         <span class="text-gray-300 text-sm sm:text-base">Seg</span>
       </div>
     </div>

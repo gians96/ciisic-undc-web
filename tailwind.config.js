@@ -1,11 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./app.vue",
+    "./app/components/**/*.{js,vue,ts}",
+    "./app/layouts/**/*.vue",
+    "./app/pages/**/*.vue",
+    "./app/plugins/**/*.{js,ts}",
+    "./app/**/*.{js,vue,ts}",
     "./error.vue"
   ],
   darkMode: 'class',
@@ -13,20 +13,20 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#45f882',
-          50: '#f0fef4',
-          100: '#dbfde6',
-          200: '#b9f9cf',
-          300: '#86f3ab',
-          400: '#4de680',
-          500: '#45f882',
-          600: '#16c653',
-          700: '#159c45',
-          800: '#167c3a',
-          900: '#146632',
+          DEFAULT: '#00d9e8',
+          50: '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#00d9e8',
+          600: '#0891b2',
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63',
         },
         secondary: {
-          DEFAULT: '#141d2a',
+          DEFAULT: '#032f5f',
           50: '#f8fafc',
           100: '#f1f5f9',
           200: '#e2e8f0',
@@ -34,9 +34,9 @@ module.exports = {
           400: '#94a3b8',
           500: '#64748b',
           600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#141d2a',
+          700: '#123e69',
+          800: '#082f58',
+          900: '#032f5f',
         },
         dark: {
           DEFAULT: '#0d0d0d',
@@ -73,13 +73,13 @@ module.exports = {
         '9xl': ['8rem', { lineHeight: '1' }],
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(90deg, #45f882 0%, #6aff8e 100%)',
-        'gradient-secondary': 'linear-gradient(90deg, #141d2a 0%, #1a212e 100%)',
+        'gradient-primary': 'linear-gradient(90deg, #00d9e8 0%, #0b75e5 100%)',
+        'gradient-secondary': 'linear-gradient(90deg, #032f5f 0%, #06467d 100%)',
       },
       boxShadow: {
-        'neon': '0 0 20px rgba(69, 248, 130, 0.3)',
-        'neon-lg': '0 0 30px rgba(69, 248, 130, 0.5)',
-        'neon-xl': '0 0 40px rgba(69, 248, 130, 0.7)',
+        'neon': '0 0 20px rgba(0, 217, 232, 0.3)',
+        'neon-lg': '0 0 30px rgba(0, 217, 232, 0.5)',
+        'neon-xl': '0 0 40px rgba(0, 217, 232, 0.7)',
       },
       animation: {
         'rotation': 'spin 12s linear infinite',

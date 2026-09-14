@@ -4,23 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables CSS para el tema MYKD */
+/* Identidad visual VIII CIISIC 2026, inspirada en el flyer oficial */
 :root {
-  --tg-theme-primary: #45f882;
-  --tg-theme-secondary: #141d2a;
+  --tg-theme-primary: #00d9e8;
+  --tg-theme-primary-hover: #38e8f2;
+  --tg-theme-secondary: #032f5f;
   --tg-common-color-white: #ffffff;
   --tg-common-color-black: #0d0d0d;
   --tg-common-color-black-2: #000000;
-  --tg-common-color-black-3: #161d2a;
-  --tg-common-color-black-4: #1a212e;
-  --tg-common-color-blue: #1e5dff;
-  --tg-common-color-blue-2: #5a87d8;
+  --tg-common-color-black-3: #042747;
+  --tg-common-color-black-4: #06385f;
+  --tg-common-color-blue: #075bcb;
+  --tg-common-color-blue-2: #2f83df;
   --tg-common-color-gray: #818181;
   --tg-common-color-gray-2: #636363;
   --tg-body-color: #b6b9c5;
   --tg-heading-color: #ffffff;
-  --tg-border-color: #20293a;
-  --tg-border-color-2: #2c364a;
+  --tg-border-color: #164a73;
+  --tg-border-color-2: #276187;
 }
 
 /* Estilos base del body */
@@ -67,7 +68,7 @@ a:hover {
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #6aff8e 100%);
+  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #0b75e5 100%);
   color: var(--tg-common-color-black);
   border: 2px solid transparent;
 }
@@ -166,7 +167,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3ee070;
+  background: var(--tg-theme-primary-hover);
 }
 
 /* Container personalizado */
@@ -185,7 +186,7 @@ html {
 
 /* Gradientes */
 .gradient-text {
-  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #6aff8e 100%);
+  background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #0b75e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -193,11 +194,11 @@ html {
 
 /* Sombras */
 .shadow-neon {
-  box-shadow: 0 0 20px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 0 20px rgba(0, 217, 232, 0.3);
 }
 
 .shadow-neon-hover:hover {
-  box-shadow: 0 0 30px rgba(69, 248, 130, 0.5);
+  box-shadow: 0 0 30px rgba(0, 217, 232, 0.5);
 }
 
 /* Transiciones de página */

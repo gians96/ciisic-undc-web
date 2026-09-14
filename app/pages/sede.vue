@@ -62,8 +62,8 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-2">Fechas del Evento</h3>
-                  <p class="text-gray-300">Del 20 al 24 de octubre de 2025</p>
-                  <p class="text-sm text-gray-400">Horario: 8:00 AM - 6:00 PM</p>
+                  <p class="text-gray-300">Del 26 al 30 de octubre de 2026</p>
+                  <p class="text-sm text-gray-400">Horario detallado por confirmar</p>
                 </div>
               </div>
             </div>
@@ -154,19 +154,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Sede del Evento | VII CIISIC',
+  title: 'Sede del Evento | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Información completa sobre cómo llegar a la sede del VII CIISIC.'
+      content: 'Información completa sobre cómo llegar a la sede del VIII CIISIC.'
     },
     {
       property: 'og:title',
-      content: 'Sede del Evento | VII CIISIC'
+      content: 'Sede del Evento | VIII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Encuentra toda la información para llegar a la sede del VII CIISIC.'
+      content: 'Encuentra toda la información para llegar a la sede del VIII CIISIC.'
     },
     {
       property: 'og:type',
@@ -263,13 +263,13 @@ onUnmounted(() => {
 /* Hover effects for info cards */
 .info-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.1);
   transition: all 0.3s ease;
 }
 
 /* Transportation route badges */
 .route-badge {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
   color: #000000;
   font-weight: 600;
 }
@@ -291,13 +291,13 @@ onUnmounted(() => {
 
 /* Icon containers */
 .icon-container {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
   transition: all 0.3s ease;
 }
 
 .icon-container:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 217, 232, 0.3);
 }
 
 /* Responsive Design */
@@ -314,7 +314,7 @@ onUnmounted(() => {
 
 /* Hero Section Animations and Buttons */
 .btn-primary {
-  background-color: #45f882;
+  background-color: #00d9e8;
   color: black;
   font-weight: 600;
   padding: 0.75rem 2rem;
@@ -324,15 +324,15 @@ onUnmounted(() => {
 }
 
 .btn-primary:hover {
-  background-color: rgba(69, 248, 130, 0.9);
+  background-color: rgba(0, 217, 232, 0.9);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.3);
 }
 
 .btn-secondary {
   background-color: transparent;
-  border: 2px solid #45f882;
-  color: #45f882;
+  border: 2px solid #00d9e8;
+  color: #00d9e8;
   font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
@@ -341,10 +341,10 @@ onUnmounted(() => {
 }
 
 .btn-secondary:hover {
-  background-color: #45f882;
+  background-color: #00d9e8;
   color: black;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.3);
 }
 
 .fade-in-element {

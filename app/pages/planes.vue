@@ -6,9 +6,9 @@
     >
       <div class="container mx-auto px-6 relative z-10">
         <div class="text-center max-w-4xl mx-auto" ref="heroRef">
-          <p class="text-green-400 text-sm font-semibold tracking-wider mb-4 uppercase fade-in-element">
-            <span class="pulse-bg px-4 py-1 rounded-full text-green-300">
-              VII CIISIC UNDC
+          <p class="text-primary-400 text-sm font-semibold tracking-wider mb-4 uppercase fade-in-element">
+            <span class="pulse-bg px-4 py-1 rounded-full text-primary-300">
+              VIII CIISIC UNDC
             </span>
           </p>
 
@@ -17,25 +17,25 @@
           </h1>
 
           <p class="text-xl text-gray-300 mb-6 leading-relaxed fade-in-element" style="animation-delay: 0.4s;">
-            Sé parte de la séptima edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica
+            Sé parte de la octava edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica
           </p>
 
           <!-- Botones de inscripción -->
           <div class="space-y-6 mb-6 fade-in-element" style="animation-delay: 0.6s;">
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button @click="navigateToPlan('estudiantes')"
-                class="bg-green-400 hover:bg-green-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                class="bg-primary-400 hover:bg-primary-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                 Inscripciones para estudiantes
               </button>
               <button @click="navigateToPlan('general')"
-                class="bg-green-400 hover:bg-green-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                class="bg-primary-400 hover:bg-primary-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
                 Inscripciones para profesionales y público general
               </button>
             </div>
             <div class="text-center">
               <p class="text-gray-300 text-lg">
                  Para inscripción de delegaciones comunicarse con: 
-                <a href="https://wa.me/51976541722" target="_blank" class="text-green-400 hover:text-green-300 transition-colors underline font-semibold">
+                <a href="https://wa.me/51976541722" target="_blank" class="text-primary-400 hover:text-primary-300 transition-colors underline font-semibold">
                   976541722
                 </a>
               </p>
@@ -43,7 +43,7 @@
           </div>
 
           <div class="flex justify-center fade-in-element" style="animation-delay: 0.8s;">
-            <div class="w-24 h-1 rounded bg-green-400 shadow shadow-green-500/50" />
+            <div class="w-24 h-1 rounded bg-primary-400 shadow shadow-primary-500/50" />
           </div>
         </div>
       </div>
@@ -100,9 +100,9 @@ const navigateToPlan = (planValue: string) => {
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-  title: 'Planes | VII CIISIC',
+  title: 'Planes | VIII CIISIC',
   meta: [
-    { name: 'description', content: 'Explora los planes de inscripción para el VII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+    { name: 'description', content: 'Explora los planes de inscripción para el VIII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
   ]
 })
 
@@ -129,14 +129,14 @@ const merchandising = ref([
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #45f882;
+  background: #00d9e8;
   /* primary */
   border-radius: 10px;
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background: #34d399;
-  /* emerald-400 */
+  background: #22d3ee;
+  /* blue-400 */
 }
 
 /* ============================================================================
@@ -154,18 +154,18 @@ const merchandising = ref([
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background-color: rgba(34, 197, 94, 0.1);
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  background-color: rgba(0, 217, 232, 0.1);
+  box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
   animation: pulse-only-bg 1.8s infinite ease-out;
   z-index: -1;
 }
 
 @keyframes pulse-only-bg {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
   }
   100% {
-    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 10px rgba(0, 217, 232, 0);
   }
 }
 </style>

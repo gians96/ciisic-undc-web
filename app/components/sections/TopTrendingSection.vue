@@ -195,7 +195,7 @@ onUnmounted(() => {
 }
 
 .trending-card:hover {
-  box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.15);
 }
 
 /* Efectos de hover para las imágenes */
@@ -245,7 +245,7 @@ button:hover {
   transition: all 0.3s ease;
 }
 
-.bg-green-500.w-2.h-2 {
+.bg-primary-500.w-2.h-2 {
   transform: scale(1.5);
 }
 
@@ -301,7 +301,7 @@ button:hover {
 /* Focus states */
 button:focus,
 .trending-card:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 

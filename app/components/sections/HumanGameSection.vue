@@ -30,15 +30,16 @@
             </h2>
             <div class="flex items-center space-x-2 mb-6">
               <span class="text-yellow-500 text-xl font-bold"
-                >Av. Mariscal Benavides N° 322 - San Vicente de Cañete</span
+                >Av. Mariscal Benavides N° 1370 - San Vicente de Cañete</span
               >
             </div>
           </div>
 
           <!-- Descripción -->
           <p class="text-gray-400 text-lg leading-relaxed text-justify">
-            El VII Congreso Internacional de Ingeniería de Sistemas e
-            Investigación Científica 2025 (VII CIISIC 2025) se desarrollará en
+            El VIII Congreso Internacional de Ingeniería de Sistemas e
+            Investigación Científica 2026 (VIII CIISIC 2026) se desarrollará del
+            26 al 30 de octubre en
             la Sede Académica Casa de la Cultura de la Facultad de Ingeniería de
             la Universidad Nacional de Cañete, un espacio diseñado para la
             formación, la investigación y la innovación.
@@ -203,7 +204,7 @@ const openSupport = () => {
 /* Efectos para los botones de acción */
 .grid button:hover {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.2);
 }
 
 /* Responsive */
@@ -240,7 +241,7 @@ const openSupport = () => {
 /* Focus states */
 button:focus,
 .game-item:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 
@@ -252,7 +253,7 @@ button:focus,
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(34, 197, 94, 0.1) 50%,
+    rgba(0, 217, 232, 0.1) 50%,
     transparent 70%
   );
   opacity: 0;
