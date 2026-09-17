@@ -5,7 +5,9 @@
         ============================================================================ -->
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
-                <h1 class="page-title">REGISTRO ESTUDIANTES - VIII CIISIC</h1>
+                <NuxtLink to="/planes" class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-300 hover:text-white"><Icon name="heroicons:arrow-left" class="h-4 w-4" /> Cambiar modalidad</NuxtLink>
+                <p class="mb-3 text-xs font-bold uppercase tracking-[.2em] text-primary-300">VIII CIISIC 2026 · Inscripciones</p>
+                <h1 class="page-title">Registro para estudiantes</h1>
                 <p class="page-subtitle">Completa tu inscripción al VIII Congreso Internacional de Ingeniería de Sistemas
                     e Investigación Científica</p>
             </div>
@@ -985,9 +987,7 @@ onMounted(async () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('/images/bg/breadcrumb_bg01.jpg');
-    background-size: cover;
-    background-position: center;
+    background: radial-gradient(circle at 50% 0, #0b75e555, transparent 48%), linear-gradient(135deg, #052c54, #041d39);
     z-index: -1;
 }
 
@@ -1005,19 +1005,18 @@ onMounted(async () => {
 }
 
 .page-title {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.1;
     font-weight: 700;
     color: #ffffff;
-    text-transform: uppercase;
     text-align: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .page-subtitle {
     color: #cbd5e1;
     font-size: 1.125rem;
-    max-width: 32rem;
+    max-width: 42rem;
 }
 
 /* Plan Info Section */

@@ -1,6 +1,6 @@
 <template>
-  <main class="min-h-screen bg-slate-900 text-white">
-    <section class="relative overflow-hidden px-6 py-24 lg:py-32">
+  <div class="bg-[#041d39] text-white">
+    <section class="relative overflow-hidden px-6 py-16 sm:py-20 lg:py-24">
       <div class="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-transparent to-yellow-500/10" />
       <div class="relative mx-auto max-w-4xl text-center">
         <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary-400">
@@ -33,7 +33,7 @@
         </div>
       </div>
     </section>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">

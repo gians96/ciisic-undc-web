@@ -1,171 +1,46 @@
 <template>
-  <div class="min-h-screen bg-secondary-900">
-    <!-- Hero Section -->
-    <section
-      class="relative bg-cover bg-center bg-no-repeat py-24 pb-2 overflow-hidden"
-    >
-      <div class="container mx-auto px-6 relative z-10">
-        <div class="text-center max-w-4xl mx-auto" ref="heroRef">
-          <p class="text-primary-400 text-sm font-semibold tracking-wider mb-4 uppercase fade-in-element">
-            <span class="pulse-bg px-4 py-1 rounded-full text-primary-300">
-              VIII CIISIC UNDC
-            </span>
-          </p>
-
-          <h1 class="text-white text-5xl md:text-6xl font-bold mb-6 fade-in-element" style="animation-delay: 0.2s;">
-            INSCRIPCIONES
-          </h1>
-
-          <p class="text-xl text-gray-300 mb-6 leading-relaxed fade-in-element" style="animation-delay: 0.4s;">
-            Sé parte de la octava edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica
-          </p>
-
-          <!-- Botones de inscripción -->
-          <div class="space-y-6 mb-6 fade-in-element" style="animation-delay: 0.6s;">
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button @click="navigateToPlan('estudiantes')"
-                class="bg-primary-400 hover:bg-primary-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                Inscripciones para estudiantes
-              </button>
-              <button @click="navigateToPlan('general')"
-                class="bg-primary-400 hover:bg-primary-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                Inscripciones para profesionales y público general
-              </button>
-            </div>
-            <div class="text-center">
-              <p class="text-gray-300 text-lg">
-                 Para inscripción de delegaciones comunicarse con: 
-                <a href="https://wa.me/51976541722" target="_blank" class="text-primary-400 hover:text-primary-300 transition-colors underline font-semibold">
-                  976541722
-                </a>
-              </p>
-            </div>
-          </div>
-
-          <div class="flex justify-center fade-in-element" style="animation-delay: 0.8s;">
-            <div class="w-24 h-1 rounded bg-primary-400 shadow shadow-primary-500/50" />
-          </div>
-        </div>
+  <div class="registration-page min-h-screen pb-16 lg:pb-24">
+    <div class="mx-auto max-w-6xl px-6 pt-12 sm:pt-16 lg:px-8 lg:pt-24">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="kicker mb-4">VIII CIISIC 2026 · Inscripciones</p>
+        <h1 class="text-5xl font-extrabold tracking-tight text-white sm:text-6xl">Tu lugar en el <span class="text-primary-400">congreso</span> comienza aquí.</h1>
+        <p class="mt-6 text-lg leading-relaxed text-slate-300">Elige la modalidad que te corresponde y completa el formulario de inscripción. La confirmación y el precio definitivo se mostrarán durante el proceso de registro.</p>
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span></div>
       </div>
-    </section>
 
-    <!-- Sección Merchandising -->
-    <section class="pt-16 pb-12 bg-secondary-900">
-      <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold uppercase text-white mb-2">Merchandising Oficial</h2>
-          <p class="text-slate-400 max-w-2xl mx-auto">Productos de alta calidad para llevar tu experiencia al siguiente
-            nivel.</p>
-        </div>
-        <div class="relative max-w-5xl mx-auto">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-            <div v-for="item in merchandising" :key="item.name" class="relative rounded-lg overflow-hidden group shadow-xl max-w-sm w-full">
-              <img :src="item.image" :alt="item.name"
-                class="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out">
-                <div class="text-center w-full">
-                  <p class="text-white text-xl font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out mb-2">
-                    {{ item.name }}
-                  </p>
-                  <div class="w-12 h-0.5 bg-primary mx-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700 ease-in-out"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="mt-10 grid gap-5 md:grid-cols-2 lg:mt-14">
+        <NuxtLink to="/estudiantes" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9">
+          <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:academic-cap" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
+          <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 01</p>
+          <h2 class="mt-2 text-3xl font-bold text-white">Estudiantes</h2>
+          <p class="mt-4 flex-1 leading-relaxed text-slate-300">Para quienes se encuentran cursando estudios y quieren formar parte de esta experiencia académica.</p>
+          <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
+        </NuxtLink>
+        <NuxtLink to="/general" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9">
+          <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:briefcase" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
+          <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 02</p>
+          <h2 class="mt-2 text-3xl font-bold text-white">Profesionales y público general</h2>
+          <p class="mt-4 flex-1 leading-relaxed text-slate-300">Para egresados, profesionales, investigadores y toda persona interesada en el congreso.</p>
+          <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
+        </NuxtLink>
       </div>
-    </section>
 
-
-
+      <div class="support-card mt-8 flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 class="text-xl font-bold text-white">¿Inscribirás una delegación?</h2><p class="mt-1 text-slate-300">Comunícate con el equipo organizador para coordinar tu registro.</p></div><a href="https://wa.me/51976541722" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary-400/50 px-5 py-3 font-semibold text-primary-300 transition hover:bg-primary-400/10"><Icon name="heroicons:chat-bubble-left-right" class="h-5 w-5" />Escribir por WhatsApp</a></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
-// ===========================================================================
-// ROUTER
-// ===========================================================================
-const navigateToPlan = (planValue: string) => {
-  if (planValue === 'estudiantes') {
-    navigateTo('/estudiantes')
-  } else if (planValue === 'general') {
-    navigateTo('/general')
-  }
-}
-
-// ===========================================================================
-// SEO Y META TAGS
-// ===========================================================================
-useHead({
-  title: 'Planes | VIII CIISIC',
-  meta: [
-    { name: 'description', content: 'Explora los planes de inscripción para el VIII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
-  ]
-})
-
-// ===========================================================================
-// DATOS ESTÁTICOS
-// ===========================================================================
-const merchandising = ref([
-  { name: 'Maletin Ejecutivo', image: '/images/merchandising/maletin.webp' },
-  { name: 'TomaTodo', image: '/images/merchandising/tomatodo.webp' },
-  { name: 'Identificador', image: '/images/merchandising/identificador.webp' }
-])
+useSeoMeta({ title: 'Inscripciones | VIII CIISIC 2026', description: 'Elige tu modalidad e inscríbete en el VIII CIISIC 2026 en San Vicente de Cañete.' })
 </script>
 
 <style scoped>
-/* Estilos para la barra de scroll del carrusel */
-.overflow-x-auto::-webkit-scrollbar {
-  height: 8px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-track {
-  background: #1e293b;
-  /* slate-800 */
-  border-radius: 10px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #00d9e8;
-  /* primary */
-  border-radius: 10px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background: #22d3ee;
-  /* blue-400 */
-}
-
-/* ============================================================================
-   PULSE BADGE STYLES
-   ============================================================================ */
-
-.pulse-bg {
-  position: relative;
-  display: inline-block;
-  z-index: 0;
-}
-
-.pulse-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background-color: rgba(0, 217, 232, 0.1);
-  box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
-  animation: pulse-only-bg 1.8s infinite ease-out;
-  z-index: -1;
-}
-
-@keyframes pulse-only-bg {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
-  }
-  100% {
-    box-shadow: 0 0 0 10px rgba(0, 217, 232, 0);
-  }
-}
+.registration-page { background: radial-gradient(circle at 50% 0, #0a4b7a, transparent 38%), #041d39; }
+.kicker { color: #67e8f9; font-size: .75rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+.plan-card, .support-card { background: #082c52; border: 1px solid #ffffff1c; }
+.plan-card { transition: transform .25s, background .25s, border-color .25s; }
+.plan-card:hover { transform: translateY(-5px); background: #0a3868; border-color: #67e8f980; }
+.icon-tile { background: #00d9e81a; color: #67e8f9; }
+@media (prefers-reduced-motion: reduce) { .plan-card { transition: none; } }
+@media (max-width: 359px) { .registration-page h1 { font-size: 2.5rem; } }
 </style>

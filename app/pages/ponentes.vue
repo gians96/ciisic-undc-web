@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-slate-900 px-6 py-24 text-white">
+  <div class="bg-[#041d39] px-6 py-16 text-white sm:py-20 lg:py-24">
     <section class="mx-auto max-w-4xl text-center">
       <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary-400">
         VIII CIISIC UNDC · 2026
@@ -17,7 +17,7 @@
         </p>
       </div>
     </section>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
