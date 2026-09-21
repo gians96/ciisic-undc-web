@@ -1,6 +1,10 @@
-# Multi-stage build: Use Bun for building, Node.js for running
-FROM oven/bun:1.4.2 AS builder
+# Multi-stage build: Bun solo instala dependencias; Nuxt corre con Node.js
+# (con `bun --bun`, nuxt prepare se quedaba colgado en el servidor de Dokploy)
+FROM node:22-slim AS builder
 WORKDIR /app
+
+# Binario de Bun (misma versión que el CI) para leer bun.lock
+COPY --from=oven/bun:1.4.2 /usr/local/bin/bun /usr/local/bin/bun
 
 # Build no interactivo: evita prompts de nuxi/telemetría
 ENV CI=true
@@ -17,9 +21,9 @@ RUN bun install --frozen-lockfile --ignore-scripts
 # Copy the entire project
 COPY . .
 
-# Prepare and build with Bun
-RUN bun --bun run postinstall
-RUN bun --bun run build
+# Prepare and build with Node.js
+RUN node_modules/.bin/nuxt prepare
+RUN node_modules/.bin/nuxt build
 
 # Production stage with Node.js
 FROM node:22-alpine AS production
