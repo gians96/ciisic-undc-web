@@ -1,12 +1,18 @@
 # Multi-stage build: Use Bun for building, Node.js for running
-FROM oven/bun:1 AS builder
+FROM oven/bun:1.4.2 AS builder
 WORKDIR /app
+
+# Build no interactivo: evita prompts de nuxi/telemetría
+ENV CI=true
+ENV NUXT_TELEMETRY_DISABLED=1
 
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies with Bun
-RUN bun install --frozen-lockfile
+# Install dependencies with Bun.
+# --ignore-scripts: el postinstall (nuxt prepare) se ejecuta más abajo,
+# cuando el proyecto ya está copiado; aquí solo correría en una carpeta vacía.
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # Copy the entire project
 COPY . .
