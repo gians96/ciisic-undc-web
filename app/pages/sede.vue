@@ -93,7 +93,7 @@
                       Tiempo estimado desde la plaza de armas: 7 minutos (dependiendo del tráfico)
                     </p>
                     <p class="text-gray-400 text-xs">
-                      Costo aproximado: S/ 1.50
+                      Costo aproximado: S/ 2.00
                     </p>
                   </div>
                 </div>
