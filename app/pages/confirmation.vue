@@ -658,8 +658,6 @@ onMounted(() => {
 .btn-primary {
     display: inline-flex;
     align-items: center;
-    background-color: #00d9e8;
-    color: #000000;
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
@@ -669,9 +667,7 @@ onMounted(() => {
     cursor: pointer;
 }
 
-.btn-primary:hover {
-    background-color: #38e8f2;
-    transform: translateY(-1px);
+.btn-primary:hover {    transform: translateY(-1px);
 }
 
 .btn-secondary {

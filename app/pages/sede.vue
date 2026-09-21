@@ -313,19 +313,14 @@ onUnmounted(() => {
 }
 
 /* Hero Section Animations and Buttons */
-.btn-primary {
-  background-color: #00d9e8;
-  color: black;
-  font-weight: 600;
+.btn-primary {  font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   transform: translateY(0);
 }
 
-.btn-primary:hover {
-  background-color: rgba(0, 217, 232, 0.9);
-  transform: translateY(-2px);
+.btn-primary:hover {  transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 217, 232, 0.3);
 }
 

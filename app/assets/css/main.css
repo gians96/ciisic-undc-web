@@ -69,14 +69,22 @@ a:hover {
 
 .btn-primary {
   background: linear-gradient(90deg, var(--tg-theme-primary) 0%, #0b75e5 100%);
+  background-origin: border-box;
+  background-repeat: no-repeat;
   color: var(--tg-common-color-black);
   border: 2px solid transparent;
 }
 
-.btn-primary:hover {
-  background: transparent;
-  color: var(--tg-theme-primary);
-  border-color: var(--tg-theme-primary);
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: linear-gradient(90deg, var(--tg-theme-primary-hover) 0%, #2f83df 100%) border-box;
+  color: var(--tg-common-color-black);
+  border-color: transparent;
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--tg-theme-primary-hover);
+  outline-offset: 3px;
 }
 
 .btn-outline {
