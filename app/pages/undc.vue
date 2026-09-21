@@ -10,10 +10,10 @@
       <!-- Overlay -->
       <div class="absolute inset-0 z-[-1] bg-slate-900/40"></div>
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider">Planes de Inscripción VII
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider">Planes de Inscripción VIII
           CIISIC - UNDC</h1>
         <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto">
-          Elige el plan que mejor se adapte a tus necesidades y sé parte de la septima edición del Congreso
+          Elige el plan que mejor se adapte a tus necesidades y sé parte de la octava edición del Congreso
           Internacional de Ingeniería de Sistemas.
         </p>
       </div>
@@ -105,9 +105,9 @@ const navigateToPlan = (plan: any) => {
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-  title: 'Planes de Inscripción - VI CIISIC UNDC',
+  title: 'Planes de Inscripción - VIII CIISIC UNDC',
   meta: [
-    { name: 'description', content: 'Explora los planes de inscripción para el VI Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
+    { name: 'description', content: 'Explora los planes de inscripción para el VIII Congreso Internacional de Ingeniería de Sistemas e Informática de la UNDC.' }
   ]
 })
 
@@ -195,13 +195,13 @@ const toggleAccordion = (id: number) => {
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #45f882;
+  background: #00d9e8;
   /* primary */
   border-radius: 10px;
 }
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background: #34d399;
-  /* emerald-400 */
+  background: #22d3ee;
+  /* blue-400 */
 }
 </style>

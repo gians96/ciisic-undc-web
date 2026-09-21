@@ -1,10 +1,11 @@
 <template>
-  <div id="app" class="min-h-screen bg-slate-900 text-white">
+  <div id="app" class="min-h-screen bg-[#041d39] text-white">
+    <a href="#main-content" class="skip-link">Saltar al contenido</a>
     <!-- Header Principal -->
     <header
-      class="fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50"
+      class="fixed top-0 left-0 right-0 z-40 border-b border-white/10 bg-[#041d39]/95 backdrop-blur-xl"
     >
-      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 2xl:max-w-[1600px]">
         <div class="flex items-center justify-between h-20">
           <!-- Logo -->
           <div class="flex items-center">
@@ -14,36 +15,33 @@
                 alt="Logo CIISIC"
                 class="w-10 h-10 object-contain"
               />
-              <span class="text-white font-bold text-3xl tracking-wider"
-                >VII CIISIC</span
-              >
+              <span class="text-white font-bold text-xl tracking-wide sm:text-2xl">VIII CIISIC<span class="ml-2 text-sm font-semibold text-primary-300">2026</span></span>
             </NuxtLink>
           </div>
 
           <!-- Navegación Principal (Desktop) -->
-          <nav class="hidden lg:flex items-center space-x-8">
+          <nav class="hidden lg:flex items-center gap-6" aria-label="Navegación principal">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
-            <NuxtLink to="/about" class="nav-link">Acerca de</NuxtLink>
+            <NuxtLink to="/about" class="nav-link">Congreso</NuxtLink>
             <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
-            <NuxtLink to="/papers" class="nav-link">Call for papers</NuxtLink>
             <NuxtLink to="/ponentes" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
-            <NuxtLink to="/contacto" class="nav-link">Contacto</NuxtLink>
           </nav>
 
           <div class="flex items-center space-x-4">
             <!-- Botón de menú móvil -->
             <button
-              @click="() => { console.log('Button clicked, current state:', layoutStore.isMobileMenuOpen); layoutStore.toggleMobileMenu(); console.log('New state:', layoutStore.isMobileMenuOpen); }"
-              class="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              @click="layoutStore.toggleMobileMenu()"
+              class="lg:hidden rounded-xl border border-white/15 p-2.5 text-white hover:border-primary-400 hover:text-primary-300 focus-visible:outline-primary-400"
               aria-label="Abrir menú de navegación"
+              :aria-expanded="layoutStore.isMobileMenuOpen"
             >
               <Icon name="heroicons:bars-3" class="h-6 w-6" />
             </button>
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
+              class="hidden lg:inline-flex items-center justify-center rounded-xl bg-primary-500 px-5 py-3 text-sm font-bold text-[#032f5f] transition hover:-translate-y-0.5 hover:bg-primary-300"
             >
               INSCRIPCIONES
             </NuxtLink>
@@ -91,10 +89,10 @@ const route = useRoute();
 // ============================================================================
 
 useSeoMeta({
-  title: "VII CIISIC | UNDC",
-  description: "Plataforma con información sobre el VII CIISIC",
-  ogTitle: "VII CIISIC | UNDC",
-  ogDescription: "Plataforma con información sobre el VII CIISIC",
+  title: "VIII CIISIC 2026 | UNDC",
+  description: "VIII CIISIC de la UNDC, del 26 al 30 de octubre de 2026",
+  ogTitle: "VIII CIISIC 2026 | UNDC",
+  ogDescription: "VIII CIISIC de la UNDC, del 26 al 30 de octubre de 2026",
   ogImage: "/images/logo/preloader.png",
   twitterCard: "summary_large_image",
 });
@@ -132,7 +130,7 @@ useHead({
     lang: "es",
   },
   bodyAttrs: {
-    class: "bg-slate-900 text-white",
+    class: "bg-[#041d39] text-white",
   },
 });
 </script>
@@ -149,22 +147,21 @@ useHead({
 
 /* Navegación principal */
 .nav-link {
-  color: #d1d5db;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: #cbd5e1;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   font-size: 0.875rem;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .nav-link:hover {
-  color: #22c55e;
+  color: #00d9e8;
   transform: translateY(-1px);
 }
 
-.nav-link.router-link-active {
-  color: #22c55e;
+.nav-link.router-link-exact-active {
+  color: #00d9e8;
 }
 
 .nav-link::after {
@@ -174,14 +171,27 @@ useHead({
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
+  background: linear-gradient(90deg, #00d9e8, #075bcb);
   transition: width 0.3s ease;
 }
 
 .nav-link:hover::after,
-.nav-link.router-link-active::after {
+.nav-link.router-link-exact-active::after {
   width: 100%;
 }
+
+.skip-link {
+  position: fixed;
+  top: -5rem;
+  left: 1rem;
+  z-index: 100;
+  border-radius: .75rem;
+  background: #00d9e8;
+  color: #032f5f;
+  padding: .75rem 1rem;
+  font-weight: 700;
+}
+.skip-link:focus { top: 1rem; }
 
 
 
@@ -215,7 +225,7 @@ html {
 
 /* Estilos para el focus del teclado */
 :focus-visible {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 

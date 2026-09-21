@@ -125,7 +125,7 @@ onMounted(() => {
 
 /* Efecto de brillo en el logo */
 .logo-glow {
-  filter: drop-shadow(0 0 20px rgba(69, 248, 130, 0.5));
+  filter: drop-shadow(0 0 20px rgba(0, 217, 232, 0.5));
 }
 
 /* Responsive */

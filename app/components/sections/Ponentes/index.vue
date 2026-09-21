@@ -10,13 +10,13 @@
         <div class="w-full max-w-2xl">
           <div class="text-center">
             <p
-              class="text-green-400 text-sm font-semibold tracking-wider mb-4 uppercase"
+              class="text-primary-400 text-sm font-semibold tracking-wider mb-4 uppercase"
             >
               <span
-                class="pulse-bg px-4 py-1 rounded-full text-green-300"
+                class="pulse-bg px-4 py-1 rounded-full text-primary-300"
                 aria-hidden="true"
               >
-                Invitados de reconocimiento
+                VIII CIISIC 2026
               </span>
             </p>
 
@@ -31,41 +31,25 @@
             <!-- Línea decorativa -->
             <div class="mt-4 flex justify-center">
               <div
-                class="w-24 h-1 rounded bg-green-400 shadow shadow-green-500/50"
+                class="w-24 h-1 rounded bg-primary-400 shadow shadow-primary-500/50"
               />
             </div>
           </div>
         </div>
       </header>
 
-      <!-- Ponentes -->
       <main class="flex justify-center">
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl"
-          role="list"
-          aria-label="Lista de miembros del equipo"
-        >
-          <PerfilCard
-            v-for="ponente in ponentes"
-            :key="ponente.id"
-            :nombre="ponente.nombre"
-            :imagen="ponente.imagen"
-            :empresa="ponente.empresa"
-          />
+        <div class="max-w-2xl rounded-2xl border border-primary-400/25 bg-slate-900/80 p-8 text-center backdrop-blur">
+          <Icon name="heroicons:user-group" class="mx-auto mb-5 h-14 w-14 text-primary-400" />
+          <h2 class="mb-3 text-2xl font-semibold text-white">Anuncios próximamente</h2>
+          <p class="text-lg leading-relaxed text-slate-300">
+            Estamos confirmando a los especialistas nacionales e internacionales de la edición 2026.
+          </p>
         </div>
       </main>
     </div>
   </section>
 </template>
-
-<script setup>
-import PerfilCard from "./PerfilCard.vue";
-
-// Usar el composable centralizado de ponentes
-const { ponentes } = usePonentes()
-
-// Usar todos los ponentes para la sección en la página principal
-</script>
 
 <style scoped>
 .pulse-bg {
@@ -79,18 +63,18 @@ const { ponentes } = usePonentes()
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background-color: rgba(34, 197, 94, 0.1);
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  background-color: rgba(0, 217, 232, 0.1);
+  box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
   animation: pulse-only-bg 1.8s infinite ease-out;
   z-index: -1;
 }
 
 @keyframes pulse-only-bg {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 0 0 rgba(0, 217, 232, 0.4);
   }
   100% {
-    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 10px rgba(0, 217, 232, 0);
   }
 }
 </style>

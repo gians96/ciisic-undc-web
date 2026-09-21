@@ -1,32 +1,10 @@
 <template>
-  <div class="min-h-screen bg-slate-900">
-    <!-- Hero Section -->
-    <SectionsHeroSection />
-
-    <!-- Memorias 2024 -->
-    <SectionsMemorias />
-
-    <!-- Ponentes para el congreso no hay ni pincho -->
-    <SectionsPonentes />
-    
-    <!-- Top Trending Section - Eventos y concursos -->
-    <SectionsTopTrendingSection />
-    
-    <!-- Human Game Section - Mapa ubicacion -->
-    <SectionsHumanGameSection />
-    
-    <!-- Active Team Section - comite de estudiantes -->
-    <SectionsActiveTeamSection />
-
-  </div>
+  <SectionsLanding2026 />
 </template>
 
 <script setup lang="ts">
-// Page metadata
-useHead({
-  title: 'VII CIISIC | UNDC',
-  meta: [
-    { name: 'description', content: 'Sistema de informacion del VII CIISIC' }
-  ]
+useSeoMeta({
+  title: 'VIII CIISIC 2026 | Ingeniería, ciencia e innovación en Cañete',
+  description: 'Del 26 al 30 de octubre de 2026 en San Vicente de Cañete. Explora e inscríbete en el VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica.',
 })
 </script>

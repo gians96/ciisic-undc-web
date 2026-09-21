@@ -5,8 +5,10 @@
         ============================================================================ -->
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
-                <h1 class="page-title">REGISTRO GENERAL - VII CIISIC</h1>
-                <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas
+                <NuxtLink to="/planes" class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-300 hover:text-white"><Icon name="heroicons:arrow-left" class="h-4 w-4" /> Cambiar modalidad</NuxtLink>
+                <p class="mb-3 text-xs font-bold uppercase tracking-[.2em] text-primary-300">VIII CIISIC 2026 · Inscripciones</p>
+                <h1 class="page-title">Registro para público general</h1>
+                <p class="page-subtitle">Completa tu inscripción al VIII Congreso Internacional de Ingeniería de Sistemas
                     e Investigación Científica</p>
             </div>
         </section>
@@ -219,7 +221,7 @@
                                                 <span>Pago Directo</span>
                                                 <Icon @click.prevent.stop="copiarNumeroCuenta"
                                                     name="heroicons:clipboard-document"
-                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5"
+                                                    class="text-primary-400 hover:text-primary-300 cursor-pointer h-5 w-5"
                                                     title="Copiar número de cuenta" />
                                             </div>
                                         </label>
@@ -234,7 +236,7 @@
                                                 <span>Pago interbancario</span>
                                                 <Icon @click.prevent.stop="copiarCCI"
                                                     name="heroicons:clipboard-document"
-                                                    class="text-green-400 hover:text-green-300 cursor-pointer h-5 w-5"
+                                                    class="text-primary-400 hover:text-primary-300 cursor-pointer h-5 w-5"
                                                     title="Copiar CCI" />
                                             </div>
                                         </label>
@@ -369,9 +371,9 @@
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-    title: 'Registro | VII CIISIC',
+    title: 'Registro | VIII CIISIC',
     meta: [
-        { name: 'description', content: 'Formulario de registro para el VII CIISIC la UNDC.' }
+        { name: 'description', content: 'Formulario de registro para el VIII CIISIC la UNDC.' }
     ]
 })
 
@@ -576,7 +578,6 @@ const selectPlan = (id: number) => {
 const showError = (message: string) => {
     errorMessage.value = message
     successMessage.value = ''
-    console.error('🔴 Error:', message)
 
     // Auto-limpiar después de 5 segundos
     setTimeout(() => {
@@ -587,7 +588,6 @@ const showError = (message: string) => {
 const showSuccess = (message: string) => {
     successMessage.value = message
     errorMessage.value = ''
-    console.log('✅ Success:', message)
 
     // Auto-limpiar después de 3 segundos
     setTimeout(() => {
@@ -661,11 +661,7 @@ const handleDocumentSearch = async () => {
     errorMessage.value = ''
 
     try {
-        console.log(`🔍 Consultando ${documentType.value}: ${documentNumber.value}`)
-
         const result = await consultDni(documentNumber.value, documentType.value)
-
-        console.log('📥 Resultado recibido:', result)
 
         if (result && result.success && result.data) {
             if (result.data.names && (result.data.paternalSurname || result.data.maternalSurname)) {
@@ -679,12 +675,6 @@ const handleDocumentSearch = async () => {
 
                 showSuccess(`✅ ${documentType.value} encontrado: ${result.data.fullName || `${nombres.value} ${apellidos.value}`}`)
 
-                console.log('📋 Datos cargados:', {
-                    nombres: nombres.value,
-                    apellidos: apellidos.value,
-                    documentType: documentType.value,
-                    documentNumber: documentNumber.value
-                })
             } else {
                 nombresEncontrados.value = false // No se encontraron nombres completos
                 showError(`⚠️ ${documentType.value} encontrado, pero faltan datos personales. Complete manualmente.`)
@@ -694,8 +684,6 @@ const handleDocumentSearch = async () => {
             showError(`❌ No se encontraron datos para el ${documentType.value} ${documentNumber.value}`)
         }
     } catch (error: any) {
-        console.error(`💥 Error en la búsqueda de ${documentType.value}:`, error)
-
         if (error.statusCode === 400) {
             showError(`❌ ${documentType.value} inválido. Debe tener ${getSelectedDocumentType()?.maxLength} dígitos numéricos.`)
         } else if (error.statusCode === 429) {
@@ -808,7 +796,6 @@ const handleSubmit = async () => {
     try {
         // Verificar que los catálogos necesarios estén cargados (solo classifications para general)
         if (!classifications.value?.length) {
-            console.warn('⚠️ Catálogos no cargados, intentando reinicializar...')
             await initializeCatalogs()
 
             // Dar un momento para que se carguen
@@ -847,17 +834,11 @@ const handleSubmit = async () => {
             descuento: discount
         }
 
-        console.log('📤 Datos del formulario:', formData)
-
         // Mapear datos del formulario a formato de API
         const apiData = mapFormDataToApiData(formData)
 
-        console.log('� Datos mapeados para API:', apiData)
-
         // Enviar inscripción
         const response = await createInscription(apiData)
-
-        console.log('✅ Inscripción completada:', response)
 
         // Redirigir inmediatamente a página de confirmación
         if (response.data?.id) {
@@ -871,8 +852,6 @@ const handleSubmit = async () => {
         }
 
     } catch (error: any) {
-        console.error('💥 Error al enviar formulario:', error)
-
         // Mostrar el error específico del composable si existe
         if (apiError.value) {
             showError(apiError.value)
@@ -982,9 +961,7 @@ onMounted(async () => {
     // Inicializar catálogos de la API
     try {
         await initializeCatalogs()
-        console.log('✅ Catálogos cargados desde la API')
-    } catch (error) {
-        console.error('💥 Error cargando catálogos:', error)
+    } catch {
         showError('❌ Error al cargar datos iniciales. Algunas funciones pueden no estar disponibles.')
     }
 })
@@ -1006,9 +983,7 @@ onMounted(async () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('/images/bg/breadcrumb_bg01.jpg');
-    background-size: cover;
-    background-position: center;
+    background: radial-gradient(circle at 50% 0, #0b75e555, transparent 48%), linear-gradient(135deg, #052c54, #041d39);
     z-index: -1;
 }
 
@@ -1026,19 +1001,18 @@ onMounted(async () => {
 }
 
 .page-title {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.1;
     font-weight: 700;
     color: #ffffff;
-    text-transform: uppercase;
     text-align: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .page-subtitle {
     color: #cbd5e1;
     font-size: 1.125rem;
-    max-width: 32rem;
+    max-width: 42rem;
 }
 
 /* Plan Info Section */
@@ -1092,8 +1066,8 @@ onMounted(async () => {
 }
 
 .badge-success {
-    border-color: #45f882;
-    color: #45f882;
+    border-color: #00d9e8;
+    color: #00d9e8;
 }
 
 .badge-warning {
@@ -1104,7 +1078,7 @@ onMounted(async () => {
 .plan-price {
     font-size: 2.25rem;
     font-weight: 800;
-    color: #45f882;
+    color: #00d9e8;
     margin-bottom: 1.5rem;
 }
 
@@ -1124,7 +1098,7 @@ onMounted(async () => {
 .feature-icon {
     width: 1.25rem;
     height: 1.25rem;
-    color: #45f882;
+    color: #00d9e8;
     margin-right: 0.75rem;
     flex-shrink: 0;
 }
@@ -1168,8 +1142,8 @@ onMounted(async () => {
 }
 
 .document-input-group:focus-within {
-    border-color: #45f882;
-    box-shadow: 0 0 0 2px rgba(69, 248, 130, 0.2);
+    border-color: #00d9e8;
+    box-shadow: 0 0 0 2px rgba(0, 217, 232, 0.2);
 }
 
 .document-type-container {
@@ -1249,8 +1223,8 @@ onMounted(async () => {
 }
 
 .document-search-button:hover:not(:disabled) {
-    color: #45f882;
-    background-color: rgba(69, 248, 130, 0.1);
+    color: #00d9e8;
+    background-color: rgba(0, 217, 232, 0.1);
 }
 
 .document-search-button:disabled {
@@ -1292,8 +1266,8 @@ select.form-input {
 .form-input:focus,
 select.form-input:focus {
     outline: none;
-    border-color: #45f882;
-    box-shadow: 0 0 0 2px rgba(69, 248, 130, 0.2);
+    border-color: #00d9e8;
+    box-shadow: 0 0 0 2px rgba(0, 217, 232, 0.2);
 }
 
 select.form-input {
@@ -1395,9 +1369,9 @@ input[type="date"]:valid {
 }
 
 .plan-card-simple.selected {
-    border-color: #45f882;
-    background-color: rgba(69, 248, 130, 0.05);
-    box-shadow: 0 0 0 1px rgba(69, 248, 130, 0.2);
+    border-color: #00d9e8;
+    background-color: rgba(0, 217, 232, 0.05);
+    box-shadow: 0 0 0 1px rgba(0, 217, 232, 0.2);
 }
 
 .plan-card-simple.disabled {
@@ -1426,7 +1400,7 @@ input[type="date"]:valid {
 .plan-card-price {
     font-size: 1.75rem;
     font-weight: 800;
-    color: #45f882;
+    color: #00d9e8;
     line-height: 1;
     margin: 0;
 }
@@ -1475,7 +1449,7 @@ input[type="date"]:valid {
 }
 
 .plan-feature-icon.included {
-    color: #45f882;
+    color: #00d9e8;
 }
 
 .plan-feature-icon.excluded {
@@ -1514,8 +1488,8 @@ input[type="date"]:valid {
 }
 
 .plan-selector-radio.selected {
-    background-color: #45f882;
-    border-color: #45f882;
+    background-color: #00d9e8;
+    border-color: #00d9e8;
 }
 
 .plan-selector-dot {
@@ -1559,8 +1533,8 @@ input[type="date"]:valid {
 }
 
 .radio-custom-indicator.selected {
-    background-color: #45f882;
-    border-color: #45f882;
+    background-color: #00d9e8;
+    border-color: #00d9e8;
 }
 
 .radio-dot {
@@ -1584,7 +1558,7 @@ input[type="date"]:valid {
 }
 
 .file-input-wrapper:hover {
-    border-color: #45f882;
+    border-color: #00d9e8;
 }
 
 .file-input-wrapper.file-input-completed {
@@ -1631,7 +1605,7 @@ input[type="date"]:valid {
 /* Submit Button */
 .submit-button {
     width: 100%;
-    background-color: #45f882;
+    background-color: #00d9e8;
     color: #000000;
     font-weight: 600;
     padding: 0.75rem 1rem;
@@ -1646,7 +1620,7 @@ input[type="date"]:valid {
 }
 
 .submit-button:hover:not(:disabled) {
-    background-color: #34d399;
+    background-color: #22d3ee;
     transform: translateY(-1px);
 }
 
@@ -1995,7 +1969,7 @@ input[type="date"]:valid {
     align-items: center;
     justify-content: center;
     padding: 0.75rem 1.5rem;
-    background-color: #45f882;
+    background-color: #00d9e8;
     color: #000000;
     font-weight: 600;
     font-size: 0.875rem;
@@ -2006,9 +1980,9 @@ input[type="date"]:valid {
 }
 
 .qr-button:hover {
-    background-color: #34d399;
+    background-color: #22d3ee;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(69, 248, 130, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 217, 232, 0.3);
 }
 
 /* QR Button Inline (al lado de radio buttons) */
@@ -2024,7 +1998,7 @@ input[type="date"]:valid {
     align-items: center;
     justify-content: center;
     padding: 0.5rem;
-    background-color: #45f882;
+    background-color: #00d9e8;
     color: #000000;
     border-radius: 0.375rem;
     border: none;
@@ -2036,9 +2010,9 @@ input[type="date"]:valid {
 }
 
 .qr-button-inline:hover {
-    background-color: #34d399;
+    background-color: #22d3ee;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(69, 248, 130, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 217, 232, 0.3);
 }
 
 /* QR Modal Styling */

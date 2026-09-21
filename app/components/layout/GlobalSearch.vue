@@ -446,7 +446,7 @@ mark {
     background-color: transparent;
   }
   to {
-    background-color: #45f882;
+    background-color: #00d9e8;
   }
 }
 

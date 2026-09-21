@@ -18,7 +18,7 @@
             />
           </NuxtLink>
           <h1 class="text-3xl font-bold text-white mb-2">Iniciar Sesión</h1>
-          <p class="text-gray-300">Accede a tu cuenta MYKD</p>
+          <p class="text-gray-300">Accede al panel administrativo del VIII CIISIC</p>
         </div>
 
         <!-- Formulario de Login -->
@@ -65,24 +65,6 @@
             </div>
           </div>
 
-          <!-- Remember Me y Forgot Password -->
-          <div class="flex items-center justify-between">
-            <label class="flex items-center">
-              <input
-                v-model="form.remember"
-                type="checkbox"
-                class="w-4 h-4 text-primary bg-secondary-700 border-secondary-600 rounded focus:ring-primary focus:ring-2"
-              />
-              <span class="ml-2 text-sm text-gray-300">Recordarme</span>
-            </label>
-            <NuxtLink
-              to="/forgot-password"
-              class="text-sm text-primary hover:text-primary/80 transition-colors duration-200"
-            >
-              ¿Olvidaste tu contraseña?
-            </NuxtLink>
-          </div>
-
           <!-- Submit Button -->
           <button
             type="submit"
@@ -94,48 +76,6 @@
           </button>
         </form>
 
-        <!-- Divider -->
-        <div class="my-8">
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-secondary-600"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-secondary-800 text-gray-400">O continúa con</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Social Login -->
-        <div class="grid grid-cols-2 gap-3">
-          <button
-            @click="loginWithProvider('google')"
-            class="flex items-center justify-center px-4 py-3 bg-secondary-700 hover:bg-secondary-600 text-white rounded-lg transition-colors duration-300"
-          >
-            <Icon name="simple-icons:google" class="h-5 w-5 mr-2" />
-            Google
-          </button>
-          <button
-            @click="loginWithProvider('discord')"
-            class="flex items-center justify-center px-4 py-3 bg-secondary-700 hover:bg-secondary-600 text-white rounded-lg transition-colors duration-300"
-          >
-            <Icon name="simple-icons:discord" class="h-5 w-5 mr-2" />
-            Discord
-          </button>
-        </div>
-
-        <!-- Register Link -->
-        <div class="mt-8 text-center">
-          <p class="text-gray-300">
-            ¿No tienes una cuenta?
-            <NuxtLink 
-              to="/register"
-              class="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
-            >
-              Regístrate aquí
-            </NuxtLink>
-          </p>
-        </div>
       </div>
     </div>
   </div>
@@ -146,7 +86,6 @@
 // IMPORTS
 // ============================================================================
 
-import { storeToRefs } from 'pinia'
 import { useLayoutStore } from '~/stores/layout'
 
 // ============================================================================
@@ -160,19 +99,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'Iniciar Sesión | VII CIISIC',
+  title: 'Iniciar Sesión | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Inicia sesión en tu cuenta VII CIISIC para acceder a más funcionalidades.'
+      content: 'Inicia sesión en tu cuenta VIII CIISIC para acceder a más funcionalidades.'
     },
     {
       property: 'og:title',
-      content: 'Iniciar Sesión | VII CIISIC'
+      content: 'Iniciar Sesión | VIII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Inicia sesión en tu cuenta VII CIISIC para acceder al panel administrativo.'
+      content: 'Inicia sesión en tu cuenta VIII CIISIC para acceder al panel administrativo.'
     },
     {
       property: 'og:type',
@@ -187,8 +126,7 @@ useHead({
 
 const form = reactive({
   email: '',
-  password: '',
-  remember: false
+  password: ''
 })
 
 const isLoading = ref(false)
@@ -210,36 +148,23 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    // Aquí iría la lógica de autenticación real
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: { correoElectronico: form.email, contrasena: form.password }
+    })
     
     layoutStore.showSuccess('¡Bienvenido de vuelta!', 'Inicio de sesión exitoso')
     
     // Redirigir al dashboard o página principal
     await navigateTo('/')
     
-  } catch (error) {
+  } catch {
     layoutStore.showError(
       'Credenciales incorrectas. Por favor verifica tu email y contraseña.',
       'Error de autenticación'
     )
   } finally {
     isLoading.value = false
-  }
-}
-
-const loginWithProvider = async (provider: string) => {
-  try {
-    layoutStore.showInfo(`Redirigiendo a ${provider}...`, 'Autenticación')
-    
-    // Aquí iría la lógica de OAuth
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-  } catch (error) {
-    layoutStore.showError(
-      `Error al conectar con ${provider}. Inténtalo de nuevo.`,
-      'Error de conexión'
-    )
   }
 }
 
@@ -266,7 +191,7 @@ onMounted(() => {
 /* Form Input Focus Effects */
 .form-input:focus {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 217, 232, 0.1);
 }
 
 /* Login Card Animation */
@@ -328,8 +253,8 @@ onMounted(() => {
 
 /* Checkbox Custom Styling */
 input[type="checkbox"]:checked {
-  background-color: #45f882;
-  border-color: #45f882;
+  background-color: #00d9e8;
+  border-color: #00d9e8;
 }
 
 /* Link Hover Effects */
@@ -344,7 +269,7 @@ input[type="checkbox"]:checked {
   left: 0;
   width: 0;
   height: 2px;
-  background: #45f882;
+  background: #00d9e8;
   transition: width 0.3s ease;
 }
 
@@ -355,8 +280,8 @@ input[type="checkbox"]:checked {
 /* Background Gradient */
 .login-background {
   background: 
-    radial-gradient(circle at 20% 80%, rgba(69, 248, 130, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(69, 248, 130, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(0, 217, 232, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 217, 232, 0.05) 0%, transparent 50%);
 }
 
 /* Loading Spinner */
@@ -407,8 +332,8 @@ input[type="checkbox"]:checked {
   }
   
   .form-input:focus {
-    border-color: #45f882;
-    box-shadow: 0 0 0 2px #45f882;
+    border-color: #00d9e8;
+    box-shadow: 0 0 0 2px #00d9e8;
   }
 }
 

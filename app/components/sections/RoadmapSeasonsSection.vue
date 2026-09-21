@@ -29,7 +29,7 @@
               </div>
               
               <!-- Efectos decorativos -->
-              <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+              <div class="absolute -top-2 -right-2 w-4 h-4 bg-primary-500 rounded-full animate-pulse"></div>
               <div class="absolute -bottom-2 -left-2 w-6 h-6 border-2 border-blue-500 rounded-full"></div>
             </div>
           </div>
@@ -39,7 +39,7 @@
         <div class="space-y-6">
           
           <!-- Season 1 -->
-          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300">
+          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-2xl font-bold text-white">SEASON 1</h3>
               <div class="w-16 h-16 bg-slate-700 rounded-lg flex items-center justify-center">
@@ -53,14 +53,14 @@
             <!-- Progress bar -->
             <div class="mt-4">
               <div class="w-full bg-slate-700 rounded-full h-2">
-                <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                <div class="bg-primary-500 h-2 rounded-full" style="width: 100%"></div>
               </div>
-              <p class="text-xs text-green-500 mt-1">Completado</p>
+              <p class="text-xs text-primary-500 mt-1">Completado</p>
             </div>
           </div>
 
           <!-- Season 2 -->
-          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300">
+          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-2xl font-bold text-white">SEASON 2</h3>
               <div class="w-16 h-16 bg-slate-700 rounded-lg flex items-center justify-center">
@@ -81,7 +81,7 @@
           </div>
 
           <!-- Season 3 -->
-          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300">
+          <div class="season-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-2xl font-bold text-white">SEASON 3</h3>
               <div class="w-16 h-16 bg-slate-700 rounded-lg flex items-center justify-center">
@@ -163,7 +163,7 @@ const seasons: Season[] = [
 const getStatusColor = (status: Season['status']) => {
   switch (status) {
     case 'completed':
-      return 'text-green-500'
+      return 'text-primary-500'
     case 'in-progress':
       return 'text-yellow-500'
     case 'upcoming':
@@ -189,7 +189,7 @@ const getStatusText = (status: Season['status']) => {
 const getProgressColor = (status: Season['status']) => {
   switch (status) {
     case 'completed':
-      return 'bg-green-500'
+      return 'bg-primary-500'
     case 'in-progress':
       return 'bg-yellow-500'
     case 'upcoming':
@@ -213,7 +213,7 @@ const getProgressColor = (status: Season['status']) => {
 
 .season-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 15px 35px rgba(0, 217, 232, 0.1);
 }
 
 /* Animaciones de entrada */
@@ -273,7 +273,7 @@ const getProgressColor = (status: Season['status']) => {
 /* Efectos del dispositivo móvil */
 .w-48.h-80 {
   box-shadow: 
-    0 0 50px rgba(34, 197, 94, 0.1),
+    0 0 50px rgba(0, 217, 232, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -283,14 +283,14 @@ const getProgressColor = (status: Season['status']) => {
 }
 
 /* Efectos de las barras de progreso */
-.bg-green-500,
+.bg-primary-500,
 .bg-yellow-500,
 .bg-gray-500 {
   transition: width 1s ease-in-out;
   position: relative;
 }
 
-.bg-green-500::after,
+.bg-primary-500::after,
 .bg-yellow-500::after {
   content: '';
   position: absolute;
@@ -336,7 +336,7 @@ const getProgressColor = (status: Season['status']) => {
     animation: none;
   }
   
-  .bg-green-500::after,
+  .bg-primary-500::after,
   .bg-yellow-500::after {
     animation: none;
   }
@@ -344,7 +344,7 @@ const getProgressColor = (status: Season['status']) => {
 
 /* Focus states */
 .season-card:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 

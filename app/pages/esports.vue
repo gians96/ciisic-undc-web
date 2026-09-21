@@ -230,19 +230,19 @@ const layoutStore = useLayoutStore()
 // ============================================================================
 
 useHead({
-  title: 'eSports | VII CIISIC',
+  title: 'eSports | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Participa en los mejores torneos de eSports en el VII CIISIC. Compite por premios increíbles.'
+      content: 'Participa en los mejores torneos de eSports en el VIII CIISIC. Compite por premios increíbles.'
     },
     {
       property: 'og:title',
-      content: 'eSports | VII CIISIC'
+      content: 'eSports | VIII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Participa en los mejores torneos de eSports en el VII CIISIC. Compite por premios increíbles.'
+      content: 'Participa en los mejores torneos de eSports en el VIII CIISIC. Compite por premios increíbles.'
     },
     {
       property: 'og:type',
@@ -385,7 +385,7 @@ const getStatusClass = (status: string) => {
     case 'En Vivo':
       return 'bg-red-500 text-white'
     case 'Inscripciones Abiertas':
-      return 'bg-green-500 text-white'
+      return 'bg-primary-500 text-white'
     case 'Próximamente':
       return 'bg-blue-500 text-white'
     default:
@@ -414,9 +414,9 @@ const formatDate = (date: Date) => {
 }
 
 .category-card:hover {
-  border-color: #45f882;
+  border-color: #00d9e8;
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(69, 248, 130, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.1);
 }
 
 /* Tournament Cards */
@@ -426,7 +426,7 @@ const formatDate = (date: Date) => {
 }
 
 .tournament-card:hover {
-  border-color: #45f882;
+  border-color: #00d9e8;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
 }
 
@@ -446,7 +446,7 @@ const formatDate = (date: Date) => {
 
 /* Prize Pool Styling */
 .prize-pool {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -454,7 +454,7 @@ const formatDate = (date: Date) => {
 
 /* Rules Section */
 .rule-number {
-  background: linear-gradient(135deg, #45f882 0%, #3ad66d 100%);
+  background: linear-gradient(135deg, #00d9e8 0%, #0b75e5 100%);
 }
 
 /* Button Animations */
@@ -514,7 +514,7 @@ const formatDate = (date: Date) => {
   
   .category-card:hover,
   .tournament-card:hover {
-    border-color: #45f882;
+    border-color: #00d9e8;
   }
 }
 

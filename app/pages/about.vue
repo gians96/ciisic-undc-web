@@ -136,19 +136,19 @@ import { ref, onMounted, onUnmounted } from 'vue'
 // ============================================================================
 
 useHead({
-  title: 'Sobre Nosotros | VII CIISIC',
+  title: 'Sobre Nosotros | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Conoce más sobre VII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
+      content: 'Conoce más sobre VIII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
     },
     {
       property: 'og:title',
-      content: 'Sobre Nosotros | VII CIISIC'
+      content: 'Sobre Nosotros | VIII CIISIC'
     },
     {
       property: 'og:description',
-      content: 'Conoce más sobre VII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
+      content: 'Conoce más sobre VIII CIISIC, la plataforma de evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos'
     },
     {
       property: 'og:type',
@@ -261,9 +261,9 @@ onUnmounted(() => {
 // ============================================================================
 
 const aboutCongress = {
-  title: '¿Qué es el congreso VII CIISIC?',
-  highlight: 'VII CIISIC',
-  description: 'El congreso VII CIISIC es un evento académico anual que reúne investigadores, profesionales y estudiantes para compartir conocimientos y experiencias en el campo de la informática y sus aplicaciones. Presentan conferencias o exposiciones sobre temas relacionados con su trabajo o actividad.',
+  title: '¿Qué es el congreso VIII CIISIC?',
+  highlight: 'VIII CIISIC',
+  description: 'El VIII CIISIC 2026 se realizará del 26 al 30 de octubre en la Casa de la Cultura de la Universidad Nacional de Cañete. El evento reúne a investigadores, profesionales y estudiantes para compartir conocimientos y experiencias en ingeniería de sistemas, informática e investigación científica.',
   actions: [
     { label: 'Inscríbete', to: '/planes', style: 'btn-primary' },
     { label: 'Contáctanos', to: '/contacto', style: 'btn-secondary' }
@@ -331,7 +331,7 @@ const teamSections = [
    ============================================================================ */
 
 .btn-primary {
-  background-color: #45f882;
+  background-color: #00d9e8;
   color: black;
   font-weight: 600;
   padding: 0.75rem 2rem;
@@ -341,15 +341,15 @@ const teamSections = [
 }
 
 .btn-primary:hover {
-  background-color: rgba(69, 248, 130, 0.9);
+  background-color: rgba(0, 217, 232, 0.9);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.3);
 }
 
 .btn-secondary {
   background-color: transparent;
-  border: 2px solid #45f882;
-  color: #45f882;
+  border: 2px solid #00d9e8;
+  color: #00d9e8;
   font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
@@ -358,10 +358,10 @@ const teamSections = [
 }
 
 .btn-secondary:hover {
-  background-color: #45f882;
+  background-color: #00d9e8;
   color: black;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(69, 248, 130, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 217, 232, 0.3);
 }
 
 /* ============================================================================
@@ -375,7 +375,7 @@ const teamSections = [
 
 .team-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(69, 248, 130, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.15);
 }
 
 /* ============================================================================

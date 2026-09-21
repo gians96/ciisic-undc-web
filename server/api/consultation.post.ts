@@ -11,7 +11,6 @@ export default defineEventHandler(async (event) => {
   const envs = useRuntimeConfig(event)
   const xApiToken = envs.xApiToken || process.env.X_API_TOKEN
   const xApiUrl = envs.xApiUrl || process.env.X_API_URL
-  console.log('Environment variables:', { xApiToken: xApiToken ? '***' : 'undefined', xApiUrl });
   
   try {
 
@@ -77,8 +76,6 @@ export default defineEventHandler(async (event) => {
     // VALIDACIÓN DE ORIGEN (OPCIONAL)
     // ========================================
     const origin = getHeader(event, 'origin')
-    const referer = getHeader(event, 'referer')
-
     // En desarrollo permitir localhost, en producción validar dominio
     if (process.env.NODE_ENV === 'production') {
       const allowedOrigins = [
@@ -102,7 +99,6 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const { documentNumber, documentType = 'DNI' } = body
 
-    console.log(`[${clientIP}] Consulta: ${documentType} ${documentNumber}`)
 
     // Validaciones básicas
     if (!documentNumber) {
@@ -141,7 +137,6 @@ export default defineEventHandler(async (event) => {
     const endpoint = documentType === 'DNI' ? 'dni' : 'ce'
     const requestUrl = `${xApiUrl}/${endpoint}/${documentNumber}`
 
-    console.log('Making request to:', requestUrl)
 
     // Hacer la petición a la API externa desde el servidor
     const response = await $fetch(requestUrl, {
@@ -152,7 +147,6 @@ export default defineEventHandler(async (event) => {
     })
 
     // Log de consulta exitosa (para monitoreo)
-    console.log(`[${clientIP}] ✅ Consulta exitosa: ${documentType} ${documentNumber}`)
 
     // Retornar la respuesta
     return response
@@ -169,7 +163,7 @@ export default defineEventHandler(async (event) => {
     } else if (error.statusCode === 403) {
       console.warn(`[SECURITY] Unauthorized access attempt from IP: ${clientIP}`)
     } else {
-      console.error(`[${clientIP}] ❌ Error in document consultation:`, error.message)
+      console.error(`[${clientIP}] Error en consulta de documento`)
     }
 
     // Si es un error de $fetch, mantener el código de estado

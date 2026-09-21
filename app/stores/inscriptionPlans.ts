@@ -1,6 +1,5 @@
 // stores/inscriptionPlans.ts
 import { defineStore } from 'pinia'
-import { useRuntimeConfig } from '#app'
 interface PlanCharacteristic {
     icon: string
     text: string
@@ -109,29 +108,20 @@ export const useInscriptionPlansStore = defineStore('inscriptionPlans', {
         async fetchPlans() {
             this.isLoading = true
             this.error = null
-            const config = useRuntimeConfig()
-            const apiBaseUrl = config.public.apiBaseUrl || process.env.API_BASE_URL
+            const { request } = useApi()
             try {
-                console.log(`🌐 API Base URL: ${apiBaseUrl}`);
-                console.log('🔄 Obteniendo planes de inscripción desde API...')
-
-                const plans = await $fetch<InscriptionPlan[]>(`${apiBaseUrl}/api/v1/registration-types`)
+                const plans = await request<InscriptionPlan[]>('/api/v1/registration-types')
 
                 this.plans = plans
                 this.lastFetch = Date.now()
                 this.error = null
 
-                console.log('✅ Planes de inscripción cargados:', plans.length, 'planes')
                 return plans
 
             } catch (error: any) {
-                console.error('💥 Error obteniendo planes de inscripción:', error)
-
                 this.error = error.message || 'Error al cargar planes de inscripción'
 
                 // Mantener los datos por defecto si hay un error
-                console.log('📦 Usando datos por defecto debido al error')
-
                 // No lanzar el error para que la aplicación continúe funcionando
                 return this.plans
 
@@ -142,7 +132,6 @@ export const useInscriptionPlansStore = defineStore('inscriptionPlans', {
 
         // Refrescar datos (alias para fetchPlans)
         async refreshPlans() {
-            console.log('🔄 Refrescando planes de inscripción...')
             return await this.fetchPlans()
         },
 
@@ -153,7 +142,6 @@ export const useInscriptionPlansStore = defineStore('inscriptionPlans', {
 
         // Establecer planes por defecto (fallback)
         setDefaultPlans() {
-            console.log('⚠️ Usando planes por defecto como fallback')
             this.plans = [
                 {
                     id: 1,

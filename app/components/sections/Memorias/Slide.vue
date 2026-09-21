@@ -7,10 +7,10 @@
           <slot name="title">Título por defecto</slot>
         </h2>
       </div>
-      
+
       <!-- Botones de navegación -->
       <div v-if="showNavigation" class="flex space-x-2">
-        <button 
+        <button
           @click="prevSlide"
           class="w-12 h-12 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center transition-colors duration-300"
         >
@@ -18,7 +18,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <button 
+        <button
           @click="nextSlide"
           class="w-12 h-12 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center transition-colors duration-300"
         >
@@ -32,18 +32,18 @@
     <!-- Contenedor del carrusel -->
     <div class="relative z-10 py-4">
       <div class="overflow-hidden">
-        <div 
+        <div
           :class="['flex', transitionClass]"
           :style="slideStyle"
           @transitionend="onTransitionEnd"
           ref="track"
         >
-          <div 
-            v-for="(slideGroup, slideIndex) in displaySlides" 
+          <div
+            v-for="(slideGroup, slideIndex) in displaySlides"
             :key="`display-${slideIndex}`"
             class="flex-shrink-0 w-full"
           >
-            <div 
+            <div
               class="grid"
               :class="{
                 'grid-cols-1': itemsPerSlide === 1,
@@ -64,11 +64,11 @@
 
     <!-- Indicadores -->
     <div v-if="showNavigation" class="flex justify-center mt-8 space-x-2">
-      <div 
-        v-for="(_, index) in realTotalSlides" 
+      <div
+        v-for="(_, index) in realTotalSlides"
         :key="index"
         class="w-2 h-2 rounded-full transition-colors duration-300 cursor-pointer"
-        :class="(currentIndexMapped === index) ? 'bg-green-500' : 'bg-slate-600'"
+        :class="(currentIndexMapped === index) ? 'bg-primary-500' : 'bg-slate-600'"
         @click="goToSlide(index)"
       ></div>
     </div>

@@ -145,9 +145,9 @@
                 <div class="space-y-4">
                   
                   <div class="flex items-start bg-secondary-700 rounded-lg p-4">
-                    <Icon name="heroicons:scale" class="h-6 w-6 text-green-400 mr-4 mt-1 flex-shrink-0" />
+                    <Icon name="heroicons:scale" class="h-6 w-6 text-primary-400 mr-4 mt-1 flex-shrink-0" />
                     <div>
-                      <h4 class="font-semibold text-green-400 mb-2">Requerimientos Legales</h4>
+                      <h4 class="font-semibold text-primary-400 mb-2">Requerimientos Legales</h4>
                       <p class="text-sm">
                         Cuando sea requerido por ley, orden judicial o para proteger 
                         nuestros derechos legales y los de nuestros usuarios.
@@ -285,11 +285,11 @@
 // ============================================================================
 
 useHead({
-  title: 'Política de Privacidad | VII CIISIC',
+  title: 'Política de Privacidad | VIII CIISIC',
   meta: [
     {
       name: 'description',
-      content: 'Política de privacidad de VII CIISIC. Conoce cómo protegemos y manejamos tus datos personales en nuestra plataforma.'
+      content: 'Política de privacidad de VIII CIISIC. Conoce cómo protegemos y manejamos tus datos personales en nuestra plataforma.'
     }
   ]
 })
@@ -298,7 +298,7 @@ useHead({
 // DATOS
 // ============================================================================
 
-const lastUpdated = ref('15 de Setiembre de 2025')
+const lastUpdated = ref('14 de septiembre de 2026')
 
 // ============================================================================
 // METHODS

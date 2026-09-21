@@ -19,7 +19,7 @@
         <h3 class="text-xl font-bold text-white mb-1">
           {{ ponente.nombre }}
         </h3>
-        <p class="text-green-400 font-medium">
+        <p class="text-primary-400 font-medium">
           {{ ponente.empresa }}
         </p>
       </div>
@@ -35,7 +35,7 @@
           <span 
             v-for="especialidad in ponente.especialidades" 
             :key="especialidad"
-            class="px-2 py-1 bg-green-400/10 text-green-400 text-xs rounded-full border border-green-400/20"
+            class="px-2 py-1 bg-primary-400/10 text-primary-400 text-xs rounded-full border border-primary-400/20"
           >
             {{ especialidad }}
           </span>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Efecto de hover -->
-    <div class="absolute inset-0 bg-gradient-to-t from-green-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+    <div class="absolute inset-0 bg-gradient-to-t from-primary-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
   </div>
 </template>
 
@@ -79,7 +79,7 @@ const props = defineProps<Props>()
 <style scoped>
 /* Efectos adicionales para la card */
 .group:hover {
-  box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 217, 232, 0.1);
 }
 
 /* Animación para las especialidades */

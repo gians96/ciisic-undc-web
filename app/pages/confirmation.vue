@@ -91,7 +91,7 @@
 
                         <p class="confirmation-message">
                             Hola <strong>{{ inscription.usuario.nombres }} {{ inscription.usuario.apellidos }}</strong>, 
-                            tu inscripción al <strong>VII CIISIC</strong> ha sido registrada exitosamente.
+                            tu inscripción al <strong>VIII CIISIC</strong> ha sido registrada exitosamente.
                         </p>
                     </div>
 
@@ -214,9 +214,9 @@
 // SEO Y META TAGS
 // ===========================================================================
 useHead({
-    title: 'Confirmación | VII CIISIC',
+    title: 'Confirmación | VIII CIISIC',
     meta: [
-        { name: 'description', content: 'Confirmación de inscripción exitosa al VII CIISIC de la UNDC.' }
+        { name: 'description', content: 'Confirmación de inscripción exitosa al VIII CIISIC de la UNDC.' }
     ]
 })
 
@@ -241,7 +241,6 @@ const loadInscription = async () => {
     // Primero intentar cargar desde el store (datos recién creados)
     if (inscriptionStore.hasInscription) {
         inscription.value = inscriptionStore.currentInscription
-        console.log('✅ Inscripción cargada desde el store:', inscription.value)
         return
     }
 
@@ -344,7 +343,6 @@ const getErrorContent = (errorType: string) => {
 
 const downloadPDF = () => {
     // TODO: Implementar descarga de PDF
-    console.log('Descargando comprobante PDF...')
 }
 
 // ===========================================================================
@@ -660,7 +658,7 @@ onMounted(() => {
 .btn-primary {
     display: inline-flex;
     align-items: center;
-    background-color: #45f882;
+    background-color: #00d9e8;
     color: #000000;
     font-weight: 600;
     padding: 0.75rem 1.5rem;
@@ -672,7 +670,7 @@ onMounted(() => {
 }
 
 .btn-primary:hover {
-    background-color: #34d399;
+    background-color: #38e8f2;
     transform: translateY(-1px);
 }
 

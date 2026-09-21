@@ -44,12 +44,15 @@
                 class="text-white font-bold text-5xl sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl leading-tight"
               >
                 <span
-                  class="text-transparent bg-clip-text bg-gradient-to-br from-green-400 to-emerald-300"
-                  >VII</span
+                  class="text-transparent bg-clip-text bg-gradient-to-br from-primary-400 to-blue-400"
+                  >VIII</span
                 >
                 Congreso Internacional de Ingeniería de Sistemas e Investigación
                 Científica.
               </h1>
+              <p class="text-xl font-semibold text-primary-300 sm:text-2xl">
+                26 al 30 de octubre de 2026 · San Vicente de Cañete
+              </p>
               <div class="py-6 sm:py-4 lg:pt-8">
                 <Countdown />
               </div>
@@ -59,7 +62,7 @@
             <div class="pb-8 lg:pb-12">
               <NuxtLink
                 to="/planes"
-                class="inline-block bg-green-500 hover:bg-green-400 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                class="inline-block bg-primary-500 hover:bg-primary-400 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 style="
                   clip-path: polygon(
                     0 0,
@@ -80,7 +83,7 @@
               class="flex w-full h-full items-center relative min-h-[400px] lg:min-h-[500px]"
             >
               <div
-                class="absolute z-0 top-1/2 -translate-y-1/2 w-5/6 right-0 h-4/5 bg-gradient-to-tr opacity-25 from-green-500 to-emerald-300 blur-2xl"
+                class="absolute z-0 top-1/2 -translate-y-1/2 w-5/6 right-0 h-4/5 bg-gradient-to-tr opacity-25 from-primary-500 to-blue-400 blur-2xl"
               ></div>
               <div
                 class="absolute w-3/5 h-4/5 z-10 p-1 -translate-y-1/2 top-1/2 -right-3 rounded-3xl bg-white shadow-2xl border"
@@ -114,9 +117,9 @@
 
     <!-- Elementos decorativos flotantes mejorados -->
     <div class="absolute inset-0 pointer-events-none">
-      <!-- Partículas flotantes verdes y doradas (responsive) -->
+      <!-- Partículas flotantes cian y doradas (responsive) -->
       <div
-        class="absolute top-1/4 left-1/4 w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-ping"
+        class="absolute top-1/4 left-1/4 w-1 h-1 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-ping"
         style="animation-delay: 0s"
       ></div>
       <div
@@ -124,7 +127,7 @@
         style="animation-delay: 1s"
       ></div>
       <div
-        class="absolute bottom-1/4 left-1/3 w-1 h-1 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-ping"
+        class="absolute bottom-1/4 left-1/3 w-1 h-1 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-ping"
         style="animation-delay: 2s"
       ></div>
       <div
@@ -134,10 +137,10 @@
 
       <!-- Líneas decorativas (responsive) -->
       <div
-        class="absolute top-1/2 left-0 w-16 sm:w-32 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent"
+        class="absolute top-1/2 left-0 w-16 sm:w-32 h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"
       ></div>
       <div
-        class="absolute top-1/3 right-0 w-16 sm:w-32 h-px bg-gradient-to-l from-transparent via-green-500/50 to-transparent"
+        class="absolute top-1/3 right-0 w-16 sm:w-32 h-px bg-gradient-to-l from-transparent via-primary-500/50 to-transparent"
       ></div>
     </div>
   </section>
@@ -189,11 +192,11 @@ const props = withDefaults(defineProps<HeroProps>(), {
 @keyframes glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 20px rgba(0, 217, 232, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 40px rgba(0, 217, 232, 0.6);
   }
 }
 
@@ -201,7 +204,7 @@ const props = withDefaults(defineProps<HeroProps>(), {
 section {
   background: radial-gradient(
       circle at 20% 80%,
-      rgba(34, 197, 94, 0.1) 0%,
+      rgba(0, 217, 232, 0.1) 0%,
       transparent 50%
     ),
     radial-gradient(
@@ -214,21 +217,21 @@ section {
 
 /* Efectos especiales para el título */
 h1 {
-  text-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.2),
-    0 0 60px rgba(34, 197, 94, 0.1);
+  text-shadow: 0 0 20px rgba(0, 217, 232, 0.3), 0 0 40px rgba(0, 217, 232, 0.2),
+    0 0 60px rgba(0, 217, 232, 0.1);
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.8));
 }
 
 /* Efectos del botón de registro */
-.bg-green-500 {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4),
+.bg-primary-500 {
+  background: linear-gradient(135deg, #00d9e8 0%, #075bcb 100%);
+  box-shadow: 0 4px 20px rgba(0, 217, 232, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Hover effects mejorados */
 a:hover {
-  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4) !important;
+  box-shadow: 0 10px 30px rgba(0, 217, 232, 0.4) !important;
   transform: scale(1.05) !important;
 }
 
@@ -244,7 +247,7 @@ a:hover {
   animation: float-slow 8s ease-in-out infinite;
 }
 
-.bg-green-500.rounded-full {
+.bg-primary-500.rounded-full {
   animation: float-slow 6s ease-in-out infinite reverse;
 }
 
@@ -319,7 +322,7 @@ section {
 
 /* Focus states para accesibilidad */
 a:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 4px;
 }
 

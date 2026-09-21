@@ -39,10 +39,10 @@
               <NuxtLink to="/" @click="closeMenu" class="flex items-center space-x-3">
                 <NuxtImg
                   src="/images/logo/preloader.png"
-                  alt="VII CIISIC Logo"
+                  alt="VIII CIISIC Logo"
                   class="w-8 h-8 object-contain"
                 />
-                <span class="text-white font-bold text-xl tracking-wider">VII CIISIC</span>
+                <span class="text-white font-bold text-xl tracking-wider">VIII CIISIC</span>
               </NuxtLink>
 
               <!-- Close Button -->
@@ -82,7 +82,7 @@
               <NuxtLink
                 to="/planes"
                 @click="closeMenu"
-                class="w-full bg-green-500 hover:bg-green-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+                class="w-full bg-primary-500 hover:bg-primary-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
               >
                 INSCRIPCIONES
               </NuxtLink>
@@ -250,9 +250,9 @@ watch(isOpen, (newValue) => {
 }
 
 .mobile-nav-link.active {
-  color: #45f882;
-  background-color: rgba(69, 248, 130, 0.1);
-  border-left: 2px solid #45f882;
+  color: #00d9e8;
+  background-color: rgba(0, 217, 232, 0.1);
+  border-left: 2px solid #00d9e8;
 }
 
 .mobile-submenu-link {
@@ -272,8 +272,8 @@ watch(isOpen, (newValue) => {
 }
 
 .mobile-submenu-link.active {
-  color: #45f882;
-  background-color: rgba(69, 248, 130, 0.1);
+  color: #00d9e8;
+  background-color: rgba(0, 217, 232, 0.1);
 }
 
 /* Transitions */
@@ -343,7 +343,7 @@ watch(isOpen, (newValue) => {
   
   .mobile-nav-link.active,
   .mobile-submenu-link.active {
-    background-color: #45f882;
+    background-color: #00d9e8;
     color: #000000;
   }
 }
@@ -352,7 +352,7 @@ watch(isOpen, (newValue) => {
 .mobile-nav-link:focus,
 .mobile-submenu-link:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #45f882, 0 0 0 4px rgb(55 65 81);
+  box-shadow: 0 0 0 2px #00d9e8, 0 0 0 4px rgb(55 65 81);
 }
 
 /* Dark Mode Enhancements */

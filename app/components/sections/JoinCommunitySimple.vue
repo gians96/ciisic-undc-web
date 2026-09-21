@@ -5,7 +5,7 @@
         
         <!-- Lado Izquierdo - Imagen -->
         <div class="relative">
-          <div class="relative aspect-video bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-green-500/20 rounded-2xl overflow-hidden">
+          <div class="relative aspect-video bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-primary-500/20 rounded-2xl overflow-hidden">
             <div class="absolute inset-0 flex items-center justify-center">
               <div class="text-8xl">🤝</div>
             </div>
@@ -24,7 +24,7 @@
         <div class="space-y-8">
           <div class="space-y-4">
             <h2 class="text-4xl lg:text-5xl font-bold text-white leading-tight">
-              JOIN THE <span class="text-green-500">COMMUNITY</span>
+              JOIN THE <span class="text-primary-500">COMMUNITY</span>
             </h2>
             <p class="text-lg text-gray-400">
               Join our Discord community and choose onsteur
@@ -34,7 +34,7 @@
           <!-- Estadísticas -->
           <div class="grid grid-cols-3 gap-6">
             <div class="text-center">
-              <div class="text-3xl font-bold text-green-500 mb-2">5K+</div>
+              <div class="text-3xl font-bold text-primary-500 mb-2">5K+</div>
               <div class="text-sm text-gray-400 uppercase tracking-wider">Members</div>
             </div>
             <div class="text-center">
@@ -51,7 +51,7 @@
           <div class="pt-4">
             <button 
               @click="joinDiscord"
-              class="inline-flex items-center bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 text-lg uppercase tracking-wider transition-all duration-300"
+              class="inline-flex items-center bg-primary-500 hover:bg-primary-400 text-black font-bold px-8 py-4 text-lg uppercase tracking-wider transition-all duration-300"
               style="clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%)"
             >
               <Icon name="simple-icons:discord" class="w-6 h-6 mr-3" />
@@ -78,13 +78,13 @@ const joinDiscord = () => {
 <style scoped>
 section {
   background: 
-    radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 25% 25%, rgba(0, 217, 232, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
     linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
 
 button:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 </style>

@@ -3,8 +3,8 @@
     <!-- Background decorativo -->
     <div class="absolute inset-0">
       <!-- Línea verde angular -->
-      <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-green-500 to-transparent transform -skew-y-2 opacity-20"></div>
-      <div class="absolute bottom-0 right-0 w-full h-32 bg-gradient-to-l from-green-500 to-transparent transform skew-y-2 opacity-20"></div>
+      <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary-500 to-transparent transform -skew-y-2 opacity-20"></div>
+      <div class="absolute bottom-0 right-0 w-full h-32 bg-gradient-to-l from-primary-500 to-transparent transform skew-y-2 opacity-20"></div>
     </div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
@@ -12,7 +12,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         
         <!-- Wolf Gaming Art -->
-        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 hover:transform hover:scale-105">
+        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300 hover:transform hover:scale-105">
           <!-- Imagen de la carta -->
           <div class="relative mb-6">
             <div class="aspect-square bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-6xl">
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Forest Princess -->
-        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 hover:transform hover:scale-105">
+        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300 hover:transform hover:scale-105">
           <!-- Imagen de la carta -->
           <div class="relative mb-6">
             <div class="aspect-square bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-6xl">
@@ -92,14 +92,14 @@
         </div>
 
         <!-- Girl Firefly Art -->
-        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 hover:transform hover:scale-105">
+        <div class="gaming-card bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-primary-500/50 transition-all duration-300 hover:transform hover:scale-105">
           <!-- Imagen de la carta -->
           <div class="relative mb-6">
-            <div class="aspect-square bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-6xl">
+            <div class="aspect-square bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center text-6xl">
               🧚‍♀️
             </div>
             <!-- Badge de categoría -->
-            <div class="absolute -top-2 -right-2 bg-green-500 text-black px-3 py-1 rounded-lg text-xs font-bold">
+            <div class="absolute -top-2 -right-2 bg-primary-500 text-black px-3 py-1 rounded-lg text-xs font-bold">
               ART
             </div>
           </div>
@@ -110,7 +110,7 @@
             
             <!-- Creator info -->
             <div class="flex items-center space-x-3">
-              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
                 <span class="text-black font-bold text-sm">A</span>
               </div>
               <div>
@@ -209,7 +209,7 @@ const handleBid = (cardId: string) => {
 }
 
 .gaming-card:hover {
-  box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 217, 232, 0.1);
 }
 
 /* Efectos de hover para las cartas */
@@ -269,7 +269,7 @@ const handleBid = (cardId: string) => {
 
 /* Focus states */
 button:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }
 </style>
