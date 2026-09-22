@@ -83,7 +83,7 @@ interface GalleryPhoto {
 // Para cargar las fotografías, colócalas en public/images/memorias-2025/
 // y reemplaza null por una ruta como: '/images/memorias-2025/foto-01.webp'.
 const previousCongressPhotos: GalleryPhoto[] = [
-  { id: 1, title: 'Ceremonia de inauguración', category: 'Apertura', image: '/images/memorias-2025/1.webp', alt: 'Ceremonia de inauguración del VII CIISIC 2025' },
+  { id: 1, title: 'Pasacalle Sistémico', category: 'Apertura', image: '/images/memorias-2025/1.webp', alt: 'Ceremonia de inauguración del VII CIISIC 2025' },
   { id: 2, title: 'Ponencias internacionales', category: 'Conocimiento', image: '/images/memorias-2025/2.webp', alt: 'Ponencia internacional durante el VII CIISIC 2025' },
   { id: 3, title: 'Comunidad universitaria', category: 'Comunidad', image: '/images/memorias-2025/3.webp', alt: 'Participantes reunidos durante el VII CIISIC 2025' },
   { id: 4, title: 'Encuentro de investigadores', category: 'Investigación', image: '/images/memorias-2025/4.webp', alt: 'Investigadores participantes del VII CIISIC 2025' },
