@@ -1,6 +1,6 @@
 <template>
   <div class="landing">
-    <section class="hero relative overflow-hidden">
+    <section class="hero relative overflow-hidden lg:pt-10 md:pt-10">
       <div class="grid-pattern absolute inset-0" aria-hidden="true" />
       <div class="hero-content relative mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-12 lg:grid-cols-2 lg:gap-x-10 lg:gap-y-12 lg:px-8 lg:py-16">
         <div class="min-w-0 text-center lg:text-left">
