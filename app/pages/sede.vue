@@ -125,7 +125,7 @@
               </div>
               <div class="space-y-2">
                 <p class="text-gray-300">Email: congreso@undc.edu.pe</p>
-                <p class="text-gray-300">Teléfono: 949026908</p>
+                <p class="text-gray-300">Teléfono: 933030027</p>
               </div>
             </div>
           </div>
