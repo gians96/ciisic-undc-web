@@ -1,12 +1,13 @@
 <template>
   <div class="landing">
-    <section class="hero relative overflow-hidden lg:pt-10 md:pt-10">
+    <section class="hero relative overflow-hidden">
       <div class="grid-pattern absolute inset-0" aria-hidden="true" />
       <div class="hero-content relative mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-12 lg:grid-cols-2 lg:gap-x-10 lg:gap-y-12 lg:px-8 lg:py-16">
         <div class="min-w-0 text-center lg:text-left">
           <p class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"><span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span>Universidad Nacional de Cañete · 2026</span></p>
           <h1 class="hero-title font-extrabold tracking-tight text-white">Las ideas que <span class="text-primary-400">conectan</span> el futuro.</h1>
           <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0">VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica. Cinco días para compartir conocimiento, descubrir perspectivas y crear conexiones en Cañete.</p>
+          <EventCountdown class="mx-auto mt-7 lg:mx-0" />
           <div class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start">
             <NuxtLink to="/planes" class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold">Inscríbete ahora <Icon name="heroicons:arrow-up-right" class="h-5 w-5 shrink-0" /></NuxtLink>
             <NuxtLink to="/about" class="action-secondary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-semibold">Conoce el congreso <Icon name="heroicons:arrow-right" class="h-5 w-5 shrink-0" /></NuxtLink>
@@ -82,6 +83,7 @@
 
 <script setup lang="ts">
 import PreviousCongressCarousel from './PreviousCongressCarousel.vue'
+import EventCountdown from '../countdown/Countdown.vue'
 
 const previousCongressImage = '/images/congreso-anterior.webp'
 

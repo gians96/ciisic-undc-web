@@ -9,8 +9,8 @@
           Especialistas nacionales e internacionales compartirán su experiencia en ingeniería, investigación, inteligencia artificial, ciberseguridad y transformación digital.
         </p>
         <div class="mt-8 flex flex-wrap justify-center gap-3 text-sm">
-          <span class="summary-chip"><Icon name="heroicons:user-group" class="h-5 w-5 text-primary-400" />5 ponentes</span>
-          <span class="summary-chip"><Icon name="heroicons:globe-americas" class="h-5 w-5 text-primary-400" />3 países</span>
+          <span class="summary-chip"><Icon name="heroicons:user-group" class="h-5 w-5 text-primary-400" />7 ponentes</span>
+          <span class="summary-chip"><Icon name="heroicons:globe-americas" class="h-5 w-5 text-primary-400" />4 países</span>
           <span class="summary-chip"><Icon name="heroicons:academic-cap" class="h-5 w-5 text-primary-400" />Perfil académico y profesional</span>
         </div>
       </div>
@@ -126,13 +126,33 @@ const speakers: Speaker[] = [
     summary: 'Profesor investigador dedicado a inteligencia artificial, aprendizaje automático, minería de datos y procesamiento de lenguaje natural.',
     areas: ['Inteligencia artificial', 'Minería de datos', 'Lenguaje natural'],
   },
+  {
+    name: 'Jorge Risco Becerra',
+    degreeLevel: 'Doctor',
+    degree: 'Doctor por la Escuela Politécnica de la Universidad de São Paulo',
+    country: 'Brasil',
+    flag: '🇧🇷',
+    image: '/images/ponentes/2026/jorge-risco-enhanced.webp',
+    summary: 'Profesor de la Universidad de São Paulo y coordinador del Grupo de Arquitectura de Software, con experiencia en ingeniería de software, procesos productivos e Industria 4.0.',
+    areas: ['Arquitectura de software', 'Industria 4.0', 'Ingeniería de software'],
+  },
+  {
+    name: 'Javier Gamboa Cruzado',
+    degreeLevel: 'Doctor',
+    degree: 'Doctor en Ingeniería de Sistemas y Doctor en Administración',
+    country: 'Perú',
+    flag: '🇵🇪',
+    image: '/images/ponentes/2026/javier-gamboa-enhanced.webp',
+    summary: 'Docente universitario, consultor e investigador especializado en inteligencia de negocios, minería de datos, Big Data, Six Sigma y asesoría de tesis.',
+    areas: ['Business Intelligence', 'Data Mining', 'Big Data'],
+  },
 ]
 
 useSeoMeta({
   title: 'Ponentes | VIII CIISIC 2026',
   description: 'Conoce a los ponentes nacionales e internacionales invitados al VIII CIISIC 2026 de la Universidad Nacional de Cañete.',
   ogTitle: 'Ponentes | VIII CIISIC 2026',
-  ogDescription: 'Especialistas de Perú, Colombia y Chile participarán en el VIII CIISIC 2026.',
+  ogDescription: 'Especialistas de Perú, Colombia, Chile y Brasil participarán en el VIII CIISIC 2026.',
 })
 </script>
 
@@ -143,5 +163,7 @@ useSeoMeta({
 .speaker-card { background: linear-gradient(155deg, #0a3157e6, #062541f2); box-shadow: 0 24px 70px #020f203d; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .speaker-card:hover { transform: translateY(-5px); border-color: #22d3ee66; box-shadow: 0 30px 80px #020f2066; }
 .photo-shade { z-index: 11; pointer-events: none; background: linear-gradient(to top, #041d3966, transparent 32%); }
+@media (min-width: 768px) and (max-width: 1279px) { .speaker-card:last-child:nth-child(odd) { width: calc(50% - .75rem); grid-column: 1 / -1; justify-self: center; } }
+@media (min-width: 1280px) { .speaker-card:last-child:nth-child(3n + 1) { grid-column-start: 2; } }
 @media (prefers-reduced-motion: reduce) { .speaker-card, .speaker-photo img { transition: none; }.speaker-card:hover { transform: none; } }
 </style>
