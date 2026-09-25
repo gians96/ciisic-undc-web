@@ -167,39 +167,22 @@
                                         <div class="relative flex items-center group">
                                             <span>Banco BCP</span>
                                             <div class="tooltip">
-                                                <div>- N° Cuenta: 255-10957977-0-98</div>
-                                                <div>- CCI: 002-25511095797709881</div>
-                                                <div>(Josemaria Caballa Garay)</div>
-                                                <div class="tooltip-arrow"></div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                    <label for="bancoInterbank" class="radio-label">
-                                        <input id="bancoInterbank" v-model="bancoSeleccionado" type="radio"
-                                            value="interbank" @change="modalidadDeposito = 'banco'" class="sr-only">
-                                        <div class="radio-custom-indicator"
-                                            :class="{ 'selected': bancoSeleccionado === 'interbank' }">
-                                            <div v-if="bancoSeleccionado === 'interbank'" class="radio-dot"></div>
-                                        </div>
-                                        <div class="relative flex items-center group">
-                                            <span>Banco Interbank</span>
-                                            <div class="tooltip">
-                                                <div>- N° Cuenta: 898 3483201070</div>
-                                                <div>- CCI: 003-898-01348320107043</div>
-                                                <div>(Josemaria Caballa Garay)</div>
+                                                <div>N° Cuenta: {{ PAYMENT_DETAILS.bcp.account }}</div>
+                                                <div>CCI: {{ PAYMENT_DETAILS.bcp.cci }}</div>
+                                                <div>{{ PAYMENT_DETAILS.holder }}</div>
                                                 <div class="tooltip-arrow"></div>
                                             </div>
                                         </div>
                                     </label>
                                     <label for="billeteraDigital" class="radio-label">
                                         <input id="billeteraDigital" v-model="modalidadDeposito" type="radio"
-                                            value="billetera" @change="bancoSeleccionado = null" class="sr-only">
+                                            value="billetera" class="sr-only">
                                         <div class="radio-custom-indicator"
                                             :class="{ 'selected': modalidadDeposito === 'billetera' }">
                                             <div v-if="modalidadDeposito === 'billetera'" class="radio-dot"></div>
                                         </div>
                                         <div class="relative flex items-center group">
-                                            <span>Billetera Digital</span>
+                                            <span>Yape</span>
                                         </div>
                                     </label>
                                 </div>
@@ -241,38 +224,47 @@
                                             </div>
                                         </label>
                                     </div>
-                                    <small class="form-hint">Selecciona el tipo de pago</small>
+                                    <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900/45 p-4">
+                                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                            {{ tipoPago === 'interbancario' ? 'CCI BCP' : 'Cuenta BCP Soles' }}
+                                        </p>
+                                        <div class="mt-1 flex items-center justify-between gap-3">
+                                            <span class="break-all font-mono text-sm font-semibold text-white">
+                                                {{ tipoPago === 'interbancario' ? PAYMENT_DETAILS.bcp.cci : PAYMENT_DETAILS.bcp.account }}
+                                            </span>
+                                            <button type="button"
+                                                :aria-label="tipoPago === 'interbancario' ? 'Copiar CCI' : 'Copiar número de cuenta'"
+                                                class="shrink-0 rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
+                                                @click="tipoPago === 'interbancario' ? copiarCCI() : copiarNumeroCuenta()">
+                                                <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                        <p class="mt-2 text-xs text-slate-400">Titular: {{ PAYMENT_DETAILS.holder }}</p>
+                                    </div>
+                                    <small class="form-hint">Elige cuenta BCP o CCI según el banco de origen</small>
                                 </div>
                                 <div v-else-if="modalidadDeposito === 'billetera'" class="form-group mt-4">
-                                    <label class="form-label">Aplicativo</label>
-                                    <div class="radio-group-with-qr">
-                                        <div class="radio-group-horizontal">
-                                            <label for="yape" class="radio-label">
-                                                <input id="yape" v-model="aplicativo" type="radio" value="yape"
-                                                    class="sr-only">
-                                                <div class="radio-custom-indicator"
-                                                    :class="{ 'selected': aplicativo === 'yape' }">
-                                                    <div v-if="aplicativo === 'yape'" class="radio-dot"></div>
-                                                </div>
-                                                <span>Yape</span>
-                                            </label>
-                                            <label for="plin" class="radio-label">
-                                                <input id="plin" v-model="aplicativo" type="radio" value="plin"
-                                                    class="sr-only">
-                                                <div class="radio-custom-indicator"
-                                                    :class="{ 'selected': aplicativo === 'plin' }">
-                                                    <div v-if="aplicativo === 'plin'" class="radio-dot"></div>
-                                                </div>
-                                                <span>Plin</span>
-                                            </label>
+                                    <label class="form-label">Datos de Yape</label>
+                                    <div class="rounded-xl border border-slate-700 bg-slate-900/45 p-4">
+                                        <div class="flex items-center justify-between gap-4">
+                                            <div>
+                                                <p class="font-mono text-lg font-bold text-white">{{ PAYMENT_DETAILS.yape.phone }}</p>
+                                                <p class="mt-1 text-xs text-slate-400">{{ PAYMENT_DETAILS.holder }}</p>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" aria-label="Copiar número de Yape"
+                                                    class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
+                                                    @click="copiarYape">
+                                                    <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
+                                                </button>
+                                                <button type="button" @click="showQrModal = true" class="qr-button-inline"
+                                                    aria-label="Mostrar código QR de Yape">
+                                                    <Icon name="heroicons:qr-code" class="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
-
-                                        <!-- Botón QR al lado de los radio buttons -->
-                                        <button type="button" @click="showQrModal = true" class="qr-button-inline">
-                                            <Icon name="heroicons:qr-code" class="h-4 w-4" />
-                                        </button>
                                     </div>
-                                    <small class="form-hint">Selecciona el aplicativo</small>
+                                    <small class="form-hint">Yapea al número o abre el código QR</small>
                                 </div>
                             </Transition>
                         </div>
@@ -331,32 +323,33 @@
                     <div class="qr-modal-header">
                         <h3 class="qr-modal-title">
                             <Icon name="heroicons:qr-code" class="h-6 w-6 mr-2" />
-                            Código QR para Billetera Digital
+                            Código QR de Yape
                         </h3>
-                        <button @click="showQrModal = false" class="qr-modal-close">
+                        <button type="button" aria-label="Cerrar código QR" @click="showQrModal = false"
+                            class="qr-modal-close">
                             <Icon name="heroicons:x-mark" class="h-6 w-6" />
                         </button>
                     </div>
 
                     <div class="qr-modal-content">
                         <div class="qr-modal-image-container">
-                            <img src="/images/qr/plin.webp" alt="Código QR para billetera digital"
+                            <img :src="PAYMENT_DETAILS.yape.qrImage" alt="Código QR de Yape de Jhon Ismael Santiago Rojas"
                                 class="qr-modal-image">
                         </div>
 
                         <div class="qr-modal-info">
                             <p class="qr-modal-name">
-                                <strong>Nombre:</strong> Josemaria Caballa Garay
+                                <strong>Yape:</strong> {{ PAYMENT_DETAILS.yape.phone }}<br>
+                                <strong>Titular:</strong> {{ PAYMENT_DETAILS.holder }}
                             </p>
                             <p class="qr-modal-instructions">
-                                Escanea el código QR con tu aplicación Yape o Plin
-                                para realizar el pago de forma rápida y segura.
+                                Escanea el código con Yape y verifica el nombre del titular antes de confirmar el pago.
                             </p>
                         </div>
                     </div>
 
                     <div class="qr-modal-footer">
-                        <button @click="showQrModal = false" class="qr-modal-button">
+                        <button type="button" @click="showQrModal = false" class="qr-modal-button">
                             Cerrar
                         </button>
                     </div>
@@ -367,6 +360,8 @@
 </template>
 
 <script setup lang="ts">
+import { PAYMENT_DETAILS } from '~/config/payment'
+
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
@@ -494,9 +489,9 @@ const clasificacion = ref<string>('')
 const tipoInscripcion = ref<string>('')
 const planId = ref<number | null>(null) // Sin plan preseleccionado
 const modalidadDeposito = ref<'banco' | 'billetera'>('banco')
-const bancoSeleccionado = ref<'bcp' | 'interbank' | null>('bcp')
-const tipoPago = ref<'directo' | 'interbancario' | null>(null)
-const aplicativo = ref<'yape' | 'plin' | null>(null)
+const bancoSeleccionado = ref<'bcp' | null>('bcp')
+const tipoPago = ref<'directo' | 'interbancario' | null>('directo')
+const aplicativo = ref<'yape' | null>(null)
 const fechaPago = ref<string>('')
 const codigoVoucher = ref<string>('')
 const archivoVoucher = ref<File | null>(null)
@@ -520,8 +515,9 @@ watch(planId, () => {
 
 watch(modalidadDeposito, (newVal, oldVal) => {
     if (newVal !== oldVal) {
-        tipoPago.value = null
-        aplicativo.value = null
+        bancoSeleccionado.value = newVal === 'banco' ? 'bcp' : null
+        tipoPago.value = newVal === 'banco' ? 'directo' : null
+        aplicativo.value = newVal === 'billetera' ? 'yape' : null
     }
 })
 
@@ -601,14 +597,7 @@ const showSuccess = (message: string) => {
 
 const copiarNumeroCuenta = async () => {
     try {
-        let numeroCuenta = ''
-
-        if (bancoSeleccionado.value === 'bcp') {
-            numeroCuenta = '255-10957977-0-98'
-        } else if (bancoSeleccionado.value === 'interbank') {
-            numeroCuenta = '898 3483201070'
-        }
-
+        const numeroCuenta = PAYMENT_DETAILS.bcp.account
         await navigator.clipboard.writeText(numeroCuenta)
         showSuccess(`✅ Número de cuenta copiado al portapapeles: ${numeroCuenta}`)
     } catch (error) {
@@ -618,16 +607,18 @@ const copiarNumeroCuenta = async () => {
 
 const copiarCCI = async () => {
     try {
-        let cci = ''
-
-        if (bancoSeleccionado.value === 'bcp') {
-            cci = '002-25511095797709881'
-        } else if (bancoSeleccionado.value === 'interbank') {
-            cci = '003-898-01348320107043'
-        }
-
+        const cci = PAYMENT_DETAILS.bcp.cci
         await navigator.clipboard.writeText(cci)
         showSuccess(`✅ CCI copiado al portapapeles: ${cci}`)
+    } catch (error) {
+        showError('❌ Error al copiar al portapapeles')
+    }
+}
+
+const copiarYape = async () => {
+    try {
+        await navigator.clipboard.writeText(PAYMENT_DETAILS.yape.phone)
+        showSuccess(`✅ Número de Yape copiado al portapapeles: ${PAYMENT_DETAILS.yape.phone}`)
     } catch (error) {
         showError('❌ Error al copiar al portapapeles')
     }
@@ -2098,7 +2089,7 @@ input[type="date"]:valid {
 .qr-modal-image {
     width: 100%;
     height: auto;
-    max-width: 200px;
+    max-width: 300px;
     aspect-ratio: 1;
     object-fit: contain;
 }
@@ -2168,7 +2159,7 @@ input[type="date"]:valid {
     }
 
     .qr-modal-image {
-        max-width: 200px;
+        max-width: 260px;
     }
 
     .qr-button {
