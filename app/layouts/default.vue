@@ -20,10 +20,11 @@
           </div>
 
           <!-- Navegación Principal (Desktop) -->
-          <nav class="hidden lg:flex items-center gap-6" aria-label="Navegación principal">
+          <nav class="hidden lg:flex items-center gap-3 xl:gap-6" aria-label="Navegación principal">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Congreso</NuxtLink>
             <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
+            <NuxtLink to="/papers" class="nav-link">Call for Papers</NuxtLink>
             <NuxtLink to="/ponentes" class="nav-link">Ponentes</NuxtLink>
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
           </nav>
@@ -147,6 +148,7 @@ useHead({
 
 /* Navegación principal */
 .nav-link {
+  white-space: nowrap;
   color: #cbd5e1;
   font-weight: 600;
   letter-spacing: 0.01em;
