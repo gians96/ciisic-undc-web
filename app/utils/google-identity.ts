@@ -35,12 +35,13 @@ export interface ClienteGoogleIdentity {
   cargar(): Promise<GoogleAccountsId>
   /**
    * Inicializa GIS (una vez por client ID), deja a `alRecibirCredencial` como receptor y dibuja el
-   * botón en el contenedor. Devuelve `false` si `senal` se abortó mientras cargaba el script.
+   * botón en el contenedor con el ancho indicado (por defecto, el del contenedor). Devuelve el
+   * ancho con que se dibujó o `null` si `senal` se abortó mientras cargaba el script.
    */
   renderizarBoton(
     contenedor: HTMLElement,
-    opciones: { clientId: string, alRecibirCredencial: ReceptorCredencial, senal?: AbortSignal },
-  ): Promise<boolean>
+    opciones: { clientId: string, alRecibirCredencial: ReceptorCredencial, senal?: AbortSignal, anchoContenedor?: number },
+  ): Promise<number | null>
   /** Suelta el receptor (si sigue siendo el indicado) y cancela el flujo de Google en curso. */
   liberar(alRecibirCredencial: ReceptorCredencial | null): void
 }
@@ -100,9 +101,9 @@ export function crearClienteGoogleIdentity(entorno: EntornoGoogleIdentity): Clie
     return carga
   }
 
-  const renderizarBoton: ClienteGoogleIdentity['renderizarBoton'] = async (contenedor, { clientId, alRecibirCredencial, senal }) => {
+  const renderizarBoton: ClienteGoogleIdentity['renderizarBoton'] = async (contenedor, { clientId, alRecibirCredencial, senal, anchoContenedor }) => {
     const id = await cargar()
-    if (senal?.aborted) return false
+    if (senal?.aborted) return null
     if (clientIdInicializado !== clientId) {
       id.initialize({
         client_id: clientId,
@@ -117,9 +118,10 @@ export function crearClienteGoogleIdentity(entorno: EntornoGoogleIdentity): Clie
       clientIdInicializado = clientId
     }
     receptor = alRecibirCredencial
+    const opciones = opcionesBotonGoogle(anchoContenedor ?? contenedor.clientWidth)
     contenedor.replaceChildren()
-    id.renderButton(contenedor, opcionesBotonGoogle(contenedor.clientWidth))
-    return true
+    id.renderButton(contenedor, opciones)
+    return opciones.width ?? null
   }
 
   const liberar = (alRecibirCredencial: ReceptorCredencial | null) => {

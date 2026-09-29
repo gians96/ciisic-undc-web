@@ -243,7 +243,8 @@ describe('cliente de Google Identity Services', () => {
 
     const primero = cliente.renderizarBoton(div, { clientId: 'cliente-a', alRecibirCredencial: vi.fn() })
     terminarCarga()
-    await expect(primero).resolves.toBe(true)
+    // Devuelve el ancho con que se dibujó (el del contenedor)
+    await expect(primero).resolves.toBe(320)
     await cliente.renderizarBoton(div, { clientId: 'cliente-a', alRecibirCredencial: vi.fn() })
 
     expect(id.initialize).toHaveBeenCalledTimes(1)
@@ -263,6 +264,15 @@ describe('cliente de Google Identity Services', () => {
     await cliente.renderizarBoton(div, { clientId: 'cliente-b', alRecibirCredencial: vi.fn() })
     expect(id.initialize).toHaveBeenCalledTimes(2)
     expect(id).not.toHaveProperty('prompt')
+  })
+
+  it('usa el ancho indicado por quien ya midió el contenedor', async () => {
+    const { entorno, id, terminarCarga } = entornoSimulado()
+    terminarCarga()
+    const ancho = await crearClienteGoogleIdentity(entorno)
+      .renderizarBoton(contenedor(0), { clientId: 'cliente-a', alRecibirCredencial: vi.fn(), anchoContenedor: 612 })
+    expect(ancho).toBe(400)
+    expect(id.renderButton.mock.calls[0]![1]).toMatchObject({ width: 400 })
   })
 
   it('el callback entrega la credencial al receptor vigente (reemplazable)', async () => {
@@ -308,7 +318,7 @@ describe('cliente de Google Identity Services', () => {
 
     controlador.abort()
     terminarCarga()
-    await expect(pendiente).resolves.toBe(false)
+    await expect(pendiente).resolves.toBeNull()
     expect(id.initialize).not.toHaveBeenCalled()
     expect(id.renderButton).not.toHaveBeenCalled()
   })
