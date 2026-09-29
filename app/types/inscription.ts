@@ -1,5 +1,5 @@
 // ============================================================================
-// INSCRIPCIÓN — POST /api/v1/public/events/:codigo/inscriptions
+// INSCRIPCIÓN — BFF POST /api/publico/inscripciones → backend POST /api/v1/site/inscriptions
 // Contrato: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md
 // ============================================================================
 

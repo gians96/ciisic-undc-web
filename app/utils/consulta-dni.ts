@@ -1,5 +1,6 @@
 // ============================================================================
-// CONSULTA DE DNI (GET /api/v1/public/document-lookup/dni/:numero) — funciones puras
+// CONSULTA DE DNI (BFF /api/publico/consulta-dni/:numero → backend /api/v1/site/document-lookup/dni/:numero)
+// Funciones puras
 // Contrato: backend-ciisic/specs/003-consultas-dni/contracts/api-consultas.md
 // ============================================================================
 import type { ApiErrorShape } from '../composables/useApi'

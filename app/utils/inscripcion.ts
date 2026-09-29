@@ -1,6 +1,6 @@
 // ============================================================================
 // INSCRIPCIÓN: FORMULARIO → CONTRATO Y MULTIPART (funciones puras)
-// Contrato: POST /api/v1/public/events/:codigo/inscriptions (backend-ciisic spec 002)
+// Contrato: backend POST /api/v1/site/inscriptions (formas de backend-ciisic spec 002), vía el BFF
 // ============================================================================
 import type { DatosInscripcion, FormularioInscripcion } from '../types/inscription'
 
