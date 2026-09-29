@@ -1,32 +1,36 @@
 # Constitución de ciisic-undc-web
 
 Landing pública del CIISIC (UNDC): contenido del congreso e inscripciones. Nuxt 4 (directorio
-`app/`) con SSR, Pinia y `@nuxtjs/tailwindcss`. Consume la API de `backend-ciisic`.
+`app/`) con SSR, Pinia y `@nuxtjs/tailwindcss`. Consume la API del sitio de `backend-ciisic` a
+través de su propio servidor Nitro.
 
 ## Principios
 
 ### I. El contrato de la API pertenece a backend-ciisic
 
-- La landing consume la API pública `/api/v1/public/**`. Los contratos de
-  `backend-ciisic/specs/*/contracts/` son la fuente de verdad: las specs de este repositorio los
-  referencian, no los copian ni los redefinen.
+- La landing consume la **API del sitio** de `backend-ciisic` (`/api/v1/site/**`). Sus contratos
+  (`backend-ciisic/specs/*/contracts/`) son la fuente de verdad: las specs de este repositorio los
+  referencian, no los copian ni los redefinen. Este repositorio solo es dueño del contrato de sus
+  rutas BFF (`server/api/publico/*`).
 - Precios, descuentos, estados y reglas de negocio los decide el servidor. El cliente solo muestra
   y valida para guiar al usuario; nunca envía montos, descuentos ni estados.
-- Lo que cambia entre ediciones (evento, tipos de inscripción, precios, datos de pago, contacto)
-  se lee de la API a partir de `NUXT_PUBLIC_EVENTO_CODIGO`; no se hardcodea en páginas.
-- El código nuevo no usa las rutas legacy (`/api/v1/inscription`, `/api/v1/registration-types`, …).
+- Lo que cambia entre ediciones (evento, tipos de inscripción, precios, datos de pago, contacto,
+  catálogos) se lee de la API; el evento lo determina el token configurado, no el código.
+- El código nuevo no usa rutas legacy (`/api/v1/inscription`, `/api/v1/registration-types`,
+  `/api/v1/public/**`, `/api/v1/classification`, …).
 
 *Razón*: el backend atiende varios eventos y es quien valida; duplicar reglas en el cliente
 produce precios o mensajes que no coinciden con lo que se registra.
 
-### II. Sin secretos en el cliente ni en el repositorio
+### II. El token del evento vive solo en el servidor (BFF)
 
-- La configuración pública (`runtimeConfig.public`) contiene la URL de la API, el código del
-  evento y la URL del panel. La configuración privada de Nitro se limita a direcciones internas
-  (`backendBaseUrl`), nunca tokens. Los tokens de proveedores (consulta DNI, API_UNDC, correo)
-  viven en el backend.
-- No se crean proxys en `server/` para esconder tokens: si algo requiere un secreto, pertenece al
-  backend.
+- La landing actúa como BFF: el navegador solo llama a rutas Nitro del mismo origen
+  (`server/api/publico/*`), que agregan `X-Api-Key` (token del evento) y `X-Client-Ip` (IP del
+  visitante) y reenvían a `backend-ciisic`. Ninguna llamada del navegador va directo al backend.
+- El token (`NUXT_BACKEND_EVENT_TOKEN`) y la dirección del backend (`NUXT_BACKEND_BASE_URL`) son
+  configuración privada que se define en runtime: nunca en `runtimeConfig.public`, en el bundle del
+  cliente, en la imagen de build, en respuestas ni en logs.
+- La configuración pública se limita a lo que el navegador necesita (URL del panel).
 - `.env` no se versiona; `.env.example` documenta cada variable sin valores reales.
 
 ### III. Stack y diseño visual estables
@@ -48,8 +52,9 @@ produce precios o mensajes que no coinciden con lo que se registra.
 
 ### V. Calidad verificable
 
-- La lógica del cliente que decide algo (mapeos, validaciones, armado de payloads, mensajes) vive
-  en funciones puras de `app/utils/` con pruebas unitarias en Vitest (`tests/`).
+- La lógica que decide algo (mapeos, validaciones, armado de payloads, mensajes, encabezados e IP
+  del BFF) vive en funciones puras de `app/utils/` y `server/utils/` con pruebas unitarias en
+  Vitest (`tests/`), usando `fetch` simulado para el BFF.
 - Puertas obligatorias antes de integrar: `bun run lint` (0 errores), `bun run typecheck`,
   `bun run test` y `bun run build`.
 - Todo cambio de comportamiento se especifica primero en `specs/NNN-nombre/` (spec → plan →
@@ -59,13 +64,16 @@ produce precios o mensajes que no coinciden con lo que se registra.
 
 - SSR activo: los datos compartidos se cargan con `useAsyncData` y clave estable (sin desajustes
   de hidratación ni peticiones duplicadas entre servidor y cliente).
-- Las lecturas públicas que se renderizan en SSR (evento y tipos de inscripción) pasan por rutas
-  Nitro con caché corta (`server/api/publico/*`, 60 s, claves por código de evento y categoría
-  en lista blanca) para no concentrar en la IP del servidor el límite de lectura del backend.
-- Las acciones del visitante (consulta de DNI, verificación, inscripción, papers, contacto) van
-  directo del navegador a la API con `useApi()` (base `NUXT_PUBLIC_API_BASE_URL`, timeout
-  explícito, errores normalizados `{ statusCode, code, message, fields }`), para que cada
-  visitante tenga su propio límite por IP.
+- Lecturas (evento, tipos de inscripción, catálogos): rutas Nitro con caché (`defineCachedEventHandler`,
+  60 s; catálogos 10 min) y claves constantes o en lista blanca; los errores no se cachean.
+- Acciones del visitante (consulta de DNI, verificación, inscripción, ponencias, contacto): sin
+  caché y con la IP del visitante (última de `X-Forwarded-For`, que agrega Traefik, o la del socket;
+  validada con `net.isIP`) para que el backend aplique su límite por visitante.
+- El BFF propaga sin cambios el estado HTTP y el cuerpo de error del backend, limita el cuerpo
+  recibido (multipart: 5 MB + margen → `413`; JSON: 100 KB) y responde `503 SITE_NOT_CONFIGURED`
+  si falta el token o la dirección del backend.
+- En el cliente, las llamadas pasan por `useApi()` (mismo origen, timeout explícito, errores
+  normalizados `{ statusCode, code, message, fields }`).
 - La validación de archivos en el cliente (tipo y tamaño) es solo una ayuda; la validación por
   contenido la hace el backend.
 
@@ -81,4 +89,4 @@ Esta constitución prevalece sobre prácticas ad hoc. Se modifica mediante PR qu
 archivo con versionado semántico: MAJOR al eliminar o redefinir un principio, MINOR al agregar un
 principio o sección, PATCH para aclaraciones de redacción.
 
-**Versión**: 1.1.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29
+**Versión**: 2.0.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29

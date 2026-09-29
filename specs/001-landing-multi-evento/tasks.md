@@ -4,15 +4,17 @@ description: "Tareas de 001-landing-multi-evento"
 
 # Tasks: Landing conectada a la API multi-evento
 
-**Input**: [spec.md](./spec.md), [plan.md](./plan.md) y los contratos de `backend-ciisic`.
+**Input**: [spec.md](./spec.md), [plan.md](./plan.md), [contracts/bff-landing.md](./contracts/bff-landing.md)
+y los contratos de `backend-ciisic`.
 
 **Tests**: pedidos explícitamente para los helpers puros (mapeo de planes, mensajes por `code`,
-armado del multipart y fecha de pago).
+armado del multipart y fecha de pago) y para el BFF (`fetch` simulado: encabezados, IP, token,
+errores).
 
 ## Format: `[ID] [P?] [Story] Descripción`
 
 - **[P]**: paralelizable (archivos distintos, sin dependencias).
-- **[Story]**: historia de la spec (US1…US7).
+- **[Story]**: historia de la spec (US1…US8).
 
 ## Phase 1: Setup
 
@@ -22,23 +24,32 @@ armado del multipart y fecha de pago).
 
 ## Phase 2: Foundational
 
-- [x] T004 `runtimeConfig.public.eventoCodigo` y `adminUrl` en `nuxt.config.ts`; `.env.example`
+- [x] T004 `runtimeConfig.public.eventoCodigo` y `adminUrl` en `nuxt.config.ts`; `.env.example` (reemplazado por T035)
 - [x] T005 [P] Tipos del contrato en `app/types/evento.ts`
-- [x] T006 [P] Rutas de la API pública en `app/utils/api-publica.ts`
-- [x] T007 `useEvento()` con `useAsyncData` y clave `evento:<codigo>` en `app/composables/useEvento.ts`
+- [x] T006 [P] Rutas de la API pública en `app/utils/api-publica.ts` (reemplazado por T038)
+- [x] T007 `useEvento()` con `useAsyncData` en `app/composables/useEvento.ts`
 - [x] T008 `normalizeApiError` distingue errores de red (`NETWORK_ERROR`) en `app/composables/useApi.ts` + prueba
-- [x] T033 Micro-caché Nitro de 60 s: `server/api/publico/evento.get.ts`, `planes.get.ts` (lista blanca de categorías) y `server/utils/api-backend.ts`; `useEvento()` lee `/api/publico/evento`; `backendBaseUrl` cae en `apiBaseUrl`; constitución 1.1.0
+- [x] T033 Micro-caché Nitro de 60 s para evento y planes (base del BFF de la Phase 2b)
+
+## Phase 2b: US8 — BFF con token del evento (P1)
+
+- [ ] T035 Configuración privada `backendEventToken` y `backendBaseUrl` sin valores en el build; retirar `apiBaseUrl` y `eventoCodigo`; `.env.example`; prueba de que el token no está en `public`
+- [ ] T036 [P] [US8] Núcleo puro `server/utils/api-sitio.ts` (encabezados `X-Api-Key`/`X-Client-Ip`, IP del visitante, `SITE_NOT_CONFIGURED`, `BACKEND_UNAVAILABLE`, propagación de errores, lectura con límite) + pruebas con `fetch` simulado
+- [ ] T037 [US8] Capa h3 `server/utils/sitio.ts` y rutas `server/api/publico/*`: evento, planes y catálogos (caché), consulta DNI, verificación, inscripciones y ponencias (multipart, `413`) y contacto
+- [ ] T038 [US8] Cliente contra el BFF: `app/utils/rutas-sitio.ts`, `useApi` de mismo origen, `useEvento`, `useConsultation`, `useVerificacionEstudiante`, `useInscription`; retirar `server/utils/api-backend.ts` y `app/utils/api-publica.ts`
+- [ ] T039 [P] [US8] Mensajes para `EVENT_TOKEN_REQUIRED`, `INVALID_EVENT_TOKEN`, `SITE_NOT_CONFIGURED` y `BACKEND_UNAVAILABLE` + pruebas
 
 ## Phase 3: US2 — Consulta de DNI (P1)
 
 - [x] T009 [P] [US2] Mapeo de la respuesta y mensajes de error (404/503/429/422/red) en `app/utils/consulta-dni.ts` + pruebas
-- [x] T010 [US2] `useConsultation` llama a `GET /document-lookup/dni/:numero` (solo DNI); CE 9–12 caracteres, manual
+- [x] T010 [US2] `useConsultation` consulta el DNI en el backend (solo DNI); CE 9–12 caracteres, manual
 - [x] T011 [US2] Retirar `server/api/consultation.post.ts`, `xApiToken`/`xApiUrl`, `searchConsultation` y tipos DNI anteriores
 
 ## Phase 4: US1 + US4 — Planes, datos de pago e inscripciones cerradas (P1/P2)
 
 - [x] T012 [P] [US1] `mapearPlanes`, `tituloPlan`, regla de precio y `formatearSoles` en `app/utils/planes.ts` / `app/utils/formato.ts` + pruebas
-- [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<codigo>:<categoria>` sobre `/api/publico/planes`
+- [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<categoria>` sobre `/api/publico/planes`
+- [ ] T040 [P] [US1] `useCatalogos()` y clasificaciones desde `/api/publico/catalogos` (etiqueta sin "ESTUDIANTE - ") + pruebas
 - [ ] T014 [US1] `useFormularioInscripcion()` con la lógica compartida de ambos formularios
 - [ ] T015 [US1] `estudiantes.vue` y `general.vue`: tarjetas desde la API y medios de pago desde `datosPago`
 - [ ] T016 [US4] `EstadoInscripciones.vue` (cargando / error con reintento / cerradas) en `/planes`, `/estudiantes` y `/general`
@@ -55,28 +66,29 @@ armado del multipart y fecha de pago).
 
 - [x] T022 [P] [US1] `mapearFormularioInscripcion`, `construirFormDataInscripcion`, `normalizarFechaPago`, `fechaHoyLima`, celular y voucher en `app/utils/inscripcion.ts` + pruebas (sin `estadoId`/`pago`)
 - [x] T023 [P] [US1] `mensajeErrorInscripcion` para todos los `code` del contrato + pruebas
-- [x] T024 [US1] `useInscription` → `POST /events/:codigo/inscriptions` (campo `voucher`), tipos en `app/types/inscription.ts`, store tipado
+- [x] T024 [US1] `useInscription` → envío multipart (campo `voucher`), tipos en `app/types/inscription.ts`, store tipado
 - [x] T025 [US1] Celular de 9 dígitos que empieza con 9, `max` de fecha y misma condición de habilitación de planes en UI y lógica (ambas páginas)
 
 ## Phase 7: US5 — Confirmación (P2)
 
 - [x] T026 [US5] `confirmation.vue` con la respuesta nueva, "Precio UNDC aplicado" y contacto del evento
 
-## Phase 8: US6 + US7 — Papers, contacto y panel (P3)
+## Phase 8: US6 + US7 — Ponencias, contacto y panel (P3)
 
-- [ ] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /events/:codigo/papers`
-- [ ] T028 [P] [US6] `contacto.vue` → `POST /events/:codigo/contact`
-- [ ] T029 [US7] `/login` redirige a `adminUrl`; eliminar `server/api/auth/*` y `server/utils/backend.ts` (se conserva `backendBaseUrl` para la caché)
+- [ ] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /api/publico/ponencias`
+- [ ] T028 [P] [US6] `contacto.vue` → `POST /api/publico/contacto` con `{ nombres, apellidos, correo, asunto, mensaje }`
+- [ ] T029 [US7] `/login` redirige a `NUXT_PUBLIC_ADMIN_URL`; eliminar `server/api/auth/*` y `server/utils/backend.ts`
 - [ ] T034 [P] `/undc` redirige a `/planes` (se conserva la ruta)
 
 ## Phase 9: Polish
 
-- [ ] T030 [P] Documentación (`docs/*.md`) y CI sin variables retiradas
-- [ ] T031 Puertas: `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`
-- [ ] T032 Verificación manual con el backend local (páginas y una inscripción completa)
+- [ ] T030 [P] Documentación (`docs/*.md`) y CI con las variables finales
+- [ ] T031 Puertas: `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`; el token no aparece en `.output/public`
+- [ ] T032 Verificación manual con el backend local (`/api/v1/site` y token de prueba): páginas y una inscripción completa — pendiente de que el backend esté disponible
 
 ## Dependencies & Execution Order
 
-- Phase 2 bloquea al resto. US2 (Phase 3) es independiente de US1.
+- Phase 2 bloquea al resto; Phase 2b (BFF) bloquea todas las llamadas del navegador.
+- US2 (Phase 3) es independiente de US1.
 - Phase 4 introduce el composable compartido que usan las fases 5 y 6.
-- Phases 7 y 8 solo dependen de Phase 2 (y del tipo de respuesta de Phase 6 para la confirmación).
+- Phases 7 y 8 dependen de Phase 2b.
