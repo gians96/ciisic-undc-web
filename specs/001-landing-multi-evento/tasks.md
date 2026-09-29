@@ -22,11 +22,11 @@ armado del multipart y fecha de pago).
 
 ## Phase 2: Foundational
 
-- [ ] T004 `runtimeConfig.public.eventoCodigo` y `adminUrl` en `nuxt.config.ts`; `.env.example`
-- [ ] T005 [P] Tipos del contrato en `app/types/evento.ts`
-- [ ] T006 [P] Rutas de la API pública en `app/utils/api-publica.ts`
-- [ ] T007 `useEvento()` con `useAsyncData` y clave `evento:<codigo>` en `app/composables/useEvento.ts`
-- [ ] T008 `normalizeApiError` distingue errores de red (`NETWORK_ERROR`) en `app/composables/useApi.ts` + prueba
+- [x] T004 `runtimeConfig.public.eventoCodigo` y `adminUrl` en `nuxt.config.ts`; `.env.example`
+- [x] T005 [P] Tipos del contrato en `app/types/evento.ts`
+- [x] T006 [P] Rutas de la API pública en `app/utils/api-publica.ts`
+- [x] T007 `useEvento()` con `useAsyncData` y clave `evento:<codigo>` en `app/composables/useEvento.ts`
+- [x] T008 `normalizeApiError` distingue errores de red (`NETWORK_ERROR`) en `app/composables/useApi.ts` + prueba
 
 ## Phase 3: US2 — Consulta de DNI (P1)
 

@@ -30,7 +30,11 @@ export default defineNuxtConfig({
       appName: 'VIII CIISIC 2026',
       appVersion: '1.0.0',
       // Usar el backend correcto como fallback si la variable no está disponible
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe'
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe',
+      // Código del evento que muestra esta landing (API pública multi-evento)
+      eventoCodigo: process.env.NUXT_PUBLIC_EVENTO_CODIGO || 'ciisic-viii-2026',
+      // Panel administrativo (aplicación externa); /login redirige aquí
+      adminUrl: process.env.NUXT_PUBLIC_ADMIN_URL || ''
     }
   },
   app: {

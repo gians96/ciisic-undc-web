@@ -1,0 +1,109 @@
+// ============================================================================
+// TIPOS DE LA API PÚBLICA MULTI-EVENTO (backend-ciisic)
+// Contratos: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md,
+// 003-consultas-dni/contracts/api-consultas.md y 004-verificacion-estudiante/contracts/api-verificacion.md
+// ============================================================================
+
+/** Respuesta de éxito de la API pública: `{ success: true, data }`. */
+export interface ApiExito<T> {
+  success: true
+  data: T
+}
+
+export interface CuentaBancaria {
+  codigo: string
+  nombre: string
+  numeroCuenta: string
+  cci?: string | null
+}
+
+export interface BilleteraDigital {
+  codigo: string
+  nombre: string
+  telefono: string
+  qrUrl?: string | null
+}
+
+export interface DatosPago {
+  titular?: string | null
+  bancos?: CuentaBancaria[] | null
+  billeteras?: BilleteraDigital[] | null
+}
+
+export interface ContactoEvento {
+  correo?: string | null
+  telefono?: string | null
+}
+
+export interface VentanaInscripciones {
+  abiertas: boolean
+  inicio: string | null
+  fin: string | null
+}
+
+export interface EventoPublico {
+  codigo: string
+  nombre: string
+  nombreCorto: string
+  descripcion: string | null
+  sede: string | null
+  fechaInicio: string
+  fechaFin: string
+  estado: string
+  inscripciones: VentanaInscripciones
+  dominioInstitucional: string
+  contacto: ContactoEvento | null
+  datosPago: DatosPago | null
+}
+
+export type CodigoCategoria = 'ESTUDIANTES' | 'PUBLICO_GENERAL'
+
+export interface CaracteristicaPlan {
+  icon: string
+  text: string
+}
+
+export interface TipoInscripcionApi {
+  id: number
+  codigo: string
+  nombre: string
+  etiqueta: string | null
+  descripcion: string | null
+  caracteristicas: CaracteristicaPlan[] | null
+  precio: number | string
+  precioInstitucional: number | string | null
+}
+
+export interface CategoriaInscripcionApi {
+  codigo: string
+  nombre: string
+  descripcion: string | null
+  esEstudiantil: boolean
+  precioDesde: number | null
+  caracteristicas: CaracteristicaPlan[] | null
+  tipos: TipoInscripcionApi[]
+}
+
+export type MotivoVerificacion =
+  | 'CORREO_NO_INSTITUCIONAL'
+  | 'DOCUMENTO_NO_SOPORTADO'
+  | 'NO_ES_ESTUDIANTE'
+  | 'EGRESADO'
+  | 'IDENTIDAD_NO_COINCIDE'
+  | 'SIN_DATOS_IDENTIDAD'
+  | 'SERVICIO_NO_DISPONIBLE'
+
+export interface VerificacionEstudiante {
+  esEstudianteUndc: boolean
+  codigoEstudiante: string | null
+  motivo: MotivoVerificacion | null
+  verificacionToken: string | null
+}
+
+export interface ConsultaDni {
+  numero: string
+  nombres: string
+  apellidoPaterno: string | null
+  apellidoMaterno: string | null
+  apellidos: string | null
+}
