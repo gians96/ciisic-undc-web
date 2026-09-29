@@ -8,8 +8,12 @@ export const rutasSitio = {
   evento: '/api/publico/evento',
   planes: '/api/publico/planes',
   catalogos: '/api/publico/catalogos',
+  /** Client ID de Google y URL del panel (backend `GET /config`). */
+  configuracion: '/api/publico/configuracion',
   consultaDni: (numero: string) => `/api/publico/consulta-dni/${encodeURIComponent(String(numero).trim())}`,
   verificacionEstudiante: '/api/publico/verificacion-estudiante',
+  /** `{ credential }` de Google → backend `POST /google-verification` con `{ idToken }`. */
+  verificacionGoogle: '/api/publico/verificacion-google',
   inscripciones: '/api/publico/inscripciones',
   ponencias: '/api/publico/ponencias',
   contacto: '/api/publico/contacto',

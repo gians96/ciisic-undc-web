@@ -12,6 +12,10 @@ export const PREFIJO_API_SITIO = '/api/v1/site'
 export const LIMITE_JSON_BYTES = 100 * 1024
 /** Multipart: 5 MB del voucher o del PDF + margen para los demás campos y los separadores. */
 export const LIMITE_MULTIPART_BYTES = 5 * 1024 * 1024 + 512 * 1024
+/** Verificación con Google: `{ "credential": "…" }` con una credencial de hasta 4096 caracteres. */
+export const LIMITE_VERIFICACION_GOOGLE_BYTES = 8 * 1024
+/** Longitud máxima del ID token de Google que acepta el backend. */
+export const LONGITUD_MAXIMA_CREDENCIAL_GOOGLE = 4096
 
 export interface ErrorSitio {
   success: false
@@ -23,6 +27,7 @@ export const errorSitio = (code: string, message: string): ErrorSitio => ({ succ
 
 export const SITIO_NO_CONFIGURADO = errorSitio('SITE_NOT_CONFIGURED', 'El sitio no está configurado para conectarse con el servidor del congreso.')
 export const BACKEND_NO_DISPONIBLE = errorSitio('BACKEND_UNAVAILABLE', 'No se pudo conectar con el servidor del congreso.')
+export const CREDENCIAL_GOOGLE_INVALIDA = errorSitio('INVALID_GOOGLE_CREDENTIAL', 'La credencial de Google no es válida.')
 
 export interface ContextoSitio {
   /** `NUXT_BACKEND_BASE_URL` (sin `/api/v1/site`). */
@@ -128,6 +133,48 @@ export async function llamarApiSitio(contexto: ContextoSitio, peticion: Peticion
     }
   }
   return { status: respuesta.status, cuerpo: respuesta._data ?? null }
+}
+
+/**
+ * Resultado de adaptar el cuerpo de una acción antes de reenviarlo: el cuerpo nuevo (con su tipo) o
+ * el error que se responde sin llamar al backend.
+ */
+export type CuerpoAdaptado =
+  | { ok: true, cuerpo: Uint8Array, tipoContenido: string }
+  | { ok: false, status: number, error: ErrorSitio }
+
+const SEGMENTO_JWT = /^[\w-]+$/
+
+/**
+ * `true` si el valor tiene la forma de un ID token de Google (JWT): texto de hasta 4096 caracteres
+ * con tres segmentos base64url no vacíos. Es la misma regla que aplica el backend; la firma y el
+ * contenido los valida él.
+ */
+export function esCredencialGoogle(valor: unknown): valor is string {
+  if (typeof valor !== 'string' || !valor || valor.length > LONGITUD_MAXIMA_CREDENCIAL_GOOGLE) return false
+  const segmentos = valor.split('.')
+  return segmentos.length === 3 && segmentos.every(segmento => SEGMENTO_JWT.test(segmento))
+}
+
+/**
+ * `{ credential }` que envía el navegador (respuesta de Google Identity Services) → `{ idToken }`
+ * que espera `POST /google-verification`. Solo se reenvía ese campo; sin una credencial con forma
+ * de JWT se responde `422 INVALID_GOOGLE_CREDENTIAL` sin consultar al backend.
+ */
+export function adaptarVerificacionGoogle(cuerpo: Uint8Array): CuerpoAdaptado {
+  let datos: unknown
+  try {
+    datos = JSON.parse(new TextDecoder().decode(cuerpo))
+  } catch {
+    return { ok: false, status: 422, error: CREDENCIAL_GOOGLE_INVALIDA }
+  }
+  const credencial = esObjeto(datos) ? datos.credential : undefined
+  if (!esCredencialGoogle(credencial)) return { ok: false, status: 422, error: CREDENCIAL_GOOGLE_INVALIDA }
+  return {
+    ok: true,
+    cuerpo: new TextEncoder().encode(JSON.stringify({ idToken: credencial })),
+    tipoContenido: 'application/json',
+  }
 }
 
 export class CuerpoDemasiadoGrande extends Error {

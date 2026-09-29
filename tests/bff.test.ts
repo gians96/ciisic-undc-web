@@ -1,13 +1,18 @@
 // @vitest-environment node
 import { Readable } from 'node:stream'
-import { describe, expect, it, vi } from 'vitest'
+import { getRequestHeader, setResponseHeader, setResponseStatus, type H3Event } from 'h3'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   BACKEND_NO_DISPONIBLE,
+  CREDENCIAL_GOOGLE_INVALIDA,
   CuerpoDemasiadoGrande,
   LIMITE_MULTIPART_BYTES,
+  LIMITE_VERIFICACION_GOOGLE_BYTES,
   PREFIJO_API_SITIO,
   SITIO_NO_CONFIGURADO,
+  adaptarVerificacionGoogle,
   configuracionFaltante,
+  esCredencialGoogle,
   excedeLongitudDeclarada,
   ipDelVisitante,
   leerCuerpoLimitado,
@@ -155,5 +160,183 @@ describe('lectura del cuerpo con límite', () => {
     expect(excedeLongitudDeclarada(String(LIMITE_MULTIPART_BYTES + 1), LIMITE_MULTIPART_BYTES)).toBe(true)
     expect(excedeLongitudDeclarada(String(5 * 1024 * 1024), LIMITE_MULTIPART_BYTES)).toBe(false)
     expect(excedeLongitudDeclarada(undefined, LIMITE_MULTIPART_BYTES)).toBe(false)
+  })
+})
+
+describe('verificación con Google: credential → idToken', () => {
+  // Forma de un ID token de Google (header.payload.firma en base64url); el contenido no importa
+  const CREDENCIAL = 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImFiYyJ9.eyJlbWFpbCI6ImFuYUB1bmRjLmVkdS5wZSJ9.c2lnbmF0dXJhLWRlLXBydWViYQ'
+  const json = (valor: unknown) => new TextEncoder().encode(JSON.stringify(valor))
+  const leerCuerpo = (cuerpo: Uint8Array | undefined) => JSON.parse(new TextDecoder().decode(cuerpo))
+  const VERIFICADO = {
+    success: true,
+    data: {
+      correo: '2021003668@undc.edu.pe',
+      nombres: 'Ana María',
+      apellidos: 'Pérez Díaz',
+      tipoCuenta: 'ESTUDIANTE',
+      esInstitucional: true,
+      verificacionCorreoToken: 'eyJ.verificacion.correo',
+    },
+  }
+
+  it('reconoce la forma de un ID token (≤ 4096 caracteres, 3 segmentos base64url)', () => {
+    expect(esCredencialGoogle(CREDENCIAL)).toBe(true)
+    expect(esCredencialGoogle(`a.b.${'c'.repeat(4092)}`)).toBe(true)
+    expect(esCredencialGoogle(`a.b.${'c'.repeat(4093)}`)).toBe(false)
+    for (const invalida of ['', 'a.b', 'a.b.c.d', 'a..c', 'a.b.', 'a.b.c=', 'a.b.c d', 'a/b.c.d', 123, null, undefined, { credential: CREDENCIAL }]) {
+      expect(esCredencialGoogle(invalida)).toBe(false)
+    }
+  })
+
+  it('reenvía solo { idToken } como JSON a /google-verification con X-Api-Key y X-Client-Ip', async () => {
+    const adaptado = adaptarVerificacionGoogle(json({ credential: CREDENCIAL, select_by: 'btn', idToken: 'otro', extra: 1 }))
+    expect(adaptado.ok).toBe(true)
+    if (!adaptado.ok) return
+
+    const { fetchSitio, llamadas } = fetchSimulado({ status: 200, _data: VERIFICADO })
+    const respuesta = await llamarApiSitio(contexto(), {
+      metodo: 'POST',
+      ruta: '/google-verification',
+      cuerpo: adaptado.cuerpo,
+      tipoContenido: adaptado.tipoContenido,
+      timeoutMs: 15000,
+    }, fetchSitio)
+
+    expect(respuesta).toEqual({ status: 200, cuerpo: VERIFICADO })
+    const [{ url, opciones }] = llamadas as [{ url: string, opciones: OpcionesFetchSitio }]
+    expect(url).toBe(`http://backend.interno:3010${PREFIJO_API_SITIO}/google-verification`)
+    expect(opciones.method).toBe('POST')
+    expect(leerCuerpo(opciones.body)).toEqual({ idToken: CREDENCIAL })
+    expect(opciones.headers).toEqual({
+      'Accept': 'application/json',
+      'X-Api-Key': TOKEN,
+      'X-Client-Ip': '181.65.10.20',
+      'Content-Type': 'application/json',
+    })
+  })
+
+  it.each([
+    ['un cuerpo que no es JSON', new TextEncoder().encode('credential=a.b.c')],
+    ['un JSON sin credential', json({ idToken: CREDENCIAL })],
+    ['una credencial que no es texto', json({ credential: 42 })],
+    ['una credencial con 2 segmentos', json({ credential: 'a.b' })],
+    ['una credencial de más de 4096 caracteres', json({ credential: `a.b.${'c'.repeat(4093)}` })],
+    ['un arreglo', json([CREDENCIAL])],
+  ])('rechaza %s con 422 INVALID_GOOGLE_CREDENTIAL sin llamar al backend', (_, cuerpo) => {
+    expect(adaptarVerificacionGoogle(cuerpo)).toEqual({ ok: false, status: 422, error: CREDENCIAL_GOOGLE_INVALIDA })
+    expect(CREDENCIAL_GOOGLE_INVALIDA).toMatchObject({ success: false, code: 'INVALID_GOOGLE_CREDENTIAL' })
+  })
+
+  it.each([
+    [401, { success: false, code: 'INVALID_GOOGLE_TOKEN', message: 'Token de Google inválido' }],
+    [403, { success: false, code: 'GOOGLE_EMAIL_NOT_VERIFIED', message: 'Correo no verificado' }],
+    [403, { success: false, code: 'GOOGLE_NOT_AUTHORITATIVE', message: 'Usa una cuenta de Gmail o tu cuenta institucional de Google.' }],
+    [422, { success: false, code: 'VALIDATION_ERROR', message: 'Datos inválidos', fields: { idToken: 'Token de Google inválido' } }],
+    [429, { success: false, code: 'RATE_LIMITED', message: 'Espera' }],
+    [503, { success: false, code: 'GOOGLE_NOT_CONFIGURED', message: 'Google no está configurado' }],
+    [503, { success: false, code: 'GOOGLE_UNAVAILABLE', message: 'Google no responde' }],
+    [401, { success: false, code: 'INVALID_EVENT_TOKEN', message: 'Token inválido' }],
+  ])('propaga sin cambios el estado %i y el cuerpo de error del backend', async (status, cuerpo) => {
+    const adaptado = adaptarVerificacionGoogle(json({ credential: CREDENCIAL }))
+    if (!adaptado.ok) throw new Error('la credencial de prueba debería ser válida')
+    const { fetchSitio } = fetchSimulado({ status, _data: cuerpo })
+    const respuesta = await llamarApiSitio(contexto(), { metodo: 'POST', ruta: '/google-verification', cuerpo: adaptado.cuerpo, tipoContenido: adaptado.tipoContenido }, fetchSitio)
+    expect(respuesta).toEqual({ status, cuerpo })
+  })
+
+  describe('ruta Nitro POST /api/publico/verificacion-google', () => {
+    let respuestaBackend: { status: number, _data?: unknown }
+    const llamadas: Array<{ url: string, opciones: OpcionesFetchSitio }> = []
+
+    /** Evento h3 mínimo: petición con cuerpo en flujo y respuesta que registra estado y encabezados. */
+    function eventoSimulado(cuerpo: string, cabeceras: Record<string, string> = {}) {
+      const bytes = Buffer.from(cuerpo)
+      const req = Object.assign(Readable.from([bytes]), {
+        headers: {
+          'content-type': 'application/json',
+          'content-length': String(bytes.length),
+          'x-forwarded-for': '1.1.1.1, 181.65.10.20',
+          ...cabeceras,
+        },
+        socket: { remoteAddress: '172.18.0.3' },
+      })
+      const encabezados: Record<string, string> = {}
+      const res = {
+        statusCode: 200,
+        statusMessage: '',
+        setHeader: (nombre: string, valor: string) => { encabezados[nombre.toLowerCase()] = String(valor) },
+      }
+      return { evento: { node: { req, res }, context: {} } as unknown as H3Event, res, encabezados }
+    }
+
+    async function manejador() {
+      const { default: ruta } = await import('../server/api/publico/verificacion-google.post')
+      return ruta as unknown as (evento: H3Event) => Promise<unknown>
+    }
+
+    beforeEach(async () => {
+      llamadas.length = 0
+      respuestaBackend = { status: 200, _data: VERIFICADO }
+      // Globals que Nitro auto-importa en el servidor
+      vi.stubGlobal('useRuntimeConfig', () => ({ backendBaseUrl: 'http://backend.interno:3010', backendEventToken: TOKEN }))
+      vi.stubGlobal('getRequestHeader', getRequestHeader)
+      vi.stubGlobal('setResponseStatus', setResponseStatus)
+      vi.stubGlobal('setResponseHeader', setResponseHeader)
+      vi.stubGlobal('$fetch', {
+        raw: vi.fn(async (url: string, opciones: OpcionesFetchSitio) => {
+          llamadas.push({ url, opciones })
+          return respuestaBackend
+        }),
+      })
+      vi.stubGlobal('defineEventHandler', <T>(handler: T) => handler)
+      vi.stubGlobal('adaptarVerificacionGoogle', adaptarVerificacionGoogle)
+      vi.stubGlobal('LIMITE_VERIFICACION_GOOGLE_BYTES', LIMITE_VERIFICACION_GOOGLE_BYTES)
+      const { reenviarCuerpoSitio } = await import('../server/utils/sitio')
+      vi.stubGlobal('reenviarCuerpoSitio', reenviarCuerpoSitio)
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('reenvía { idToken } con el token del evento y la IP del visitante, sin caché', async () => {
+      const { evento, res, encabezados } = eventoSimulado(JSON.stringify({ credential: CREDENCIAL, select_by: 'btn' }))
+      const cuerpo = await (await manejador())(evento)
+
+      expect(cuerpo).toEqual(VERIFICADO)
+      expect(res.statusCode).toBe(200)
+      expect(encabezados['cache-control']).toBe('no-store')
+      expect(llamadas).toHaveLength(1)
+      expect(llamadas[0]!.url).toBe(`http://backend.interno:3010${PREFIJO_API_SITIO}/google-verification`)
+      expect(llamadas[0]!.opciones.headers).toMatchObject({ 'X-Api-Key': TOKEN, 'X-Client-Ip': '181.65.10.20', 'Content-Type': 'application/json' })
+      expect(leerCuerpo(llamadas[0]!.opciones.body)).toEqual({ idToken: CREDENCIAL })
+      expect(JSON.stringify(cuerpo)).not.toContain(TOKEN)
+    })
+
+    it('propaga el estado y el cuerpo de error del backend', async () => {
+      respuestaBackend = { status: 403, _data: { success: false, code: 'GOOGLE_EMAIL_NOT_VERIFIED', message: 'Correo no verificado' } }
+      const { evento, res } = eventoSimulado(JSON.stringify({ credential: CREDENCIAL }))
+      expect(await (await manejador())(evento)).toEqual(respuestaBackend._data)
+      expect(res.statusCode).toBe(403)
+    })
+
+    it('responde 422 INVALID_GOOGLE_CREDENTIAL sin llamar al backend', async () => {
+      const { evento, res } = eventoSimulado(JSON.stringify({ credential: 'no-es-un-jwt' }))
+      expect(await (await manejador())(evento)).toEqual(CREDENCIAL_GOOGLE_INVALIDA)
+      expect(res.statusCode).toBe(422)
+      expect(llamadas).toHaveLength(0)
+    })
+
+    it('rechaza otro Content-Type (415) y un cuerpo mayor a 8 KB (413) sin llamar al backend', async () => {
+      const formulario = eventoSimulado(`credential=${CREDENCIAL}`, { 'content-type': 'application/x-www-form-urlencoded' })
+      expect(await (await manejador())(formulario.evento)).toMatchObject({ code: 'UNSUPPORTED_MEDIA_TYPE' })
+      expect(formulario.res.statusCode).toBe(415)
+
+      const grande = eventoSimulado(JSON.stringify({ credential: CREDENCIAL, relleno: 'x'.repeat(LIMITE_VERIFICACION_GOOGLE_BYTES) }))
+      expect(await (await manejador())(grande.evento)).toMatchObject({ code: 'PAYLOAD_TOO_LARGE' })
+      expect(grande.res.statusCode).toBe(413)
+      expect(llamadas).toHaveLength(0)
+    })
   })
 })

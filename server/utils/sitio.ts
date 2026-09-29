@@ -15,6 +15,7 @@ import {
   leerCuerpoLimitado,
   llamarApiSitio,
   type ContextoSitio,
+  type CuerpoAdaptado,
   type FetchSitio,
   type PeticionSitio,
 } from './api-sitio'
@@ -55,15 +56,20 @@ export async function responderSitio(event: H3Event, peticion: PeticionSitio): P
   return cuerpo
 }
 
+export interface OpcionesReenvio {
+  formato: 'json' | 'multipart'
+  timeoutMs: number
+  /** Límite propio del cuerpo (por defecto, el del formato). */
+  limiteBytes?: number
+  /** Cambia el cuerpo antes de reenviarlo (p. ej. `credential` → `idToken`) o lo rechaza. */
+  adaptar?: (cuerpo: Uint8Array) => CuerpoAdaptado
+}
+
 /**
  * Reenvía el cuerpo de una acción del visitante tal cual (mismo `Content-Type`, incluido el
- * `boundary` del multipart), sin caché y con límite de tamaño.
+ * `boundary` del multipart) o adaptado, sin caché y con límite de tamaño.
  */
-export async function reenviarCuerpoSitio(
-  event: H3Event,
-  ruta: string,
-  opciones: { formato: 'json' | 'multipart', timeoutMs: number },
-): Promise<unknown> {
+export async function reenviarCuerpoSitio(event: H3Event, ruta: string, opciones: OpcionesReenvio): Promise<unknown> {
   setResponseHeader(event, 'Cache-Control', 'no-store')
 
   const multipart = opciones.formato === 'multipart'
@@ -74,7 +80,7 @@ export async function reenviarCuerpoSitio(
     return errorSitio('UNSUPPORTED_MEDIA_TYPE', multipart ? 'Envía el formulario como multipart/form-data.' : 'Envía los datos como JSON.')
   }
 
-  const limite = multipart ? LIMITE_MULTIPART_BYTES : LIMITE_JSON_BYTES
+  const limite = opciones.limiteBytes ?? (multipart ? LIMITE_MULTIPART_BYTES : LIMITE_JSON_BYTES)
   const demasiadoGrande = multipart
     ? errorSitio('UPLOAD_LIMIT_EXCEEDED', 'El archivo supera el límite permitido (5 MB).')
     : errorSitio('PAYLOAD_TOO_LARGE', 'Los datos enviados superan el tamaño permitido.')
@@ -94,5 +100,16 @@ export async function reenviarCuerpoSitio(
     throw error
   }
 
-  return responderSitio(event, { metodo: 'POST', ruta, cuerpo, tipoContenido, timeoutMs: opciones.timeoutMs })
+  const peticion: PeticionSitio = { metodo: 'POST', ruta, cuerpo, tipoContenido, timeoutMs: opciones.timeoutMs }
+  if (opciones.adaptar) {
+    const adaptado = opciones.adaptar(cuerpo)
+    if (!adaptado.ok) {
+      setResponseStatus(event, adaptado.status)
+      return adaptado.error
+    }
+    peticion.cuerpo = adaptado.cuerpo
+    peticion.tipoContenido = adaptado.tipoContenido
+  }
+
+  return responderSitio(event, peticion)
 }
