@@ -53,10 +53,14 @@ curl -fsSL https://bun.sh/install | bash
 |---|---|
 | `NUXT_BACKEND_BASE_URL` | URL de `backend-ciisic` alcanzable por el servidor Nitro (la landing llama a `/api/v1/site`). Solo servidor. |
 | `NUXT_BACKEND_EVENT_TOKEN` | Token de acceso del evento. **Secreto de servidor**: solo en runtime, nunca en el build ni en variables `NUXT_PUBLIC_*`. |
-| `NUXT_PUBLIC_ADMIN_URL` | Panel administrativo; `/login` redirige ahí. |
+
+No hay variables públicas: el client ID de Google (botón «Continuar con Google» de la inscripción) y la URL
+del panel (`/login` redirige ahí) se configuran en `backend-ciisic` y la landing los lee en runtime de
+`/api/publico/configuracion` (backend `GET /api/v1/site/config`, caché de 60 s).
 
 El navegador solo llama a las rutas BFF `/api/publico/*` de la propia landing; Nitro agrega el token y la IP
-del visitante. Detalles en `specs/001-landing-multi-evento/` y `docs/INSCRIPCION-FLUJO.md`.
+del visitante. Detalles en `specs/001-landing-multi-evento/`, `specs/002-google-en-inscripcion/` y
+`docs/INSCRIPCION-FLUJO.md`.
 
 ## 🚀 Desarrollo
 

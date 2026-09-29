@@ -26,12 +26,11 @@ export default defineNuxtConfig({
     // para que el token del evento nunca quede en la imagen ni llegue al navegador.
     backendBaseUrl: '',
     backendEventToken: '',
-    // Públicas (expuestas al cliente)
+    // Públicas (expuestas al cliente). El client ID de Google y la URL del panel no son
+    // configuración de la landing: se leen en runtime de la API del sitio (/api/publico/configuracion).
     public: {
       appName: 'VIII CIISIC 2026',
-      appVersion: '1.0.0',
-      // Panel administrativo (aplicación externa); /login redirige aquí
-      adminUrl: process.env.NUXT_PUBLIC_ADMIN_URL || ''
+      appVersion: '1.0.0'
     }
   },
   app: {

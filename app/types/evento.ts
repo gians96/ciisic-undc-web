@@ -124,3 +124,13 @@ export interface CatalogosSitio {
   clasificaciones: ClasificacionCatalogo[]
   tiposDocumento: TipoDocumentoCatalogo[]
 }
+
+/**
+ * `GET /api/v1/site/config` (vía `/api/publico/configuracion`): lo que el navegador necesita de
+ * las integraciones, definido en el backend (no hay variables `NUXT_PUBLIC_*`).
+ */
+export interface ConfiguracionSitioApi {
+  google: { clientId: string | null } | null
+  /** Panel (administradores y participantes); `/login` redirige aquí. */
+  urlPanel: string | null
+}

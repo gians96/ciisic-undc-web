@@ -1,6 +1,7 @@
 <!-- ============================================================================
-     /login: el panel administrativo es una aplicación aparte (NUXT_PUBLIC_ADMIN_URL).
-     Esta ruta solo redirige; si la URL no está configurada muestra un aviso.
+     /login: el panel es una aplicación aparte; su URL se define en el backend y llega en la
+     configuración del sitio (/api/publico/configuracion). Esta ruta solo redirige; si no hay URL
+     muestra un aviso (y "Reintentar" si la configuración no cargó).
      ============================================================================ -->
 
 <template>
@@ -17,10 +18,29 @@
           />
         </NuxtLink>
         <h1 class="text-3xl font-bold text-white mb-2">Panel administrativo</h1>
-        <p class="text-gray-300" role="status">
-          El panel administrativo no está disponible en este momento. Si formas parte de la organización,
-          comunícate con el equipo técnico.
-        </p>
+        <div role="status" aria-live="polite">
+          <p v-if="urlPanel" class="text-gray-300">
+            Te estamos llevando al panel. Si no ocurre en unos segundos,
+            <a :href="urlPanel" class="font-semibold text-primary underline-offset-4 hover:underline">ábrelo aquí</a>.
+          </p>
+          <p v-else-if="error" class="text-gray-300">
+            No pudimos obtener la dirección del panel en este momento. Revisa tu conexión e inténtalo nuevamente.
+          </p>
+          <p v-else class="text-gray-300">
+            El panel administrativo no está disponible en este momento. Si formas parte de la organización,
+            comunícate con el equipo técnico.
+          </p>
+        </div>
+        <button
+          v-if="error && !urlPanel"
+          type="button"
+          class="mt-6 inline-flex items-center justify-center gap-2 rounded-lg border border-primary/50 px-5 py-3 font-semibold text-primary transition-colors duration-300 hover:bg-primary/10 disabled:opacity-60"
+          :disabled="reintentando"
+          @click="reintentar"
+        >
+          <Icon name="heroicons:arrow-path" class="h-5 w-5" :class="{ 'animate-spin': reintentando }" aria-hidden="true" />
+          Reintentar
+        </button>
         <NuxtLink
           to="/"
           class="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-black transition-colors duration-300 hover:bg-primary/90"
@@ -39,10 +59,24 @@ useHead({
   meta: [{ name: 'robots', content: 'noindex' }]
 })
 
-// La URL sale de la configuración (no de la petición): no hay redirección abierta.
-// En SSR responde 302; en navegación cliente cambia de sitio con location.
-const adminUrl = String(useRuntimeConfig().public.adminUrl || '').trim()
-if (adminUrl) {
-  await navigateTo(adminUrl, { external: true, redirectCode: 302 })
+// La URL sale de la configuración del sitio (no de la petición): no hay redirección abierta y
+// solo se aceptan URLs http(s) absolutas. En SSR responde 302; en navegación cliente cambia de
+// sitio con location.
+const { urlPanel, error, listo, recargar } = useConfiguracionSitio()
+await listo
+if (urlPanel.value) {
+  await navigateTo(urlPanel.value, { external: true, redirectCode: 302 })
+}
+
+const reintentando = ref(false)
+
+const reintentar = async () => {
+  reintentando.value = true
+  try {
+    await recargar()
+  } finally {
+    reintentando.value = false
+  }
+  if (urlPanel.value) await navigateTo(urlPanel.value, { external: true })
 }
 </script>

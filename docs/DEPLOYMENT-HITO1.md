@@ -30,7 +30,8 @@ Frontend (landing, BFF de la API del sitio):
 - `NODE_ENV=production`
 - `NUXT_BACKEND_BASE_URL`, URL del backend del mismo entorno alcanzable por Nitro (la landing llama a `{URL}/api/v1/site`)
 - `NUXT_BACKEND_EVENT_TOKEN`, token de acceso del evento (se genera en el panel del backend). **Secreto**: solo como variable runtime; nunca `NUXT_PUBLIC_*`, argumento del build ni GitHub
-- `NUXT_PUBLIC_ADMIN_URL`, URL del panel administrativo; `/login` redirige ahí
+
+No hay más variables: la URL del panel (a la que redirige `/login`) y el client ID de Google (botón «Continuar con Google» de la inscripción) se configuran en el backend y la landing los lee de `/api/publico/configuracion` (backend `GET /api/v1/site/config`, caché de 60 s). Sin client ID el botón no aparece; sin URL, `/login` muestra un aviso.
 
 El navegador nunca llama al backend: todas las llamadas pasan por las rutas Nitro `/api/publico/*`, que agregan `X-Api-Key` y `X-Client-Ip` (última IP de `X-Forwarded-For`, que agrega Traefik). Sin token o sin URL, esas rutas responden `503 SITE_NOT_CONFIGURED` y lo registran en los logs del contenedor. Cambiar de edición o rotar el token requiere reiniciar el servicio.
 
