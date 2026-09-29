@@ -28,6 +28,13 @@ Esta spec **no** repite los contratos; se implementa contra:
 - Se elimina la regla anterior de `/estudiantes` que daba el precio UNDC solo porque el correo
   terminaba en `@undc.edu.pe`.
 - `/login` ya no autentica en la landing: redirige al panel administrativo (aplicación externa).
+- En `/general` se mantiene el precio UNDC para correos del dominio institucional (regla del backend
+  para la categoría general).
+- Las lecturas que se renderizan en SSR (evento y tipos de inscripción) no dependen del límite por
+  IP del backend: la landing las cachea 60 s en Nitro. Las acciones del visitante van directo del
+  navegador a la API.
+- `/undc` (página antigua con precios fijos) redirige a `/planes`; la ruta se conserva para que
+  los enlaces antiguos no den 404.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -171,7 +178,11 @@ Como administrador quiero que `/login` me lleve al panel, que ahora es una aplic
 ### Edge Cases
 
 - Backend caído o evento inexistente (`404 EVENT_NOT_FOUND`) → estado de error con "Reintentar";
-  no se muestra el formulario.
+  no se muestra el formulario. Si la caché de Nitro tiene una copia válida, se sigue sirviendo
+  mientras se revalida (stale-while-revalidate); los errores nunca se guardan en caché.
+- Cierre de inscripciones en el panel → la landing lo refleja en máximo ~60 s (caché); mientras
+  tanto el backend responde `409 REGISTRATION_CLOSED` y la página pasa al estado cerrado.
+- Categoría fuera de la lista blanca en `/api/publico/planes` → `400` sin consultar al backend.
 - `datosPago` nulo o sin cuentas → aviso en la sección de pago y no se permite enviar.
 - Categoría sin tipos activos → aviso "No hay tipos de inscripción disponibles".
 - `precioInstitucional` nulo → se muestra el precio regular.
@@ -190,15 +201,18 @@ Como administrador quiero que `/login` me lleve al panel, que ahora es una aplic
 ### Functional Requirements
 
 - **FR-001**: La landing se configura con `NUXT_PUBLIC_API_BASE_URL`,
-  `NUXT_PUBLIC_EVENTO_CODIGO` (por defecto `ciisic-viii-2026`) y `NUXT_PUBLIC_ADMIN_URL`; no
-  existen variables privadas (se retiran `xApiToken`, `xApiUrl` y `backendBaseUrl`).
-- **FR-002**: `useEvento()` carga `GET /events/:codigo` con `useAsyncData` y clave
-  `evento:<codigo>`, compatible con SSR y compartida entre componentes, y expone nombre, fechas,
-  `inscripciones.abiertas`, `contacto`, `datosPago` y `dominioInstitucional`.
-- **FR-003**: `/estudiantes` y `/general` cargan sus tipos de
-  `GET /events/:codigo/registration-types?categoria=ESTUDIANTES|PUBLICO_GENERAL` y los muestran
-  en la tarjeta existente (`title`, `badge` = etiqueta, `basePrice` = precio,
-  `institutionalPrice` = precioInstitucional, `description`, `features` = características).
+  `NUXT_PUBLIC_EVENTO_CODIGO` (por defecto `ciisic-viii-2026`), `NUXT_PUBLIC_ADMIN_URL` y la
+  privada `NUXT_BACKEND_BASE_URL` (dirección del backend para Nitro; no es un secreto y, si falta,
+  se usa la pública). Se retiran `xApiToken` y `xApiUrl`.
+- **FR-002**: `useEvento()` carga el evento con `useAsyncData` y clave `evento:<codigo>`,
+  compatible con SSR y compartida entre componentes, desde `GET /api/publico/evento` (Nitro, que
+  consulta `GET /events/:codigo`), y expone nombre, fechas, `inscripciones.abiertas`, `contacto`,
+  `datosPago` y `dominioInstitucional`.
+- **FR-003**: `/estudiantes` y `/general` cargan sus tipos desde
+  `GET /api/publico/planes?categoria=ESTUDIANTES|PUBLICO_GENERAL` (Nitro, que consulta
+  `GET /events/:codigo/registration-types`) y los muestran en la tarjeta existente (`title`,
+  `badge` = etiqueta, `basePrice` = precio, `institutionalPrice` = precioInstitucional,
+  `description`, `features` = características).
 - **FR-004**: Con inscripciones cerradas, `/planes`, `/estudiantes` y `/general` muestran
   "Inscripciones cerradas" en lugar de formularios o tarjetas de modalidad.
 - **FR-005**: La consulta de DNI usa `GET /document-lookup/dni/:numero` solo para DNI; con
@@ -229,6 +243,12 @@ Como administrador quiero que `/login` me lleve al panel, que ahora es una aplic
   `server/api/consultation.post.ts` y `server/utils/backend.ts`.
 - **FR-014**: Los datos de pago provienen de `datosPago`; se elimina `app/config/payment.ts`.
 - **FR-015**: El celular se valida en el cliente: 9 dígitos que empiezan con 9.
+- **FR-016**: Las rutas Nitro `server/api/publico/evento` y `server/api/publico/planes` cachean
+  60 s (stale-while-revalidate) por código de evento configurado y categoría en lista blanca;
+  conservan el estado HTTP y el cuerpo de error del contrato y no guardan errores. La consulta de
+  DNI, la verificación, la inscripción, los papers y el contacto van directo del navegador a
+  `NUXT_PUBLIC_API_BASE_URL`.
+- **FR-017**: `/undc` redirige a `/planes` (se conserva la ruta).
 
 ### Key Entities
 
@@ -253,11 +273,14 @@ Definidas en los contratos del backend; la landing solo las consume:
 - **SC-004**: Con la consulta de DNI (`503`) y la verificación (`SERVICIO_NO_DISPONIBLE`) caídas,
   el usuario completa su inscripción sin bloqueo.
 - **SC-005**: `lint` (0 errores), `typecheck`, `test` y `build` en verde.
+- **SC-006**: Con tráfico sostenido, el backend recibe como máximo una lectura de evento y una por
+  categoría cada ~60 s por instancia de la landing, sin importar cuántas visitas haya.
 
 ## Assumptions
 
 - El backend publica el evento `ciisic-viii-2026` y mantiene el catálogo de clasificaciones
   (ciclos I–X con ids 1–10), que la landing sigue usando como opciones fijas.
 - No existe GET público de inscripciones: la confirmación usa la respuesta del POST en memoria.
-- `/undc` (página informativa con precios propios) y los textos de marketing ("VIII CIISIC 2026",
-  fechas en `/planes`) quedan fuera de alcance.
+- Los textos de marketing ("VIII CIISIC 2026", fechas en `/planes`) quedan fuera de alcance.
+- La caché de Nitro es en memoria por instancia (suficiente para el despliegue actual de una
+  instancia).

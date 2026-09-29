@@ -21,8 +21,10 @@ export default defineNuxtConfig({
   },
   ssr: true,
   runtimeConfig: {
-    // Variables privadas del servidor (no expuestas al cliente)
-    backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || process.env.API_BASE_URL || 'http://localhost:3000',
+    // Variables privadas del servidor (no expuestas al cliente). No es un secreto: es la dirección
+    // del backend alcanzable por Nitro para las lecturas con caché de server/api/publico/*.
+    // Si está vacía se usa apiBaseUrl.
+    backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || process.env.API_BASE_URL || '',
     // Variables públicas (expuestas al cliente)
     public: {
       appName: 'VIII CIISIC 2026',

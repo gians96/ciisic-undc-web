@@ -42,7 +42,7 @@ inscripciones 10/15 min, papers 10/15 min, contacto 5/15 min); voucher ≤ 5 MB.
 | Principio | Estado | Cómo se cumple |
 |---|---|---|
 | I. Contrato del backend | ✅ | Se referencian los contratos 002/003/004; montos, descuentos y estado los decide el servidor; todo sale de `NUXT_PUBLIC_EVENTO_CODIGO`; sin rutas legacy. |
-| II. Sin secretos | ✅ | Se eliminan `xApiToken`, `xApiUrl`, `backendBaseUrl`, el proxy de DNI y el BFF de autenticación. |
+| II. Sin secretos | ✅ | Se eliminan `xApiToken`, `xApiUrl`, el proxy de DNI y el BFF de autenticación; `backendBaseUrl` queda solo como dirección interna del backend para la caché (no es un secreto). |
 | III. Stack y diseño | ✅ | Sin cambios de dependencias; se reutilizan tarjetas y estilos existentes; marketing intacto. |
 | IV. Accesibilidad | ✅ | Chip de verificación con `aria-live`, notificaciones con `role="alert"`/`status`, tarjetas de plan operables con teclado. |
 | V. Calidad | ✅ | Helpers puros en `app/utils/` con pruebas; puertas lint/typecheck/test/build. |
@@ -54,7 +54,17 @@ inscripciones 10/15 min, papers 10/15 min, contacto 5/15 min); voucher ≤ 5 MB.
   página conserva su template y sus estilos (diseño intacto, diff de template acotado).
 - **D2 — Datos del evento con `useAsyncData`.** Claves `evento:<codigo>` y
   `planes:<codigo>:<categoria>`; `getCachedData` reutiliza el payload (hidratación y navegación
-  cliente) salvo en un refresco manual ("Reintentar").
+  cliente) salvo en un refresco manual ("Reintentar"). Las lecturas van a las rutas Nitro de D13,
+  no al backend.
+- **D13 — Micro-caché Nitro para las lecturas de SSR (decisión del usuario).** Sin ella, cada
+  visita renderizada en el servidor consumiría el límite de lectura del backend (120/min) desde la
+  única IP de la landing. `server/api/publico/evento.get.ts` y `planes.get.ts` usan
+  `defineCachedEventHandler` (`maxAge: 60`, `swr: true`) con claves por código de evento
+  configurado (nunca tomado de la URL) y categoría en lista blanca; consultan
+  `${backendBaseUrl || apiBaseUrl}/api/v1/public/...`, devuelven el cuerpo del backend tal cual y
+  conservan el estado HTTP de los errores, que Nitro no guarda en caché. Las acciones del visitante
+  (DNI, verificación, inscripción, papers, contacto) siguen yendo directo del navegador al backend.
+- **D14 — `/undc` redirige a `/planes`** (301) para retirar precios fijos sin romper enlaces.
 - **D3 — Precio mostrado = réplica de `calcularPrecio` del backend.** Estudiantil → verificación;
   general → dominio institucional del evento. Es solo informativo: el servidor calcula el monto.
 - **D4 — Verificación de estudiante.** Debounce de 600 ms, `AbortController` y número de
@@ -81,7 +91,9 @@ inscripciones 10/15 min, papers 10/15 min, contacto 5/15 min); voucher ≤ 5 MB.
 
 | Archivo | Cambio |
 |---|---|
-| `nuxt.config.ts`, `.env.example` | `eventoCodigo`, `adminUrl`; se retiran `xApiToken`, `xApiUrl`, `backendBaseUrl`. |
+| `nuxt.config.ts`, `.env.example` | `eventoCodigo`, `adminUrl`; se retiran `xApiToken`, `xApiUrl`; `backendBaseUrl` sin valor por defecto (cae en `apiBaseUrl`). |
+| `server/api/publico/evento.get.ts`, `planes.get.ts`, `server/utils/api-backend.ts` (nuevos) | Lecturas con caché de 60 s para el SSR. |
+| `app/pages/undc.vue` | Redirección a `/planes`. |
 | `app/types/evento.ts` (nuevo), `app/types/inscription.ts`, `app/types/index.ts` | Tipos del contrato; se retiran los de la API de DNI anterior. |
 | `app/utils/api-publica.ts` (nuevo) | Rutas de la API pública. |
 | `app/utils/planes.ts` (nuevo) | Mapeo de categorías/tipos a tarjetas, título y regla de precio. |
@@ -103,12 +115,11 @@ inscripciones 10/15 min, papers 10/15 min, contacto 5/15 min); voucher ≤ 5 MB.
 
 ## Riesgos y pendientes
 
-- **Límite de lectura compartido en SSR**: las peticiones SSR salen desde la IP del servidor de la
-  landing y comparten el límite de 120/min del backend. Con tráfico alto conviene excluir esa IP
-  en el backend o agregar una micro-caché en Nitro.
+- **Límite de lectura compartido en SSR**: mitigado con D13. Queda: la caché es en memoria por
+  instancia y el cierre de inscripciones se refleja con hasta ~60 s de retraso (el backend lo
+  impone igual con `409 REGISTRATION_CLOSED`).
 - **Verificación en producción**: depende de la API key de API_UNDC en el backend; sin ella todos
   los estudiantes pagan precio regular (comportamiento esperado y comunicado en el chip).
-- **`/undc`** conserva precios propios hardcodeados (fuera de alcance).
 
 ## Project Structure
 
@@ -135,4 +146,5 @@ app/
 tests/            *.test.ts (Vitest)
 ```
 
-**Structure Decision**: proyecto Nuxt único existente; no se agregan paquetes ni rutas de servidor.
+**Structure Decision**: proyecto Nuxt único existente; no se agregan paquetes. En `server/` solo
+quedan `api/health.get.ts` y las lecturas con caché `api/publico/*` (con `utils/api-backend.ts`).

@@ -1,13 +1,13 @@
 // ============================================================================
-// EVENTO PÚBLICO (GET /api/v1/public/events/:codigo)
+// EVENTO PÚBLICO (GET /api/publico/evento → backend GET /api/v1/public/events/:codigo)
 // ============================================================================
 import type { NuxtApp } from '#app'
 import type { ApiExito, EventoPublico } from '~/types/evento'
-import { rutasApiPublica } from '~/utils/api-publica'
+import { rutasCachePublica } from '~/utils/api-publica'
 
 /**
  * Reutiliza los datos ya cargados (payload de SSR o navegación anterior) salvo en un refresco
- * manual, para que "Reintentar" siempre vuelva a pedir al backend.
+ * manual, para que "Reintentar" siempre vuelva a pedirlos.
  */
 export function datosEnCache(key: string, nuxtApp: NuxtApp, contexto: { cause: string }) {
   if (contexto.cause === 'refresh:manual' || contexto.cause === 'refresh:hook') return undefined
@@ -19,15 +19,14 @@ export const useEventoCodigo = () => String(useRuntimeConfig().public.eventoCodi
 
 /**
  * Datos públicos del evento, compartidos por clave (`evento:<codigo>`) entre componentes y entre
- * SSR e hidratación. En SSR la página espera la carga antes de renderizar.
+ * SSR e hidratación. Se leen de la ruta Nitro con caché de 60 s (no del backend en cada visita).
  */
 export const useEvento = () => {
   const codigo = useEventoCodigo()
-  const { request } = useApi()
 
   const { data, status, error, refresh } = useAsyncData(
     `evento:${codigo}`,
-    () => request<ApiExito<EventoPublico>>(rutasApiPublica.evento(codigo), { timeout: 10000 }).then(respuesta => respuesta.data),
+    () => $fetch<ApiExito<EventoPublico>>(rutasCachePublica.evento, { timeout: 12000 }).then(respuesta => respuesta.data),
     { getCachedData: datosEnCache },
   )
 

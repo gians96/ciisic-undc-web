@@ -21,8 +21,10 @@ produce precios o mensajes que no coinciden con lo que se registra.
 
 ### II. Sin secretos en el cliente ni en el repositorio
 
-- Solo existe configuración pública (`runtimeConfig.public`: URL de la API, código del evento,
-  URL del panel). Los tokens de proveedores (consulta DNI, API_UNDC, correo) viven en el backend.
+- La configuración pública (`runtimeConfig.public`) contiene la URL de la API, el código del
+  evento y la URL del panel. La configuración privada de Nitro se limita a direcciones internas
+  (`backendBaseUrl`), nunca tokens. Los tokens de proveedores (consulta DNI, API_UNDC, correo)
+  viven en el backend.
 - No se crean proxys en `server/` para esconder tokens: si algo requiere un secreto, pertenece al
   backend.
 - `.env` no se versiona; `.env.example` documenta cada variable sin valores reales.
@@ -57,8 +59,13 @@ produce precios o mensajes que no coinciden con lo que se registra.
 
 - SSR activo: los datos compartidos se cargan con `useAsyncData` y clave estable (sin desajustes
   de hidratación ni peticiones duplicadas entre servidor y cliente).
-- Las llamadas HTTP pasan por `useApi()` (base `NUXT_PUBLIC_API_BASE_URL`, timeout explícito,
-  errores normalizados `{ statusCode, code, message, fields }`).
+- Las lecturas públicas que se renderizan en SSR (evento y tipos de inscripción) pasan por rutas
+  Nitro con caché corta (`server/api/publico/*`, 60 s, claves por código de evento y categoría
+  en lista blanca) para no concentrar en la IP del servidor el límite de lectura del backend.
+- Las acciones del visitante (consulta de DNI, verificación, inscripción, papers, contacto) van
+  directo del navegador a la API con `useApi()` (base `NUXT_PUBLIC_API_BASE_URL`, timeout
+  explícito, errores normalizados `{ statusCode, code, message, fields }`), para que cada
+  visitante tenga su propio límite por IP.
 - La validación de archivos en el cliente (tipo y tamaño) es solo una ayuda; la validación por
   contenido la hace el backend.
 
@@ -74,4 +81,4 @@ Esta constitución prevalece sobre prácticas ad hoc. Se modifica mediante PR qu
 archivo con versionado semántico: MAJOR al eliminar o redefinir un principio, MINOR al agregar un
 principio o sección, PATCH para aclaraciones de redacción.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29
+**Versión**: 1.1.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29

@@ -27,6 +27,7 @@ armado del multipart y fecha de pago).
 - [x] T006 [P] Rutas de la API pública en `app/utils/api-publica.ts`
 - [x] T007 `useEvento()` con `useAsyncData` y clave `evento:<codigo>` en `app/composables/useEvento.ts`
 - [x] T008 `normalizeApiError` distingue errores de red (`NETWORK_ERROR`) en `app/composables/useApi.ts` + prueba
+- [x] T033 Micro-caché Nitro de 60 s: `server/api/publico/evento.get.ts`, `planes.get.ts` (lista blanca de categorías) y `server/utils/api-backend.ts`; `useEvento()` lee `/api/publico/evento`; `backendBaseUrl` cae en `apiBaseUrl`; constitución 1.1.0
 
 ## Phase 3: US2 — Consulta de DNI (P1)
 
@@ -37,7 +38,7 @@ armado del multipart y fecha de pago).
 ## Phase 4: US1 + US4 — Planes, datos de pago e inscripciones cerradas (P1/P2)
 
 - [ ] T012 [P] [US1] `mapearPlanes`, `tituloPlan`, regla de precio y `formatearSoles` en `app/utils/planes.ts` / `app/utils/formato.ts` + pruebas
-- [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<codigo>:<categoria>`
+- [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<codigo>:<categoria>` sobre `/api/publico/planes`
 - [ ] T014 [US1] `useFormularioInscripcion()` con la lógica compartida de ambos formularios
 - [ ] T015 [US1] `estudiantes.vue` y `general.vue`: tarjetas desde la API y medios de pago desde `datosPago`
 - [ ] T016 [US4] `EstadoInscripciones.vue` (cargando / error con reintento / cerradas) en `/planes`, `/estudiantes` y `/general`
@@ -65,7 +66,8 @@ armado del multipart y fecha de pago).
 
 - [ ] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /events/:codigo/papers`
 - [ ] T028 [P] [US6] `contacto.vue` → `POST /events/:codigo/contact`
-- [ ] T029 [US7] `/login` redirige a `adminUrl`; eliminar `server/api/auth/*`, `server/utils/backend.ts` y `backendBaseUrl`
+- [ ] T029 [US7] `/login` redirige a `adminUrl`; eliminar `server/api/auth/*` y `server/utils/backend.ts` (se conserva `backendBaseUrl` para la caché)
+- [ ] T034 [P] `/undc` redirige a `/planes` (se conserva la ruta)
 
 ## Phase 9: Polish
 
