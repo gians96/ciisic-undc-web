@@ -69,10 +69,10 @@
             <div class="w-full lg:w-[75%] h-auto">
               <img
                 src="/images/eventos/papers.webp"
-                alt="Afiche de Call for Papers de la edición 2025"
+                alt="Afiche de Call for Papers de la edición 2026"
                 class="w-full h-auto object-cover rounded-xl shadow-2xl"
               >
-              <p class="mt-3 text-center text-sm text-slate-400">Afiche de referencia · Edición 2025</p>
+              <p class="mt-3 text-center text-sm text-slate-400">Edición 2026</p>
             </div>
           </div>
         </div>
