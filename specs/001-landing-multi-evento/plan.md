@@ -73,6 +73,7 @@ visitante vía `X-Client-Ip` (DNI 10/min, verificación 20/min, inscripciones 10
   BCP y Yape, con el mismo aspecto que antes). URLs de QR aceptadas solo si son relativas o http(s).
 - **D9 — `/login`.** `navigateTo(adminUrl, { external: true })`: 302 en SSR y redirección en
   navegación cliente. Se eliminan las rutas de autenticación de Nitro que ya no se usan.
+  *(002: la URL sale de `/api/publico/configuracion`, ya no de `adminUrl`.)*
 - **D10 — Clasificaciones desde `/catalogs`.** Las opciones de ciclo salen del catálogo del
   backend (vía `/api/publico/catalogos`), mostradas sin el prefijo "ESTUDIANTE - " para conservar
   el aspecto actual. Los tipos de documento mantienen las reglas locales (reflejan la validación
@@ -107,7 +108,7 @@ visitante vía `X-Client-Ip` (DNI 10/min, verificación 20/min, inscripciones 10
 
 | Archivo | Cambio |
 |---|---|
-| `nuxt.config.ts`, `.env.example` | `backendEventToken` y `backendBaseUrl` privados (runtime); `adminUrl` público; se retiran `apiBaseUrl`, `eventoCodigo`, `xApiToken`, `xApiUrl`. |
+| `nuxt.config.ts`, `.env.example` | `backendEventToken` y `backendBaseUrl` privados (runtime); `adminUrl` público (retirado en 002); se retiran `apiBaseUrl`, `eventoCodigo`, `xApiToken`, `xApiUrl`. |
 | `server/utils/api-sitio.ts` (nuevo) | Núcleo puro del BFF: encabezados, IP, llamada, errores propios, lectura con límite. |
 | `server/utils/sitio.ts` (nuevo) | Capa h3: config, IP, reenvío de cuerpo y estado HTTP. |
 | `server/api/publico/{evento,planes,catalogos}.get.ts` | Lecturas cacheadas. |

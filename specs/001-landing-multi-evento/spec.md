@@ -178,6 +178,10 @@ Como autor o visitante quiero que mi paper o mensaje quede asociado al evento de
 
 Como administrador quiero que `/login` me lleve al panel, que ahora es una aplicación aparte.
 
+> Actualizado por [002-google-en-inscripcion](../002-google-en-inscripcion/spec.md): la URL del
+> panel se lee de la API del sitio (`/api/publico/configuracion`); `NUXT_PUBLIC_ADMIN_URL` ya no
+> existe.
+
 **Acceptance Scenarios**:
 
 1. **Given** `NUXT_PUBLIC_ADMIN_URL` configurada, **When** abro `/login`, **Then** se me redirige
@@ -244,7 +248,8 @@ ausente, errores) y búsqueda del token en el bundle del cliente (`.output/publi
 
 - **FR-001**: La landing se configura con `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`
   (privadas, solo runtime) y `NUXT_PUBLIC_ADMIN_URL`. Se retiran `NUXT_PUBLIC_API_BASE_URL`,
-  `NUXT_PUBLIC_EVENTO_CODIGO`, `xApiToken` y `xApiUrl`.
+  `NUXT_PUBLIC_EVENTO_CODIGO`, `xApiToken` y `xApiUrl`. *(002 retira también
+  `NUXT_PUBLIC_ADMIN_URL`: solo quedan las dos variables privadas.)*
 - **FR-002**: `useEvento()` carga el evento con `useAsyncData` y clave constante `evento`,
   compatible con SSR y compartida entre componentes, desde `GET /api/publico/evento` (backend
   `GET /event`), y expone nombre, fechas, `inscripciones.abiertas`, `contacto`, `datosPago` y
@@ -283,8 +288,9 @@ ausente, errores) y búsqueda del token en el bundle del cliente (`.output/publi
   `descuento > 0` y el contacto de `useEvento().contacto`.
 - **FR-012**: Ponencias y contacto usan `POST /api/publico/ponencias` y `POST /api/publico/contacto`
   (backend `POST /papers` y `POST /contact` con `{ nombres, apellidos, correo, asunto, mensaje }`).
-- **FR-013**: `/login` redirige a `NUXT_PUBLIC_ADMIN_URL`; se eliminan `server/api/auth/*`,
-  `server/api/consultation.post.ts` y `server/utils/backend.ts`.
+- **FR-013**: `/login` redirige a `NUXT_PUBLIC_ADMIN_URL` *(002: a `urlPanel` de la configuración
+  del sitio)*; se eliminan `server/api/auth/*`, `server/api/consultation.post.ts` y
+  `server/utils/backend.ts`.
 - **FR-014**: Los datos de pago provienen de `datosPago`; se elimina `app/config/payment.ts`.
 - **FR-015**: El celular se valida en el cliente: 9 dígitos que empiezan con 9.
 - **FR-016**: El BFF (`server/api/publico/*`, contrato en `contracts/bff-landing.md`) agrega
