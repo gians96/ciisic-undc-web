@@ -46,17 +46,17 @@ armado del multipart y fecha de pago).
 
 ## Phase 5: US3 — Verificación de estudiante UNDC (P1)
 
-- [ ] T018 [P] [US3] Mensajes por `motivo` y condición de verificación en `app/utils/verificacion.ts` + pruebas
-- [ ] T019 [US3] `useVerificacionEstudiante()` con debounce, cancelación y descarte de respuestas obsoletas
-- [ ] T020 [US3] Chip de estado en `/estudiantes`; precio UNDC solo con `esEstudianteUndc === true`; retirar la regla por `@undc.edu.pe`
-- [ ] T021 [US1] `/general`: precio institucional por `dominioInstitucional` del evento (regla del backend)
+- [x] T018 [P] [US3] Mensajes por `motivo` y condición de verificación en `app/utils/verificacion.ts` + pruebas
+- [x] T019 [US3] `useVerificacionEstudiante()` con debounce, cancelación y descarte de respuestas obsoletas
+- [x] T020 [US3] Chip de estado en `/estudiantes`; precio UNDC solo con `esEstudianteUndc === true`; retirar la regla por `@undc.edu.pe`
+- [x] T021 [US1] `/general`: precio institucional por `dominioInstitucional` del evento (regla del backend)
 
 ## Phase 6: US1 — Envío multipart y validaciones (P1)
 
 - [x] T022 [P] [US1] `mapearFormularioInscripcion`, `construirFormDataInscripcion`, `normalizarFechaPago`, `fechaHoyLima`, celular y voucher en `app/utils/inscripcion.ts` + pruebas (sin `estadoId`/`pago`)
 - [x] T023 [P] [US1] `mensajeErrorInscripcion` para todos los `code` del contrato + pruebas
 - [x] T024 [US1] `useInscription` → `POST /events/:codigo/inscriptions` (campo `voucher`), tipos en `app/types/inscription.ts`, store tipado
-- [ ] T025 [US1] Celular de 9 dígitos que empieza con 9, `max` de fecha y misma condición de habilitación de planes en UI y lógica (ambas páginas)
+- [x] T025 [US1] Celular de 9 dígitos que empieza con 9, `max` de fecha y misma condición de habilitación de planes en UI y lógica (ambas páginas)
 
 ## Phase 7: US5 — Confirmación (P2)
 

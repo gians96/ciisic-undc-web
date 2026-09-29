@@ -81,15 +81,27 @@
                     <div class="form-group col-span-6 md:col-span-3">
                         <label for="email" class="form-label">Correo electrónico</label>
                         <input id="email" v-model="email" type="email" placeholder="Tu correo electrónico" required
-                            class="form-input">
+                            class="form-input" autocomplete="email" maxlength="191">
                         <small class="form-hint">{{ getEmailHint() }}</small>
+                        <!-- Estado de la verificación de estudiante UNDC (se anuncia a lectores de pantalla) -->
+                        <div aria-live="polite">
+                            <p v-if="mensajeVerificacionUndc" class="verification-chip"
+                                :class="`verification-chip--${mensajeVerificacionUndc.tono}`">
+                                <Icon :name="iconoVerificacion" class="verification-chip__icon"
+                                    :class="{ 'animate-spin': estadoVerificacion === 'verificando' }" aria-hidden="true" />
+                                <span>{{ mensajeVerificacionUndc.texto }}</span>
+                                <button v-if="mensajeVerificacionUndc.reintentable" type="button"
+                                    class="verification-chip__retry" @click="reintentarVerificacion">Reintentar</button>
+                            </p>
+                        </div>
                     </div>
 
                     <div class="form-group col-span-6 md:col-span-3">
                         <label for="celular" class="form-label">Celular</label>
                         <input id="celular" v-model="celular" type="tel" placeholder="Tu número de celular" required
-                            class="form-input" pattern="[9][0-9]{8}" maxlength="9">
-                        <small class="form-hint">9 dígitos sin espacios</small>
+                            class="form-input" pattern="9[0-9]{8}" maxlength="9" inputmode="numeric"
+                            autocomplete="tel-national" @input="handleCelularInput">
+                        <small class="form-hint">{{ celularHint }}</small>
                     </div>
 
 
@@ -100,7 +112,7 @@
                             <div v-for="plan in availablePlans" :key="plan.id" @click="selectPlan(plan.id)"
                                 class="plan-card-simple" :class="{
                                     'selected': planId === plan.id,
-                                    'disabled': !isEmailValid
+                                    'disabled': !camposCompletos
                                 }">
                                 <div class="plan-card-header">
                                     <h4 class="plan-card-title">{{ plan.title }}</h4>
@@ -130,7 +142,7 @@
                             </div>
                         </div>
                         <small class="form-hint">
-                            <template v-if="!isEmailValid">
+                            <template v-if="!camposCompletos">
                                 Completa los campos anteriores para habilitar la selección de planes
                             </template>
                             <template v-else>
@@ -294,13 +306,14 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
                                 <div class="form-group">
                                     <label for="codigoVoucher" class="form-label">Código del voucher de pago</label>
-                                    <input v-model="codigoVoucher" type="text" placeholder="Código de operación"
-                                        required class="form-input">
+                                    <input id="codigoVoucher" v-model="codigoVoucher" type="text" placeholder="Código de operación"
+                                        required class="form-input" maxlength="100" autocomplete="off">
                                     <small class="form-hint">Digita el código de pago</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="fechaPago" class="form-label">Fecha de Pago</label>
-                                    <input id="fechaPago" v-model="fechaPago" type="date" required class="form-input">
+                                    <input id="fechaPago" v-model="fechaPago" type="date" required class="form-input"
+                                        :max="fechaMaxima || undefined">
                                     <small class="form-hint">Indica la fecha de pago</small>
                                 </div>
                             </div>
@@ -314,8 +327,8 @@
                                     </div>
                                 </label>
                                 <input id="archivoVoucher" type="file" @change="handleFileChange" required
-                                    class="sr-only" accept="image/jpeg,image/png,image/jpg,application/pdf">
-                                <small class="form-hint">Sube el voucher en JPG, JPEG, PNG o PDF (máx. 5MB)</small>
+                                    class="sr-only" :accept="VOUCHER_ACCEPT">
+                                <small class="form-hint">Sube el voucher en PDF, JPG, PNG o WebP (máx. 5MB)</small>
                             </div>
                         </div>
                     </div>
@@ -379,6 +392,9 @@
 <script setup lang="ts">
 import { PAYMENT_DETAILS } from '~/config/payment'
 import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
+import { formatearSoles } from '~/utils/formato'
+import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
+import { precioPlan } from '~/utils/planes'
 
 // ===========================================================================
 // SEO Y META TAGS
@@ -444,19 +460,15 @@ const inscriptionPlans = [
 // ===========================================================================
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return email.value && emailRegex.test(email.value)
+    return email.value && emailRegex.test(email.value.trim())
 })
 
-const isInstitutionalEmail = computed(() => {
-    return email.value && email.value.toLowerCase().endsWith('@undc.edu.pe')
-})
-
+// Precio UNDC solo para estudiantes verificados; el resto (incluidos estudiantes de otras
+// universidades) ve el precio regular. El monto definitivo lo calcula el backend.
 const availablePlans = computed(() => {
     return inscriptionPlans.map(plan => ({
         ...plan,
-        price: isInstitutionalEmail.value
-            ? `S/ ${plan.institutionalPrice.toFixed(2)}`
-            : `S/ ${plan.basePrice.toFixed(2)}`
+        price: formatearSoles(precioPlan(plan, esEstudianteUndc.value))
     }))
 })
 
@@ -489,6 +501,50 @@ const isSubmitting = ref(false)
 const errorMessage = ref<string>('')
 const successMessage = ref<string>('')
 const showQrModal = ref(false)
+// "Hoy" en Lima se calcula en el navegador (evita desajustes de hidratación a medianoche)
+const fechaMaxima = ref<string>('')
+
+// ===========================================================================
+// VERIFICACIÓN DE ESTUDIANTE UNDC
+// ===========================================================================
+const { evento } = useEvento()
+const {
+    estado: estadoVerificacion,
+    esEstudianteUndc,
+    verificacionToken,
+    mensaje: mensajeVerificacionUndc,
+    reintentar: reintentarVerificacion
+} = useVerificacionEstudiante({
+    correo: email,
+    tipoDocumento: documentType,
+    numeroDocumento: documentNumber,
+    dominio: computed(() => evento.value?.dominioInstitucional)
+})
+
+const iconoVerificacion = computed(() => {
+    if (estadoVerificacion.value === 'verificando') return 'heroicons:arrow-path'
+    switch (mensajeVerificacionUndc.value?.tono) {
+        case 'exito': return 'heroicons:check-badge'
+        case 'aviso': return 'heroicons:exclamation-triangle'
+        default: return 'heroicons:information-circle'
+    }
+})
+
+// Misma condición para habilitar los planes en la interfaz y en la lógica
+const camposCompletos = computed(() => Boolean(
+    isDocumentNumberComplete()
+    && nombres.value.trim()
+    && apellidos.value.trim()
+    && isEmailValid.value
+    && esCelularValido(celular.value)
+))
+
+const celularHint = computed(() => {
+    if (!celular.value) return '9 dígitos, empieza con 9'
+    if (!celular.value.startsWith('9')) return 'El celular debe empezar con 9'
+    if (celular.value.length < 9) return `Faltan ${9 - celular.value.length} dígitos`
+    return 'Celular válido'
+})
 
 // ===========================================================================
 // WATCHERS
@@ -533,10 +589,9 @@ const getBadgeClass = (badge: string) => {
 }
 
 const getEmailHint = () => {
-    if (!email.value) return 'Ingresa tu correo electrónico'
-    if (isInstitutionalEmail.value) {
-        return 'Correo institucional - Se aplicará descuento UNDC'
-    }
+    const dominio = evento.value?.dominioInstitucional || 'undc.edu.pe'
+    if (!email.value) return `Si eres estudiante UNDC, usa tu correo institucional @${dominio}`
+    if (!isEmailValid.value) return 'Ingresa un correo electrónico válido'
     return 'Correo válido'
 }
 
@@ -568,11 +623,17 @@ const documentHint = computed(() => {
 })
 
 const selectPlan = (id: number) => {
-    if (!isEmailValid.value) {
-        showError('❌ Por favor completa correctamente tu correo electrónico antes de seleccionar un plan')
+    if (!camposCompletos.value) {
+        showError('❌ Completa correctamente documento, nombres, apellidos, correo y celular antes de elegir un plan')
         return
     }
     planId.value = id
+}
+
+const handleCelularInput = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    celular.value = target.value.replace(/\D/g, '').slice(0, 9)
+    target.value = celular.value
 }
 
 const showError = (message: string) => {
@@ -695,14 +756,10 @@ const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement
     const file = target.files ? target.files.item(0) : null
 
-    if (file && !['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) {
-        showError('📎 Solo se permiten archivos JPG, PNG o PDF')
-        target.value = ''
-        return
-    }
-
-    if (file && file.size > 5 * 1024 * 1024) {
-        showError('📏 El archivo no debe superar los 5MB')
+    // PDF, JPG, PNG o WebP de hasta 5 MB (el backend valida además el contenido)
+    const problema = file ? validarArchivoVoucher(file) : ''
+    if (problema) {
+        showError(`📎 ${problema}`)
         target.value = ''
         return
     }
@@ -735,8 +792,16 @@ const handleSubmit = async () => {
         showError('❌ El campo Correo electrónico es obligatorio')
         return
     }
+    if (!isEmailValid.value) {
+        showError('❌ Ingresa un correo electrónico válido')
+        return
+    }
     if (!celular.value) {
         showError('❌ El campo Celular es obligatorio')
+        return
+    }
+    if (!esCelularValido(celular.value)) {
+        showError('❌ El celular debe tener 9 dígitos y empezar con 9')
         return
     }
 
@@ -776,14 +841,25 @@ const handleSubmit = async () => {
         showError('❌ Por favor indica la fecha de pago')
         return
     }
+    // Comparación de cadenas YYYY-MM-DD en hora de Lima, igual que el backend
+    if (fechaPago.value > fechaHoyLima()) {
+        showError('❌ La fecha de pago no puede ser futura')
+        return
+    }
 
-    if (!codigoVoucher.value) {
-        showError('❌ Por favor ingresa el código del voucher')
+    if (codigoVoucher.value.trim().length < 3) {
+        showError('❌ Por favor ingresa el código del voucher (mínimo 3 caracteres)')
         return
     }
 
     if (!archivoVoucher.value) {
         showError('❌ Por favor adjunta el voucher de pago')
+        return
+    }
+
+    // Sin esperar el resultado se cobraría el precio regular a un estudiante UNDC
+    if (estadoVerificacion.value === 'verificando') {
+        showError('⏳ Estamos verificando tu condición de estudiante UNDC; espera unos segundos y vuelve a intentarlo')
         return
     }
 
@@ -807,7 +883,8 @@ const handleSubmit = async () => {
             aplicativo: aplicativo.value,
             fechaPago: fechaPago.value,
             codigoVoucher: codigoVoucher.value,
-            archivoVoucher: archivoVoucher.value
+            archivoVoucher: archivoVoucher.value,
+            verificacionToken: verificacionToken.value
         })
 
         const inscripcion = await createInscription(datos)
@@ -909,6 +986,10 @@ const onClassificationAfterLeave = (el: Element) => {
     htmlEl.style.transform = ''
     htmlEl.style.overflow = ''
 }
+
+onMounted(() => {
+    fechaMaxima.value = fechaHoyLima()
+})
 </script>
 
 <style scoped>
@@ -1286,6 +1367,55 @@ input[type="date"]:valid {
     line-height: 1rem;
     color: #94a3b8;
     font-style: italic;
+}
+
+/* Chip de verificación de estudiante UNDC */
+.verification-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #475569;
+    border-radius: 0.5rem;
+    background-color: rgba(30, 41, 59, 0.6);
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    line-height: 1.1rem;
+}
+
+.verification-chip--exito {
+    border-color: rgba(0, 217, 232, 0.5);
+    background-color: rgba(0, 217, 232, 0.08);
+    color: #a5f3fc;
+}
+
+.verification-chip--aviso {
+    border-color: rgba(251, 191, 36, 0.5);
+    background-color: rgba(251, 191, 36, 0.08);
+    color: #fde68a;
+}
+
+.verification-chip__icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.verification-chip__retry {
+    margin-left: auto;
+    padding: 0 0.25rem;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    white-space: nowrap;
+    border-radius: 0.25rem;
+}
+
+.verification-chip__retry:focus-visible {
+    outline: 2px solid #00d9e8;
+    outline-offset: 2px;
 }
 
 /* Plan Cards Compact Styling - Similar a Digital Ocean */
