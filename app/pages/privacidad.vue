@@ -100,6 +100,20 @@
                   </div>
 
                 </div>
+
+                <!-- Verificación del correo con Google (opcional) -->
+                <div class="bg-secondary-700 rounded-lg p-6">
+                  <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                    <Icon name="heroicons:envelope" class="h-5 w-5 mr-2 flex-shrink-0" aria-hidden="true" />
+                    Verificación del correo con Google (opcional)
+                  </h3>
+                  <p class="text-sm leading-relaxed">
+                    Al inscribirte puedes usar «Continuar con Google» para verificar tu correo electrónico. Es
+                    opcional y solo se usa para eso: de tu cuenta de Google recibimos tu correo, nombres y
+                    apellidos (nunca tu contraseña), no publicamos nada en tu nombre ni accedemos a otros datos de
+                    tu cuenta. Si prefieres no usarlo, escribe tu correo y continúa con tu inscripción.
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -298,7 +312,7 @@ useHead({
 // DATOS
 // ============================================================================
 
-const lastUpdated = ref('14 de septiembre de 2026')
+const lastUpdated = ref('29 de septiembre de 2026')
 
 // ============================================================================
 // METHODS
