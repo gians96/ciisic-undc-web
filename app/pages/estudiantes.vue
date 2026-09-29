@@ -152,9 +152,13 @@
                                     <option value="" disabled selected>Selecciona una opción</option>
                                     <option value=1>I CICLO</option>
                                     <option value=2>II CICLO</option>
+                                    <option value=3>III CICLO</option>
                                     <option value=4>IV CICLO</option>
+                                    <option value=5>V CICLO</option>
                                     <option value=6>VI CICLO</option>
+                                    <option value=7>VII CICLO</option>
                                     <option value=8>VIII CICLO</option>
+                                    <option value=9>IX CICLO</option>
                                     <option value=10>X CICLO</option>
                                 </select>
                                 <small class="form-hint">Indica el ciclo al que perteneces</small>
