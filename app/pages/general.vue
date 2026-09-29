@@ -376,17 +376,11 @@ useHead({
 const { consultDni, documentTypes } = useConsultation()
 const {
     createInscription,
-    initializeCatalogs,
     mapFormDataToApiData,
     isSubmitting: apiSubmitting,
     error: apiError,
-    clearError,
-    registrationTypes,
-    classifications,
-    depositMethods,
-    paymentTypes
+    clearError
 } = useInscription()
-const route = useRoute()
 const router = useRouter()
 
 // ===========================================================================
@@ -779,70 +773,29 @@ const handleSubmit = async () => {
     clearError()
 
     try {
-        // Verificar que los catálogos necesarios estén cargados (solo classifications para general)
-        if (!classifications.value?.length) {
-            await initializeCatalogs()
-
-            // Dar un momento para que se carguen
-            await new Promise(resolve => setTimeout(resolve, 100))
-
-            if (!classifications.value?.length) {
-                throw new Error('No se pudieron cargar los datos necesarios. Recargue la página e intente nuevamente.')
-            }
-        }
-
-        // Calcular el precio final basado en el plan seleccionado
-        const selectedPlanData = selectedPlan.value
-        const basePrice = isInstitutionalEmail.value ? selectedPlanData?.institutionalPrice || 0 : selectedPlanData?.basePrice || 0
-        const originalPrice = selectedPlanData?.basePrice || 0
-        const discount = originalPrice - basePrice
-
-        // Preparar los datos del formulario
-        const formData = {
+        // El monto, el descuento y el estado los calcula el backend: no se envían
+        const datos = mapFormDataToApiData({
             documentType: documentType.value,
             documentNumber: documentNumber.value,
             nombres: nombres.value,
             apellidos: apellidos.value,
             email: email.value,
             celular: celular.value,
+            planId: planId.value,
             clasificacion: clasificacion.value,
-            planId: planId.value, // Usar planId directamente
             modalidadDeposito: modalidadDeposito.value,
             bancoSeleccionado: bancoSeleccionado.value,
             tipoPago: tipoPago.value,
             aplicativo: aplicativo.value,
             fechaPago: fechaPago.value,
             codigoVoucher: codigoVoucher.value,
-            archivoVoucher: archivoVoucher.value,
-            finalPrice: basePrice,
-            hasDiscount: discount > 0,
-            descuento: discount
-        }
+            archivoVoucher: archivoVoucher.value
+        })
 
-        // Mapear datos del formulario a formato de API
-        const apiData = mapFormDataToApiData(formData)
-
-        // Enviar inscripción
-        const response = await createInscription(apiData)
-
-        // Redirigir inmediatamente a página de confirmación
-        if (response.data?.id) {
-            router.push(`/confirmation?id=${response.data.id}`)
-        } else {
-            showSuccess(`🎉 ¡Inscripción completada exitosamente! Recibirás un email de confirmación en: ${email.value}`)
-            // Si por alguna razón no hay ID, redirigir a página principal después de un momento
-            setTimeout(() => {
-                router.push('/')
-            }, 2000)
-        }
-
-    } catch (error: any) {
-        // Mostrar el error específico del composable si existe
-        if (apiError.value) {
-            showError(apiError.value)
-        } else {
-            showError('❌ Error al procesar la inscripción. Inténtelo nuevamente.')
-        }
+        const inscripcion = await createInscription(datos)
+        await router.push(`/confirmation?id=${inscripcion.id}`)
+    } catch (error) {
+        showError(apiError.value || (error instanceof Error && error.message) || '❌ Error al procesar la inscripción. Inténtelo nuevamente.')
     } finally {
         isSubmitting.value = false
     }
@@ -938,18 +891,6 @@ const onClassificationAfterLeave = (el: Element) => {
     htmlEl.style.transform = ''
     htmlEl.style.overflow = ''
 }
-
-// ===========================================================================
-// INICIALIZACIÓN
-// ===========================================================================
-onMounted(async () => {
-    // Inicializar catálogos de la API
-    try {
-        await initializeCatalogs()
-    } catch {
-        showError('❌ Error al cargar datos iniciales. Algunas funciones pueden no estar disponibles.')
-    }
-})
 </script>
 
 <style scoped>

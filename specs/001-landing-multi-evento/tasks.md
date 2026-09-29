@@ -37,7 +37,7 @@ armado del multipart y fecha de pago).
 
 ## Phase 4: US1 + US4 — Planes, datos de pago e inscripciones cerradas (P1/P2)
 
-- [ ] T012 [P] [US1] `mapearPlanes`, `tituloPlan`, regla de precio y `formatearSoles` en `app/utils/planes.ts` / `app/utils/formato.ts` + pruebas
+- [x] T012 [P] [US1] `mapearPlanes`, `tituloPlan`, regla de precio y `formatearSoles` en `app/utils/planes.ts` / `app/utils/formato.ts` + pruebas
 - [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<codigo>:<categoria>` sobre `/api/publico/planes`
 - [ ] T014 [US1] `useFormularioInscripcion()` con la lógica compartida de ambos formularios
 - [ ] T015 [US1] `estudiantes.vue` y `general.vue`: tarjetas desde la API y medios de pago desde `datosPago`
@@ -53,14 +53,14 @@ armado del multipart y fecha de pago).
 
 ## Phase 6: US1 — Envío multipart y validaciones (P1)
 
-- [ ] T022 [P] [US1] `mapearFormularioInscripcion`, `construirFormDataInscripcion`, `normalizarFechaPago`, `fechaHoyLima`, celular y voucher en `app/utils/inscripcion.ts` + pruebas (sin `estadoId`/`pago`)
-- [ ] T023 [P] [US1] `mensajeErrorInscripcion` para todos los `code` del contrato + pruebas
-- [ ] T024 [US1] `useInscription` → `POST /events/:codigo/inscriptions` (campo `voucher`), tipos en `app/types/inscription.ts`, store tipado
+- [x] T022 [P] [US1] `mapearFormularioInscripcion`, `construirFormDataInscripcion`, `normalizarFechaPago`, `fechaHoyLima`, celular y voucher en `app/utils/inscripcion.ts` + pruebas (sin `estadoId`/`pago`)
+- [x] T023 [P] [US1] `mensajeErrorInscripcion` para todos los `code` del contrato + pruebas
+- [x] T024 [US1] `useInscription` → `POST /events/:codigo/inscriptions` (campo `voucher`), tipos en `app/types/inscription.ts`, store tipado
 - [ ] T025 [US1] Celular de 9 dígitos que empieza con 9, `max` de fecha y misma condición de habilitación de planes en UI y lógica (ambas páginas)
 
 ## Phase 7: US5 — Confirmación (P2)
 
-- [ ] T026 [US5] `confirmation.vue` con la respuesta nueva, "Precio UNDC aplicado" y contacto del evento
+- [x] T026 [US5] `confirmation.vue` con la respuesta nueva, "Precio UNDC aplicado" y contacto del evento
 
 ## Phase 8: US6 + US7 — Papers, contacto y panel (P3)
 

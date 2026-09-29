@@ -54,17 +54,17 @@
                             </NuxtLink>
                         </div>
 
-                        <!-- Información de contacto -->
+                        <!-- Información de contacto (del evento) -->
                         <div class="error-help">
                             <p class="help-text">¿Necesitas ayuda?</p>
                             <div class="help-options">
-                                <a href="mailto:congreso@undc.edu.pe" class="help-link">
+                                <a :href="`mailto:${contactoCorreo}`" class="help-link">
                                     <Icon name="heroicons:envelope" class="h-4 w-4 mr-1" />
-                                    congreso@undc.edu.pe
+                                    {{ contactoCorreo }}
                                 </a>
-                                <a href="https://wa.me/51949026908" class="help-link">
+                                <a v-if="enlaceTelefono" :href="enlaceTelefono" target="_blank" rel="noopener noreferrer" class="help-link">
                                     <Icon name="heroicons:phone" class="h-4 w-4 mr-1" />
-                                    +51 949 026 908
+                                    {{ contactoTelefono }}
                                 </a>
                             </div>
                         </div>
@@ -90,81 +90,101 @@
                         </div>
 
                         <p class="confirmation-message">
-                            Hola <strong>{{ inscription.usuario.nombres }} {{ inscription.usuario.apellidos }}</strong>, 
-                            tu inscripción al <strong>VIII CIISIC</strong> ha sido registrada exitosamente.
+                            Hola <strong>{{ inscription.participante.nombres }} {{ inscription.participante.apellidos }}</strong>,
+                            tu inscripción al <strong>{{ inscription.evento?.nombreCorto || 'VIII CIISIC' }}</strong> ha sido registrada exitosamente.
                         </p>
                     </div>
 
                     <!-- Detalles de la inscripción -->
                     <div class="inscription-details">
                         <h3 class="details-title">Detalles de tu inscripción:</h3>
-                        
+
                         <div class="details-grid">
                             <div class="detail-item">
                                 <span class="detail-label">Tipo de inscripción:</span>
-                                <span class="detail-value">{{ inscription.tipoInscripcion.nombre }}</span>
+                                <span class="detail-value">{{ tipoInscripcionTexto }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
-                                <span class="detail-label">Monto pagado:</span>
-                                <span class="detail-value">S/ {{ parseFloat(inscription.pago).toFixed(2) }}</span>
+                                <span class="detail-label">Monto de inscripción:</span>
+                                <span class="detail-value">
+                                    {{ formatearSoles(inscription.monto) }}
+                                    <span v-if="precioUndcAplicado" class="price-badge">Precio UNDC aplicado</span>
+                                </span>
                             </div>
-                            
+
+                            <div v-if="precioUndcAplicado" class="detail-item">
+                                <span class="detail-label">Precio regular:</span>
+                                <span class="detail-value">
+                                    {{ formatearSoles(inscription.precioRegular) }} (ahorras {{ formatearSoles(inscription.descuento) }})
+                                </span>
+                            </div>
+
+                            <div v-if="inscription.esEstudianteUndc" class="detail-item">
+                                <span class="detail-label">Condición:</span>
+                                <span class="detail-value">Estudiante UNDC verificado</span>
+                            </div>
+
                             <div v-if="inscription.clasificacion" class="detail-item">
                                 <span class="detail-label">Clasificación:</span>
                                 <span class="detail-value">{{ inscription.clasificacion.nombre }}</span>
                             </div>
-                            
+
+                            <div class="detail-item">
+                                <span class="detail-label">Documento:</span>
+                                <span class="detail-value">{{ inscription.participante.tipoDocumento.toUpperCase() }} {{ inscription.participante.numeroDocumento }}</span>
+                            </div>
+
                             <div class="detail-item">
                                 <span class="detail-label">Email:</span>
-                                <span class="detail-value">{{ inscription.usuario.correoElectronico }}</span>
+                                <span class="detail-value">{{ inscription.participante.correo }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Celular:</span>
-                                <span class="detail-value">{{ inscription.usuario.celular }}</span>
+                                <span class="detail-value">{{ inscription.participante.celular }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Modalidad de pago:</span>
-                                <span class="detail-value">{{ inscription.modalidadDeposito === 'banco' ? 'Depósito Bancario' : 'Billetera Digital' }}</span>
+                                <span class="detail-value">{{ inscription.modalidadPago === 'billetera' ? 'Billetera digital' : 'Depósito bancario' }}</span>
                             </div>
-                            
-                            <div v-if="inscription.modalidadDeposito === 'banco'" class="detail-item">
+
+                            <div v-if="inscription.modalidadPago === 'banco' && inscription.banco" class="detail-item">
                                 <span class="detail-label">Banco:</span>
-                                <span class="detail-value">{{ inscription.bancoSeleccionado === 'bcp' ? 'BCP' : 'Interbank' }}</span>
+                                <span class="detail-value">{{ nombreBanco }}</span>
                             </div>
-                            
-                            <div v-if="inscription.modalidadDeposito === 'banco'" class="detail-item">
+
+                            <div v-if="inscription.modalidadPago === 'banco' && inscription.tipoOperacion" class="detail-item">
                                 <span class="detail-label">Tipo de operación:</span>
-                                <span class="detail-value">{{ inscription.tipoOperacion === 'directo' ? 'Depósito Directo' : 'Transferencia Interbancaria' }}</span>
+                                <span class="detail-value">{{ inscription.tipoOperacion === 'interbancario' ? 'Transferencia interbancaria' : 'Depósito directo' }}</span>
                             </div>
-                            
-                            <div v-if="inscription.modalidadDeposito === 'billetera'" class="detail-item">
+
+                            <div v-if="inscription.modalidadPago === 'billetera' && inscription.billeteraDigital" class="detail-item">
                                 <span class="detail-label">Aplicativo:</span>
-                                <span class="detail-value">{{ inscription.billeteraDigital === 'yape' ? 'Yape' : 'Plin' }}</span>
+                                <span class="detail-value">{{ nombreBilletera }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Código del voucher:</span>
                                 <span class="detail-value">{{ inscription.numeroOperacion }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Fecha de pago:</span>
-                                <span class="detail-value">{{ formatDate(inscription.fechaPago) }}</span>
+                                <span class="detail-value">{{ formatearFechaSoloDia(inscription.fechaPago) }}</span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Estado:</span>
-                                <span class="detail-value status" :class="getStatusClass(inscription.estado.nombre)">
+                                <span class="detail-value status" :class="getStatusClass(inscription.estado.codigo)">
                                     {{ inscription.estado.nombre }}
                                 </span>
                             </div>
-                            
+
                             <div class="detail-item">
                                 <span class="detail-label">Fecha de registro:</span>
-                                <span class="detail-value">{{ formatDate(inscription.creadoEn) }}</span>
+                                <span class="detail-value">{{ formatearFechaHoraLima(inscription.creadoEn) }}</span>
                             </div>
                         </div>
                     </div>
@@ -182,11 +202,6 @@
 
                     <!-- Acciones -->
                     <div class="confirmation-actions">
-                        <!-- <button @click="downloadPDF" class="btn-secondary">
-                            <Icon name="heroicons:document-arrow-down" class="h-5 w-5 mr-2" />
-                            Descargar comprobante
-                        </button> -->
-                        
                         <NuxtLink to="/" class="btn-primary">
                             <Icon name="heroicons:home" class="h-5 w-5 mr-2" />
                             Volver al inicio
@@ -210,6 +225,10 @@
 </template>
 
 <script setup lang="ts">
+import type { InscripcionCreada } from '~/types/inscription'
+import { enlaceWhatsApp, formatearFechaHoraLima, formatearFechaSoloDia, formatearSoles } from '~/utils/formato'
+import { tituloPlan } from '~/utils/planes'
+
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
@@ -225,14 +244,41 @@ useHead({
 // ===========================================================================
 const route = useRoute()
 const inscriptionStore = useInscriptionStore()
+const { contacto, datosPago } = useEvento()
 const isLoading = ref(false)
 
 // ===========================================================================
 // ESTADO REACTIVO
 // ===========================================================================
-const inscription = ref<any>(null)
+const inscription = ref<InscripcionCreada | null>(null)
 const error = ref<string | null>(null)
 const inscriptionId = computed(() => route.query.id as string)
+
+// Contacto de soporte: datos del evento (con los de la organización como respaldo)
+const contactoCorreo = computed(() => contacto.value?.correo || 'congreso@undc.edu.pe')
+const contactoTelefono = computed(() => contacto.value?.telefono || '+51 949 026 908')
+const enlaceTelefono = computed(() => enlaceWhatsApp(contactoTelefono.value))
+
+const tipoInscripcionTexto = computed(() => {
+    const tipo = inscription.value?.tipoInscripcion
+    return tipo ? tituloPlan(tipo.nombre, tipo.etiqueta) : '—'
+})
+
+// El descuento lo calcula el backend (verificación UNDC o correo institucional según la categoría)
+const precioUndcAplicado = computed(() => Number(inscription.value?.descuento ?? 0) > 0)
+
+const nombreBanco = computed(() => {
+    const codigo = inscription.value?.banco
+    if (!codigo) return ''
+    return datosPago.value?.bancos?.find(banco => banco.codigo === codigo)?.nombre || codigo.toUpperCase()
+})
+
+const nombreBilletera = computed(() => {
+    const codigo = inscription.value?.billeteraDigital
+    if (!codigo) return ''
+    return datosPago.value?.billeteras?.find(billetera => billetera.codigo === codigo)?.nombre
+        || codigo.charAt(0).toUpperCase() + codigo.slice(1)
+})
 
 // ===========================================================================
 // MÉTODOS
@@ -255,27 +301,17 @@ const loadInscription = async () => {
     error.value = 'no_data'
 }
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-PE', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    })
-}
-
-const getStatusClass = (status: string) => {
-    switch (status.toLowerCase()) {
-        case 'pendiente':
+const getStatusClass = (codigo: string) => {
+    switch (codigo.toUpperCase()) {
+        case 'PENDIENTE':
             return 'status-pending'
-        case 'aprobado':
+        case 'APROBADO':
             return 'status-approved'
-        case 'rechazado':
+        case 'RECHAZADO':
             return 'status-rejected'
-        case 'en revisión':
+        case 'EN_REVISION':
             return 'status-reviewing'
-        case 'cancelado':
+        case 'CANCELADO':
             return 'status-cancelled'
         default:
             return 'status-default'
@@ -339,10 +375,6 @@ const getErrorContent = (errorType: string) => {
                 actionLink: null
             }
     }
-}
-
-const downloadPDF = () => {
-    // TODO: Implementar descarga de PDF
 }
 
 // ===========================================================================
@@ -592,6 +624,18 @@ onMounted(() => {
     border-radius: 0.375rem;
     font-size: 0.875rem;
     text-transform: uppercase;
+}
+
+.price-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid #00d9e8;
+    border-radius: 9999px;
+    color: #00d9e8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .status-pending {
