@@ -1,6 +1,9 @@
-# VII CIISIC Platform
+# CIISIC — landing del congreso
 
-Una plataforma gaming moderna construida con Nuxt 4, TailwindCSS y las mejores prácticas de desarrollo. Incluye componentes modulares.
+Landing del Congreso CIISIC (UNDC) construida con Nuxt 4, TailwindCSS y las mejores prácticas de desarrollo. Incluye componentes modulares.
+
+- **Documentación** (arquitectura BFF, inscripción, ponencias, despliegue): [`docs/`](docs/README.md)
+- **Guía para agentes de IA y forma de trabajar con el resto del ecosistema**: [`AGENTS.md`](AGENTS.md)
 
 ## 🚀 Características
 

@@ -11,19 +11,12 @@ Los servicios de staging deben utilizar dominios distintos y protección de acce
 
 ## Variables de Dokploy
 
-Backend:
-
-- `NODE_ENV=production`
-- `PORT=3000`
-- `DATABASE_URL`
-- `JWT_SECRET` aleatorio de al menos 32 caracteres
-- `CORS_ORIGINS`, lista separada por comas con los dominios frontend permitidos
-- `API_URL`, URL pública del backend
-- `UPLOADS_DIR=/app/uploads`
-- `MAX_UPLOAD_BYTES=5242880`
-- `RENIEC_PROVIDER=nubetec` y `NUBETEC_TOKEN`; alternativamente `reniec`, `RENIEC_TOKEN` y `API_RENIEC_DNI`
-- `BREVO_API_KEY`, `BREVO_SENDER`, `BREVO_SENDER_NAME` y `BREVO_SENDER_SUBJECT`
-- `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD` solo durante la creación inicial
+Backend (`backend-ciisic`, detalle en su `docs/configuracion.md`): solo `DATABASE_URL`,
+`JWT_SECRET` (≥ 32 caracteres aleatorios) y `SECRETS_ENCRYPTION_KEY` (32 bytes en base64; no debe
+cambiar). `NODE_ENV=production` lo fija la imagen. API_UNDC, Google, URL del panel, correo (Brevo),
+tokens DNI y rutas de la landing anterior se configuran en el panel; CORS está abierto y lo
+protege el token. Variables antiguas (`CORS_ORIGINS`, `API_URL`, `UPLOADS_DIR`, `RENIEC_*`,
+`NUBETEC_TOKEN`, `BREVO_*`, `BOOTSTRAP_*`…) sobran: el log del backend avisa de cada una.
 
 Frontend (landing, BFF de la API del sitio):
 
@@ -44,8 +37,10 @@ Los secretos se configuran como variables runtime de Dokploy. No se envían como
 1. Habilitar reglas de protección en `rama-beni`, `main` y ambas ramas `staging`: PR obligatorio y workflow CI requerido.
 2. Crear los servicios y recursos aislados de staging.
 3. Montar y verificar el volumen de uploads antes del primer despliegue.
-4. Ejecutar `prisma migrate deploy` contra la base de staging.
-5. Ejecutar una sola vez `npm run bootstrap:admin` en el contenedor backend; retirar después las variables `BOOTSTRAP_ADMIN_*`.
+4. Las migraciones se aplican solas al arrancar el contenedor del backend (valida el entorno y
+   luego ejecuta `prisma migrate deploy`).
+5. Crear el primer SuperAdmin una sola vez en el contenedor backend:
+   `node dist/src/database/bootstrapAdmin.js --correo admin@undc.edu.pe` (muestra una contraseña temporal).
 
 ## Validación de staging
 
