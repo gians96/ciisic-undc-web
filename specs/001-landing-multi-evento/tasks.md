@@ -77,8 +77,8 @@ errores).
 
 - [x] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /api/publico/ponencias`
 - [x] T028 [P] [US6] `contacto.vue` → `POST /api/publico/contacto` con `{ nombres, apellidos, correo, asunto, mensaje }`
-- [ ] T029 [US7] `/login` redirige a `NUXT_PUBLIC_ADMIN_URL`; eliminar `server/api/auth/*` y `server/utils/backend.ts`
-- [ ] T034 [P] `/undc` redirige a `/planes` (se conserva la ruta)
+- [x] T029 [US7] `/login` redirige a `NUXT_PUBLIC_ADMIN_URL`; eliminar `server/api/auth/*` y `server/utils/backend.ts`
+- [x] T034 [P] `/undc` redirige a `/planes` (se conserva la ruta)
 
 ## Phase 9: Polish
 

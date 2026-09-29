@@ -1,361 +1,48 @@
 <!-- ============================================================================
-     PÁGINA LOGIN - INICIAR SESIÓN
+     /login: el panel administrativo es una aplicación aparte (NUXT_PUBLIC_ADMIN_URL).
+     Esta ruta solo redirige; si la URL no está configurada muestra un aviso.
      ============================================================================ -->
 
 <template>
   <div class="min-h-screen bg-secondary-900 flex items-center justify-center py-12 px-4">
     <div class="max-w-md w-full">
-      <div class="bg-secondary-800 rounded-2xl shadow-2xl p-8">
-        <!-- Logo y Título -->
-        <div class="text-center mb-8">
-          <NuxtLink to="/" class="inline-block mb-6">
-            <NuxtImg
-              src="/images/logo/logo.png"
-              alt="MYKD Logo"
-              width="120"
-              height="40"
-              class="h-10 w-auto mx-auto"
-            />
-          </NuxtLink>
-          <h1 class="text-3xl font-bold text-white mb-2">Iniciar Sesión</h1>
-          <p class="text-gray-300">Accede al panel administrativo del VIII CIISIC</p>
-        </div>
-
-        <!-- Formulario de Login -->
-        <form @submit.prevent="handleLogin" class="space-y-6">
-          <!-- Email -->
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-              Correo Electrónico
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              required
-              class="w-full px-4 py-3 bg-secondary-700 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-              placeholder="tu@email.com"
-            />
-          </div>
-
-          <!-- Password -->
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
-              Contraseña
-            </label>
-            <div class="relative">
-              <input
-                id="password"
-                v-model="form.password"
-                :type="showPassword ? 'text' : 'password'"
-                required
-                class="w-full px-4 py-3 pr-12 bg-secondary-700 border border-secondary-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                @click="showPassword = !showPassword"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
-              >
-                <Icon 
-                  :name="showPassword ? 'heroicons:eye-slash' : 'heroicons:eye'" 
-                  class="h-5 w-5" 
-                />
-              </button>
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="w-full bg-primary hover:bg-primary/90 text-black font-semibold py-3 px-4 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            <Icon v-if="isLoading" name="heroicons:arrow-path" class="h-5 w-5 animate-spin mr-2" />
-            {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
-          </button>
-        </form>
-
+      <div class="bg-secondary-800 rounded-2xl shadow-2xl p-8 text-center">
+        <NuxtLink to="/" class="inline-block mb-6">
+          <NuxtImg
+            src="/images/logo/logo.png"
+            alt="VIII CIISIC"
+            width="120"
+            height="40"
+            class="h-10 w-auto mx-auto"
+          />
+        </NuxtLink>
+        <h1 class="text-3xl font-bold text-white mb-2">Panel administrativo</h1>
+        <p class="text-gray-300" role="status">
+          El panel administrativo no está disponible en este momento. Si formas parte de la organización,
+          comunícate con el equipo técnico.
+        </p>
+        <NuxtLink
+          to="/"
+          class="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-black transition-colors duration-300 hover:bg-primary/90"
+        >
+          <Icon name="heroicons:home" class="h-5 w-5" aria-hidden="true" />
+          Volver al inicio
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// ============================================================================
-// IMPORTS
-// ============================================================================
-
-import { useLayoutStore } from '~/stores/layout'
-
-// ============================================================================
-// STORES
-// ============================================================================
-
-const layoutStore = useLayoutStore()
-
-// ============================================================================
-// SEO Y META TAGS
-// ============================================================================
-
 useHead({
-  title: 'Iniciar Sesión | VIII CIISIC',
-  meta: [
-    {
-      name: 'description',
-      content: 'Inicia sesión en tu cuenta VIII CIISIC para acceder a más funcionalidades.'
-    },
-    {
-      property: 'og:title',
-      content: 'Iniciar Sesión | VIII CIISIC'
-    },
-    {
-      property: 'og:description',
-      content: 'Inicia sesión en tu cuenta VIII CIISIC para acceder al panel administrativo.'
-    },
-    {
-      property: 'og:type',
-      content: 'website'
-    }
-  ]
+  title: 'Panel administrativo | VIII CIISIC',
+  meta: [{ name: 'robots', content: 'noindex' }]
 })
 
-// ============================================================================
-// ESTADO LOCAL
-// ============================================================================
-
-const form = reactive({
-  email: '',
-  password: ''
-})
-
-const isLoading = ref(false)
-const showPassword = ref(false)
-
-// ============================================================================
-// METHODS
-// ============================================================================
-
-const handleLogin = async () => {
-  if (isLoading.value) return
-
-  // Validación básica
-  if (!form.email || !form.password) {
-    layoutStore.showError('Por favor completa todos los campos', 'Error de validación')
-    return
-  }
-
-  isLoading.value = true
-
-  try {
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: { correoElectronico: form.email, contrasena: form.password }
-    })
-    
-    layoutStore.showSuccess('¡Bienvenido de vuelta!', 'Inicio de sesión exitoso')
-    
-    // Redirigir al dashboard o página principal
-    await navigateTo('/')
-    
-  } catch {
-    layoutStore.showError(
-      'Credenciales incorrectas. Por favor verifica tu email y contraseña.',
-      'Error de autenticación'
-    )
-  } finally {
-    isLoading.value = false
-  }
+// La URL sale de la configuración (no de la petición): no hay redirección abierta.
+// En SSR responde 302; en navegación cliente cambia de sitio con location.
+const adminUrl = String(useRuntimeConfig().public.adminUrl || '').trim()
+if (adminUrl) {
+  await navigateTo(adminUrl, { external: true, redirectCode: 302 })
 }
-
-// ============================================================================
-// LIFECYCLE
-// ============================================================================
-
-onMounted(() => {
-  // Focus en el campo email al cargar
-  nextTick(() => {
-    const emailInput = document.getElementById('email')
-    if (emailInput) {
-      emailInput.focus()
-    }
-  })
-})
 </script>
-
-<style scoped>
-/* ============================================================================
-   ESTILOS ESPECÍFICOS DE LA PÁGINA LOGIN
-   ============================================================================ */
-
-/* Form Input Focus Effects */
-.form-input:focus {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 217, 232, 0.1);
-}
-
-/* Login Card Animation */
-.login-card {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Button Hover Effects */
-.submit-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.submit-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.submit-btn:hover::before {
-  left: 100%;
-}
-
-/* Social Button Hover */
-.social-btn {
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.social-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Password Toggle Button */
-.password-toggle {
-  transition: all 0.2s ease;
-}
-
-.password-toggle:hover {
-  transform: scale(1.1);
-}
-
-/* Checkbox Custom Styling */
-input[type="checkbox"]:checked {
-  background-color: #00d9e8;
-  border-color: #00d9e8;
-}
-
-/* Link Hover Effects */
-.auth-link {
-  position: relative;
-}
-
-.auth-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #00d9e8;
-  transition: width 0.3s ease;
-}
-
-.auth-link:hover::after {
-  width: 100%;
-}
-
-/* Background Gradient */
-.login-background {
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(0, 217, 232, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 217, 232, 0.05) 0%, transparent 50%);
-}
-
-/* Loading Spinner */
-.spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  .login-card {
-    margin: 1rem;
-    padding: 1.5rem;
-  }
-  
-  .social-buttons {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .login-card,
-  .form-input:focus,
-  .social-btn:hover,
-  .password-toggle:hover,
-  .submit-btn::before {
-    animation: none;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .form-input,
-  .submit-btn,
-  .social-btn {
-    border: 2px solid #ffffff;
-  }
-  
-  .form-input:focus {
-    border-color: #00d9e8;
-    box-shadow: 0 0 0 2px #00d9e8;
-  }
-}
-
-/* Dark Mode Specific */
-@media (prefers-color-scheme: dark) {
-  .form-input::placeholder {
-    color: rgb(156 163 175);
-  }
-  
-  .divider {
-    border-color: rgb(75 85 99);
-  }
-}
-
-/* Error States */
-.form-input.error {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-}
-
-.form-input.error:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
-}
-</style>
