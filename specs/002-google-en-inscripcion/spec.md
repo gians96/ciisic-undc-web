@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-29
 
-**Status**: Implementado; pendiente la prueba integrada con `backend-ciisic` (spec 010, acceso con Google)
+**Status**: Implementado y probado con un backend simulado; pendiente la prueba integrada con `backend-ciisic` y un client ID real
 
 **Input**: "La landing deja de usar variables de entorno públicas: el client ID de Google y la URL
 del panel se leen de la API del sitio (`GET /config`). En la inscripción se agrega un botón
@@ -14,10 +14,12 @@ confirmación enlaza al estado de la inscripción en el panel."
 
 ## Contratos (fuente de verdad)
 
-- API del sitio de `backend-ciisic` (`/api/v1/site`, `X-Api-Key` del evento): `GET /config`,
-  `POST /google-verification` y el campo `verificacionCorreoToken` de `POST /inscriptions`
-  (spec 010 del backend). Hasta que el backend publique su archivo de contrato, el resumen vive en
-  [`../001-landing-multi-evento/contracts/bff-landing.md`](../001-landing-multi-evento/contracts/bff-landing.md).
+- API del sitio de `backend-ciisic` (`/api/v1/site`, `X-Api-Key` del evento):
+  - `GET /config` → `backend-ciisic/specs/008-configuracion-sistema/contracts/api-configuracion.md`.
+  - `POST /google-verification` y `verificacionCorreoToken` / `esCorreoVerificado` en
+    `POST /inscriptions` → `backend-ciisic/specs/010-google-sign-in/contracts/api-google.md`.
+  - Resumen de lo que usa la landing en
+    [`../001-landing-multi-evento/contracts/bff-landing.md`](../001-landing-multi-evento/contracts/bff-landing.md).
 - Rutas BFF nuevas (propiedad de este repositorio): `GET /api/publico/configuracion` y
   `POST /api/publico/verificacion-google`, en el mismo contrato.
 
@@ -210,8 +212,8 @@ reconfigurar la landing.
 
 ## Assumptions
 
-- El backend (spec 010) implementa `/config` y `/google-verification` con el contrato resumido y
-  rechaza credenciales mal formadas con `422 VALIDATION_ERROR`.
+- El backend implementa `/config` (spec 008) y `/google-verification` (spec 010) según sus contratos
+  publicados y rechaza credenciales mal formadas con `422 VALIDATION_ERROR` (el BFF ya las filtra).
 - El dominio de cada landing está registrado como «Origen de JavaScript autorizado» del client ID
   en Google Cloud (también `http://localhost:3000` para desarrollo).
 - La landing no envía `Cross-Origin-Opener-Policy`; si se agrega, debe ser

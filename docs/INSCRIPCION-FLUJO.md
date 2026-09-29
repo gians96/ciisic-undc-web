@@ -16,12 +16,19 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 - Muestran "Inscripciones cerradas", "Cargando" o un error con "Reintentar" según el estado del evento.
 - `/estudiantes` verifica al estudiante UNDC (`/api/publico/verificacion-estudiante`) y muestra el precio UNDC
   solo si `esEstudianteUndc === true`.
+- Junto al correo, ambas páginas ofrecen «Continuar con Google» (opcional, `InscripcionCorreoGoogle`) si la
+  configuración del sitio (`/api/publico/configuracion`) trae client ID. La credencial de Google va a
+  `/api/publico/verificacion-google`; al verificarse, el correo queda fijado y de solo lectura, los nombres
+  vacíos (que no vinieron del DNI) se completan y el `verificacionCorreoToken` (solo en memoria) viaja con la
+  inscripción. «Usar otro correo» lo descarta. Google no cambia el precio: los estudiantes siguen
+  verificándose con SIVIRENO. Detalles en `specs/002-google-en-inscripcion/`.
 
 ### 2. Composable `useInscription` (`app/composables/useInscription.ts`)
 
 - `mapFormDataToApiData()`: valores del formulario → datos del contrato (sin montos, descuentos ni estados).
 - `createInscription()`: `POST /api/publico/inscripciones` (multipart: `participante` JSON + campos + archivo
-  `voucher`) y guarda la respuesta en el store.
+  `voucher`, y `verificacionCorreoToken` solo si el correo sigue verificado con Google) y guarda la respuesta
+  en el store.
 
 ### 3. BFF (`server/api/publico/inscripciones.post.ts`)
 
@@ -35,8 +42,12 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 ### 5. Página de confirmación (`app/pages/confirmation.vue`)
 
 - Lee el store (no hay GET público de inscripciones) y muestra monto, precio regular, descuento
-  ("Precio UNDC aplicado"), datos del pago, estado y el contacto del evento.
-- Si no hay datos en el store (recarga o enlace directo), muestra el aviso de sesión expirada.
+  ("Precio UNDC aplicado"), «Verificado con Google» (`esCorreoVerificado`), datos del pago, estado y el
+  contacto del evento.
+- Si la configuración del sitio trae `urlPanel`, enlaza a `<urlPanel>/mis-inscripciones` («Ver el estado de mi
+  inscripción», en otra pestaña), donde el participante ingresa con la cuenta de Google de su correo.
+- Si no hay datos en el store (recarga o enlace directo), muestra el aviso de sesión expirada (con el mismo
+  enlace al panel).
 
 ## Flujo Completo
 

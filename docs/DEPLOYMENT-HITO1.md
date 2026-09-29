@@ -33,6 +33,8 @@ Frontend (landing, BFF de la API del sitio):
 
 No hay más variables: la URL del panel (a la que redirige `/login`) y el client ID de Google (botón «Continuar con Google» de la inscripción) se configuran en el backend y la landing los lee de `/api/publico/configuracion` (backend `GET /api/v1/site/config`, caché de 60 s). Sin client ID el botón no aparece; sin URL, `/login` muestra un aviso.
 
+Google: el dominio de cada landing (y `http://localhost:3000` en desarrollo) debe figurar en «Orígenes de JavaScript autorizados» del client ID en Google Cloud; si no, la ventana de Google muestra un error y la inscripción sigue funcionando sin verificar el correo. La landing no envía `Cross-Origin-Opener-Policy`; si se agrega, debe ser `same-origin-allow-popups`.
+
 El navegador nunca llama al backend: todas las llamadas pasan por las rutas Nitro `/api/publico/*`, que agregan `X-Api-Key` y `X-Client-Ip` (última IP de `X-Forwarded-For`, que agrega Traefik). Sin token o sin URL, esas rutas responden `503 SITE_NOT_CONFIGURED` y lo registran en los logs del contenedor. Cambiar de edición o rotar el token requiere reiniciar el servicio.
 
 Los secretos se configuran como variables runtime de Dokploy. No se envían como argumentos del build ni se guardan en GitHub.
@@ -51,6 +53,7 @@ Los secretos se configuran como variables runtime de Dokploy. No se envían como
 2. Cargar planes y catálogos desde el frontend.
 3. Consultar un documento de prueba autorizado.
 4. Crear una inscripción con PNG/PDF válido y comprobar rechazo de formato falso, archivo mayor a 5 MiB y operación duplicada.
+   Repetirla con «Continuar con Google»: el correo queda fijado, la confirmación dice «Verificado con Google» y su enlace abre `/mis-inscripciones` del panel.
 5. En el panel administrativo (`/login` de la landing redirige ahí): iniciar sesión; comprobar cookie HttpOnly y que el JWT no aparece en almacenamiento local.
 6. Verificar `401` sin sesión, `403` de Admin en rutas SuperAdmin y descarga autenticada de voucher.
 7. Aprobar la inscripción y verificar el correo con la credencial PDF adjunta.

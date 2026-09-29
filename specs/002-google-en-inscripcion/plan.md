@@ -75,8 +75,10 @@ credencial de Google (JWT) ocupa como máximo 4096 caracteres; límite por visit
 - **D5 — Solo cliente por construcción.** `InscripcionCorreoGoogle` (SSR) reserva 40 px con un
   marcador y monta dentro de `<ClientOnly>` el botón (`InscripcionBotonGoogle`), que es el único que
   llama a `useGoogleIdentity()`. El script de Google nunca se pide en el servidor ni en páginas sin
-  formulario. El ancho se toma del contenedor (200–400 px) y se vuelve a dibujar si cambia (≥ 8 px,
-  con `ResizeObserver` y espera de 200 ms).
+  formulario. El ancho se toma del contenedor (200–400 px) y se vuelve a dibujar si cambia (≥ 8 px
+  respecto del ancho dibujado, con `ResizeObserver` y espera de 200 ms). Si el contenedor aún no
+  tiene ancho al montarse (ocurre en la primera navegación cliente) se espera al observador; el
+  marcador se mantiene hasta el primer dibujo.
 - **D6 — Estado del correo en el formulario.** `useCorreoGoogle({ alVerificar })` vive dentro de
   `useFormularioInscripcion`: secuencia + `AbortController` para ignorar respuestas obsoletas;
   `alVerificar` fija `email` y completa nombres con `nombresDesdeGoogle` (cada campo solo si está
@@ -116,15 +118,32 @@ credencial de Google (JWT) ocupa como máximo 4096 caracteres; límite por visit
 
 ## Riesgos y pendientes
 
-- **Contrato del backend en paralelo**: `/config` y `/google-verification` se implementan a la par
-  (spec 010 del backend); el resumen del contrato está en `001/contracts/bff-landing.md` hasta que
-  se publique el archivo del backend.
+- **Contrato del backend**: implementado en paralelo y ya publicado (specs 008 y 010 del backend);
+  coincide con lo implementado aquí. `001/contracts/bff-landing.md` lo referencia.
 - **Orígenes autorizados**: si el dominio de la landing no está en el client ID de Google Cloud, el
   botón muestra el error de Google en la ventana emergente (la inscripción sigue funcionando).
 - **Bloqueadores**: algunas extensiones bloquean `accounts.google.com`; se muestra el aviso y se
   escribe el correo a mano.
 - **Prueba integrada pendiente**: se hará con el backend y un client ID de prueba (la hará el
   usuario).
+
+## Verificación realizada (2026-09-29)
+
+Build de producción (`node .output/server/index.mjs`) contra un backend simulado de `/api/v1/site`:
+
+- `/login` responde `302` a la `urlPanel` normalizada; sin token del evento, `/api/publico/configuracion`
+  responde `503 SITE_NOT_CONFIGURED` y `/login` muestra el aviso con «Reintentar».
+- `/api/publico/verificacion-google` reenvía solo `{ idToken }` con `X-Api-Key` y la última IP de
+  `X-Forwarded-For`; `422` para una credencial mal formada, `415` con otro `Content-Type` y el `403` del
+  backend sin cambios.
+- SSR de `/estudiantes` y `/general`: texto de ayuda y marcador de 40 px; sin client ID no aparece nada.
+- En el navegador: el botón real de Google se dibuja (`continue_with`, `hl=es`, píldora, 400 px); con
+  un GIS simulado, «Verificando…» → chip de estudiante, correo fijado y de solo lectura (con foco),
+  nombres completados, SIVIRENO llamado con el correo verificado, «Usar otro correo», error `403` con su
+  mensaje, inscripción con `verificacionCorreoToken` y confirmación con «Verificado con Google» y el
+  enlace a `/mis-inscripciones`; tras «Usar otro correo» el multipart ya no lleva el token.
+- El token del evento, la dirección del backend y una `NUXT_PUBLIC_ADMIN_URL` presentes en el entorno
+  del build no aparecen en `.output`.
 
 ## Project Structure
 

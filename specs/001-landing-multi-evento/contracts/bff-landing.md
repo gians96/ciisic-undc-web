@@ -6,14 +6,16 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 ## API del sitio consumida (backend-ciisic)
 
 > Fuente de verdad: `backend-ciisic/specs/007-tokens-acceso-evento/contracts/api-sitio.md`
-> (formas de datos, códigos de error y límites por visitante) y, para `/config` y
-> `/google-verification`, la spec 010 del backend (acceso con Google; resumen provisional abajo
-> hasta que publique su contrato). Resumen:
+> (formas de datos, códigos de error y límites por visitante),
+> `008-configuracion-sistema/contracts/api-configuracion.md` (`GET /config`) y
+> `010-google-sign-in/contracts/api-google.md` (`POST /google-verification` y
+> `verificacionCorreoToken`). Resumen:
 
 - Base `${NUXT_BACKEND_BASE_URL}/api/v1/site`, sin `:codigo` (el evento lo define el token).
 - Encabezados: `X-Api-Key: <token del evento>` (obligatorio), `X-Client-Ip: <IP del visitante>`
   (recomendado; el backend lo usa para el límite por visitante solo si el token es válido).
-- El backend no admite `X-Api-Key` desde navegadores (CORS): toda llamada pasa por Nitro.
+- Aunque el backend abrió CORS (su spec 009), la landing no expone el token: toda llamada del
+  navegador pasa por Nitro.
 - Errores propios del token: `401 EVENT_TOKEN_REQUIRED`, `401 INVALID_EVENT_TOKEN` (revocado,
   expirado o inexistente), `404 EVENT_NOT_FOUND` (evento archivado).
 
@@ -30,20 +32,17 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `POST /papers` | multipart: `data` JSON + `file` PDF |
 | `POST /contact` | JSON `{ nombres, apellidos, correo, asunto, mensaje }` |
 
-### Verificación del correo con Google (spec 010 del backend, resumen)
+### Verificación del correo con Google (lo que usa la landing)
 
-- `POST /google-verification` con `{ idToken }` (ID token de Google Identity Services, ≤ 4096
-  caracteres, `header.payload.firma`) →
-  `{ success: true, data: { correo, nombres: string | null, apellidos: string | null, tipoCuenta: 'ESTUDIANTE' | 'PERSONAL' | 'EXTERNO', esInstitucional: boolean, verificacionCorreoToken } }`.
-- `tipoCuenta` (regla fija del backend): dominio `undc.edu.pe` con parte local numérica de 8 a 12
-  dígitos = `ESTUDIANTE`; otra parte local del dominio = `PERSONAL`; otro dominio = `EXTERNO`.
-- `verificacionCorreoToken`: 24 h, atado al evento y al correo. `POST /inscriptions` lo acepta como
-  campo opcional; si no es válido o es de otro correo se ignora (`esCorreoVerificado: false`). No
-  cambia el precio.
-- Errores: `503 GOOGLE_NOT_CONFIGURED`, `503 GOOGLE_UNAVAILABLE`, `401 INVALID_GOOGLE_TOKEN`,
-  `403 GOOGLE_EMAIL_NOT_VERIFIED`, `403 GOOGLE_NOT_AUTHORITATIVE` (la cuenta no es de Gmail ni de un
-  dominio de Google Workspace), `422 VALIDATION_ERROR`, `429 RATE_LIMITED` y los comunes del sitio
-  (`401 EVENT_TOKEN_REQUIRED`, `401 INVALID_EVENT_TOKEN`).
+- `POST /google-verification` con `{ idToken }` →
+  `{ correo, nombres, apellidos, tipoCuenta: 'ESTUDIANTE' | 'PERSONAL' | 'EXTERNO', esInstitucional, verificacionCorreoToken }`.
+  El tipo de cuenta lo decide el backend (dominio `undc.edu.pe`; parte local de 8 a 12 dígitos =
+  estudiante, otra = personal; otro dominio = externo).
+- `verificacionCorreoToken` (24 h, mismo evento y correo) viaja opcionalmente en `POST /inscriptions`,
+  que responde `esCorreoVerificado`. No cambia el precio.
+- Códigos que la landing traduce (`mensajeErrorGoogle`): `GOOGLE_NOT_CONFIGURED`, `GOOGLE_UNAVAILABLE`,
+  `INVALID_GOOGLE_TOKEN`, `GOOGLE_EMAIL_NOT_VERIFIED`, `GOOGLE_NOT_AUTHORITATIVE`, `VALIDATION_ERROR`,
+  `RATE_LIMITED` y los comunes del sitio.
 
 ## Rutas del BFF
 
