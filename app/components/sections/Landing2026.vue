@@ -31,6 +31,8 @@
       </div>
     </section>
 
+    <SpeakersCarousel />
+
     <section class="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24 2xl:max-w-[1600px]">
       <div class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end lg:mb-10">
         <div>
@@ -82,6 +84,7 @@
 </template>
 
 <script setup lang="ts">
+import SpeakersCarousel from './SpeakersCarousel.vue'
 import PreviousCongressCarousel from './PreviousCongressCarousel.vue'
 import EventCountdown from '../countdown/Countdown.vue'
 
