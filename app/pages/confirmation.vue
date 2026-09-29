@@ -45,13 +45,23 @@
                                 {{ getErrorContent(error).actionText }}
                             </NuxtLink>
 
-                            <NuxtLink 
+                            <NuxtLink
                                 to="/planes"
                                 class="btn-secondary"
                             >
                                 <Icon name="heroicons:arrow-path" class="h-5 w-5 mr-2" />
                                 Nueva inscripción
                             </NuxtLink>
+                        </div>
+
+                        <!-- Estado de la inscripción en el panel (URL de la configuración del sitio) -->
+                        <div v-if="enlaceMisInscripciones" class="panel-estado">
+                            <a :href="enlaceMisInscripciones" target="_blank" rel="noopener noreferrer" class="btn-panel">
+                                <Icon name="heroicons:clipboard-document-check" class="h-5 w-5 mr-2" aria-hidden="true" />
+                                Ver el estado de mi inscripción
+                                <span class="sr-only">(se abre en una pestaña nueva)</span>
+                            </a>
+                            <p class="panel-estado__ayuda">Ingresa con la cuenta de Google del correo con el que te inscribiste</p>
                         </div>
 
                         <!-- Información de contacto (del evento) -->
@@ -200,6 +210,16 @@
                         </ul>
                     </div>
 
+                    <!-- Estado de la inscripción en el panel (en otra pestaña: esta confirmación solo vive en memoria) -->
+                    <div v-if="enlaceMisInscripciones" class="panel-estado">
+                        <a :href="enlaceMisInscripciones" target="_blank" rel="noopener noreferrer" class="btn-panel">
+                            <Icon name="heroicons:clipboard-document-check" class="h-5 w-5 mr-2" aria-hidden="true" />
+                            Ver el estado de mi inscripción
+                            <span class="sr-only">(se abre en una pestaña nueva)</span>
+                        </a>
+                        <p class="panel-estado__ayuda">Ingresa con la cuenta de Google del correo con el que te inscribiste</p>
+                    </div>
+
                     <!-- Acciones -->
                     <div class="confirmation-actions">
                         <NuxtLink to="/" class="btn-primary">
@@ -226,6 +246,7 @@
 
 <script setup lang="ts">
 import type { InscripcionCreada } from '~/types/inscription'
+import { urlMisInscripciones } from '~/utils/configuracion-sitio'
 import { enlaceWhatsApp, formatearFechaHoraLima, formatearFechaSoloDia, formatearSoles } from '~/utils/formato'
 import { tituloPlan } from '~/utils/planes'
 
@@ -245,6 +266,7 @@ useHead({
 const route = useRoute()
 const inscriptionStore = useInscriptionStore()
 const { contacto, datosPago } = useEvento()
+const { urlPanel } = useConfiguracionSitio()
 const isLoading = ref(false)
 
 // ===========================================================================
@@ -258,6 +280,9 @@ const inscriptionId = computed(() => route.query.id as string)
 const contactoCorreo = computed(() => contacto.value?.correo || 'congreso@undc.edu.pe')
 const contactoTelefono = computed(() => contacto.value?.telefono || '+51 949 026 908')
 const enlaceTelefono = computed(() => enlaceWhatsApp(contactoTelefono.value))
+
+// Estado de la inscripción: página del panel donde se ingresa con Google (solo si hay panel)
+const enlaceMisInscripciones = computed(() => urlMisInscripciones(urlPanel.value))
 
 const tipoInscripcionTexto = computed(() => {
     const tipo = inscription.value?.tipoInscripcion
@@ -731,6 +756,43 @@ onMounted(() => {
 .btn-secondary:hover {
     background-color: #64748b;
     transform: translateY(-1px);
+}
+
+/* Enlace al estado de la inscripción en el panel */
+.panel-estado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.btn-panel {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid rgba(0, 217, 232, 0.6);
+    border-radius: 0.5rem;
+    color: #67e8f9;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 300ms;
+}
+
+.btn-panel:hover {
+    background-color: rgba(0, 217, 232, 0.1);
+    transform: translateY(-1px);
+}
+
+.btn-panel:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 3px;
+}
+
+.panel-estado__ayuda {
+    color: #94a3b8;
+    font-size: 0.875rem;
 }
 
 /* Responsive */
