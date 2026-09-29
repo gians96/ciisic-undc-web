@@ -21,18 +21,15 @@ export default defineNuxtConfig({
   },
   ssr: true,
   runtimeConfig: {
-    // Variables privadas del servidor (no expuestas al cliente). No es un secreto: es la dirección
-    // del backend alcanzable por Nitro para las lecturas con caché de server/api/publico/*.
-    // Si está vacía se usa apiBaseUrl.
-    backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || process.env.API_BASE_URL || '',
-    // Variables públicas (expuestas al cliente)
+    // Privadas: solo el servidor Nitro (BFF de server/api/publico/*) las conoce. Quedan vacías en
+    // el build y se completan en runtime con NUXT_BACKEND_BASE_URL y NUXT_BACKEND_EVENT_TOKEN,
+    // para que el token del evento nunca quede en la imagen ni llegue al navegador.
+    backendBaseUrl: '',
+    backendEventToken: '',
+    // Públicas (expuestas al cliente)
     public: {
       appName: 'VIII CIISIC 2026',
       appVersion: '1.0.0',
-      // Usar el backend correcto como fallback si la variable no está disponible
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe',
-      // Código del evento que muestra esta landing (API pública multi-evento)
-      eventoCodigo: process.env.NUXT_PUBLIC_EVENTO_CODIGO || 'ciisic-viii-2026',
       // Panel administrativo (aplicación externa); /login redirige aquí
       adminUrl: process.env.NUXT_PUBLIC_ADMIN_URL || ''
     }

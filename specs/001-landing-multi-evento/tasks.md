@@ -33,11 +33,11 @@ errores).
 
 ## Phase 2b: US8 — BFF con token del evento (P1)
 
-- [ ] T035 Configuración privada `backendEventToken` y `backendBaseUrl` sin valores en el build; retirar `apiBaseUrl` y `eventoCodigo`; `.env.example`; prueba de que el token no está en `public`
-- [ ] T036 [P] [US8] Núcleo puro `server/utils/api-sitio.ts` (encabezados `X-Api-Key`/`X-Client-Ip`, IP del visitante, `SITE_NOT_CONFIGURED`, `BACKEND_UNAVAILABLE`, propagación de errores, lectura con límite) + pruebas con `fetch` simulado
-- [ ] T037 [US8] Capa h3 `server/utils/sitio.ts` y rutas `server/api/publico/*`: evento, planes y catálogos (caché), consulta DNI, verificación, inscripciones y ponencias (multipart, `413`) y contacto
-- [ ] T038 [US8] Cliente contra el BFF: `app/utils/rutas-sitio.ts`, `useApi` de mismo origen, `useEvento`, `useConsultation`, `useVerificacionEstudiante`, `useInscription`; retirar `server/utils/api-backend.ts` y `app/utils/api-publica.ts`
-- [ ] T039 [P] [US8] Mensajes para `EVENT_TOKEN_REQUIRED`, `INVALID_EVENT_TOKEN`, `SITE_NOT_CONFIGURED` y `BACKEND_UNAVAILABLE` + pruebas
+- [x] T035 Configuración privada `backendEventToken` y `backendBaseUrl` sin valores en el build; retirar `apiBaseUrl` y `eventoCodigo`; `.env.example`; prueba de que el token no está en `public`
+- [x] T036 [P] [US8] Núcleo puro `server/utils/api-sitio.ts` (encabezados `X-Api-Key`/`X-Client-Ip`, IP del visitante, `SITE_NOT_CONFIGURED`, `BACKEND_UNAVAILABLE`, propagación de errores, lectura con límite) + pruebas con `fetch` simulado
+- [x] T037 [US8] Capa h3 `server/utils/sitio.ts` y rutas `server/api/publico/*`: evento, planes y catálogos (caché), consulta DNI, verificación, inscripciones y ponencias (multipart, `413`) y contacto
+- [x] T038 [US8] Cliente contra el BFF: `app/utils/rutas-sitio.ts`, `useApi` de mismo origen, `useEvento`, `useConsultation`, `useVerificacionEstudiante`, `useInscription`; retirar `server/utils/api-backend.ts` y `app/utils/api-publica.ts`
+- [x] T039 [P] [US8] Mensajes para `EVENT_TOKEN_REQUIRED`, `INVALID_EVENT_TOKEN`, `SITE_NOT_CONFIGURED` y `BACKEND_UNAVAILABLE` + pruebas
 
 ## Phase 3: US2 — Consulta de DNI (P1)
 
@@ -75,8 +75,8 @@ errores).
 
 ## Phase 8: US6 + US7 — Ponencias, contacto y panel (P3)
 
-- [ ] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /api/publico/ponencias`
-- [ ] T028 [P] [US6] `contacto.vue` → `POST /api/publico/contacto` con `{ nombres, apellidos, correo, asunto, mensaje }`
+- [x] T027 [P] [US6] `PaperSubmissionForm.vue` → `POST /api/publico/ponencias`
+- [x] T028 [P] [US6] `contacto.vue` → `POST /api/publico/contacto` con `{ nombres, apellidos, correo, asunto, mensaje }`
 - [ ] T029 [US7] `/login` redirige a `NUXT_PUBLIC_ADMIN_URL`; eliminar `server/api/auth/*` y `server/utils/backend.ts`
 - [ ] T034 [P] `/undc` redirige a `/planes` (se conserva la ruta)
 

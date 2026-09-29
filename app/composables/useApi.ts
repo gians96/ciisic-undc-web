@@ -33,12 +33,13 @@ export function normalizeApiError(error: unknown): ApiErrorShape {
   }
 }
 
+/**
+ * Llamadas a las rutas BFF de esta landing (`/api/publico/*`, mismo origen). El token del evento
+ * lo agrega Nitro: el navegador nunca habla directamente con backend-ciisic.
+ */
 export const useApi = () => {
-  const config = useRuntimeConfig()
-  const baseURL = String(config.public.apiBaseUrl).replace(/\/$/, '')
-
   const request = <T>(path: string, options: FetchOptions = {}) =>
-    $fetch<T>(path, { baseURL, timeout: 15000, retry: 0, ...options } as Parameters<typeof $fetch>[1])
+    $fetch<T>(path, { timeout: 15000, retry: 0, ...options } as Parameters<typeof $fetch>[1])
 
   return { request }
 }

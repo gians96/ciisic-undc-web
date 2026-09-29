@@ -37,6 +37,7 @@
                     v-model="form.firstName"
                     type="text"
                     required
+                    maxlength="80"
                     :class="[
                       'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300',
                       errors.firstName 
@@ -61,6 +62,7 @@
                     v-model="form.lastName"
                     type="text"
                     required
+                    maxlength="80"
                     :class="[
                       'w-full px-4 py-3 bg-secondary-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300',
                       errors.lastName 
@@ -212,7 +214,7 @@
                 </div>
                 <div>
                   <h3 class="text-white font-semibold mb-2">Email</h3>
-                  <p class="text-gray-300">congreso@undc.edu.pe</p>
+                  <p class="text-gray-300">{{ correoContacto }}</p>
                 </div>
               </div>
 
@@ -278,12 +280,29 @@
 // ============================================================================
 
 import { useLayoutStore } from '~/stores/layout'
+import { mensajeErrorContacto } from '~/utils/errores-api'
+import { rutasSitio } from '~/utils/rutas-sitio'
 
 // ============================================================================
 // STORES
 // ============================================================================
 
 const layoutStore = useLayoutStore()
+const { request } = useApi()
+const { contacto } = useEvento()
+
+// Correo de contacto del evento (con el de la organización como respaldo)
+const correoContacto = computed(() => contacto.value?.correo || 'congreso@undc.edu.pe')
+
+// El backend guarda el asunto como texto: se envía la etiqueta visible, no el código interno
+const ASUNTOS: Record<string, string> = {
+  general: 'Consulta General',
+  torneos: 'Torneos',
+  ponencias: 'Ponencias',
+  patrocinios: 'Patrocinios',
+  soporte: 'Soporte',
+  otros: 'Otros'
+}
 
 // ============================================================================
 // SEO Y META TAGS
@@ -538,18 +557,17 @@ const submitForm = async () => {
   isSubmitting.value = true
 
   try {
-    // Preparar datos en formato JSON
-    const formDmData = {
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      email: form.email.trim().toLowerCase(),
-      subject: form.subject,
-      message: form.message.trim(),
-      timestamp: new Date().toISOString(),
-    }
-
-    const { request } = useApi()
-    await request('/api/v1/contact', { method: 'POST', body: formDmData })
+    // BFF de la landing: Nitro lo reenvía a backend POST /api/v1/site/contact con el token del evento
+    await request(rutasSitio.contacto, {
+      method: 'POST',
+      body: {
+        nombres: form.firstName.trim(),
+        apellidos: form.lastName.trim(),
+        correo: form.email.trim().toLowerCase(),
+        asunto: ASUNTOS[form.subject] ?? form.subject,
+        mensaje: form.message.trim()
+      }
+    })
     
     // Guardar tiempo de envío para cooldown
     saveSubmissionTime()
@@ -568,11 +586,8 @@ const submitForm = async () => {
       errors[key as keyof typeof errors] = ''
     })
     
-  } catch {
-    layoutStore.showError(
-      'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.',
-      'Error'
-    )
+  } catch (error) {
+    layoutStore.showError(mensajeErrorContacto(normalizeApiError(error)), 'Error')
   } finally {
     isSubmitting.value = false
   }

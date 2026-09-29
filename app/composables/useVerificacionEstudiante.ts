@@ -1,10 +1,11 @@
 // ============================================================================
-// VERIFICACIÓN DE ESTUDIANTE UNDC (POST /api/v1/public/events/:codigo/student-verification)
+// VERIFICACIÓN DE ESTUDIANTE UNDC (BFF POST /api/publico/verificacion-estudiante →
+// backend POST /api/v1/site/student-verification)
 // Se lanza con DNI de 8 dígitos y correo válido; se repite al cambiar DNI o correo.
 // ============================================================================
 import type { Ref } from 'vue'
 import type { ApiExito, VerificacionEstudiante } from '~/types/evento'
-import { rutasApiPublica } from '~/utils/api-publica'
+import { rutasSitio } from '~/utils/rutas-sitio'
 import {
   crearCoordinadorVerificacion,
   esCorreoValido,
@@ -23,7 +24,6 @@ interface EntradaVerificacion {
 
 export const useVerificacionEstudiante = (entrada: EntradaVerificacion) => {
   const { request } = useApi()
-  const codigoEvento = useEventoCodigo()
 
   const estado = ref<EstadoVerificacion>('inactivo')
   const resultado = ref<VerificacionEstudiante | null>(null)
@@ -35,7 +35,7 @@ export const useVerificacionEstudiante = (entrada: EntradaVerificacion) => {
   const coordinador = crearCoordinadorVerificacion<VerificacionEstudiante>({
     esperaMs: 600,
     consultar: (solicitud, senal) =>
-      request<ApiExito<VerificacionEstudiante>>(rutasApiPublica.verificacionEstudiante(codigoEvento), {
+      request<ApiExito<VerificacionEstudiante>>(rutasSitio.verificacionEstudiante, {
         method: 'POST',
         body: solicitud,
         signal: senal,

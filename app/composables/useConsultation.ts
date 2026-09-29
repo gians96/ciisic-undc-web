@@ -1,12 +1,12 @@
 // ============================================================================
-// CONSULTA DE DOCUMENTOS (backend-ciisic: GET /api/v1/public/document-lookup/dni/:numero)
-// El token del proveedor vive en el backend; la landing no guarda secretos.
+// CONSULTA DE DOCUMENTOS (BFF GET /api/publico/consulta-dni/:numero →
+// backend GET /api/v1/site/document-lookup/dni/:numero). Los tokens viven en el servidor.
 // ============================================================================
 
 import type { DocumentType } from '~/types'
 import type { ApiExito, ConsultaDni } from '~/types/evento'
-import { rutasApiPublica } from '~/utils/api-publica'
 import { mapearConsultaDni, type NombresConsultados } from '~/utils/consulta-dni'
+import { rutasSitio } from '~/utils/rutas-sitio'
 
 export const useConsultation = () => {
   const { request } = useApi()
@@ -41,7 +41,7 @@ export const useConsultation = () => {
     if (!/^\d{8}$/.test(numero)) {
       throw new Error('El DNI debe tener 8 dígitos numéricos')
     }
-    const respuesta = await request<ApiExito<ConsultaDni>>(rutasApiPublica.consultaDni(numero), {
+    const respuesta = await request<ApiExito<ConsultaDni>>(rutasSitio.consultaDni(numero), {
       timeout: 15000,
       signal: opciones.signal
     })

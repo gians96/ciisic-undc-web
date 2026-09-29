@@ -1,9 +1,9 @@
 // ============================================================================
-// EVENTO PÚBLICO (GET /api/publico/evento → backend GET /api/v1/public/events/:codigo)
+// EVENTO PÚBLICO (GET /api/publico/evento → backend GET /api/v1/site/event)
 // ============================================================================
 import type { NuxtApp } from '#app'
 import type { ApiExito, EventoPublico } from '~/types/evento'
-import { rutasCachePublica } from '~/utils/api-publica'
+import { rutasSitio } from '~/utils/rutas-sitio'
 
 /**
  * Reutiliza los datos ya cargados (payload de SSR o navegación anterior) salvo en un refresco
@@ -14,26 +14,22 @@ export function datosEnCache(key: string, nuxtApp: NuxtApp, contexto: { cause: s
   return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
 }
 
-/** Código del evento que muestra esta landing (`NUXT_PUBLIC_EVENTO_CODIGO`). */
-export const useEventoCodigo = () => String(useRuntimeConfig().public.eventoCodigo || '').trim()
-
 /**
- * Datos públicos del evento, compartidos por clave (`evento:<codigo>`) entre componentes y entre
- * SSR e hidratación. Se leen de la ruta Nitro con caché de 60 s (no del backend en cada visita).
+ * Datos públicos del evento (el que define el token configurado en el servidor), compartidos por
+ * clave entre componentes y entre SSR e hidratación. Nitro los cachea 60 s.
  */
 export const useEvento = () => {
-  const codigo = useEventoCodigo()
+  const { request } = useApi()
 
   const { data, status, error, refresh } = useAsyncData(
-    `evento:${codigo}`,
-    () => $fetch<ApiExito<EventoPublico>>(rutasCachePublica.evento, { timeout: 12000 }).then(respuesta => respuesta.data),
+    'evento',
+    () => request<ApiExito<EventoPublico>>(rutasSitio.evento, { timeout: 12000 }).then(respuesta => respuesta.data),
     { getCachedData: datosEnCache },
   )
 
   const evento = computed<EventoPublico | null>(() => data.value ?? null)
 
   return {
-    codigo,
     evento,
     error,
     cargando: computed(() => !evento.value && !error.value && status.value !== 'success'),

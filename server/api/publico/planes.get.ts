@@ -1,5 +1,5 @@
 // GET /api/publico/planes?categoria=ESTUDIANTES|PUBLICO_GENERAL
-// → GET {backend}/api/v1/public/events/:codigo/registration-types con caché de 60 s por categoría.
+// → GET {backend}/api/v1/site/registration-types con caché de 60 s por categoría.
 import type { H3Event } from 'h3'
 
 /** Solo las categorías que usa la landing: otras claves no llegan al backend ni a la caché. */
@@ -12,15 +12,14 @@ export default defineCachedEventHandler(
     const categoria = categoriaDe(event)
     if (categoria && !CATEGORIAS.has(categoria)) {
       setResponseStatus(event, 400)
-      return { success: false, code: 'INVALID_CATEGORY', message: 'Categoría de inscripción no válida.' }
+      return errorSitio('INVALID_CATEGORY', 'Categoría de inscripción no válida.')
     }
-    const ruta = `/api/v1/public/events/${encodeURIComponent(codigoEventoConfigurado(event))}/registration-types`
-    return leerApiPublica(event, ruta, categoria ? { categoria } : undefined)
+    return responderSitio(event, { ruta: '/registration-types', query: categoria ? { categoria } : undefined, timeoutMs: 10000 })
   },
   {
-    name: 'publico-planes',
+    name: 'sitio-planes',
     maxAge: 60,
     swr: true,
-    getKey: event => `planes-${codigoEventoConfigurado(event)}-${categoriaDe(event) || 'todas'}`,
+    getKey: event => `planes-${categoriaDe(event) || 'todas'}`,
   },
 )

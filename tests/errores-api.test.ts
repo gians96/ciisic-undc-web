@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { camposConError, mensajeErrorApi, mensajeErrorInscripcion } from '../app/utils/errores-api'
+import {
+  SERVICIO_NO_DISPONIBLE,
+  camposConError,
+  mensajeErrorApi,
+  mensajeErrorContacto,
+  mensajeErrorInscripcion,
+  mensajeErrorPonencia,
+} from '../app/utils/errores-api'
 
 const GENERICO = 'No pudimos registrar tu inscripción. Revisa los datos e inténtalo nuevamente.'
 
@@ -57,5 +64,36 @@ describe('camposConError y mensajeErrorApi', () => {
     expect(mensajeErrorApi({ statusCode: 429, code: 'RATE_LIMITED' }, {}, 'x')).toMatch(/Espera unos minutos/)
     expect(mensajeErrorApi({ statusCode: 404, code: 'EVENT_NOT_FOUND' }, { EVENT_NOT_FOUND: 'propio' }, 'x')).toBe('propio')
     expect(mensajeErrorApi({ statusCode: 400, code: 'OTRO' }, {}, 'por defecto')).toBe('por defecto')
+  })
+})
+
+describe('errores del token del evento y del BFF', () => {
+  it.each([
+    ['SITE_NOT_CONFIGURED', 503],
+    ['EVENT_TOKEN_REQUIRED', 401],
+    ['INVALID_EVENT_TOKEN', 401],
+  ])('%s se muestra como servicio no disponible, sin detalles técnicos', (code, statusCode) => {
+    expect(mensajeErrorInscripcion({ statusCode, code })).toBe(SERVICIO_NO_DISPONIBLE)
+    expect(mensajeErrorContacto({ statusCode, code })).toBe(SERVICIO_NO_DISPONIBLE)
+    expect(mensajeErrorPonencia({ statusCode, code })).toBe(SERVICIO_NO_DISPONIBLE)
+  })
+
+  it('BACKEND_UNAVAILABLE indica que no se pudo conectar y que los datos se conservan', () => {
+    expect(mensajeErrorInscripcion({ statusCode: 502, code: 'BACKEND_UNAVAILABLE' })).toMatch(/No pudimos conectar con el servidor del congreso.*se conservan/)
+  })
+})
+
+describe('mensajes de ponencias y contacto', () => {
+  it('ponencias: PDF inválido, límite de tamaño y de envíos', () => {
+    expect(mensajeErrorPonencia({ statusCode: 422, code: 'INVALID_PDF' })).toBe('Adjunta un archivo PDF válido y no vacío.')
+    expect(mensajeErrorPonencia({ statusCode: 413, code: 'UPLOAD_LIMIT_EXCEEDED' })).toBe('El PDF supera el máximo de 5 MB.')
+    expect(mensajeErrorPonencia({ statusCode: 429, code: 'RATE_LIMITED' })).toMatch(/Espera 15 minutos/)
+    expect(mensajeErrorPonencia({ statusCode: 400, code: 'OTRO' })).toMatch(/No pudimos confirmar la recepción/)
+  })
+
+  it('contacto: límite de mensajes y validación', () => {
+    expect(mensajeErrorContacto({ statusCode: 429, code: 'RATE_LIMITED' })).toMatch(/15 minutos/)
+    expect(mensajeErrorContacto({ statusCode: 422, code: 'VALIDATION_ERROR' })).toMatch(/Revisa el formulario/)
+    expect(mensajeErrorContacto({ statusCode: 400, code: 'OTRO' })).toBe('Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.')
   })
 })

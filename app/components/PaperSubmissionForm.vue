@@ -57,7 +57,9 @@
 
 <script setup lang="ts">
 import { nextTick, reactive, ref } from 'vue'
+import { mensajeErrorPonencia } from '~/utils/errores-api'
 import { validatePaperFile, type PaperAuthor } from '~/utils/papers'
+import { rutasSitio } from '~/utils/rutas-sitio'
 
 const { request } = useApi()
 const emptyAuthor = (): PaperAuthor => ({ firstName: '', lastName: '', university: '' })
@@ -108,7 +110,8 @@ async function submit() {
   body.append('file', new Blob([pdf.value], { type: 'application/pdf' }), pdf.value.name)
   submitting.value = true
   try {
-    const result = await request<{ success: boolean; data: { id: string } }>('/api/v1/papers', { method: 'POST', body, timeout: 60000 })
+    // BFF de la landing: Nitro lo reenvía a backend POST /api/v1/site/papers con el token del evento
+    const result = await request<{ success: boolean; data: { id: string } }>(rutasSitio.ponencias, { method: 'POST', body, timeout: 60000 })
     if (!result.success || !result.data?.id) throw new Error('Respuesta inválida')
     receipt.value = result.data.id
     Object.assign(mainAuthor, emptyAuthor())
@@ -116,8 +119,7 @@ async function submit() {
     title.value = ''
     pdf.value = null
   } catch (cause: unknown) {
-    const failure = cause as { statusCode?: number; data?: { message?: string } }
-    error.value = failure.data?.message || (failure.statusCode === 413 ? 'El PDF supera el máximo de 5 MB.' : 'No pudimos confirmar la recepción. Tus datos se mantienen; revisa tu conexión antes de volver a intentar.')
+    error.value = mensajeErrorPonencia(normalizeApiError(cause))
   } finally {
     submitting.value = false
   }

@@ -1,15 +1,15 @@
 // composables/useInscription.ts
-// Envío de inscripciones a POST /api/v1/public/events/:codigo/inscriptions (multipart).
+// Envío de inscripciones (multipart) al BFF POST /api/publico/inscripciones, que lo reenvía a
+// backend POST /api/v1/site/inscriptions con el token del evento.
 // El monto, el descuento y el estado los calcula el backend: aquí nunca se envían.
 import type { ApiExito } from '~/types/evento'
 import type { DatosInscripcion, FormularioInscripcion, InscripcionCreada } from '~/types/inscription'
-import { rutasApiPublica } from '~/utils/api-publica'
 import { mensajeErrorInscripcion } from '~/utils/errores-api'
 import { construirFormDataInscripcion, mapearFormularioInscripcion } from '~/utils/inscripcion'
+import { rutasSitio } from '~/utils/rutas-sitio'
 
 export const useInscription = () => {
     const { request } = useApi()
-    const codigoEvento = useEventoCodigo()
     const inscriptionStore = useInscriptionStore()
 
     // Estado reactivo
@@ -32,7 +32,7 @@ export const useInscription = () => {
         errorCode.value = null
 
         try {
-            const respuesta = await request<ApiExito<InscripcionCreada>>(rutasApiPublica.inscripciones(codigoEvento), {
+            const respuesta = await request<ApiExito<InscripcionCreada>>(rutasSitio.inscripciones, {
                 method: 'POST',
                 body: construirFormDataInscripcion(datos),
                 // El voucher puede pesar hasta 5 MB en conexiones lentas

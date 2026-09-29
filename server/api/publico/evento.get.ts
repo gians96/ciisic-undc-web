@@ -1,11 +1,11 @@
-// GET /api/publico/evento → GET {backend}/api/v1/public/events/:codigo con caché de 60 s.
-// Evita que el SSR de cada visita consuma el límite de lectura por IP del backend.
+// GET /api/publico/evento → GET {backend}/api/v1/site/event (el evento lo define el token).
+// Caché de 60 s (stale-while-revalidate); las respuestas con error no se guardan.
 export default defineCachedEventHandler(
-  event => leerApiPublica(event, `/api/v1/public/events/${encodeURIComponent(codigoEventoConfigurado(event))}`),
+  event => responderSitio(event, { ruta: '/event', timeoutMs: 10000 }),
   {
-    name: 'publico-evento',
+    name: 'sitio-evento',
     maxAge: 60,
     swr: true,
-    getKey: event => `evento-${codigoEventoConfigurado(event)}`,
+    getKey: () => 'evento',
   },
 )

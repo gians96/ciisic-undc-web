@@ -1,6 +1,7 @@
 // ============================================================================
 // ERRORES DE LA API → MENSAJES EN ESPAÑOL (funciones puras)
-// Códigos: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md
+// Códigos: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md y los del token del
+// evento y del BFF (specs/001-landing-multi-evento/contracts/bff-landing.md)
 // ============================================================================
 import type { ApiErrorShape } from '../composables/useApi'
 
@@ -9,10 +10,19 @@ type ErrorApi = Pick<ApiErrorShape, 'statusCode' | 'code'> & Partial<Pick<ApiErr
 const SIN_CONEXION = 'No pudimos conectar con el servidor. Revisa tu conexión e inténtalo nuevamente; tus datos se conservan.'
 const ESPERA = 'Hiciste varios intentos seguidos. Espera unos minutos e inténtalo nuevamente.'
 const VOUCHER_MUY_GRANDE = 'El voucher supera el tamaño máximo de 5 MB.'
+export const SERVICIO_NO_DISPONIBLE = 'El servicio no está disponible en este momento. Inténtalo más tarde o comunícate con la organización.'
+
+/** Errores del token del evento o del BFF: no dependen del usuario ni muestran detalles técnicos. */
+const ERRORES_DEL_SITIO: Record<string, string> = {
+  SITE_NOT_CONFIGURED: SERVICIO_NO_DISPONIBLE,
+  EVENT_TOKEN_REQUIRED: SERVICIO_NO_DISPONIBLE,
+  INVALID_EVENT_TOKEN: SERVICIO_NO_DISPONIBLE,
+  BACKEND_UNAVAILABLE: 'No pudimos conectar con el servidor del congreso. Inténtalo nuevamente en unos minutos; tus datos se conservan.',
+}
 
 /** Mensaje por `code`; si no hay uno específico, uno según el estado HTTP. */
 export function mensajeErrorApi(error: ErrorApi, porCodigo: Record<string, string>, porDefecto: string): string {
-  const especifico = porCodigo[error.code]
+  const especifico = porCodigo[error.code] ?? ERRORES_DEL_SITIO[error.code]
   if (especifico) return especifico
   if (error.code === 'NETWORK_ERROR' || error.statusCode === 0) return SIN_CONEXION
   if (error.code === 'RATE_LIMITED' || error.statusCode === 429) return ESPERA
@@ -88,4 +98,29 @@ export function mensajeErrorInscripcion(error: ErrorApi): string {
   // 413 también puede venir del proxy (sin cuerpo del contrato)
   if (error.statusCode === 413) return VOUCHER_MUY_GRANDE
   return mensajeErrorApi(error, MENSAJES_INSCRIPCION, 'No pudimos registrar tu inscripción. Revisa los datos e inténtalo nuevamente.')
+}
+
+const MENSAJES_PONENCIA: Record<string, string> = {
+  INVALID_PDF: 'Adjunta un archivo PDF válido y no vacío.',
+  INVALID_PAPER: 'Completa título, nombres, apellidos y universidad de cada autor. Se permiten hasta tres coautores.',
+  UPLOAD_LIMIT_EXCEEDED: 'El PDF supera el máximo de 5 MB.',
+  RATE_LIMITED: 'Hiciste varios envíos seguidos. Espera 15 minutos e inténtalo nuevamente.',
+  EVENT_NOT_FOUND: SERVICIO_NO_DISPONIBLE,
+}
+
+/** Mensaje para el registro de ponencias (papers). */
+export function mensajeErrorPonencia(error: ErrorApi): string {
+  if (error.statusCode === 413) return 'El PDF supera el máximo de 5 MB.'
+  return mensajeErrorApi(error, MENSAJES_PONENCIA, 'No pudimos confirmar la recepción. Tus datos se mantienen; revisa tu conexión antes de volver a intentar.')
+}
+
+const MENSAJES_CONTACTO: Record<string, string> = {
+  RATE_LIMITED: 'Enviaste varios mensajes seguidos. Intenta nuevamente en 15 minutos.',
+  VALIDATION_ERROR: 'Revisa el formulario: nombre y apellido de 2 a 80 caracteres, un correo válido, asunto y un mensaje de 10 a 2000 caracteres.',
+  EVENT_NOT_FOUND: SERVICIO_NO_DISPONIBLE,
+}
+
+/** Mensaje para el formulario de contacto. */
+export function mensajeErrorContacto(error: ErrorApi): string {
+  return mensajeErrorApi(error, MENSAJES_CONTACTO, 'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.')
 }
