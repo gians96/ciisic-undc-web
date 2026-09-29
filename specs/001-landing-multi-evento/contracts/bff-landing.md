@@ -5,11 +5,8 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 
 ## API del sitio consumida (backend-ciisic)
 
-> Fuente de verdad: `backend-ciisic`. Resumen del contrato comunicado el 2026-09-29, **provisional**
-> hasta que el backend publique su archivo de contrato; entonces este apartado se reemplaza por la
-> referencia. Formas de datos y códigos de error: iguales a
-> `backend-ciisic/specs/002-multi-evento/contracts/api-publica.md`,
-> `003-consultas-dni/contracts/api-consultas.md` y `004-verificacion-estudiante/contracts/api-verificacion.md`.
+> Fuente de verdad: `backend-ciisic/specs/007-tokens-acceso-evento/contracts/api-sitio.md`
+> (formas de datos, códigos de error y límites por visitante). Resumen:
 
 - Base `${NUXT_BACKEND_BASE_URL}/api/v1/site`, sin `:codigo` (el evento lo define el token).
 - Encabezados: `X-Api-Key: <token del evento>` (obligatorio), `X-Client-Ip: <IP del visitante>`
