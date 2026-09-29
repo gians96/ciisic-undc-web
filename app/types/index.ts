@@ -360,48 +360,17 @@ export interface Ponente {
 }
 
 // ============================================================================
-// INTERFACES PARA CONSULTA DE DNI
+// TIPOS DE DOCUMENTO DEL FORMULARIO DE INSCRIPCIÓN
+// (la respuesta de la consulta de DNI está en ~/types/evento: ConsultaDni)
 // ============================================================================
-
-export interface DniData {
-  documentNumber: string
-  documentType: string
-  names: string
-  paternalSurname: string
-  maternalSurname: string
-  fullName: string
-  birthDate?: string | null
-  gender?: string | null
-  civilStatus?: string | null
-  address?: string | null
-  department?: string | null
-  province?: string | null
-  district?: string | null
-  ubigeo?: string[] | null
-  profession?: string | null
-}
-
-export interface DniMetadata {
-  provider: string
-  isCached: boolean
-  responseTime: number
-  dataSource: string
-  requestOrigin: string
-  billableToClient: boolean
-  consumesSubscription: boolean
-  remaining_credits: number
-}
-
-export interface DniConsultationResponse {
-  success: boolean
-  data: DniData
-  metadata: DniMetadata
-}
 
 export interface DocumentType {
   value: 'DNI' | 'CE'
   label: string
+  minLength: number
   maxLength: number
   placeholder: string
   pattern: string
+  /** Si se puede autocompletar con la consulta de documentos del backend. */
+  consultable: boolean
 }

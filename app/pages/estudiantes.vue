@@ -43,21 +43,18 @@
                                     :placeholder="getSelectedDocumentType()?.placeholder || 'Número de documento'"
                                     :maxlength="getSelectedDocumentType()?.maxLength || 8"
                                     :pattern="getSelectedDocumentType()?.pattern || '[0-9]{8}'"
+                                    :inputmode="documentType === 'DNI' ? 'numeric' : 'text'" autocomplete="off"
                                     @input="handleDocumentInput" required class="document-number-input">
                                 <button type="button" @click="handleDocumentSearch"
-                                    :disabled="isSearchingDni || !isDocumentNumberComplete()"
-                                    class="document-search-button" aria-label="Buscar documento">
+                                    :disabled="isSearchingDni || !puedeConsultarDocumento"
+                                    class="document-search-button" aria-label="Buscar DNI">
                                     <Icon v-if="isSearchingDni" name="heroicons:arrow-path"
                                         class="h-5 w-5 animate-spin" />
                                     <Icon v-else name="heroicons:magnifying-glass" class="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
-                        <small class="form-hint">
-                            {{ getSelectedDocumentType()?.maxLength || 8 }} dígitos.
-                            {{ isDocumentNumberComplete() ? 'Presiona la lupa para buscar.' : `Faltan
-                            ${getRemainingDigits()} dígitos.` }}
-                        </small>
+                        <small class="form-hint">{{ documentHint }}</small>
                     </div>
 
                     <div class="form-group col-span-6 md:col-span-3 lg:col-span-2">
@@ -381,6 +378,7 @@
 
 <script setup lang="ts">
 import { PAYMENT_DETAILS } from '~/config/payment'
+import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
 
 // ===========================================================================
 // SEO Y META TAGS
@@ -492,6 +490,7 @@ const fechaPago = ref<string>('')
 const codigoVoucher = ref<string>('')
 const archivoVoucher = ref<File | null>(null)
 const isSearchingDni = ref(false)
+const consultaDniFallida = ref(false)
 const isSubmitting = ref(false)
 const errorMessage = ref<string>('')
 const successMessage = ref<string>('')
@@ -521,10 +520,13 @@ watch(documentType, () => {
     documentNumber.value = ''
     nombres.value = ''
     apellidos.value = ''
+    nombresEncontrados.value = false
+    consultaDniFallida.value = false
 })
 
-watch(documentNumber, (newValue) => {
-    if (isDocumentNumberComplete() && newValue.length === getSelectedDocumentType()?.maxLength) {
+watch(documentNumber, () => {
+    consultaDniFallida.value = false
+    if (puedeConsultarDocumento.value) {
         handleDocumentSearch()
     }
 })
@@ -549,14 +551,27 @@ const getSelectedDocumentType = () => {
 }
 
 const isDocumentNumberComplete = () => {
-    const expectedLength = getSelectedDocumentType()?.maxLength || 8
-    return documentNumber.value.length === expectedLength
+    const tipo = getSelectedDocumentType()
+    return Boolean(tipo) && new RegExp(tipo!.pattern).test(documentNumber.value)
 }
 
 const getRemainingDigits = () => {
-    const expectedLength = getSelectedDocumentType()?.maxLength || 8
-    return Math.max(0, expectedLength - documentNumber.value.length)
+    const minimo = getSelectedDocumentType()?.minLength || 8
+    return Math.max(0, minimo - documentNumber.value.length)
 }
+
+// Solo el DNI se consulta en el backend; el carné de extranjería se completa a mano
+const puedeConsultarDocumento = computed(() => Boolean(getSelectedDocumentType()?.consultable) && isDocumentNumberComplete())
+
+const documentHint = computed(() => {
+    const tipo = getSelectedDocumentType()
+    if (!tipo?.consultable) {
+        return `${tipo?.minLength ?? 9} a ${tipo?.maxLength ?? 12} caracteres. Ingresa tus nombres y apellidos manualmente.`
+    }
+    if (!isDocumentNumberComplete()) return `${tipo.maxLength} dígitos. Faltan ${getRemainingDigits()} dígitos.`
+    if (consultaDniFallida.value) return `${tipo.maxLength} dígitos. Completa tus nombres y apellidos manualmente.`
+    return `${tipo.maxLength} dígitos. Presiona la lupa para buscar.`
+})
 
 const selectPlan = (id: number) => {
     if (!isEmailValid.value) {
@@ -625,71 +640,60 @@ const copiarYape = async () => {
 
 const handleDocumentInput = (event: Event) => {
     const target = event.target as HTMLInputElement
-    const numericValue = target.value.replace(/\D/g, '')
     const maxLength = getSelectedDocumentType()?.maxLength || 8
+    const limpio = documentType.value === 'DNI'
+        ? target.value.replace(/\D/g, '')
+        : target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
 
     errorMessage.value = ''
-    documentNumber.value = numericValue.slice(0, maxLength)
+    documentNumber.value = limpio.slice(0, maxLength)
     target.value = documentNumber.value
-    
-    // Limpiar nombres y permitir edición cuando se cambia el número de documento
-    if (nombres.value || apellidos.value) {
+
+    // Los nombres autocompletados pertenecen al documento anterior; los escritos a mano se conservan
+    if (nombresEncontrados.value) {
         nombres.value = ''
         apellidos.value = ''
         nombresEncontrados.value = false
     }
 }
 
+let consultaDniActual = 0
+
 const handleDocumentSearch = async () => {
+    if (!getSelectedDocumentType()?.consultable) return
     if (!isDocumentNumberComplete()) {
-        const expectedLength = getSelectedDocumentType()?.maxLength || 8
-        showError(`Por favor, ingrese un ${documentType.value} válido de ${expectedLength} dígitos.`)
+        showError('Por favor, ingresa un DNI válido de 8 dígitos.')
         return
     }
 
+    const numero = documentNumber.value
+    const consulta = ++consultaDniActual
     isSearchingDni.value = true
-    nombres.value = ''
-    apellidos.value = ''
-    nombresEncontrados.value = false
+    consultaDniFallida.value = false
     errorMessage.value = ''
 
     try {
-        const result = await consultDni(documentNumber.value, documentType.value)
+        const resultado = await consultDni(numero)
+        // Se descarta una respuesta que llega después de cambiar el documento
+        if (consulta !== consultaDniActual || numero !== documentNumber.value) return
 
-        if (result && result.success && result.data) {
-            if (result.data.names && (result.data.paternalSurname || result.data.maternalSurname)) {
-                nombres.value = result.data.names.trim()
-
-                const paternal = result.data.paternalSurname?.trim() || ''
-                const maternal = result.data.maternalSurname?.trim() || ''
-                apellidos.value = `${paternal} ${maternal}`.trim()
-
-                nombresEncontrados.value = true // Marcar que se encontraron los nombres
-
-                showSuccess(`✅ ${documentType.value} encontrado: ${result.data.fullName || `${nombres.value} ${apellidos.value}`}`)
-
-            } else {
-                nombresEncontrados.value = false // No se encontraron nombres completos
-                showError(`⚠️ ${documentType.value} encontrado, pero faltan datos personales. Complete manualmente.`)
-            }
+        if (resultado) {
+            nombres.value = resultado.nombres
+            apellidos.value = resultado.apellidos
+            nombresEncontrados.value = true
+            showSuccess(`✅ DNI encontrado: ${resultado.nombres} ${resultado.apellidos}`)
         } else {
-            nombresEncontrados.value = false // No se encontraron datos
-            showError(`❌ No se encontraron datos para el ${documentType.value} ${documentNumber.value}`)
+            nombresEncontrados.value = false
+            consultaDniFallida.value = true
+            showError('⚠️ DNI encontrado, pero faltan datos personales. Completa tus nombres manualmente.')
         }
-    } catch (error: any) {
-        if (error.statusCode === 400) {
-            showError(`❌ ${documentType.value} inválido. Debe tener ${getSelectedDocumentType()?.maxLength} dígitos numéricos.`)
-        } else if (error.statusCode === 429) {
-            showError('⏳ Demasiadas consultas. Espere un momento antes de intentar nuevamente.')
-        } else if (error.statusCode === 500) {
-            showError('🔧 Error del servidor. Inténtelo más tarde.')
-        } else if (error.statusCode === 403) {
-            showError('🚫 Acceso no autorizado. Contacte al administrador.')
-        } else {
-            showError(`🌐 Error de conexión. Verifique su internet e inténtelo nuevamente.`)
-        }
+    } catch (error) {
+        if (consulta !== consultaDniActual || numero !== documentNumber.value) return
+        nombresEncontrados.value = false
+        consultaDniFallida.value = true
+        showError(mensajeFallaConsultaDni(normalizeApiError(error), numero))
     } finally {
-        isSearchingDni.value = false
+        if (consulta === consultaDniActual) isSearchingDni.value = false
     }
 }
 

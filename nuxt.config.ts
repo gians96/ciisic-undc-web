@@ -22,8 +22,6 @@ export default defineNuxtConfig({
   ssr: true,
   runtimeConfig: {
     // Variables privadas del servidor (no expuestas al cliente)
-    xApiToken: process.env.NUXT_X_API_TOKEN || process.env.X_API_TOKEN || '',
-    xApiUrl: process.env.NUXT_X_API_URL || process.env.X_API_URL || '',
     backendBaseUrl: process.env.NUXT_BACKEND_BASE_URL || process.env.API_BASE_URL || 'http://localhost:3000',
     // Variables públicas (expuestas al cliente)
     public: {

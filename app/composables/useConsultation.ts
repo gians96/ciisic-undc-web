@@ -1,56 +1,51 @@
 // ============================================================================
-// COMPOSABLE PARA CONSULTA DE DOCUMENTOS
+// CONSULTA DE DOCUMENTOS (backend-ciisic: GET /api/v1/public/document-lookup/dni/:numero)
+// El token del proveedor vive en el backend; la landing no guarda secretos.
 // ============================================================================
 
-import type { DniConsultationResponse, DocumentType } from '~/types'
+import type { DocumentType } from '~/types'
+import type { ApiExito, ConsultaDni } from '~/types/evento'
+import { rutasApiPublica } from '~/utils/api-publica'
+import { mapearConsultaDni, type NombresConsultados } from '~/utils/consulta-dni'
 
 export const useConsultation = () => {
-  
-  // Tipos de documento disponibles
+  const { request } = useApi()
+
+  // Tipos de documento: solo el DNI se consulta; el carné de extranjería se completa a mano
   const documentTypes: DocumentType[] = [
     {
       value: 'DNI',
       label: 'DNI',
+      minLength: 8,
       maxLength: 8,
       placeholder: '12345678',
-      pattern: '^[0-9]{8}$'
+      pattern: '^[0-9]{8}$',
+      consultable: true
     },
     {
       value: 'CE',
       label: 'Carnet de Extranjería',
-      maxLength: 9,
-      placeholder: '123456789',
-      pattern: '^[0-9]{9}$'
+      minLength: 9,
+      maxLength: 12,
+      placeholder: '9 a 12 caracteres',
+      pattern: '^[A-Za-z0-9]{9,12}$',
+      consultable: false
     }
   ]
 
   /**
-   * Consulta los datos de una persona mediante su DNI o CE
-   * Esta función llama al endpoint del servidor para proteger el token
+   * Consulta un DNI en el backend. Devuelve `null` si la respuesta no trae nombres completos y
+   * propaga los errores de la API (404, 503, 429…) para que la página ofrezca el ingreso manual.
    */
-  const consultDni = async (documentNumber: string, documentType: 'DNI' | 'CE' = 'DNI'): Promise<DniConsultationResponse | null> => {
-    try {
-      const expectedLength = documentType === 'DNI' ? 8 : 9
-      
-      // Validación básica del documento
-      if (!documentNumber || documentNumber.length !== expectedLength || !/^\d+$/.test(documentNumber)) {
-        throw new Error(`${documentType} debe tener ${expectedLength} dígitos numéricos`)
-      }
-
-      // Hacer la petición al endpoint del servidor
-      const response = await $fetch<DniConsultationResponse>('/api/consultation', {
-        method: 'POST',
-        body: {
-          documentNumber,
-          documentType
-        }
-      })
-      
-      return response
-      
-    } catch (error) {
-      throw error
+  const consultDni = async (numero: string, opciones: { signal?: AbortSignal } = {}): Promise<NombresConsultados | null> => {
+    if (!/^\d{8}$/.test(numero)) {
+      throw new Error('El DNI debe tener 8 dígitos numéricos')
     }
+    const respuesta = await request<ApiExito<ConsultaDni>>(rutasApiPublica.consultaDni(numero), {
+      timeout: 15000,
+      signal: opciones.signal
+    })
+    return mapearConsultaDni(respuesta?.data)
   }
 
   return {

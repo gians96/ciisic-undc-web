@@ -30,7 +30,7 @@ Frontend:
 - `NODE_ENV=production`
 - `NUXT_PUBLIC_API_BASE_URL`, URL pública del backend del mismo entorno
 - `NUXT_BACKEND_BASE_URL`, URL alcanzable por Nitro hacia el backend del mismo entorno
-- `NUXT_X_API_TOKEN` y `NUXT_X_API_URL` para la consulta de documentos
+- La consulta de documentos (DNI) la hace el backend con su pool de tokens; la landing no guarda tokens de proveedores
 
 Los secretos se configuran como variables runtime de Dokploy. No se envían como argumentos del build ni se guardan en GitHub.
 

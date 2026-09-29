@@ -30,9 +30,9 @@ armado del multipart y fecha de pago).
 
 ## Phase 3: US2 — Consulta de DNI (P1)
 
-- [ ] T009 [P] [US2] Mapeo de la respuesta y clasificación de errores (404/503/429/422/red) en `app/utils/errores-api.ts` + pruebas
-- [ ] T010 [US2] `useConsultation` llama a `GET /document-lookup/dni/:numero` (solo DNI); CE 9–12 caracteres, manual
-- [ ] T011 [US2] Retirar `server/api/consultation.post.ts`, `xApiToken`/`xApiUrl`, `searchConsultation` y tipos DNI anteriores
+- [x] T009 [P] [US2] Mapeo de la respuesta y mensajes de error (404/503/429/422/red) en `app/utils/consulta-dni.ts` + pruebas
+- [x] T010 [US2] `useConsultation` llama a `GET /document-lookup/dni/:numero` (solo DNI); CE 9–12 caracteres, manual
+- [x] T011 [US2] Retirar `server/api/consultation.post.ts`, `xApiToken`/`xApiUrl`, `searchConsultation` y tipos DNI anteriores
 
 ## Phase 4: US1 + US4 — Planes, datos de pago e inscripciones cerradas (P1/P2)
 
