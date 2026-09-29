@@ -434,7 +434,7 @@ const inscriptionPlans = [
         id: 2,
         title: 'ESTUDIANTES SIN KIT',
         badge: 'SIN KIT',
-        basePrice: 60.00,
+        basePrice: 40.00,
         institutionalPrice: 40.00,
         value: 'estudiantes_sin_kit',
         description: 'La opción económica para estudiantes, con acceso a todas las ponencias.',
