@@ -1,7 +1,7 @@
 // ============================================================================
 // ERRORES DE LA API → MENSAJES EN ESPAÑOL (funciones puras)
-// Códigos: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md y los del token del
-// evento y del BFF (specs/001-landing-multi-evento/contracts/bff-landing.md)
+// Códigos: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md, los del token del
+// evento y del BFF, y los de la verificación con Google (specs/001-landing-multi-evento/contracts/bff-landing.md)
 // ============================================================================
 import type { ApiErrorShape } from '../composables/useApi'
 
@@ -66,6 +66,7 @@ const CAMPOS: Record<string, string> = {
   'numeroOperacion': 'Código del voucher',
   'fechaPago': 'Fecha de pago',
   'verificacionToken': 'Verificación de estudiante',
+  'verificacionCorreoToken': 'Verificación del correo con Google',
 }
 
 /** Qué corregir (los mensajes de validación del backend pueden venir en inglés). */
@@ -123,4 +124,39 @@ const MENSAJES_CONTACTO: Record<string, string> = {
 /** Mensaje para el formulario de contacto. */
 export function mensajeErrorContacto(error: ErrorApi): string {
   return mensajeErrorApi(error, MENSAJES_CONTACTO, 'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.')
+}
+
+// La verificación con Google es opcional: cada mensaje recuerda que se puede seguir escribiendo el correo
+const GOOGLE_NO_DISPONIBLE = 'La verificación con Google no está disponible en este momento. Puedes escribir tu correo y continuar con tu inscripción.'
+const CUENTA_GOOGLE_NO_VALIDADA = 'No pudimos validar tu cuenta de Google. Vuelve a intentarlo o escribe tu correo.'
+const GOOGLE_SIN_CONEXION = 'No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo, o escribe tu correo.'
+const GOOGLE_ESPERA = 'Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo, o escribe tu correo.'
+
+const MENSAJES_GOOGLE: Record<string, string> = {
+  GOOGLE_NOT_CONFIGURED: GOOGLE_NO_DISPONIBLE,
+  GOOGLE_UNAVAILABLE: 'No pudimos comunicarnos con Google. Inténtalo de nuevo en unos minutos o escribe tu correo.',
+  INVALID_GOOGLE_TOKEN: CUENTA_GOOGLE_NO_VALIDADA,
+  // Credencial mal formada: la rechaza el BFF (422 INVALID_GOOGLE_CREDENTIAL) o el backend (422 VALIDATION_ERROR)
+  INVALID_GOOGLE_CREDENTIAL: CUENTA_GOOGLE_NO_VALIDADA,
+  VALIDATION_ERROR: CUENTA_GOOGLE_NO_VALIDADA,
+  GOOGLE_EMAIL_NOT_VERIFIED: 'Tu cuenta de Google no tiene el correo verificado. Usa otra cuenta o escribe tu correo.',
+  GOOGLE_NOT_AUTHORITATIVE: 'Google no puede confirmar ese correo porque es de otro proveedor. Usa una cuenta de Gmail o tu cuenta @undc.edu.pe, o escribe tu correo.',
+  RATE_LIMITED: GOOGLE_ESPERA,
+  // Token del evento, BFF o evento no disponible: no dependen del usuario
+  SITE_NOT_CONFIGURED: GOOGLE_NO_DISPONIBLE,
+  EVENT_TOKEN_REQUIRED: GOOGLE_NO_DISPONIBLE,
+  INVALID_EVENT_TOKEN: GOOGLE_NO_DISPONIBLE,
+  EVENT_NOT_FOUND: GOOGLE_NO_DISPONIBLE,
+  BACKEND_UNAVAILABLE: GOOGLE_NO_DISPONIBLE,
+  NETWORK_ERROR: GOOGLE_SIN_CONEXION,
+}
+
+/** Mensaje cuando falla la verificación del correo con Google (`POST /api/publico/verificacion-google`). */
+export function mensajeErrorGoogle(error: ErrorApi): string {
+  const especifico = MENSAJES_GOOGLE[error.code]
+  if (especifico) return especifico
+  if (error.statusCode === 0) return GOOGLE_SIN_CONEXION
+  if (error.statusCode === 429) return GOOGLE_ESPERA
+  if (error.statusCode >= 500) return GOOGLE_NO_DISPONIBLE
+  return 'No pudimos verificar tu correo con Google. Inténtalo de nuevo o escribe tu correo.'
 }

@@ -4,6 +4,7 @@ import {
   camposConError,
   mensajeErrorApi,
   mensajeErrorContacto,
+  mensajeErrorGoogle,
   mensajeErrorInscripcion,
   mensajeErrorPonencia,
 } from '../app/utils/errores-api'
@@ -95,5 +96,44 @@ describe('mensajes de ponencias y contacto', () => {
     expect(mensajeErrorContacto({ statusCode: 429, code: 'RATE_LIMITED' })).toMatch(/15 minutos/)
     expect(mensajeErrorContacto({ statusCode: 422, code: 'VALIDATION_ERROR' })).toMatch(/Revisa el formulario/)
     expect(mensajeErrorContacto({ statusCode: 400, code: 'OTRO' })).toBe('Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.')
+  })
+})
+
+describe('mensajes de la verificación del correo con Google', () => {
+  it.each([
+    ['GOOGLE_NOT_CONFIGURED', 503, /verificación con Google no está disponible en este momento/],
+    ['GOOGLE_UNAVAILABLE', 503, /No pudimos comunicarnos con Google/],
+    ['INVALID_GOOGLE_TOKEN', 401, /No pudimos validar tu cuenta de Google/],
+    ['INVALID_GOOGLE_CREDENTIAL', 422, /No pudimos validar tu cuenta de Google/],
+    ['VALIDATION_ERROR', 422, /No pudimos validar tu cuenta de Google/],
+    ['GOOGLE_EMAIL_NOT_VERIFIED', 403, /Tu cuenta de Google no tiene el correo verificado/],
+    ['GOOGLE_NOT_AUTHORITATIVE', 403, /es de otro proveedor. Usa una cuenta de Gmail o tu cuenta @undc\.edu\.pe/],
+    ['RATE_LIMITED', 429, /Espera un minuto/],
+  ])('%s → qué pasó y que se puede seguir escribiendo el correo', (code, statusCode, esperado) => {
+    const mensaje = mensajeErrorGoogle({ statusCode, code, message: 'message from server' })
+    expect(mensaje).toMatch(esperado)
+    expect(mensaje).toMatch(/escrib(e|ir) tu correo/)
+  })
+
+  it.each([
+    ['SITE_NOT_CONFIGURED', 503],
+    ['EVENT_TOKEN_REQUIRED', 401],
+    ['INVALID_EVENT_TOKEN', 401],
+    ['EVENT_NOT_FOUND', 404],
+    ['BACKEND_UNAVAILABLE', 502],
+  ])('%s: Google no disponible, sin detalles técnicos', (code, statusCode) => {
+    expect(mensajeErrorGoogle({ statusCode, code })).toBe('La verificación con Google no está disponible en este momento. Puedes escribir tu correo y continuar con tu inscripción.')
+  })
+
+  it('red, errores del servidor y códigos desconocidos', () => {
+    expect(mensajeErrorGoogle({ statusCode: 0, code: 'NETWORK_ERROR' })).toMatch(/Revisa tu conexión/)
+    expect(mensajeErrorGoogle({ statusCode: 500, code: 'INTERNAL_ERROR' })).toMatch(/no está disponible en este momento/)
+    expect(mensajeErrorGoogle({ statusCode: 429, code: 'OTRO' })).toMatch(/Espera un minuto/)
+    expect(mensajeErrorGoogle({ statusCode: 400, code: 'OTRO' })).toBe('No pudimos verificar tu correo con Google. Inténtalo de nuevo o escribe tu correo.')
+  })
+
+  it('la inscripción nombra el token de verificación del correo en un VALIDATION_ERROR', () => {
+    expect(mensajeErrorInscripcion({ statusCode: 422, code: 'VALIDATION_ERROR', fields: { verificacionCorreoToken: 'inválido' } }))
+      .toBe('Revisa estos datos: Verificación del correo con Google.')
   })
 })

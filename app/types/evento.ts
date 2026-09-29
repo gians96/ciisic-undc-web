@@ -134,3 +134,20 @@ export interface ConfiguracionSitioApi {
   /** Panel (administradores y participantes); `/login` redirige aquí. */
   urlPanel: string | null
 }
+
+/**
+ * Tipo de cuenta según el correo (regla fija del backend): `undc.edu.pe` con parte local numérica
+ * de 8 a 12 dígitos = estudiante; otra parte local del dominio = personal; otro dominio = externo.
+ */
+export type TipoCuentaCorreo = 'ESTUDIANTE' | 'PERSONAL' | 'EXTERNO'
+
+/** `POST /api/v1/site/google-verification` (vía `/api/publico/verificacion-google`). */
+export interface VerificacionCorreoGoogle {
+  correo: string
+  nombres: string | null
+  apellidos: string | null
+  tipoCuenta: TipoCuentaCorreo
+  esInstitucional: boolean
+  /** Prueba firmada de la verificación (24 h, atada al evento y al correo); solo en memoria. */
+  verificacionCorreoToken: string
+}
