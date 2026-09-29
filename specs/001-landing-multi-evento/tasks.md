@@ -48,12 +48,12 @@ errores).
 ## Phase 4: US1 + US4 — Planes, datos de pago e inscripciones cerradas (P1/P2)
 
 - [x] T012 [P] [US1] `mapearPlanes`, `tituloPlan`, regla de precio y `formatearSoles` en `app/utils/planes.ts` / `app/utils/formato.ts` + pruebas
-- [ ] T013 [US1] `usePlanes(categoria)` con clave `planes:<categoria>` sobre `/api/publico/planes`
-- [ ] T040 [P] [US1] `useCatalogos()` y clasificaciones desde `/api/publico/catalogos` (etiqueta sin "ESTUDIANTE - ") + pruebas
-- [ ] T014 [US1] `useFormularioInscripcion()` con la lógica compartida de ambos formularios
-- [ ] T015 [US1] `estudiantes.vue` y `general.vue`: tarjetas desde la API y medios de pago desde `datosPago`
-- [ ] T016 [US4] `EstadoInscripciones.vue` (cargando / error con reintento / cerradas) en `/planes`, `/estudiantes` y `/general`
-- [ ] T017 [US1] Eliminar `app/config/payment.ts` y `app/stores/inscriptionPlans.ts`
+- [x] T013 [US1] `usePlanes(categoria)` con clave `planes:<categoria>` sobre `/api/publico/planes`
+- [x] T040 [P] [US1] `useCatalogos()` y clasificaciones desde `/api/publico/catalogos` (etiqueta sin "ESTUDIANTE - ") + pruebas
+- [x] T014 [US1] `useFormularioInscripcion()` con la lógica compartida de ambos formularios
+- [x] T015 [US1] `estudiantes.vue` y `general.vue`: tarjetas desde la API y medios de pago desde `datosPago`
+- [x] T016 [US4] `EstadoInscripciones.vue` (cargando / error con reintento / cerradas) en `/planes`, `/estudiantes` y `/general`
+- [x] T017 [US1] Eliminar `app/config/payment.ts` y `app/stores/inscriptionPlans.ts`
 
 ## Phase 5: US3 — Verificación de estudiante UNDC (P1)
 

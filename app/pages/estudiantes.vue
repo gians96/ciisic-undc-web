@@ -20,9 +20,10 @@
             @clear-error="errorMessage = ''" @clear-success="successMessage = ''" />
 
         <!-- ===========================================================================
-        SECCIÓN DEL FORMULARIO
+        SECCIÓN DEL FORMULARIO (o estado: cargando / error / inscripciones cerradas)
         ============================================================================ -->
-        <section class="form-section">
+        <EstadoInscripciones v-if="estadoPagina !== 'abiertas'" :estado="estadoPagina" @reintentar="recargar" />
+        <section v-else class="form-section">
             <div class="form-container">
                 <form @submit.prevent="handleSubmit" class="registration-form">
 
@@ -107,16 +108,19 @@
 
                     <!-- Selección de Tipo de Inscripción - Cards Simples -->
                     <div class="form-group col-span-6 form-section-below-classification">
-                        <label class="form-label">Tipo de inscripción</label>
-                        <div class="plan-cards-container">
-                            <div v-for="plan in availablePlans" :key="plan.id" @click="selectPlan(plan.id)"
+                        <label id="tipoInscripcionLabel" class="form-label">Tipo de inscripción</label>
+                        <div class="plan-cards-container" role="radiogroup" aria-labelledby="tipoInscripcionLabel">
+                            <div v-for="plan in availablePlans" :key="plan.id" role="radio"
+                                :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="`${plan.title}, ${plan.price}`"
+                                :tabindex="camposCompletos ? 0 : -1" @click="selectPlan(plan.id)"
+                                @keydown.enter.prevent="selectPlan(plan.id)" @keydown.space.prevent="selectPlan(plan.id)"
                                 class="plan-card-simple" :class="{
                                     'selected': planId === plan.id,
                                     'disabled': !camposCompletos
                                 }">
                                 <div class="plan-card-header">
                                     <h4 class="plan-card-title">{{ plan.title }}</h4>
-                                    <span class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
+                                    <span v-if="plan.badge" class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
                                     }}</span>
                                 </div>
                                 <div class="plan-card-price">{{ plan.price }}</div>
@@ -142,7 +146,10 @@
                             </div>
                         </div>
                         <small class="form-hint">
-                            <template v-if="!camposCompletos">
+                            <template v-if="!availablePlans.length">
+                                No hay tipos de inscripción disponibles por ahora
+                            </template>
+                            <template v-else-if="!camposCompletos">
                                 Completa los campos anteriores para habilitar la selección de planes
                             </template>
                             <template v-else>
@@ -159,16 +166,9 @@
                                 <label for="clasificacion" class="form-label">Clasificación</label>
                                 <select id="clasificacion" v-model="clasificacion" required class="form-input">
                                     <option value="" disabled selected>Selecciona una opción</option>
-                                    <option value=1>I CICLO</option>
-                                    <option value=2>II CICLO</option>
-                                    <option value=3>III CICLO</option>
-                                    <option value=4>IV CICLO</option>
-                                    <option value=5>V CICLO</option>
-                                    <option value=6>VI CICLO</option>
-                                    <option value=7>VII CICLO</option>
-                                    <option value=8>VIII CICLO</option>
-                                    <option value=9>IX CICLO</option>
-                                    <option value=10>X CICLO</option>
+                                    <option v-for="opcion in clasificaciones" :key="opcion.id" :value="String(opcion.id)">
+                                        {{ opcion.etiqueta }}
+                                    </option>
                                 </select>
                                 <small class="form-hint">Indica el ciclo al que perteneces</small>
                             </div>
@@ -189,40 +189,50 @@
                             <div class="form-group">
                                 <label class="form-label">Modalidad de Depósito</label>
                                 <div class="radio-group-horizontal">
-                                    <label for="bancoBcp" class="radio-label">
-                                        <input id="bancoBcp" v-model="bancoSeleccionado" type="radio" value="bcp"
-                                            @change="modalidadDeposito = 'banco'" class="sr-only">
+                                    <label v-for="banco in bancos" :key="`banco-${banco.codigo}`"
+                                        :for="`medio-banco-${banco.codigo}`" class="radio-label">
+                                        <input :id="`medio-banco-${banco.codigo}`" type="radio" name="medioPago"
+                                            :value="`banco:${banco.codigo}`"
+                                            :checked="modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo"
+                                            @change="seleccionarBanco(banco.codigo)" class="sr-only">
                                         <div class="radio-custom-indicator"
-                                            :class="{ 'selected': bancoSeleccionado === 'bcp' }">
-                                            <div v-if="bancoSeleccionado === 'bcp'" class="radio-dot"></div>
+                                            :class="{ 'selected': modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo }">
+                                            <div v-if="modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo"
+                                                class="radio-dot"></div>
                                         </div>
                                         <div class="relative flex items-center group">
-                                            <span>Banco BCP</span>
+                                            <span>Banco {{ banco.nombre }}</span>
                                             <div class="tooltip">
-                                                <div>N° Cuenta: {{ PAYMENT_DETAILS.bcp.account }}</div>
-                                                <div>CCI: {{ PAYMENT_DETAILS.bcp.cci }}</div>
-                                                <div>{{ PAYMENT_DETAILS.holder }}</div>
+                                                <div>N° Cuenta: {{ banco.numeroCuenta }}</div>
+                                                <div v-if="banco.cci">CCI: {{ banco.cci }}</div>
+                                                <div v-if="titular">{{ titular }}</div>
                                                 <div class="tooltip-arrow"></div>
                                             </div>
                                         </div>
                                     </label>
-                                    <label for="billeteraDigital" class="radio-label">
-                                        <input id="billeteraDigital" v-model="modalidadDeposito" type="radio"
-                                            value="billetera" class="sr-only">
+                                    <label v-for="billetera in billeteras" :key="`billetera-${billetera.codigo}`"
+                                        :for="`medio-billetera-${billetera.codigo}`" class="radio-label">
+                                        <input :id="`medio-billetera-${billetera.codigo}`" type="radio" name="medioPago"
+                                            :value="`billetera:${billetera.codigo}`"
+                                            :checked="modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo"
+                                            @change="seleccionarBilletera(billetera.codigo)" class="sr-only">
                                         <div class="radio-custom-indicator"
-                                            :class="{ 'selected': modalidadDeposito === 'billetera' }">
-                                            <div v-if="modalidadDeposito === 'billetera'" class="radio-dot"></div>
+                                            :class="{ 'selected': modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo }">
+                                            <div v-if="modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo"
+                                                class="radio-dot"></div>
                                         </div>
                                         <div class="relative flex items-center group">
-                                            <span>Yape</span>
+                                            <span>{{ billetera.nombre }}</span>
                                         </div>
                                     </label>
                                 </div>
-                                <small class="form-hint">Selecciona el medio de pago</small>
+                                <small class="form-hint">
+                                    {{ hayMediosDePago ? 'Selecciona el medio de pago' : 'Los datos de pago aún no están disponibles; comunícate con la organización.' }}
+                                </small>
                             </div>
 
                             <Transition name="fade" mode="out-in">
-                                <div v-if="modalidadDeposito === 'banco' && bancoSeleccionado" class="form-group mt-4">
+                                <div v-if="bancoActual" class="form-group mt-4">
                                     <label class="form-label">Tipo de Pago</label>
                                     <div class="radio-group-horizontal">
                                         <label for="pagoDirecto" class="radio-label">
@@ -240,7 +250,7 @@
                                                     title="Copiar número de cuenta" />
                                             </div>
                                         </label>
-                                        <label for="pagoInterbancario" class="radio-label">
+                                        <label v-if="bancoActual.cci" for="pagoInterbancario" class="radio-label">
                                             <input id="pagoInterbancario" v-model="tipoPago" type="radio"
                                                 value="interbancario" class="sr-only">
                                             <div class="radio-custom-indicator"
@@ -258,11 +268,11 @@
                                     </div>
                                     <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900/45 p-4">
                                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                            {{ tipoPago === 'interbancario' ? 'CCI BCP' : 'Cuenta BCP Soles' }}
+                                            {{ tipoPago === 'interbancario' ? `CCI ${bancoActual.nombre}` : `Cuenta ${bancoActual.nombre}` }}
                                         </p>
                                         <div class="mt-1 flex items-center justify-between gap-3">
                                             <span class="break-all font-mono text-sm font-semibold text-white">
-                                                {{ tipoPago === 'interbancario' ? PAYMENT_DETAILS.bcp.cci : PAYMENT_DETAILS.bcp.account }}
+                                                {{ tipoPago === 'interbancario' ? bancoActual.cci : bancoActual.numeroCuenta }}
                                             </span>
                                             <button type="button"
                                                 :aria-label="tipoPago === 'interbancario' ? 'Copiar CCI' : 'Copiar número de cuenta'"
@@ -271,32 +281,34 @@
                                                 <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
                                             </button>
                                         </div>
-                                        <p class="mt-2 text-xs text-slate-400">Titular: {{ PAYMENT_DETAILS.holder }}</p>
+                                        <p v-if="titular" class="mt-2 text-xs text-slate-400">Titular: {{ titular }}</p>
                                     </div>
-                                    <small class="form-hint">Elige cuenta BCP o CCI según el banco de origen</small>
+                                    <small class="form-hint">Elige cuenta {{ bancoActual.nombre }}{{ bancoActual.cci ? ' o CCI' : '' }} según el banco de origen</small>
                                 </div>
-                                <div v-else-if="modalidadDeposito === 'billetera'" class="form-group mt-4">
-                                    <label class="form-label">Datos de Yape</label>
+                                <div v-else-if="billeteraActual" class="form-group mt-4">
+                                    <label class="form-label">Datos de {{ billeteraActual.nombre }}</label>
                                     <div class="rounded-xl border border-slate-700 bg-slate-900/45 p-4">
                                         <div class="flex items-center justify-between gap-4">
                                             <div>
-                                                <p class="font-mono text-lg font-bold text-white">{{ PAYMENT_DETAILS.yape.phone }}</p>
-                                                <p class="mt-1 text-xs text-slate-400">{{ PAYMENT_DETAILS.holder }}</p>
+                                                <p class="font-mono text-lg font-bold text-white">{{ billeteraActual.telefono }}</p>
+                                                <p v-if="titular" class="mt-1 text-xs text-slate-400">{{ titular }}</p>
                                             </div>
                                             <div class="flex items-center gap-2">
-                                                <button type="button" aria-label="Copiar número de Yape"
+                                                <button type="button" :aria-label="`Copiar número de ${billeteraActual.nombre}`"
                                                     class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
-                                                    @click="copiarYape">
+                                                    @click="copiarTelefonoBilletera">
                                                     <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
                                                 </button>
-                                                <button type="button" @click="showQrModal = true" class="qr-button-inline"
-                                                    aria-label="Mostrar código QR de Yape">
+                                                <button v-if="qrBilletera" type="button" @click="showQrModal = true" class="qr-button-inline"
+                                                    :aria-label="`Mostrar código QR de ${billeteraActual.nombre}`">
                                                     <Icon name="heroicons:qr-code" class="h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <small class="form-hint">Yapea al número o abre el código QR</small>
+                                    <small class="form-hint">
+                                        {{ billeteraActual.codigo === 'yape' ? 'Yapea al número' : 'Paga al número indicado' }}{{ qrBilletera ? ' o abre el código QR' : '' }}
+                                    </small>
                                 </div>
                             </Transition>
                         </div>
@@ -348,12 +360,12 @@
 
         <!-- Modal para mostrar QR -->
         <Transition name="modal" appear>
-            <div v-if="showQrModal" class="qr-modal-overlay" @click="showQrModal = false">
-                <div class="qr-modal-container" @click.stop>
+            <div v-if="showQrModal && billeteraActual && qrBilletera" class="qr-modal-overlay" @click="showQrModal = false">
+                <div class="qr-modal-container" role="dialog" aria-modal="true" aria-labelledby="qrModalTitulo" @click.stop>
                     <div class="qr-modal-header">
-                        <h3 class="qr-modal-title">
+                        <h3 id="qrModalTitulo" class="qr-modal-title">
                             <Icon name="heroicons:qr-code" class="h-6 w-6 mr-2" />
-                            Código QR de Yape
+                            Código QR de {{ billeteraActual.nombre }}
                         </h3>
                         <button type="button" aria-label="Cerrar código QR" @click="showQrModal = false"
                             class="qr-modal-close">
@@ -363,17 +375,18 @@
 
                     <div class="qr-modal-content">
                         <div class="qr-modal-image-container">
-                            <img :src="PAYMENT_DETAILS.yape.qrImage" alt="Código QR de Yape de Jhon Ismael Santiago Rojas"
+                            <img :src="qrBilletera"
+                                :alt="`Código QR de ${billeteraActual.nombre}${titular ? ` de ${titular}` : ''}`"
                                 class="qr-modal-image">
                         </div>
 
                         <div class="qr-modal-info">
                             <p class="qr-modal-name">
-                                <strong>Yape:</strong> {{ PAYMENT_DETAILS.yape.phone }}<br>
-                                <strong>Titular:</strong> {{ PAYMENT_DETAILS.holder }}
+                                <strong>{{ billeteraActual.nombre }}:</strong> {{ billeteraActual.telefono }}<br>
+                                <template v-if="titular"><strong>Titular:</strong> {{ titular }}</template>
                             </p>
                             <p class="qr-modal-instructions">
-                                Escanea el código con Yape y verifica el nombre del titular antes de confirmar el pago.
+                                Escanea el código con {{ billeteraActual.nombre }} y verifica el nombre del titular antes de confirmar el pago.
                             </p>
                         </div>
                     </div>
@@ -390,12 +403,6 @@
 </template>
 
 <script setup lang="ts">
-import { PAYMENT_DETAILS } from '~/config/payment'
-import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
-import { formatearSoles } from '~/utils/formato'
-import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
-import { precioPlan } from '~/utils/planes'
-
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
@@ -407,494 +414,68 @@ useHead({
 })
 
 // ===========================================================================
-// COMPOSABLES Y ROUTER
+// FORMULARIO (lógica compartida con /general en useFormularioInscripcion)
 // ===========================================================================
-const { consultDni, documentTypes } = useConsultation()
 const {
-    createInscription,
-    mapFormDataToApiData,
-    isSubmitting: apiSubmitting,
-    error: apiError,
-    clearError
-} = useInscription()
-const router = useRouter()
-
-// ===========================================================================
-// PLANES DE INSCRIPCIÓN
-// ===========================================================================
-const inscriptionPlans = [
-    {
-        id: 1,
-        title: 'ESTUDIANTES CON KIT',
-        badge: 'CON KIT',
-        basePrice: 120.00,
-        institutionalPrice: 100.00,
-        value: 'estudiantes_con_kit',
-        description: 'La experiencia completa para estudiantes con kit de merchandising oficial.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:gift', text: 'Kit de Merchandising Oficial' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-        ]
-    },
-    {
-        id: 2,
-        title: 'ESTUDIANTES SIN KIT',
-        badge: 'SIN KIT',
-        basePrice: 60.00,
-        institutionalPrice: 40.00,
-        value: 'estudiantes_sin_kit',
-        description: 'La opción económica para estudiantes, con acceso a todas las ponencias.',
-        features: [
-            { icon: 'heroicons:academic-cap', text: 'Certificado Digital (100h)' },
-            { icon: 'heroicons:identification', text: 'Carnet de Identificación' },
-            { icon: 'heroicons:ticket', text: 'Acceso a todas las ponencias' },
-            { icon: 'heroicons:x-mark', text: 'No incluye Kit' },
-        ]
-    },
-]
-
-// ===========================================================================
-// COMPUTED Y REACTIVOS
-// ===========================================================================
-const isEmailValid = computed(() => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return email.value && emailRegex.test(email.value.trim())
-})
-
-// Precio UNDC solo para estudiantes verificados; el resto (incluidos estudiantes de otras
-// universidades) ve el precio regular. El monto definitivo lo calcula el backend.
-const availablePlans = computed(() => {
-    return inscriptionPlans.map(plan => ({
-        ...plan,
-        price: formatearSoles(precioPlan(plan, esEstudianteUndc.value))
-    }))
-})
-
-const selectedPlan = computed(() => planId.value ? availablePlans.value.find(plan => plan.id === planId.value) : null)
-const isStudentPlan = computed(() => planId.value === 1 || planId.value === 2)
-
-// ===========================================================================
-// ESTADO DEL FORMULARIO
-// ===========================================================================
-const documentType = ref<'DNI' | 'CE'>('DNI')
-const documentNumber = ref<string>('')
-const nombres = ref<string>('')
-const apellidos = ref<string>('')
-const nombresEncontrados = ref<boolean>(false) // Nueva variable para controlar si se encontraron los nombres
-const email = ref<string>('')
-const celular = ref<string>('')
-const clasificacion = ref<string>('')
-const tipoInscripcion = ref<string>('')
-const planId = ref<number | null>(null) // Sin plan preseleccionado
-const modalidadDeposito = ref<'banco' | 'billetera'>('banco')
-const bancoSeleccionado = ref<'bcp' | null>('bcp')
-const tipoPago = ref<'directo' | 'interbancario' | null>('directo')
-const aplicativo = ref<'yape' | null>(null)
-const fechaPago = ref<string>('')
-const codigoVoucher = ref<string>('')
-const archivoVoucher = ref<File | null>(null)
-const isSearchingDni = ref(false)
-const consultaDniFallida = ref(false)
-const isSubmitting = ref(false)
-const errorMessage = ref<string>('')
-const successMessage = ref<string>('')
-const showQrModal = ref(false)
-// "Hoy" en Lima se calcula en el navegador (evita desajustes de hidratación a medianoche)
-const fechaMaxima = ref<string>('')
-
-// ===========================================================================
-// VERIFICACIÓN DE ESTUDIANTE UNDC
-// ===========================================================================
-const { evento } = useEvento()
-const {
-    estado: estadoVerificacion,
-    esEstudianteUndc,
-    verificacionToken,
-    mensaje: mensajeVerificacionUndc,
-    reintentar: reintentarVerificacion
-} = useVerificacionEstudiante({
-    correo: email,
-    tipoDocumento: documentType,
-    numeroDocumento: documentNumber,
-    dominio: computed(() => evento.value?.dominioInstitucional)
-})
-
-const iconoVerificacion = computed(() => {
-    if (estadoVerificacion.value === 'verificando') return 'heroicons:arrow-path'
-    switch (mensajeVerificacionUndc.value?.tono) {
-        case 'exito': return 'heroicons:check-badge'
-        case 'aviso': return 'heroicons:exclamation-triangle'
-        default: return 'heroicons:information-circle'
-    }
-})
-
-// Misma condición para habilitar los planes en la interfaz y en la lógica
-const camposCompletos = computed(() => Boolean(
-    isDocumentNumberComplete()
-    && nombres.value.trim()
-    && apellidos.value.trim()
-    && isEmailValid.value
-    && esCelularValido(celular.value)
-))
-
-const celularHint = computed(() => {
-    if (!celular.value) return '9 dígitos, empieza con 9'
-    if (!celular.value.startsWith('9')) return 'El celular debe empezar con 9'
-    if (celular.value.length < 9) return `Faltan ${9 - celular.value.length} dígitos`
-    return 'Celular válido'
-})
-
-// ===========================================================================
-// WATCHERS
-// ===========================================================================
-watch(planId, () => {
-    // Preseleccionar el tipo de inscripción basado en el planId
-    if (selectedPlan.value) {
-        tipoInscripcion.value = selectedPlan.value.value
-    } else {
-        tipoInscripcion.value = ''
-    }
-}, { immediate: true })
-
-watch(modalidadDeposito, (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-        bancoSeleccionado.value = newVal === 'banco' ? 'bcp' : null
-        tipoPago.value = newVal === 'banco' ? 'directo' : null
-        aplicativo.value = newVal === 'billetera' ? 'yape' : null
-    }
-})
-
-watch(documentType, () => {
-    documentNumber.value = ''
-    nombres.value = ''
-    apellidos.value = ''
-    nombresEncontrados.value = false
-    consultaDniFallida.value = false
-})
-
-watch(documentNumber, () => {
-    consultaDniFallida.value = false
-    if (puedeConsultarDocumento.value) {
-        handleDocumentSearch()
-    }
-})
-
-// ===========================================================================
-// MÉTODOS AUXILIARES
-// ===========================================================================
-const getBadgeClass = (badge: string) => {
-    return badge.includes('SIN') ? 'badge-warning' : 'badge-success'
-}
-
-const getEmailHint = () => {
-    const dominio = evento.value?.dominioInstitucional || 'undc.edu.pe'
-    if (!email.value) return `Si eres estudiante UNDC, usa tu correo institucional @${dominio}`
-    if (!isEmailValid.value) return 'Ingresa un correo electrónico válido'
-    return 'Correo válido'
-}
-
-const getSelectedDocumentType = () => {
-    return documentTypes.find(type => type.value === documentType.value)
-}
-
-const isDocumentNumberComplete = () => {
-    const tipo = getSelectedDocumentType()
-    return Boolean(tipo) && new RegExp(tipo!.pattern).test(documentNumber.value)
-}
-
-const getRemainingDigits = () => {
-    const minimo = getSelectedDocumentType()?.minLength || 8
-    return Math.max(0, minimo - documentNumber.value.length)
-}
-
-// Solo el DNI se consulta en el backend; el carné de extranjería se completa a mano
-const puedeConsultarDocumento = computed(() => Boolean(getSelectedDocumentType()?.consultable) && isDocumentNumberComplete())
-
-const documentHint = computed(() => {
-    const tipo = getSelectedDocumentType()
-    if (!tipo?.consultable) {
-        return `${tipo?.minLength ?? 9} a ${tipo?.maxLength ?? 12} caracteres. Ingresa tus nombres y apellidos manualmente.`
-    }
-    if (!isDocumentNumberComplete()) return `${tipo.maxLength} dígitos. Faltan ${getRemainingDigits()} dígitos.`
-    if (consultaDniFallida.value) return `${tipo.maxLength} dígitos. Completa tus nombres y apellidos manualmente.`
-    return `${tipo.maxLength} dígitos. Presiona la lupa para buscar.`
-})
-
-const selectPlan = (id: number) => {
-    if (!camposCompletos.value) {
-        showError('❌ Completa correctamente documento, nombres, apellidos, correo y celular antes de elegir un plan')
-        return
-    }
-    planId.value = id
-}
-
-const handleCelularInput = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    celular.value = target.value.replace(/\D/g, '').slice(0, 9)
-    target.value = celular.value
-}
-
-const showError = (message: string) => {
-    errorMessage.value = message
-    successMessage.value = ''
-
-    // Auto-limpiar después de 5 segundos
-    setTimeout(() => {
-        errorMessage.value = ''
-    }, 5000)
-}
-
-const showSuccess = (message: string) => {
-    successMessage.value = message
-    errorMessage.value = ''
-
-    // Auto-limpiar después de 3 segundos
-    setTimeout(() => {
-        successMessage.value = ''
-    }, 3000)
-}
-
-// ===========================================================================
-// FUNCIONES DE PORTAPAPELES
-// ===========================================================================
-
-const copiarNumeroCuenta = async () => {
-    try {
-        const numeroCuenta = PAYMENT_DETAILS.bcp.account
-        await navigator.clipboard.writeText(numeroCuenta)
-        showSuccess(`✅ Número de cuenta copiado al portapapeles: ${numeroCuenta}`)
-    } catch (error) {
-        showError('❌ Error al copiar al portapapeles')
-    }
-}
-
-const copiarCCI = async () => {
-    try {
-        const cci = PAYMENT_DETAILS.bcp.cci
-        await navigator.clipboard.writeText(cci)
-        showSuccess(`✅ CCI copiado al portapapeles: ${cci}`)
-    } catch (error) {
-        showError('❌ Error al copiar al portapapeles')
-    }
-}
-
-const copiarYape = async () => {
-    try {
-        await navigator.clipboard.writeText(PAYMENT_DETAILS.yape.phone)
-        showSuccess(`✅ Número de Yape copiado al portapapeles: ${PAYMENT_DETAILS.yape.phone}`)
-    } catch (error) {
-        showError('❌ Error al copiar al portapapeles')
-    }
-}
-
-// ===========================================================================
-// MANEJADORES DE EVENTOS
-// ===========================================================================
-
-const handleDocumentInput = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const maxLength = getSelectedDocumentType()?.maxLength || 8
-    const limpio = documentType.value === 'DNI'
-        ? target.value.replace(/\D/g, '')
-        : target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
-
-    errorMessage.value = ''
-    documentNumber.value = limpio.slice(0, maxLength)
-    target.value = documentNumber.value
-
-    // Los nombres autocompletados pertenecen al documento anterior; los escritos a mano se conservan
-    if (nombresEncontrados.value) {
-        nombres.value = ''
-        apellidos.value = ''
-        nombresEncontrados.value = false
-    }
-}
-
-let consultaDniActual = 0
-
-const handleDocumentSearch = async () => {
-    if (!getSelectedDocumentType()?.consultable) return
-    if (!isDocumentNumberComplete()) {
-        showError('Por favor, ingresa un DNI válido de 8 dígitos.')
-        return
-    }
-
-    const numero = documentNumber.value
-    const consulta = ++consultaDniActual
-    isSearchingDni.value = true
-    consultaDniFallida.value = false
-    errorMessage.value = ''
-
-    try {
-        const resultado = await consultDni(numero)
-        // Se descarta una respuesta que llega después de cambiar el documento
-        if (consulta !== consultaDniActual || numero !== documentNumber.value) return
-
-        if (resultado) {
-            nombres.value = resultado.nombres
-            apellidos.value = resultado.apellidos
-            nombresEncontrados.value = true
-            showSuccess(`✅ DNI encontrado: ${resultado.nombres} ${resultado.apellidos}`)
-        } else {
-            nombresEncontrados.value = false
-            consultaDniFallida.value = true
-            showError('⚠️ DNI encontrado, pero faltan datos personales. Completa tus nombres manualmente.')
-        }
-    } catch (error) {
-        if (consulta !== consultaDniActual || numero !== documentNumber.value) return
-        nombresEncontrados.value = false
-        consultaDniFallida.value = true
-        showError(mensajeFallaConsultaDni(normalizeApiError(error), numero))
-    } finally {
-        if (consulta === consultaDniActual) isSearchingDni.value = false
-    }
-}
-
-const handleFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const file = target.files ? target.files.item(0) : null
-
-    // PDF, JPG, PNG o WebP de hasta 5 MB (el backend valida además el contenido)
-    const problema = file ? validarArchivoVoucher(file) : ''
-    if (problema) {
-        showError(`📎 ${problema}`)
-        target.value = ''
-        return
-    }
-
-    archivoVoucher.value = file
-    if (file) {
-        showSuccess(`📎 Archivo cargado: ${file.name}`)
-    }
-}
-
-const handleSubmit = async () => {
-
-    // Prevenir múltiples envíos
-    if (isSubmitting.value || apiSubmitting.value) return
-
-    // Validación de campos obligatorios
-    if (!documentType.value || !documentNumber.value) {
-        showError('❌ El campo Documento de identidad es obligatorio')
-        return
-    }
-    if (!nombres.value) {
-        showError('❌ El campo Nombres es obligatorio')
-        return
-    }
-    if (!apellidos.value) {
-        showError('❌ El campo Apellidos es obligatorio')
-        return
-    }
-    if (!email.value) {
-        showError('❌ El campo Correo electrónico es obligatorio')
-        return
-    }
-    if (!isEmailValid.value) {
-        showError('❌ Ingresa un correo electrónico válido')
-        return
-    }
-    if (!celular.value) {
-        showError('❌ El campo Celular es obligatorio')
-        return
-    }
-    if (!esCelularValido(celular.value)) {
-        showError('❌ El celular debe tener 9 dígitos y empezar con 9')
-        return
-    }
-
-    if (!planId.value) {
-        showError('❌ Por favor selecciona un plan de inscripción')
-        return
-    }
-
-    if (!selectedPlan.value) {
-        showError('❌ Plan no válido')
-        return
-    }
-
-    if (!tipoInscripcion.value) {
-        showError('❌ Por favor selecciona un tipo de inscripción')
-        return
-    }
-
-    // Validaciones adicionales
-    if (isStudentPlan.value && !clasificacion.value) {
-        showError('❌ Por favor selecciona tu clasificación')
-        return
-    }
-
-    if (!modalidadDeposito.value) {
-        showError('❌ Por favor selecciona la modalidad de depósito')
-        return
-    }
-
-    const metodoDePago = modalidadDeposito.value === 'banco' ? tipoPago.value : aplicativo.value
-    if (!metodoDePago) {
-        showError('❌ Por favor selecciona el método de pago')
-        return
-    }
-
-    if (!fechaPago.value) {
-        showError('❌ Por favor indica la fecha de pago')
-        return
-    }
-    // Comparación de cadenas YYYY-MM-DD en hora de Lima, igual que el backend
-    if (fechaPago.value > fechaHoyLima()) {
-        showError('❌ La fecha de pago no puede ser futura')
-        return
-    }
-
-    if (codigoVoucher.value.trim().length < 3) {
-        showError('❌ Por favor ingresa el código del voucher (mínimo 3 caracteres)')
-        return
-    }
-
-    if (!archivoVoucher.value) {
-        showError('❌ Por favor adjunta el voucher de pago')
-        return
-    }
-
-    // Sin esperar el resultado se cobraría el precio regular a un estudiante UNDC
-    if (estadoVerificacion.value === 'verificando') {
-        showError('⏳ Estamos verificando tu condición de estudiante UNDC; espera unos segundos y vuelve a intentarlo')
-        return
-    }
-
-    isSubmitting.value = true
-    clearError()
-
-    try {
-        // El monto, el descuento y el estado los calcula el backend: no se envían
-        const datos = mapFormDataToApiData({
-            documentType: documentType.value,
-            documentNumber: documentNumber.value,
-            nombres: nombres.value,
-            apellidos: apellidos.value,
-            email: email.value,
-            celular: celular.value,
-            planId: planId.value,
-            clasificacion: clasificacion.value,
-            modalidadDeposito: modalidadDeposito.value,
-            bancoSeleccionado: bancoSeleccionado.value,
-            tipoPago: tipoPago.value,
-            aplicativo: aplicativo.value,
-            fechaPago: fechaPago.value,
-            codigoVoucher: codigoVoucher.value,
-            archivoVoucher: archivoVoucher.value,
-            verificacionToken: verificacionToken.value
-        })
-
-        const inscripcion = await createInscription(datos)
-        await router.push(`/confirmation?id=${inscripcion.id}`)
-    } catch (error) {
-        showError(apiError.value || (error instanceof Error && error.message) || '❌ Error al procesar la inscripción. Inténtelo nuevamente.')
-    } finally {
-        isSubmitting.value = false
-    }
-}
+    estadoPagina,
+    recargar,
+    errorMessage,
+    successMessage,
+    documentTypes,
+    documentType,
+    documentNumber,
+    getSelectedDocumentType,
+    handleDocumentInput,
+    handleDocumentSearch,
+    isSearchingDni,
+    puedeConsultarDocumento,
+    documentHint,
+    nombres,
+    apellidos,
+    nombresEncontrados,
+    email,
+    getEmailHint,
+    celular,
+    celularHint,
+    handleCelularInput,
+    estadoVerificacion,
+    mensajeVerificacionUndc,
+    iconoVerificacion,
+    reintentarVerificacion,
+    availablePlans,
+    planId,
+    selectPlan,
+    camposCompletos,
+    getBadgeClass,
+    isStudentPlan,
+    clasificacion,
+    clasificaciones,
+    bancos,
+    billeteras,
+    titular,
+    hayMediosDePago,
+    modalidadDeposito,
+    bancoSeleccionado,
+    bancoActual,
+    billeteraActual,
+    qrBilletera,
+    tipoPago,
+    seleccionarBanco,
+    seleccionarBilletera,
+    copiarNumeroCuenta,
+    copiarCCI,
+    copiarTelefonoBilletera,
+    showQrModal,
+    codigoVoucher,
+    fechaPago,
+    fechaMaxima,
+    archivoVoucher,
+    handleFileChange,
+    VOUCHER_ACCEPT,
+    isSubmitting,
+    apiSubmitting,
+    handleSubmit
+} = useFormularioInscripcion({ categoria: 'ESTUDIANTES', verificarEstudiante: true })
 
 // ===========================================================================
 // FUNCIONES DE TRANSICIÓN PARA CAMPO DE CLASIFICACIÓN
@@ -987,9 +568,6 @@ const onClassificationAfterLeave = (el: Element) => {
     htmlEl.style.overflow = ''
 }
 
-onMounted(() => {
-    fechaMaxima.value = fechaHoyLima()
-})
 </script>
 
 <style scoped>
@@ -1457,6 +1035,11 @@ input[type="date"]:valid {
     cursor: not-allowed;
     pointer-events: none;
     filter: grayscale(0.3);
+}
+
+.plan-card-simple:focus-visible {
+    outline: 2px solid #00d9e8;
+    outline-offset: 2px;
 }
 
 .plan-card-header {

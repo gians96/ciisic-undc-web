@@ -107,3 +107,20 @@ export interface ConsultaDni {
   apellidoMaterno: string | null
   apellidos: string | null
 }
+
+export interface ClasificacionCatalogo {
+  id: number
+  nombre: string
+}
+
+export interface TipoDocumentoCatalogo {
+  id: string
+  nombre: string
+  abreviatura: string
+}
+
+/** `GET /api/v1/site/catalogs` (vía `/api/publico/catalogos`). */
+export interface CatalogosSitio {
+  clasificaciones: ClasificacionCatalogo[]
+  tiposDocumento: TipoDocumentoCatalogo[]
+}

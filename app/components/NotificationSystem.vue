@@ -1,15 +1,15 @@
 <template>
   <Transition name="notification" mode="out-in">
-    <div v-if="errorMessage" class="notification error-notification">
+    <div v-if="errorMessage" class="notification error-notification" role="alert">
       <div class="notification-content">
         <Icon name="heroicons:exclamation-circle" class="notification-icon" />
         <span>{{ errorMessage }}</span>
       </div>
-      <button @click="clearError" class="notification-close">
+      <button type="button" aria-label="Cerrar mensaje" @click="clearError" class="notification-close">
         <Icon name="heroicons:x-mark" class="h-5 w-5" />
       </button>
     </div>
-    <div v-else-if="successMessage" class="notification success-notification">
+    <div v-else-if="successMessage" class="notification success-notification" role="status">
       <div class="notification-content">
         <Icon name="heroicons:check-circle" class="notification-icon" />
         <div class="notification-text">
@@ -23,7 +23,7 @@
           </button>
         </div>
       </div>
-      <button @click="clearSuccess" class="notification-close">
+      <button type="button" aria-label="Cerrar mensaje" @click="clearSuccess" class="notification-close">
         <Icon name="heroicons:x-mark" class="h-5 w-5" />
       </button>
     </div>

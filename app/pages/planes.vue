@@ -8,7 +8,8 @@
         <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span></div>
       </div>
 
-      <div class="mt-10 grid gap-5 md:grid-cols-2 lg:mt-14">
+      <EstadoInscripciones v-if="evento && !inscripcionesAbiertas" estado="cerradas" />
+      <div v-else class="mt-10 grid gap-5 md:grid-cols-2 lg:mt-14">
         <NuxtLink to="/estudiantes" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9">
           <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:academic-cap" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
           <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 01</p>
@@ -32,6 +33,9 @@
 
 <script setup lang="ts">
 useSeoMeta({ title: 'Inscripciones | VIII CIISIC 2026', description: 'Elige tu modalidad e inscríbete en el VIII CIISIC 2026 en San Vicente de Cañete.' })
+
+// Con las inscripciones cerradas en el panel se muestra el aviso en lugar de las modalidades
+const { evento, inscripcionesAbiertas } = useEvento()
 </script>
 
 <style scoped>
