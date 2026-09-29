@@ -6,6 +6,7 @@ import type { BilleteraDigital, CodigoCategoria, CuentaBancaria } from '~/types/
 import type { ModalidadPago, TipoOperacion } from '~/types/inscription'
 import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
 import { formatearSoles, urlSegura } from '~/utils/formato'
+import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { aplicaPrecioInstitucional, esCorreoDelDominio, precioPlan } from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
@@ -255,6 +256,36 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
   }
 
   // ===========================================================================
+  // VERIFICACIÓN OPCIONAL DEL CORREO CON GOOGLE (no cambia el precio)
+  // ===========================================================================
+  // Sin client ID en la configuración del sitio no se muestra el botón
+  const { clientIdGoogle } = useConfiguracionSitio()
+  const correoGoogle = useCorreoGoogle({
+    alVerificar: (datos) => {
+      // El correo verificado queda fijado (y la verificación de estudiante se relanza con él)
+      email.value = datos.correo
+      // Nombres de Google solo en campos vacíos y nunca sobre los de la consulta de DNI
+      const completar = nombresDesdeGoogle(
+        { nombres: nombres.value, apellidos: apellidos.value, desdeDni: nombresEncontrados.value },
+        datos,
+      )
+      if (completar.nombres) nombres.value = completar.nombres
+      if (completar.apellidos) apellidos.value = completar.apellidos
+    },
+  })
+  const estadoCorreoGoogle = correoGoogle.estado
+  const mensajeCorreoGoogle = correoGoogle.mensaje
+  // El correo verificado es de solo lectura hasta que el usuario elija «Usar otro correo»
+  const correoBloqueado = computed(() => estadoCorreoGoogle.value === 'verificado')
+  const verificarCorreoGoogle = (credencial: string) => correoGoogle.verificar(credencial)
+  const usarOtroCorreo = () => correoGoogle.descartar()
+
+  // Un error anterior de Google deja de mostrarse cuando el usuario escribe su correo
+  watch(email, () => {
+    if (estadoCorreoGoogle.value === 'error') correoGoogle.descartar()
+  })
+
+  // ===========================================================================
   // PLANES Y PRECIOS
   // ===========================================================================
   // Misma condición para habilitar los planes en la interfaz y en la lógica
@@ -408,6 +439,10 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     if (estadoVerificacion.value === 'verificando') {
       return '⏳ Estamos verificando tu condición de estudiante UNDC; espera unos segundos y vuelve a intentarlo'
     }
+    // Sin esperar, la inscripción saldría sin el correo verificado
+    if (estadoCorreoGoogle.value === 'verificando') {
+      return '⏳ Estamos verificando tu correo con Google; espera unos segundos y vuelve a intentarlo'
+    }
     return null
   }
 
@@ -442,6 +477,13 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
         codigoVoucher: codigoVoucher.value,
         archivoVoucher: archivoVoucher.value,
         verificacionToken: verificacionToken.value,
+        // Solo mientras el correo siga bloqueado y sea el que verificó Google
+        verificacionCorreoToken: tokenCorreoParaEnvio({
+          bloqueado: correoBloqueado.value,
+          token: correoGoogle.token.value,
+          correoVerificado: correoGoogle.datos.value?.correo,
+          correoFormulario: email.value,
+        }),
       })
 
       const inscripcion = await createInscription(datos)
@@ -493,6 +535,13 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     mensajeVerificacionUndc,
     iconoVerificacion,
     reintentarVerificacion,
+    // Correo verificado con Google (opcional)
+    clientIdGoogle,
+    correoBloqueado,
+    estadoCorreoGoogle,
+    mensajeCorreoGoogle,
+    verificarCorreoGoogle,
+    usarOtroCorreo,
     // Planes
     availablePlans,
     planId,

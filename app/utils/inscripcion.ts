@@ -91,6 +91,7 @@ export function mapearFormularioInscripcion(form: FormularioInscripcion): DatosI
     numeroOperacion: String(form.codigoVoucher ?? '').trim(),
     fechaPago: normalizarFechaPago(form.fechaPago),
     verificacionToken: form.verificacionToken || null,
+    verificacionCorreoToken: form.verificacionCorreoToken || null,
     voucher: form.archivoVoucher,
   }
 }
@@ -112,6 +113,8 @@ export function construirFormDataInscripcion(datos: DatosInscripcion): FormData 
   cuerpo.append('numeroOperacion', datos.numeroOperacion)
   cuerpo.append('fechaPago', datos.fechaPago)
   if (datos.verificacionToken) cuerpo.append('verificacionToken', datos.verificacionToken)
+  // Correo verificado con Google (opcional): solo si el formulario lo envía (correo bloqueado)
+  if (datos.verificacionCorreoToken) cuerpo.append('verificacionCorreoToken', datos.verificacionCorreoToken)
   const nombreArchivo = 'name' in datos.voucher && datos.voucher.name ? datos.voucher.name : 'voucher'
   cuerpo.append(CAMPO_VOUCHER, datos.voucher, nombreArchivo)
   return cuerpo

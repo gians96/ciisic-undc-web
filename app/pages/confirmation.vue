@@ -147,7 +147,10 @@
 
                             <div class="detail-item">
                                 <span class="detail-label">Email:</span>
-                                <span class="detail-value">{{ inscription.participante.correo }}</span>
+                                <span class="detail-value">
+                                    {{ inscription.participante.correo }}
+                                    <span v-if="inscription.esCorreoVerificado" class="price-badge">Verificado con Google</span>
+                                </span>
                             </div>
 
                             <div class="detail-item">

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { FormularioInscripcion } from '../app/types/inscription'
+import { tokenCorreoParaEnvio } from '../app/utils/google'
 import {
   CAMPO_VOUCHER,
   VOUCHER_MAX_BYTES,
@@ -108,6 +109,45 @@ describe('construirFormDataInscripcion', () => {
     ))
     expect([...cuerpo.keys()]).toEqual(['participante', 'tipoInscripcionId', 'modalidadPago', 'billeteraDigital', 'numeroOperacion', 'fechaPago', 'voucher'])
     expect(cuerpo.get('billeteraDigital')).toBe('yape')
+  })
+})
+
+describe('verificacionCorreoToken (correo verificado con Google)', () => {
+  const CAMPOS_CON_TOKENS = [
+    'participante', 'tipoInscripcionId', 'clasificacionId', 'modalidadPago', 'banco', 'tipoOperacion',
+    'numeroOperacion', 'fechaPago', 'verificacionToken', 'verificacionCorreoToken', 'voucher',
+  ]
+
+  it('mapearFormularioInscripcion lo conserva y usa null sin token', () => {
+    expect(mapearFormularioInscripcion(formulario({ verificacionCorreoToken: 'eyJ.correo' })).verificacionCorreoToken).toBe('eyJ.correo')
+    expect(mapearFormularioInscripcion(formulario()).verificacionCorreoToken).toBeNull()
+    expect(mapearFormularioInscripcion(formulario({ verificacionCorreoToken: '' })).verificacionCorreoToken).toBeNull()
+  })
+
+  it('el multipart lo incluye (antes del archivo) cuando el correo está verificado', () => {
+    const cuerpo = construirFormDataInscripcion(mapearFormularioInscripcion(
+      formulario({ verificacionToken: 'eyJ.token', verificacionCorreoToken: 'eyJ.correo' }),
+    ))
+    expect([...cuerpo.keys()]).toEqual(CAMPOS_CON_TOKENS)
+    expect(cuerpo.get('verificacionCorreoToken')).toBe('eyJ.correo')
+    expect(cuerpo.get('verificacionToken')).toBe('eyJ.token')
+  })
+
+  it('el multipart lo omite sin token (sin Google o después de «Usar otro correo»)', () => {
+    for (const verificacionCorreoToken of [null, undefined, '']) {
+      const cuerpo = construirFormDataInscripcion(mapearFormularioInscripcion(formulario({ verificacionCorreoToken })))
+      expect(cuerpo.has('verificacionCorreoToken')).toBe(false)
+    }
+  })
+
+  it('con la regla del formulario: solo se envía mientras el correo está bloqueado', () => {
+    const enviar = (bloqueado: boolean, correoFormulario = ' Ana.Perez@Gmail.com ') => construirFormDataInscripcion(mapearFormularioInscripcion(formulario({
+      email: correoFormulario,
+      verificacionCorreoToken: tokenCorreoParaEnvio({ bloqueado, token: 'eyJ.correo', correoVerificado: 'ana.perez@gmail.com', correoFormulario }),
+    })))
+    expect(enviar(true).get('verificacionCorreoToken')).toBe('eyJ.correo')
+    expect(enviar(false).has('verificacionCorreoToken')).toBe(false)
+    expect(enviar(true, 'otra@gmail.com').has('verificacionCorreoToken')).toBe(false)
   })
 })
 

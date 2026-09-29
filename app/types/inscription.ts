@@ -30,6 +30,8 @@ export interface DatosInscripcion {
     /** `YYYY-MM-DD` tal como viene del selector de fecha. */
     fechaPago: string
     verificacionToken: string | null
+    /** Token de `google-verification` (correo verificado con Google); solo con el correo bloqueado. */
+    verificacionCorreoToken: string | null
     voucher: File | Blob
 }
 
@@ -51,6 +53,7 @@ export interface FormularioInscripcion {
     codigoVoucher: string
     archivoVoucher: File | Blob | null
     verificacionToken?: string | null
+    verificacionCorreoToken?: string | null
 }
 
 /** `data` de la respuesta `201`. */
@@ -64,6 +67,8 @@ export interface InscripcionCreada {
     precioRegular: number
     descuento: number
     esEstudianteUndc: boolean
+    /** `true` si llegó un `verificacionCorreoToken` válido para este evento y correo. */
+    esCorreoVerificado?: boolean
     modalidadPago: ModalidadPago
     banco: string | null
     tipoOperacion: TipoOperacion | null

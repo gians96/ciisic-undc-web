@@ -82,8 +82,18 @@
                     <div class="form-group col-span-6 md:col-span-3">
                         <label for="email" class="form-label">Correo electrónico</label>
                         <input id="email" v-model="email" type="email" placeholder="Tu correo electrónico" required
-                            class="form-input" autocomplete="email" maxlength="191">
+                            class="form-input" :class="{ 'input-readonly': correoBloqueado }" :readonly="correoBloqueado"
+                            autocomplete="email" maxlength="191">
                         <small class="form-hint">{{ getEmailHint() }}</small>
+                        <!-- Verificación opcional del correo con Google (solo si está configurada) -->
+                        <InscripcionCorreoGoogle
+                            :client-id="clientIdGoogle"
+                            :estado="estadoCorreoGoogle"
+                            :mensaje="mensajeCorreoGoogle"
+                            campo-correo="email"
+                            @credencial="verificarCorreoGoogle"
+                            @descartar="usarOtroCorreo"
+                        />
                         <!-- Estado de la verificación de estudiante UNDC (se anuncia a lectores de pantalla) -->
                         <div aria-live="polite">
                             <p v-if="mensajeVerificacionUndc" class="verification-chip"
@@ -442,6 +452,12 @@ const {
     mensajeVerificacionUndc,
     iconoVerificacion,
     reintentarVerificacion,
+    clientIdGoogle,
+    correoBloqueado,
+    estadoCorreoGoogle,
+    mensajeCorreoGoogle,
+    verificarCorreoGoogle,
+    usarOtroCorreo,
     availablePlans,
     planId,
     selectPlan,
