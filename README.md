@@ -47,6 +47,17 @@ curl -fsSL https://bun.sh/install | bash
    bun install
    ```
 
+### Configuración (`.env`, ver `.env.example`)
+
+| Variable | Uso |
+|---|---|
+| `NUXT_BACKEND_BASE_URL` | URL de `backend-ciisic` alcanzable por el servidor Nitro (la landing llama a `/api/v1/site`). Solo servidor. |
+| `NUXT_BACKEND_EVENT_TOKEN` | Token de acceso del evento. **Secreto de servidor**: solo en runtime, nunca en el build ni en variables `NUXT_PUBLIC_*`. |
+| `NUXT_PUBLIC_ADMIN_URL` | Panel administrativo; `/login` redirige ahí. |
+
+El navegador solo llama a las rutas BFF `/api/publico/*` de la propia landing; Nitro agrega el token y la IP
+del visitante. Detalles en `specs/001-landing-multi-evento/` y `docs/INSCRIPCION-FLUJO.md`.
+
 ## 🚀 Desarrollo
 
 ### Servidor de desarrollo

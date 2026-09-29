@@ -25,12 +25,14 @@ Backend:
 - `BREVO_API_KEY`, `BREVO_SENDER`, `BREVO_SENDER_NAME` y `BREVO_SENDER_SUBJECT`
 - `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD` solo durante la creación inicial
 
-Frontend:
+Frontend (landing, BFF de la API del sitio):
 
 - `NODE_ENV=production`
-- `NUXT_PUBLIC_API_BASE_URL`, URL pública del backend del mismo entorno
-- `NUXT_BACKEND_BASE_URL`, URL alcanzable por Nitro hacia el backend del mismo entorno
-- La consulta de documentos (DNI) la hace el backend con su pool de tokens; la landing no guarda tokens de proveedores
+- `NUXT_BACKEND_BASE_URL`, URL del backend del mismo entorno alcanzable por Nitro (la landing llama a `{URL}/api/v1/site`)
+- `NUXT_BACKEND_EVENT_TOKEN`, token de acceso del evento (se genera en el panel del backend). **Secreto**: solo como variable runtime; nunca `NUXT_PUBLIC_*`, argumento del build ni GitHub
+- `NUXT_PUBLIC_ADMIN_URL`, URL del panel administrativo; `/login` redirige ahí
+
+El navegador nunca llama al backend: todas las llamadas pasan por las rutas Nitro `/api/publico/*`, que agregan `X-Api-Key` y `X-Client-Ip` (última IP de `X-Forwarded-For`, que agrega Traefik). Sin token o sin URL, esas rutas responden `503 SITE_NOT_CONFIGURED` y lo registran en los logs del contenedor. Cambiar de edición o rotar el token requiere reiniciar el servicio.
 
 Los secretos se configuran como variables runtime de Dokploy. No se envían como argumentos del build ni se guardan en GitHub.
 
@@ -44,11 +46,11 @@ Los secretos se configuran como variables runtime de Dokploy. No se envían como
 
 ## Validación de staging
 
-1. Comprobar `/health` en frontend y backend.
+1. Comprobar `/health` en frontend y backend, y que `/api/publico/evento` del frontend responde `200` (sin `SITE_NOT_CONFIGURED`).
 2. Cargar planes y catálogos desde el frontend.
 3. Consultar un documento de prueba autorizado.
 4. Crear una inscripción con PNG/PDF válido y comprobar rechazo de formato falso, archivo mayor a 5 MiB y operación duplicada.
-5. Iniciar sesión; comprobar cookie HttpOnly y que el JWT no aparece en almacenamiento local.
+5. En el panel administrativo (`/login` de la landing redirige ahí): iniciar sesión; comprobar cookie HttpOnly y que el JWT no aparece en almacenamiento local.
 6. Verificar `401` sin sesión, `403` de Admin en rutas SuperAdmin y descarga autenticada de voucher.
 7. Aprobar la inscripción y verificar el correo con la credencial PDF adjunta.
 8. Redesplegar backend y confirmar que inscripción y voucher persisten.

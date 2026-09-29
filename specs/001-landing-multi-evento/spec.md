@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-29
 
-**Status**: En implementación (API del sitio con token por evento)
+**Status**: Implementado; pendiente la prueba de punta a punta contra `/api/v1/site` con un token de prueba
 
 **Input**: "Actualizar la landing pública del CIISIC a la nueva API multi-evento de backend-ciisic:
 evento, tipos de inscripción, datos de pago, consulta de DNI, verificación de estudiante UNDC,

@@ -82,8 +82,8 @@ errores).
 
 ## Phase 9: Polish
 
-- [ ] T030 [P] Documentación (`docs/*.md`) y CI con las variables finales
-- [ ] T031 Puertas: `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`; el token no aparece en `.output/public`
+- [x] T030 [P] Documentación (`docs/*.md`) y CI con las variables finales
+- [x] T031 Puertas: `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`; el token no aparece en `.output/public`
 - [ ] T032 Verificación manual con el backend local (`/api/v1/site` y token de prueba): páginas y una inscripción completa — pendiente de que el backend esté disponible
 
 ## Dependencies & Execution Order

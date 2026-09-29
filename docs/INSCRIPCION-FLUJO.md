@@ -1,107 +1,70 @@
 # Flujo de Inscripción y Confirmación
 
 ## Descripción
-Este flujo maneja el registro de inscripciones y la visualización de la confirmación sin necesidad de hacer peticiones GET al API (que está protegida).
+
+Las inscripciones se envían a la API del sitio de `backend-ciisic` a través del BFF de la landing:
+el navegador nunca llama al backend y el token del evento solo existe en el servidor Nitro.
+Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `contracts/bff-landing.md`).
 
 ## Arquitectura
 
-### 1. Store de Inscripción (`app/stores/inscription.ts`)
-```typescript
-- state.currentInscription: Almacena temporalmente los datos de la inscripción recién creada
-- setInscription(data): Guarda los datos en el store
-- clearInscription(): Limpia los datos del store
-- hasInscription: Getter que indica si hay datos disponibles
-```
+### 1. Páginas `/estudiantes` y `/general`
 
-### 2. Composable useInscription (`app/composables/useInscription.ts`)
-```typescript
-- createInscription(): Crea la inscripción y guarda los datos en el store automáticamente
-```
+- Conservan su template y estilos; la lógica común vive en `useFormularioInscripcion({ categoria, verificarEstudiante })`.
+- Datos del evento (`useEvento` → `/api/publico/evento`), planes (`usePlanes` → `/api/publico/planes?categoria=`)
+  y ciclos (`useCatalogos` → `/api/publico/catalogos`), cargados con `useAsyncData` (compatibles con SSR).
+- Muestran "Inscripciones cerradas", "Cargando" o un error con "Reintentar" según el estado del evento.
+- `/estudiantes` verifica al estudiante UNDC (`/api/publico/verificacion-estudiante`) y muestra el precio UNDC
+  solo si `esEstudianteUndc === true`.
 
-### 3. Páginas de Registro (`app/pages/estudiantes.vue` y `app/pages/general.vue`)
-```typescript
-- handleSubmit(): Envía el formulario
-- Tras éxito, redirige a /confirmation?id=X
-```
+### 2. Composable `useInscription` (`app/composables/useInscription.ts`)
 
-### 4. Página de Confirmación (`app/pages/confirmation.vue`)
-```typescript
-- loadInscription(): Carga datos desde el store (no hace petición GET)
-- Si no hay datos en el store, muestra error 'no_data'
-```
+- `mapFormDataToApiData()`: valores del formulario → datos del contrato (sin montos, descuentos ni estados).
+- `createInscription()`: `POST /api/publico/inscripciones` (multipart: `participante` JSON + campos + archivo
+  `voucher`) y guarda la respuesta en el store.
+
+### 3. BFF (`server/api/publico/inscripciones.post.ts`)
+
+- Reenvía el cuerpo tal cual a `POST {NUXT_BACKEND_BASE_URL}/api/v1/site/inscriptions` con `X-Api-Key` y
+  `X-Client-Ip`; límite de 5 MB + 512 KB (`413`); propaga estado y cuerpo del backend.
+
+### 4. Store de inscripción (`app/stores/inscription.ts`)
+
+- `currentInscription`: respuesta del POST (tipada como `InscripcionCreada`), solo en memoria.
+
+### 5. Página de confirmación (`app/pages/confirmation.vue`)
+
+- Lee el store (no hay GET público de inscripciones) y muestra monto, precio regular, descuento
+  ("Precio UNDC aplicado"), datos del pago, estado y el contacto del evento.
+- Si no hay datos en el store (recarga o enlace directo), muestra el aviso de sesión expirada.
 
 ## Flujo Completo
 
-1. **Usuario completa el formulario** en `/estudiantes` o `/general`
-2. **Se envía POST** a `https://api-ciisic-vii.episundc.pe/api/v1/inscription`
-3. **API responde** con el objeto completo de la inscripción:
-   ```json
-   {
-     "success": true,
-     "message": "Inscripción creada exitosamente",
-     "data": {
-       "id": 199,
-       "usuario": { ... },
-       "tipoInscripcion": { ... },
-       "clasificacion": { ... },
-       "estado": { ... },
-       ...
-     }
-   }
-   ```
-4. **useInscription guarda** los datos en el store: `inscriptionStore.setInscription(response.data)`
-5. **Redirección** a `/confirmation?id=199`
-6. **Página de confirmación** lee desde el store y muestra los datos
-7. **No se hace petición GET** al API protegida
+1. El usuario completa el formulario en `/estudiantes` o `/general`.
+2. El navegador envía `POST /api/publico/inscripciones` (mismo origen).
+3. Nitro lo reenvía a `POST /api/v1/site/inscriptions` con el token del evento.
+4. El backend calcula el monto y responde `201` con la inscripción creada.
+5. `useInscription` guarda la respuesta en el store y se redirige a `/confirmation?id=<id>`.
+6. `/confirmation` muestra los datos devueltos por el servidor.
 
-## Ventajas
-
-✅ **Seguridad**: No expone endpoint GET protegido al público
-✅ **Performance**: No hace petición adicional innecesaria
-✅ **UX**: Transición inmediata sin loading extra
-✅ **Datos frescos**: Muestra exactamente lo que el servidor retornó
+Los errores del backend (`ALREADY_REGISTERED`, `VALIDATION_ERROR`, `REGISTRATION_CLOSED`, …) y del BFF
+(`SITE_NOT_CONFIGURED`, `BACKEND_UNAVAILABLE`, …) se muestran con mensajes en español
+(`app/utils/errores-api.ts`); el formulario conserva los datos.
 
 ## Limitaciones
 
-⚠️ **Recarga de página**: Si el usuario recarga `/confirmation`, perderá los datos del store
-   - Solución: Mostrar mensaje amigable de "Sesión expirada" con contacto de soporte
-
-⚠️ **Link directo**: Si alguien accede directamente a `/confirmation?id=X`, no tendrá datos
-   - Solución: Mismo mensaje de "Sesión expirada"
-
-## Alternativas Consideradas
-
-### Opción 1: Endpoint GET público (❌ Rechazada)
-- Exponía información sensible sin autenticación
-- Cualquiera podría consultar inscripciones por ID
-
-### Opción 2: Token temporal (⚠️ Compleja)
-- Requeriría generar y validar tokens de un solo uso
-- Más complejidad en backend y frontend
-
-### Opción 3: Store actual (✅ Seleccionada)
-- Simple y efectiva para el flujo principal
-- No requiere cambios en el backend
-- Funciona perfectamente para el caso de uso común
-
-## Mejoras Futuras
-
-1. **Email de confirmación**: Incluir link seguro con token temporal
-2. **Persistencia opcional**: Guardar en sessionStorage para resistir recargas
-3. **Panel de usuario**: Área privada donde consultar inscripciones con autenticación
+- **Recarga de página**: si el usuario recarga `/confirmation`, pierde los datos del store y ve el aviso de
+  sesión expirada con el contacto del evento.
+- **Enlace directo**: `/confirmation?id=X` sin datos en memoria muestra el mismo aviso.
 
 ## Testing
 
-Para probar localmente:
 ```bash
-# 1. Completar formulario en /estudiantes o /general
-# 2. Verificar que redirije a /confirmation?id=X
-# 3. Verificar que muestra todos los datos correctamente
-# 4. (Opcional) Recargar la página y verificar mensaje de "Sesión expirada"
+bun run test        # helpers del cliente y del BFF (fetch simulado)
+bun run typecheck
+bun run lint
+bun run build
 ```
 
-## Notas Técnicas
-
-- El store usa Pinia (auto-importado en Nuxt 3)
-- Los datos NO persisten entre sesiones del navegador (intencional)
-- El ID en la URL es informativo pero no se usa para consultas
+Prueba manual: con el backend y un token de prueba (`NUXT_BACKEND_BASE_URL`, `NUXT_BACKEND_EVENT_TOKEN`),
+completar `/general` con un DNI nuevo y un voucher PNG y verificar que `/confirmation` muestre la respuesta.
