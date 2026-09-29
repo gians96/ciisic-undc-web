@@ -29,8 +29,15 @@ produce precios o mensajes que no coinciden con lo que se registra.
   visitante) y reenvían a `backend-ciisic`. Ninguna llamada del navegador va directo al backend.
 - El token (`NUXT_BACKEND_EVENT_TOKEN`) y la dirección del backend (`NUXT_BACKEND_BASE_URL`) son
   configuración privada que se define en runtime: nunca en `runtimeConfig.public`, en el bundle del
-  cliente, en la imagen de build, en respuestas ni en logs.
-- La configuración pública se limita a lo que el navegador necesita (URL del panel).
+  cliente, en la imagen de build, en respuestas ni en logs. Son las únicas variables de entorno de
+  la landing.
+- Lo que el navegador necesita de las integraciones (client ID de Google, URL del panel) no es
+  configuración de la landing: se lee en runtime de la API del sitio (`GET /api/publico/configuracion`,
+  backend `GET /config`). No hay variables `NUXT_PUBLIC_*` para URLs ni identificadores.
+- Scripts de terceros en el navegador, solo los imprescindibles y solo en el cliente: Google Identity
+  Services se carga bajo demanda en los formularios de inscripción. La credencial que entrega (ID
+  token) se envía al BFF y no se guarda; el token de verificación que devuelve el backend vive solo
+  en memoria.
 - `.env` no se versiona; `.env.example` documenta cada variable sin valores reales.
 
 ### III. Stack y diseño visual estables
@@ -48,7 +55,8 @@ produce precios o mensajes que no coinciden con lo que se registra.
   mensajes dinámicos anunciados (`role="alert"` / `aria-live`).
 - Interfaz en español; los errores dicen qué pasó y qué hacer, nunca muestran códigos técnicos.
 - Degradación elegante: si un servicio auxiliar falla (consulta de DNI, verificación de
-  estudiante) el usuario puede continuar (ingreso manual, precio regular).
+  estudiante, verificación del correo con Google) el usuario puede continuar (ingreso manual,
+  precio regular, correo escrito a mano).
 
 ### V. Calidad verificable
 
@@ -64,11 +72,13 @@ produce precios o mensajes que no coinciden con lo que se registra.
 
 - SSR activo: los datos compartidos se cargan con `useAsyncData` y clave estable (sin desajustes
   de hidratación ni peticiones duplicadas entre servidor y cliente).
-- Lecturas (evento, tipos de inscripción, catálogos): rutas Nitro con caché (`defineCachedEventHandler`,
-  60 s; catálogos 10 min) y claves constantes o en lista blanca; los errores no se cachean.
-- Acciones del visitante (consulta de DNI, verificación, inscripción, ponencias, contacto): sin
-  caché y con la IP del visitante (última de `X-Forwarded-For`, que agrega Traefik, o la del socket;
-  validada con `net.isIP`) para que el backend aplique su límite por visitante.
+- Lecturas (evento, tipos de inscripción, catálogos, configuración del sitio): rutas Nitro con caché
+  (`defineCachedEventHandler`, 60 s; catálogos 10 min) y claves constantes o en lista blanca; los
+  errores no se cachean.
+- Acciones del visitante (consulta de DNI, verificación de estudiante, verificación con Google,
+  inscripción, ponencias, contacto): sin caché y con la IP del visitante (última de
+  `X-Forwarded-For`, que agrega Traefik, o la del socket; validada con `net.isIP`) para que el
+  backend aplique su límite por visitante.
 - El BFF propaga sin cambios el estado HTTP y el cuerpo de error del backend, limita el cuerpo
   recibido (multipart: 5 MB + margen → `413`; JSON: 100 KB) y responde `503 SITE_NOT_CONFIGURED`
   si falta el token o la dirección del backend.
@@ -89,4 +99,8 @@ Esta constitución prevalece sobre prácticas ad hoc. Se modifica mediante PR qu
 archivo con versionado semántico: MAJOR al eliminar o redefinir un principio, MINOR al agregar un
 principio o sección, PATCH para aclaraciones de redacción.
 
-**Versión**: 2.0.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29
+**Versión**: 2.1.0 | **Ratificada**: 2026-09-29 | **Última enmienda**: 2026-09-29
+
+*2.1.0*: la configuración que necesita el navegador (client ID de Google, URL del panel) se lee de
+la API del sitio en lugar de variables `NUXT_PUBLIC_*`; regla para scripts de terceros (Google
+Identity Services) y la verificación con Google como acción del visitante.
