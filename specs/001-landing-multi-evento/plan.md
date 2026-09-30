@@ -69,8 +69,10 @@ visitante vía `X-Client-Ip` (DNI 10/min, verificación 20/min, inscripciones 10
 - **D6 — Título del plan.** `nombre` + `etiqueta` cuando el nombre no la contiene (conserva
   "ESTUDIANTES CON KIT"; "… EN GENERAL CON KIT" no se duplica).
 - **D7 — Carné de extranjería.** 9–12 caracteres alfanuméricos según el contrato; sin consulta.
-- **D8 — Medios de pago dinámicos.** Una opción por banco y por billetera de `datosPago` (hoy
-  BCP y Yape, con el mismo aspecto que antes). URLs de QR aceptadas solo si son relativas o http(s).
+- **D8 — Medios de pago dinámicos.** «Modalidad de Depósito» elige el grupo con los nombres del
+  panel: «Billeteras digitales» (primero y por defecto, es lo más usado) y «Cuentas bancarias»; el
+  banco o la billetera concretos se eligen solo si el grupo tiene más de uno (`utils/medios-pago.ts`).
+  URLs de QR aceptadas solo si son relativas o http(s).
 - **D9 — `/login`.** `navigateTo(adminUrl, { external: true })`: 302 en SSR y redirección en
   navegación cliente. Se eliminan las rutas de autenticación de Nitro que ya no se usan.
   *(002: la URL sale de `/api/publico/configuracion`, ya no de `adminUrl`.)*

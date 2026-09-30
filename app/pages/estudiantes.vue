@@ -198,43 +198,17 @@
                         <div class="conditional-section flex flex-col justify-center">
                             <div class="form-group">
                                 <label class="form-label">Modalidad de Depósito</label>
-                                <div class="radio-group-horizontal">
-                                    <label v-for="banco in bancos" :key="`banco-${banco.codigo}`"
-                                        :for="`medio-banco-${banco.codigo}`" class="radio-label">
-                                        <input :id="`medio-banco-${banco.codigo}`" type="radio" name="medioPago"
-                                            :value="`banco:${banco.codigo}`"
-                                            :checked="modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo"
-                                            @change="seleccionarBanco(banco.codigo)" class="sr-only">
+                                <div class="radio-group-horizontal" role="radiogroup" aria-label="Modalidad de depósito">
+                                    <label v-for="opcion in modalidadesPago" :key="`modalidad-${opcion.valor}`"
+                                        :for="`modalidad-${opcion.valor}`" class="radio-label">
+                                        <input :id="`modalidad-${opcion.valor}`" type="radio" name="modalidadPago"
+                                            :value="opcion.valor" :checked="modalidadDeposito === opcion.valor"
+                                            @change="seleccionarModalidad(opcion.valor)" class="sr-only">
                                         <div class="radio-custom-indicator"
-                                            :class="{ 'selected': modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo }">
-                                            <div v-if="modalidadDeposito === 'banco' && bancoSeleccionado === banco.codigo"
-                                                class="radio-dot"></div>
+                                            :class="{ 'selected': modalidadDeposito === opcion.valor }">
+                                            <div v-if="modalidadDeposito === opcion.valor" class="radio-dot"></div>
                                         </div>
-                                        <div class="relative flex items-center group">
-                                            <span>Banco {{ banco.nombre }}</span>
-                                            <div class="tooltip">
-                                                <div>N° Cuenta: {{ banco.numeroCuenta }}</div>
-                                                <div v-if="banco.cci">CCI: {{ banco.cci }}</div>
-                                                <div v-if="titular">{{ titular }}</div>
-                                                <div class="tooltip-arrow"></div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                    <label v-for="billetera in billeteras" :key="`billetera-${billetera.codigo}`"
-                                        :for="`medio-billetera-${billetera.codigo}`" class="radio-label">
-                                        <input :id="`medio-billetera-${billetera.codigo}`" type="radio" name="medioPago"
-                                            :value="`billetera:${billetera.codigo}`"
-                                            :checked="modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo"
-                                            @change="seleccionarBilletera(billetera.codigo)" class="sr-only">
-                                        <div class="radio-custom-indicator"
-                                            :class="{ 'selected': modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo }">
-                                            <div v-if="modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo"
-                                                class="radio-dot"></div>
-                                        </div>
-                                        <div class="relative flex items-center gap-1.5 group">
-                                            <span>{{ nombreBilletera(billetera) }}</span>
-                                            <Icon v-if="urlQrBilletera(billetera)" name="heroicons:qr-code" class="h-4 w-4 text-primary-400" aria-hidden="true" />
-                                        </div>
+                                        <span>{{ opcion.etiqueta }}</span>
                                     </label>
                                 </div>
                                 <small class="form-hint">
@@ -243,7 +217,78 @@
                             </div>
 
                             <Transition name="fade" mode="out-in">
-                                <div v-if="bancoActual" class="form-group mt-4">
+                                <div v-if="billeteraActual" class="form-group mt-4">
+                                    <template v-if="billeteras.length > 1">
+                                        <label class="form-label">Billetera digital</label>
+                                        <div class="radio-group-horizontal mb-4" role="radiogroup" aria-label="Billetera digital">
+                                            <label v-for="billetera in billeteras" :key="`billetera-${billetera.codigo}`"
+                                                :for="`medio-billetera-${billetera.codigo}`" class="radio-label">
+                                                <input :id="`medio-billetera-${billetera.codigo}`" type="radio" name="billeteraDigital"
+                                                    :value="billetera.codigo" :checked="billeteraActual.codigo === billetera.codigo"
+                                                    @change="seleccionarBilletera(billetera.codigo)" class="sr-only">
+                                                <div class="radio-custom-indicator"
+                                                    :class="{ 'selected': billeteraActual.codigo === billetera.codigo }">
+                                                    <div v-if="billeteraActual.codigo === billetera.codigo" class="radio-dot"></div>
+                                                </div>
+                                                <div class="flex items-center gap-1.5">
+                                                    <span>{{ nombreBilletera(billetera) }}</span>
+                                                    <Icon v-if="urlQrBilletera(billetera)" name="heroicons:qr-code" class="h-4 w-4 text-primary-400" aria-hidden="true" />
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </template>
+                                    <label class="form-label">Datos de {{ nombreBilleteraActual }}</label>
+                                    <div class="rounded-xl border border-slate-700 bg-slate-900/45 p-4">
+                                        <div class="flex flex-wrap items-center justify-between gap-4">
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Número de {{ nombreBilleteraActual }}</p>
+                                                <div class="mt-1 flex items-center gap-2">
+                                                    <p class="font-mono text-lg font-bold text-white">{{ billeteraActual.telefono }}</p>
+                                                    <button
+                                                        type="button"
+                                                        :aria-label="`Copiar número de ${nombreBilleteraActual}`"
+                                                        class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
+                                                        @click="copiarTelefonoBilletera">
+                                                        <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
+                                                    </button>
+                                                </div>
+                                                <p v-if="titularBilleteraActual" class="mt-1 text-xs text-slate-400">Titular: {{ titularBilleteraActual }}</p>
+                                            </div>
+                                            <button
+                                                v-if="qrBilletera"
+                                                type="button"
+                                                class="group flex shrink-0 flex-col items-center gap-1.5"
+                                                :aria-label="`Ampliar el código QR de ${nombreBilleteraActual}`"
+                                                @click="showQrModal = true">
+                                                <img
+                                                    :src="qrBilletera"
+                                                    :alt="`Código QR de ${nombreBilleteraActual}`"
+                                                    class="h-40 w-40 rounded-lg bg-white object-contain p-1.5 shadow-lg transition group-hover:scale-[1.03]">
+                                                <span class="text-xs text-primary-400 group-hover:text-primary-300">Toca para ampliar o descargar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="form-hint">
+                                        {{ billeteraActual.codigo === 'yape' ? 'Yapea al número' : 'Paga al número indicado' }}{{ qrBilletera ? ' o escanea el código QR' : '' }}
+                                    </small>
+                                </div>
+                                <div v-else-if="bancoActual" class="form-group mt-4">
+                                    <template v-if="bancos.length > 1">
+                                        <label class="form-label">Banco</label>
+                                        <div class="radio-group-horizontal mb-4" role="radiogroup" aria-label="Banco">
+                                            <label v-for="banco in bancos" :key="`banco-${banco.codigo}`"
+                                                :for="`medio-banco-${banco.codigo}`" class="radio-label">
+                                                <input :id="`medio-banco-${banco.codigo}`" type="radio" name="bancoDeposito"
+                                                    :value="banco.codigo" :checked="bancoActual.codigo === banco.codigo"
+                                                    @change="seleccionarBanco(banco.codigo)" class="sr-only">
+                                                <div class="radio-custom-indicator"
+                                                    :class="{ 'selected': bancoActual.codigo === banco.codigo }">
+                                                    <div v-if="bancoActual.codigo === banco.codigo" class="radio-dot"></div>
+                                                </div>
+                                                <span>Banco {{ banco.nombre }}</span>
+                                            </label>
+                                        </div>
+                                    </template>
                                     <label class="form-label">Tipo de Pago</label>
                                     <div class="radio-group-horizontal">
                                         <label for="pagoDirecto" class="radio-label">
@@ -295,42 +340,6 @@
                                         <p v-if="titular" class="mt-2 text-xs text-slate-400">Titular: {{ titular }}</p>
                                     </div>
                                     <small class="form-hint">Elige cuenta {{ bancoActual.nombre }}{{ bancoActual.cci ? ' o CCI' : '' }} según el banco de origen</small>
-                                </div>
-                                <div v-else-if="billeteraActual" class="form-group mt-4">
-                                    <label class="form-label">Datos de {{ nombreBilleteraActual }}</label>
-                                    <div class="rounded-xl border border-slate-700 bg-slate-900/45 p-4">
-                                        <div class="flex flex-wrap items-center justify-between gap-4">
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Número de {{ nombreBilleteraActual }}</p>
-                                                <div class="mt-1 flex items-center gap-2">
-                                                    <p class="font-mono text-lg font-bold text-white">{{ billeteraActual.telefono }}</p>
-                                                    <button
-                                                        type="button"
-                                                        :aria-label="`Copiar número de ${nombreBilleteraActual}`"
-                                                        class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
-                                                        @click="copiarTelefonoBilletera">
-                                                        <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
-                                                    </button>
-                                                </div>
-                                                <p v-if="titularBilleteraActual" class="mt-1 text-xs text-slate-400">Titular: {{ titularBilleteraActual }}</p>
-                                            </div>
-                                            <button
-                                                v-if="qrBilletera"
-                                                type="button"
-                                                class="group flex shrink-0 flex-col items-center gap-1.5"
-                                                :aria-label="`Ampliar el código QR de ${nombreBilleteraActual}`"
-                                                @click="showQrModal = true">
-                                                <img
-                                                    :src="qrBilletera"
-                                                    :alt="`Código QR de ${nombreBilleteraActual}`"
-                                                    class="h-40 w-40 rounded-lg bg-white object-contain p-1.5 shadow-lg transition group-hover:scale-[1.03]">
-                                                <span class="text-xs text-primary-400 group-hover:text-primary-300">Toca para ampliar o descargar</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <small class="form-hint">
-                                        {{ billeteraActual.codigo === 'yape' ? 'Yapea al número' : 'Paga al número indicado' }}{{ qrBilletera ? ' o escanea el código QR' : '' }}
-                                    </small>
                                 </div>
                             </Transition>
                         </div>
@@ -491,6 +500,7 @@ const {
     billeteras,
     titular,
     hayMediosDePago,
+    modalidadesPago,
     modalidadDeposito,
     bancoSeleccionado,
     bancoActual,
@@ -500,6 +510,7 @@ const {
     titularBilleteraActual,
     descargaQrBilletera,
     tipoPago,
+    seleccionarModalidad,
     seleccionarBanco,
     seleccionarBilletera,
     copiarNumeroCuenta,
@@ -1328,43 +1339,6 @@ input[type="date"]:valid {
 .submit-button:disabled {
     background-color: #64748b;
     cursor: not-allowed;
-}
-
-/* Tooltip Styling */
-.tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    background-color: #111827;
-    color: #ffffff;
-    font-size: 0.75rem;
-    border-radius: 0.375rem;
-    text-align: left;
-    min-width: max-content;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.group:hover .tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-5px);
-}
-
-.tooltip-arrow {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid #111827;
 }
 
 /* Conditional Section Styling */

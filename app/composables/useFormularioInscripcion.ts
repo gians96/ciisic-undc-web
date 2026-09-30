@@ -8,6 +8,7 @@ import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
 import { formatearSoles, nombreBilletera, nombreDescargaQr, titularBilletera, urlQrBilletera } from '~/utils/formato'
 import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
+import { modalidadesDisponibles, resolverMedioPago, type EleccionPago } from '~/utils/medios-pago'
 import { aplicaPrecioInstitucional, esCorreoDelDominio, precioPlan } from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
 
@@ -336,27 +337,19 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
   const titular = computed(() => String(datosPago.value?.titular ?? '').trim())
   const hayMediosDePago = computed(() => bancos.value.length + billeteras.value.length > 0)
 
-  // La selección por defecto (primer banco o primera billetera) se deriva de los datos, no se
-  // asigna con un watcher: así el SSR y la hidratación muestran lo mismo.
-  const medioElegido = ref<{ modalidad: ModalidadPago, codigo: string } | null>(null)
+  // Grupos como en el panel: «Billeteras digitales» (por defecto, la más usada) y «Cuentas
+  // bancarias». La selección vigente se deriva de los datos, no se asigna con un watcher: así el
+  // SSR y la hidratación muestran lo mismo.
+  const modalidadesPago = computed(() => modalidadesDisponibles(bancos.value, billeteras.value))
+  const eleccionPago = ref<EleccionPago>({ modalidad: null, banco: null, billetera: null })
   const tipoPagoElegido = ref<TipoOperacion>('directo')
 
-  const medioActual = computed(() => {
-    const elegido = medioElegido.value
-    const disponible = elegido && (elegido.modalidad === 'banco' ? bancos.value : billeteras.value).some(medio => medio.codigo === elegido.codigo)
-    if (elegido && disponible) return elegido
-    const [primerBanco] = bancos.value
-    const [primeraBilletera] = billeteras.value
-    if (primerBanco) return { modalidad: 'banco' as const, codigo: primerBanco.codigo }
-    if (primeraBilletera) return { modalidad: 'billetera' as const, codigo: primeraBilletera.codigo }
-    return null
-  })
-
-  const modalidadDeposito = computed<ModalidadPago>(() => medioActual.value?.modalidad ?? 'banco')
-  const bancoSeleccionado = computed(() => (medioActual.value?.modalidad === 'banco' ? medioActual.value.codigo : null))
-  const aplicativo = computed(() => (medioActual.value?.modalidad === 'billetera' ? medioActual.value.codigo : null))
-  const bancoActual = computed(() => bancos.value.find(banco => banco.codigo === bancoSeleccionado.value) ?? null)
-  const billeteraActual = computed(() => billeteras.value.find(billetera => billetera.codigo === aplicativo.value) ?? null)
+  const medioPago = computed(() => resolverMedioPago(bancos.value, billeteras.value, eleccionPago.value))
+  const modalidadDeposito = computed<ModalidadPago>(() => medioPago.value.modalidad ?? 'billetera')
+  const bancoActual = computed(() => medioPago.value.banco)
+  const billeteraActual = computed(() => medioPago.value.billetera)
+  const bancoSeleccionado = computed(() => bancoActual.value?.codigo ?? null)
+  const aplicativo = computed(() => billeteraActual.value?.codigo ?? null)
   const qrBilletera = computed(() => urlQrBilletera(billeteraActual.value))
   const nombreBilleteraActual = computed(() => nombreBilletera(billeteraActual.value))
   const titularBilleteraActual = computed(() => titularBilletera(billeteraActual.value, titular.value))
@@ -373,12 +366,16 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     },
   })
 
+  const seleccionarModalidad = (modalidad: ModalidadPago) => {
+    eleccionPago.value = { ...eleccionPago.value, modalidad }
+  }
+
   const seleccionarBanco = (codigo: string) => {
-    medioElegido.value = { modalidad: 'banco', codigo }
+    eleccionPago.value = { ...eleccionPago.value, modalidad: 'banco', banco: codigo }
   }
 
   const seleccionarBilletera = (codigo: string) => {
-    medioElegido.value = { modalidad: 'billetera', codigo }
+    eleccionPago.value = { ...eleccionPago.value, modalidad: 'billetera', billetera: codigo }
   }
 
   const copiar = async (texto: string | null | undefined, descripcion: string) => {
@@ -393,7 +390,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
 
   const copiarNumeroCuenta = () => copiar(bancoActual.value?.numeroCuenta, 'Número de cuenta')
   const copiarCCI = () => copiar(bancoActual.value?.cci, 'CCI')
-  const copiarTelefonoBilletera = () => copiar(billeteraActual.value?.telefono, `Número de ${billeteraActual.value?.nombre ?? 'la billetera'}`)
+  const copiarTelefonoBilletera = () => copiar(billeteraActual.value?.telefono, `Número de ${nombreBilleteraActual.value || 'la billetera'}`)
 
   // ===========================================================================
   // VOUCHER
@@ -559,6 +556,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     billeteras,
     titular,
     hayMediosDePago,
+    modalidadesPago,
     modalidadDeposito,
     bancoSeleccionado,
     bancoActual,
@@ -568,6 +566,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     titularBilleteraActual,
     descargaQrBilletera,
     tipoPago,
+    seleccionarModalidad,
     seleccionarBanco,
     seleccionarBilletera,
     copiarNumeroCuenta,

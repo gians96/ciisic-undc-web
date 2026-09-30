@@ -92,6 +92,10 @@ errores).
       «Descargar QR» en el modal); la opción muestra el aplicativo («Yape») aunque en el panel el «Nombre»
       sea el del titular (`nombreBilletera`, `titularBilletera`, `nombreDescargaQr` con pruebas); probado
       con el build de producción en escritorio y a 375 px (2026-09-30)
+- [x] T043 [US1] Medios de pago agrupados como en el panel: «Billeteras digitales» (por defecto) y
+      «Cuentas bancarias»; subopción de banco o billetera solo con más de uno y cada grupo recuerda su
+      elección (`modalidadesDisponibles`, `resolverMedioPago` con pruebas); probado con un backend
+      simulado con 1 y con 2 medios por grupo (2026-09-30)
 
 ## Dependencies & Execution Order
 
