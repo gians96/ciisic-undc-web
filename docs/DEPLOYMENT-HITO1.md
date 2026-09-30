@@ -11,12 +11,13 @@ Los servicios de staging deben utilizar dominios distintos y protección de acce
 
 ## Variables de Dokploy
 
-Backend (`backend-ciisic`, detalle en su `docs/configuracion.md`): solo `DATABASE_URL`,
-`JWT_SECRET` (≥ 32 caracteres aleatorios) y `SECRETS_ENCRYPTION_KEY` (32 bytes en base64; no debe
-cambiar). `NODE_ENV=production` lo fija la imagen. API_UNDC, Google, URL del panel, correo (Brevo),
+Backend (`backend-ciisic`, detalle en su `docs/configuracion.md`): solo `DATABASE_URL` y
+`JWT_SECRET` (≥ 32 caracteres aleatorios; de él se deriva la clave que cifra las credenciales
+guardadas, así que rotarlo obliga a volver a guardarlas en el panel). `NODE_ENV=production` lo
+fija la imagen. API_UNDC, Google, URL del panel, correo (Brevo),
 tokens DNI y rutas de la landing anterior se configuran en el panel; CORS está abierto y lo
 protege el token. Variables antiguas (`CORS_ORIGINS`, `API_URL`, `UPLOADS_DIR`, `RENIEC_*`,
-`NUBETEC_TOKEN`, `BREVO_*`, `BOOTSTRAP_*`…) sobran: el log del backend avisa de cada una.
+`NUBETEC_TOKEN`, `BREVO_*`, `BOOTSTRAP_*`, `SECRETS_ENCRYPTION_KEY`…) sobran: el log del backend avisa de cada una.
 
 Frontend (landing, BFF de la API del sitio):
 
