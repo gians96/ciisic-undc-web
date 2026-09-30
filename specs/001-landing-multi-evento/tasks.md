@@ -88,6 +88,10 @@ errores).
 - [x] T041 [US1] QR de las billeteras subido en el panel: ruta `GET /api/publico/qr/:archivo` del BFF
       (`obtenerQrSitio`) y `urlQrBilletera` (`qrArchivo` tiene prioridad sobre `qrUrl`), con pruebas
       y verificación local panel → backend → landing (2026-09-30)
+- [x] T042 [US1] QR visible en la tarjeta de la billetera (/estudiantes y /general; toca para ampliar y
+      «Descargar QR» en el modal); la opción muestra el aplicativo («Yape») aunque en el panel el «Nombre»
+      sea el del titular (`nombreBilletera`, `titularBilletera`, `nombreDescargaQr` con pruebas); probado
+      con el build de producción en escritorio y a 375 px (2026-09-30)
 
 ## Dependencies & Execution Order
 

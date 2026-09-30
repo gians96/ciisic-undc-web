@@ -62,3 +62,39 @@ export function urlQrBilletera(billetera?: { qrArchivo?: string | null, qrUrl?: 
   if (ARCHIVO_QR.test(archivo)) return `/api/publico/qr/${archivo}`
   return urlSegura(billetera?.qrUrl)
 }
+
+/** Nombre visible de los aplicativos conocidos, por su código en los datos de pago. */
+const APLICATIVOS: Readonly<Record<string, string>> = { yape: 'Yape', plin: 'Plin', tunki: 'Tunki', bim: 'BIM', agora: 'Agora' }
+
+const sinTildes = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+interface BilleteraVisible {
+  codigo?: string | null
+  nombre?: string | null
+}
+
+/**
+ * Nombre del medio de pago que ve el visitante. En el panel, «Nombre» a veces guarda el del
+ * titular (p. ej. el de la persona dueña del Yape): si el código es un aplicativo conocido y el
+ * nombre no lo menciona, se muestra el aplicativo.
+ */
+export function nombreBilletera(billetera?: BilleteraVisible | null): string {
+  const codigo = String(billetera?.codigo ?? '').trim()
+  const nombre = String(billetera?.nombre ?? '').trim()
+  const aplicativo = APLICATIVOS[codigo.toLowerCase()]
+  if (aplicativo && !sinTildes(nombre).includes(sinTildes(aplicativo))) return aplicativo
+  return nombre || codigo.charAt(0).toUpperCase() + codigo.slice(1)
+}
+
+/** Titular de la billetera: su «Nombre» cuando es el de una persona; si no, el titular general. */
+export function titularBilletera(billetera: BilleteraVisible | null | undefined, titularGeneral: string): string {
+  const nombre = String(billetera?.nombre ?? '').trim()
+  return nombre && nombreBilletera(billetera) !== nombre ? nombre : titularGeneral
+}
+
+/** Nombre sugerido al descargar el QR (misma extensión que la imagen). */
+export function nombreDescargaQr(codigo: string | null | undefined, url: string): string {
+  const extension = /\.(png|jpe?g|webp)(?:[?#].*)?$/i.exec(url)?.[1]?.toLowerCase() ?? 'png'
+  const base = String(codigo ?? '').toLowerCase().replace(/[^a-z0-9-]/g, '') || 'billetera'
+  return `qr-${base}.${extension === 'jpeg' ? 'jpg' : extension}`
+}

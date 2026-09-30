@@ -204,8 +204,9 @@
                                             <div v-if="modalidadDeposito === 'billetera' && billeteraActual?.codigo === billetera.codigo"
                                                 class="radio-dot"></div>
                                         </div>
-                                        <div class="relative flex items-center group">
-                                            <span>{{ billetera.nombre }}</span>
+                                        <div class="relative flex items-center gap-1.5 group">
+                                            <span>{{ nombreBilletera(billetera) }}</span>
+                                            <Icon v-if="urlQrBilletera(billetera)" name="heroicons:qr-code" class="h-4 w-4 text-primary-400" aria-hidden="true" />
                                         </div>
                                     </label>
                                 </div>
@@ -269,28 +270,39 @@
                                     <small class="form-hint">Elige cuenta {{ bancoActual.nombre }}{{ bancoActual.cci ? ' o CCI' : '' }} según el banco de origen</small>
                                 </div>
                                 <div v-else-if="billeteraActual" class="form-group mt-4">
-                                    <label class="form-label">Datos de {{ billeteraActual.nombre }}</label>
+                                    <label class="form-label">Datos de {{ nombreBilleteraActual }}</label>
                                     <div class="rounded-xl border border-slate-700 bg-slate-900/45 p-4">
-                                        <div class="flex items-center justify-between gap-4">
-                                            <div>
-                                                <p class="font-mono text-lg font-bold text-white">{{ billeteraActual.telefono }}</p>
-                                                <p v-if="titular" class="mt-1 text-xs text-slate-400">{{ titular }}</p>
+                                        <div class="flex flex-wrap items-center justify-between gap-4">
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Número de {{ nombreBilleteraActual }}</p>
+                                                <div class="mt-1 flex items-center gap-2">
+                                                    <p class="font-mono text-lg font-bold text-white">{{ billeteraActual.telefono }}</p>
+                                                    <button
+                                                        type="button"
+                                                        :aria-label="`Copiar número de ${nombreBilleteraActual}`"
+                                                        class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
+                                                        @click="copiarTelefonoBilletera">
+                                                        <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
+                                                    </button>
+                                                </div>
+                                                <p v-if="titularBilleteraActual" class="mt-1 text-xs text-slate-400">Titular: {{ titularBilleteraActual }}</p>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <button type="button" :aria-label="`Copiar número de ${billeteraActual.nombre}`"
-                                                    class="rounded-lg p-2 text-primary-400 transition hover:bg-slate-800 hover:text-primary-300"
-                                                    @click="copiarTelefonoBilletera">
-                                                    <Icon name="heroicons:clipboard-document" class="h-5 w-5" />
-                                                </button>
-                                                <button v-if="qrBilletera" type="button" @click="showQrModal = true" class="qr-button-inline"
-                                                    :aria-label="`Mostrar código QR de ${billeteraActual.nombre}`">
-                                                    <Icon name="heroicons:qr-code" class="h-4 w-4" />
-                                                </button>
-                                            </div>
+                                            <button
+                                                v-if="qrBilletera"
+                                                type="button"
+                                                class="group flex shrink-0 flex-col items-center gap-1.5"
+                                                :aria-label="`Ampliar el código QR de ${nombreBilleteraActual}`"
+                                                @click="showQrModal = true">
+                                                <img
+                                                    :src="qrBilletera"
+                                                    :alt="`Código QR de ${nombreBilleteraActual}`"
+                                                    class="h-40 w-40 rounded-lg bg-white object-contain p-1.5 shadow-lg transition group-hover:scale-[1.03]">
+                                                <span class="text-xs text-primary-400 group-hover:text-primary-300">Toca para ampliar o descargar</span>
+                                            </button>
                                         </div>
                                     </div>
                                     <small class="form-hint">
-                                        {{ billeteraActual.codigo === 'yape' ? 'Yapea al número' : 'Paga al número indicado' }}{{ qrBilletera ? ' o abre el código QR' : '' }}
+                                        {{ billeteraActual.codigo === 'yape' ? 'Yapea al número' : 'Paga al número indicado' }}{{ qrBilletera ? ' o escanea el código QR' : '' }}
                                     </small>
                                 </div>
                             </Transition>
@@ -352,7 +364,7 @@
                     <div class="qr-modal-header">
                         <h3 id="qrModalTitulo" class="qr-modal-title">
                             <Icon name="heroicons:qr-code" class="h-6 w-6 mr-2" />
-                            Código QR de {{ billeteraActual.nombre }}
+                            Código QR de {{ nombreBilleteraActual }}
                         </h3>
                         <button type="button" aria-label="Cerrar código QR" @click="showQrModal = false"
                             class="qr-modal-close">
@@ -363,22 +375,29 @@
                     <div class="qr-modal-content">
                         <div class="qr-modal-image-container">
                             <img :src="qrBilletera"
-                                :alt="`Código QR de ${billeteraActual.nombre}${titular ? ` de ${titular}` : ''}`"
+                                :alt="`Código QR de ${nombreBilleteraActual}${titularBilleteraActual ? ` de ${titularBilleteraActual}` : ''}`"
                                 class="qr-modal-image">
                         </div>
 
                         <div class="qr-modal-info">
                             <p class="qr-modal-name">
-                                <strong>{{ billeteraActual.nombre }}:</strong> {{ billeteraActual.telefono }}<br>
-                                <template v-if="titular"><strong>Titular:</strong> {{ titular }}</template>
+                                <strong>{{ nombreBilleteraActual }}:</strong> {{ billeteraActual.telefono }}<br>
+                                <template v-if="titularBilleteraActual"><strong>Titular:</strong> {{ titularBilleteraActual }}</template>
                             </p>
                             <p class="qr-modal-instructions">
-                                Escanea el código con {{ billeteraActual.nombre }} y verifica el nombre del titular antes de confirmar el pago.
+                                Escanea el código con {{ nombreBilleteraActual }} (en el celular, descárgalo y súbelo desde la app) y verifica el nombre del titular antes de confirmar el pago.
                             </p>
                         </div>
                     </div>
 
-                    <div class="qr-modal-footer">
+                    <div class="qr-modal-footer gap-3">
+                        <a
+                            :href="qrBilletera"
+                            :download="descargaQrBilletera"
+                            class="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-6 py-3 font-semibold text-black transition hover:bg-primary-400">
+                            <Icon name="heroicons:arrow-down-tray" class="h-5 w-5" aria-hidden="true" />
+                            Descargar QR
+                        </a>
                         <button type="button" @click="showQrModal = false" class="qr-modal-button">
                             Cerrar
                         </button>
@@ -390,6 +409,8 @@
 </template>
 
 <script setup lang="ts">
+import { nombreBilletera, urlQrBilletera } from '~/utils/formato'
+
 // ===========================================================================
 // SEO Y META TAGS
 // ===========================================================================
@@ -445,6 +466,9 @@ const {
     bancoActual,
     billeteraActual,
     qrBilletera,
+    nombreBilleteraActual,
+    titularBilleteraActual,
+    descargaQrBilletera,
     tipoPago,
     seleccionarBanco,
     seleccionarBilletera,
@@ -1493,28 +1517,6 @@ input[type="date"]:valid {
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-}
-
-.qr-button-inline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    background-color: #00d9e8;
-    color: #000000;
-    border-radius: 0.375rem;
-    border: none;
-    cursor: pointer;
-    transition: all 300ms ease;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    flex-shrink: 0;
-}
-
-.qr-button-inline:hover {
-    background-color: #22d3ee;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 217, 232, 0.3);
 }
 
 /* QR Modal Styling */

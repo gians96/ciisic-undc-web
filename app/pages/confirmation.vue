@@ -175,7 +175,7 @@
 
                             <div v-if="inscription.modalidadPago === 'billetera' && inscription.billeteraDigital" class="detail-item">
                                 <span class="detail-label">Aplicativo:</span>
-                                <span class="detail-value">{{ nombreBilletera }}</span>
+                                <span class="detail-value">{{ nombreBilleteraPagada }}</span>
                             </div>
 
                             <div class="detail-item">
@@ -250,7 +250,7 @@
 <script setup lang="ts">
 import type { InscripcionCreada } from '~/types/inscription'
 import { urlMisInscripciones } from '~/utils/configuracion-sitio'
-import { enlaceWhatsApp, formatearFechaHoraLima, formatearFechaSoloDia, formatearSoles } from '~/utils/formato'
+import { enlaceWhatsApp, formatearFechaHoraLima, formatearFechaSoloDia, formatearSoles, nombreBilletera } from '~/utils/formato'
 import { tituloPlan } from '~/utils/planes'
 
 // ===========================================================================
@@ -301,11 +301,10 @@ const nombreBanco = computed(() => {
     return datosPago.value?.bancos?.find(banco => banco.codigo === codigo)?.nombre || codigo.toUpperCase()
 })
 
-const nombreBilletera = computed(() => {
+const nombreBilleteraPagada = computed(() => {
     const codigo = inscription.value?.billeteraDigital
     if (!codigo) return ''
-    return datosPago.value?.billeteras?.find(billetera => billetera.codigo === codigo)?.nombre
-        || codigo.charAt(0).toUpperCase() + codigo.slice(1)
+    return nombreBilletera(datosPago.value?.billeteras?.find(billetera => billetera.codigo === codigo) ?? { codigo })
 })
 
 // ===========================================================================

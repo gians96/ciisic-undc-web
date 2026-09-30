@@ -5,7 +5,7 @@
 import type { BilleteraDigital, CodigoCategoria, CuentaBancaria } from '~/types/evento'
 import type { ModalidadPago, TipoOperacion } from '~/types/inscription'
 import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
-import { formatearSoles, urlQrBilletera } from '~/utils/formato'
+import { formatearSoles, nombreBilletera, nombreDescargaQr, titularBilletera, urlQrBilletera } from '~/utils/formato'
 import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { aplicaPrecioInstitucional, esCorreoDelDominio, precioPlan } from '~/utils/planes'
@@ -358,6 +358,9 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
   const bancoActual = computed(() => bancos.value.find(banco => banco.codigo === bancoSeleccionado.value) ?? null)
   const billeteraActual = computed(() => billeteras.value.find(billetera => billetera.codigo === aplicativo.value) ?? null)
   const qrBilletera = computed(() => urlQrBilletera(billeteraActual.value))
+  const nombreBilleteraActual = computed(() => nombreBilletera(billeteraActual.value))
+  const titularBilleteraActual = computed(() => titularBilletera(billeteraActual.value, titular.value))
+  const descargaQrBilletera = computed(() => nombreDescargaQr(billeteraActual.value?.codigo, qrBilletera.value))
 
   // Solo aplica a bancos; sin CCI no hay transferencia interbancaria
   const tipoPago = computed<TipoOperacion | null>({
@@ -561,6 +564,9 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     bancoActual,
     billeteraActual,
     qrBilletera,
+    nombreBilleteraActual,
+    titularBilleteraActual,
+    descargaQrBilletera,
     tipoPago,
     seleccionarBanco,
     seleccionarBilletera,

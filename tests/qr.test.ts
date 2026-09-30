@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from 'vitest'
-import { urlQrBilletera } from '../app/utils/formato'
+import { nombreBilletera, nombreDescargaQr, titularBilletera, urlQrBilletera } from '../app/utils/formato'
 import {
   BACKEND_NO_DISPONIBLE,
   QR_NO_EXISTE,
@@ -39,6 +39,36 @@ describe('urlQrBilletera', () => {
 
   it('ignora nombres de archivo con otro formato', () => {
     expect(urlQrBilletera({ qrArchivo: '../../secreto.png', qrUrl: null })).toBe('')
+  })
+})
+
+describe('nombreBilletera / titularBilletera', () => {
+  it('muestra el aplicativo cuando «Nombre» guarda el del titular (caso de producción)', () => {
+    const yape = { codigo: 'yape', nombre: 'Jhon Isamel Santiago Rojas' }
+    expect(nombreBilletera(yape)).toBe('Yape')
+    expect(titularBilletera(yape, 'Titular general')).toBe('Jhon Isamel Santiago Rojas')
+  })
+
+  it('respeta un nombre que ya menciona el aplicativo y usa el titular general', () => {
+    expect(nombreBilletera({ codigo: 'plin', nombre: 'Plin Interbank' })).toBe('Plin Interbank')
+    expect(nombreBilletera({ codigo: 'yape', nombre: 'YAPE' })).toBe('YAPE')
+    expect(titularBilletera({ codigo: 'yape', nombre: 'Yape' }, 'UNDC')).toBe('UNDC')
+  })
+
+  it('con un código desconocido usa su nombre o el código', () => {
+    expect(nombreBilletera({ codigo: 'lukita', nombre: 'Lukita' })).toBe('Lukita')
+    expect(nombreBilletera({ codigo: 'lukita', nombre: '' })).toBe('Lukita')
+    expect(titularBilletera({ codigo: 'lukita', nombre: 'Lukita' }, 'UNDC')).toBe('UNDC')
+    expect(nombreBilletera(null)).toBe('')
+  })
+})
+
+describe('nombreDescargaQr', () => {
+  it('usa el código de la billetera y la extensión de la imagen', () => {
+    expect(nombreDescargaQr('yape', `/api/publico/qr/${ARCHIVO}`)).toBe('qr-yape.png')
+    expect(nombreDescargaQr('plin', '/images/qr/plin.jpeg')).toBe('qr-plin.jpg')
+    expect(nombreDescargaQr('plin', '/images/qr/plin.webp?v=2')).toBe('qr-plin.webp')
+    expect(nombreDescargaQr(null, 'https://pagos.example/qr')).toBe('qr-billetera.png')
   })
 })
 
