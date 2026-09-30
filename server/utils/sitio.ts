@@ -2,7 +2,7 @@
 // CAPA h3 DEL BFF: configuración privada, IP del visitante, cuerpo y estado HTTP.
 // La lógica (encabezados, errores, límites) está en ./api-sitio.ts y tiene pruebas.
 // ============================================================================
-import type { Buffer } from 'node:buffer'
+import { Buffer } from 'node:buffer'
 import type { H3Event } from 'h3'
 import {
   CuerpoDemasiadoGrande,
@@ -14,8 +14,10 @@ import {
   ipDelVisitante,
   leerCuerpoLimitado,
   llamarApiSitio,
+  obtenerQrSitio,
   type ContextoSitio,
   type CuerpoAdaptado,
+  type FetchImagenSitio,
   type FetchSitio,
   type PeticionSitio,
 } from './api-sitio'
@@ -43,6 +45,34 @@ function contextoSitio(event: H3Event): ContextoSitio {
 const fetchSitio: FetchSitio = async (url, opciones) => {
   const respuesta = await $fetch.raw(url, opciones)
   return { status: respuesta.status, _data: respuesta._data }
+}
+
+const fetchImagenSitio: FetchImagenSitio = async (url, opciones) => {
+  const respuesta = await $fetch.raw<ArrayBuffer>(url, opciones)
+  return { status: respuesta.status, headers: respuesta.headers, _data: respuesta._data }
+}
+
+/**
+ * Imagen del QR de una billetera. El navegador la pide a la landing: el token y la URL del backend
+ * no salen del servidor. Cada imagen tiene un nombre único, así que se guarda en caché un día.
+ */
+export async function responderQrSitio(event: H3Event, archivo: string): Promise<unknown> {
+  const contexto = contextoSitio(event)
+  const faltantes = configuracionFaltante(contexto)
+  if (faltantes.length) avisarConfiguracionFaltante(faltantes)
+
+  const imagen = await obtenerQrSitio(contexto, archivo, fetchImagenSitio)
+  setResponseStatus(event, imagen.status)
+  if (!('bytes' in imagen)) {
+    setResponseHeader(event, 'Cache-Control', 'no-store')
+    return imagen.cuerpo
+  }
+  setResponseHeaders(event, {
+    'Content-Type': imagen.tipo,
+    'Cache-Control': 'public, max-age=86400, immutable',
+    'X-Content-Type-Options': 'nosniff',
+  })
+  return Buffer.from(imagen.bytes)
 }
 
 /** Llama a la API del sitio con el token del evento y responde con su estado y cuerpo. */

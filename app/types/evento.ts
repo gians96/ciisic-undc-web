@@ -22,6 +22,8 @@ export interface BilleteraDigital {
   nombre: string
   telefono: string
   qrUrl?: string | null
+  /** Imagen subida en el panel; tiene prioridad sobre `qrUrl`. */
+  qrArchivo?: string | null
 }
 
 export interface DatosPago {

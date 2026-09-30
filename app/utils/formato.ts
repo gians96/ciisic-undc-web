@@ -52,3 +52,13 @@ export function urlSegura(url: string | null | undefined): string {
     return ''
   }
 }
+
+/** Nombre de un QR subido en el panel (lo genera backend-ciisic). */
+const ARCHIVO_QR = /^qr-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$/
+
+/** Imagen del QR de una billetera: la subida en el panel (servida por el BFF) o la URL configurada. */
+export function urlQrBilletera(billetera?: { qrArchivo?: string | null, qrUrl?: string | null } | null): string {
+  const archivo = billetera?.qrArchivo?.trim() ?? ''
+  if (ARCHIVO_QR.test(archivo)) return `/api/publico/qr/${archivo}`
+  return urlSegura(billetera?.qrUrl)
+}

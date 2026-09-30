@@ -135,6 +135,63 @@ export async function llamarApiSitio(contexto: ContextoSitio, peticion: Peticion
   return { status: respuesta.status, cuerpo: respuesta._data ?? null }
 }
 
+/** Nombre de un QR subido en el panel (lo genera backend-ciisic): `qr-<uuid>.<png|jpg|webp>`. */
+export const ARCHIVO_QR = /^qr-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$/
+export const QR_NO_EXISTE = errorSitio('QR_NOT_FOUND', 'La imagen del QR no existe.')
+const TIPOS_IMAGEN = new Set(['image/png', 'image/jpeg', 'image/webp'])
+
+export interface OpcionesFetchImagen {
+  headers: Record<string, string>
+  responseType: 'arrayBuffer'
+  timeout: number
+  retry: 0
+  ignoreResponseError: true
+}
+
+/** Firma mínima de `$fetch.raw` para binarios; en pruebas se reemplaza por un doble. */
+export type FetchImagenSitio = (url: string, opciones: OpcionesFetchImagen) => Promise<{
+  status: number
+  headers: { get: (nombre: string) => string | null }
+  _data?: ArrayBuffer
+}>
+
+export type ImagenSitio =
+  | { status: 200, tipo: string, bytes: Uint8Array }
+  | { status: number, cuerpo: ErrorSitio }
+
+/**
+ * Imagen del QR de una billetera (`GET /api/v1/site/payment-qr/:archivo`). Solo pide nombres con
+ * el formato del backend y solo devuelve respuestas que de verdad son PNG, JPG o WebP.
+ */
+export async function obtenerQrSitio(contexto: ContextoSitio, archivo: string, fetchImagen: FetchImagenSitio): Promise<ImagenSitio> {
+  if (!ARCHIVO_QR.test(archivo)) return { status: 404, cuerpo: QR_NO_EXISTE }
+  if (configuracionFaltante(contexto).length) return { status: 503, cuerpo: SITIO_NO_CONFIGURADO }
+
+  const headers: Record<string, string> = { 'Accept': 'image/png, image/jpeg, image/webp', 'X-Api-Key': contexto.token.trim() }
+  if (contexto.ipCliente) headers['X-Client-Ip'] = contexto.ipCliente
+
+  let respuesta: Awaited<ReturnType<FetchImagenSitio>>
+  try {
+    respuesta = await fetchImagen(`${contexto.baseUrl.trim().replace(/\/+$/, '')}${PREFIJO_API_SITIO}/payment-qr/${archivo}`, {
+      headers,
+      responseType: 'arrayBuffer',
+      timeout: 10000,
+      retry: 0,
+      ignoreResponseError: true,
+    })
+  } catch {
+    return { status: 502, cuerpo: BACKEND_NO_DISPONIBLE }
+  }
+
+  if (respuesta.status === 404) return { status: 404, cuerpo: QR_NO_EXISTE }
+  const tipo = (respuesta.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
+  if (respuesta.status === 200 && TIPOS_IMAGEN.has(tipo) && respuesta._data) {
+    return { status: 200, tipo, bytes: new Uint8Array(respuesta._data) }
+  }
+  if (respuesta.status >= 400 && respuesta.status < 500) return { status: respuesta.status, cuerpo: errorSitio('REQUEST_ERROR', 'No se pudo obtener la imagen.') }
+  return { status: 502, cuerpo: BACKEND_NO_DISPONIBLE }
+}
+
 /**
  * Resultado de adaptar el cuerpo de una acción antes de reenviarlo: el cuerpo nuevo (con su tipo) o
  * el error que se responde sin llamar al backend.

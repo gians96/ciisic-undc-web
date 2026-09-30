@@ -26,6 +26,7 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 | `GET /api/publico/catalogos` | `GET /site/catalogs` | 10 min |
 | `GET /api/publico/configuracion` | `GET /site/config` (client ID de Google, URL del panel) | 60 s |
 | `GET /api/publico/consulta-dni/:numero` | `GET /site/document-lookup/dni/:numero` | no |
+| `GET /api/publico/qr/:archivo` (imagen) | `GET /site/payment-qr/:archivo` (QR subido en el panel) | navegador/CDN 1 día (`immutable`) |
 | `POST /api/publico/verificacion-estudiante` | `POST /site/student-verification` | no |
 | `POST /api/publico/verificacion-google` | `POST /site/google-verification` (`credential` → `idToken`) | no |
 | `POST /api/publico/inscripciones` (multipart) | `POST /site/inscriptions` | no |
