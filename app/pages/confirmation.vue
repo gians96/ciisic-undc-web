@@ -61,7 +61,7 @@
                                 Ver el estado de mi inscripción
                                 <span class="sr-only">(se abre en una pestaña nueva)</span>
                             </a>
-                            <p class="panel-estado__ayuda">Ingresa con la cuenta de Google del correo con el que te inscribiste</p>
+                            <p class="panel-estado__ayuda">Ingresa con Google o con un código que te enviamos al correo con el que te inscribiste</p>
                         </div>
 
                         <!-- Información de contacto (del evento) -->
@@ -103,6 +103,17 @@
                             Hola <strong>{{ inscription.participante.nombres }} {{ inscription.participante.apellidos }}</strong>,
                             tu inscripción al <strong>{{ inscription.evento?.nombreCorto || 'VIII CIISIC' }}</strong> ha sido registrada exitosamente.
                         </p>
+
+                        <!-- El documento ya tenía otro correo: la inscripción quedó con ese correo -->
+                        <div v-if="inscription.correoConservado" class="correo-conservado" role="status">
+                            <Icon name="heroicons:envelope" class="correo-conservado__icono" aria-hidden="true" />
+                            <p>
+                                Tu documento ya estaba registrado con el correo
+                                <strong>{{ inscription.correoEnmascarado || 'anterior' }}</strong>. Usamos ese correo para
+                                tu inscripción: allí recibirás la credencial y con él entras a «Mis inscripciones».
+                                Si ya no lo usas, escríbenos a <a :href="`mailto:${contactoCorreo}`">{{ contactoCorreo }}</a>.
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Detalles de la inscripción -->
@@ -220,7 +231,7 @@
                             Ver el estado de mi inscripción
                             <span class="sr-only">(se abre en una pestaña nueva)</span>
                         </a>
-                        <p class="panel-estado__ayuda">Ingresa con la cuenta de Google del correo con el que te inscribiste</p>
+                        <p class="panel-estado__ayuda">Ingresa con Google o con un código que te enviamos al correo con el que te inscribiste</p>
                     </div>
 
                     <!-- Acciones -->
@@ -284,7 +295,7 @@ const contactoCorreo = computed(() => contacto.value?.correo || 'congreso@undc.e
 const contactoTelefono = computed(() => contacto.value?.telefono || '+51 949 026 908')
 const enlaceTelefono = computed(() => enlaceWhatsApp(contactoTelefono.value))
 
-// Estado de la inscripción: página del panel donde se ingresa con Google (solo si hay panel)
+// Estado de la inscripción: página del panel donde se ingresa con Google o con un código por correo (solo si hay panel)
 const enlaceMisInscripciones = computed(() => urlMisInscripciones(urlPanel.value))
 
 const tipoInscripcionTexto = computed(() => {
@@ -594,6 +605,32 @@ onMounted(() => {
 .inscription-number .number {
     font-size: 1.25rem;
     font-weight: 800;
+}
+
+.correo-conservado {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.correo-conservado__icono {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #f59e0b;
+}
+
+.correo-conservado a {
+    text-decoration: underline;
 }
 
 .confirmation-message {

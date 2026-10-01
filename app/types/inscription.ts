@@ -77,4 +77,11 @@ export interface InscripcionCreada {
     fechaPago: string
     estado: { codigo: string; nombre: string }
     creadoEn: string
+    /**
+     * `true` si el documento ya estaba registrado con otro correo y no se verificó el nuevo con
+     * Google: la inscripción quedó con el correo registrado (`correoEnmascarado`), que es el que
+     * recibe la credencial y da acceso a «Mis inscripciones» (spec 014 del backend).
+     */
+    correoConservado?: boolean
+    correoEnmascarado?: string | null
 }

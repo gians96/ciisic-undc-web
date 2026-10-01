@@ -114,6 +114,21 @@
                     tu cuenta. Si prefieres no usarlo, escribe tu correo y continúa con tu inscripción.
                   </p>
                 </div>
+
+                <!-- Portal del inscrito: código por correo y foto del fotocheck (opcional) -->
+                <div class="bg-secondary-700 rounded-lg p-6">
+                  <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                    <Icon name="heroicons:identification" class="h-5 w-5 mr-2 flex-shrink-0" aria-hidden="true" />
+                    «Mis inscripciones» y fotocheck virtual
+                  </h3>
+                  <p class="text-sm leading-relaxed">
+                    Para ver tu inscripción, tu asistencia, tus certificados y tu fotocheck virtual puedes ingresar con
+                    Google o con un código de 6 dígitos que enviamos a tu correo; el código vence en minutos y solo
+                    guardamos una huella cifrada de él. En tu perfil puedes subir una foto para el fotocheck: es
+                    opcional, solo se usa para identificarte en el evento, se guarda sin los datos ocultos de la imagen
+                    (ubicación, dispositivo) y puedes quitarla cuando quieras.
+                  </p>
+                </div>
               </div>
             </section>
 
