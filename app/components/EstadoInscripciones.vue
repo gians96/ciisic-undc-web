@@ -72,7 +72,7 @@ const { evento, contacto } = useEvento()
 // Contacto del evento (con el de la organización como respaldo si el evento no cargó)
 const nombreEvento = computed(() => evento.value?.nombreCorto || '')
 const correo = computed(() => contacto.value?.correo || 'congreso@undc.edu.pe')
-const telefono = computed(() => contacto.value?.telefono || '+51 949 026 908')
+const telefono = computed(() => contacto.value?.telefono || '+51 955204231')
 const enlaceTelefono = computed(() => enlaceWhatsApp(telefono.value))
 </script>
 
