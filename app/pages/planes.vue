@@ -24,6 +24,14 @@
           <p class="mt-4 flex-1 leading-relaxed text-slate-300">Para egresados, profesionales, investigadores y toda persona interesada en el congreso.</p>
           <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
         </NuxtLink>
+        <!-- Categoría FI_UNDC del panel: sus planes son «Solo UNDC» (aparecen con un correo del dominio) -->
+        <NuxtLink to="/fi-undc" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9 md:col-span-2">
+          <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:building-library" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
+          <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 03</p>
+          <h2 class="mt-2 text-3xl font-bold text-white">Docentes, egresados y administrativos</h2>
+          <p class="mt-4 max-w-3xl flex-1 leading-relaxed text-slate-300">Para docentes, egresados y personal administrativo de la Facultad de Ingeniería de la UNDC. Inscríbete con tu correo @{{ dominioInstitucional }}.</p>
+          <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
+        </NuxtLink>
       </div>
 
       <div class="support-card mt-8 flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 class="text-xl font-bold text-white">¿Inscribirás una delegación?</h2><p class="mt-1 text-slate-300">Comunícate con el equipo organizador para coordinar tu registro.</p></div><a href="https://wa.me/51955204231" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary-400/50 px-5 py-3 font-semibold text-primary-300 transition hover:bg-primary-400/10"><Icon name="heroicons:chat-bubble-left-right" class="h-5 w-5" />Escribir por WhatsApp</a></div>
@@ -36,6 +44,7 @@ useSeoMeta({ title: 'Inscripciones | VIII CIISIC 2026', description: 'Elige tu m
 
 // Con las inscripciones cerradas en el panel se muestra el aviso en lugar de las modalidades
 const { evento, inscripcionesAbiertas } = useEvento()
+const dominioInstitucional = computed(() => evento.value?.dominioInstitucional || 'undc.edu.pe')
 </script>
 
 <style scoped>

@@ -50,7 +50,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | Ruta (landing) | Backend | Caché | Límite de cuerpo |
 |---|---|---|---|
 | `GET /api/publico/evento` | `GET /event` | 60 s, clave constante | — |
-| `GET /api/publico/planes?categoria=ESTUDIANTES\|PUBLICO_GENERAL` | `GET /registration-types` | 60 s por categoría (lista blanca) | — |
+| `GET /api/publico/planes?categoria=ESTUDIANTES\|PUBLICO_GENERAL\|FI_UNDC` | `GET /registration-types` | 60 s por categoría (lista blanca) | — |
 | `GET /api/publico/catalogos` | `GET /catalogs` | 10 min, clave constante | — |
 | `GET /api/publico/configuracion` | `GET /config` | 60 s, clave constante | — |
 | `GET /api/publico/consulta-dni/:numero` | `GET /document-lookup/dni/:numero` | no (`no-store`) | — |

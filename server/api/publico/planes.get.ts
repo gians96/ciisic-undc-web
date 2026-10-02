@@ -1,9 +1,9 @@
-// GET /api/publico/planes?categoria=ESTUDIANTES|PUBLICO_GENERAL
+// GET /api/publico/planes?categoria=ESTUDIANTES|PUBLICO_GENERAL|FI_UNDC
 // → GET {backend}/api/v1/site/registration-types con caché de 60 s por categoría.
 import type { H3Event } from 'h3'
 
 /** Solo las categorías que usa la landing: otras claves no llegan al backend ni a la caché. */
-const CATEGORIAS = new Set(['ESTUDIANTES', 'PUBLICO_GENERAL'])
+const CATEGORIAS = new Set(['ESTUDIANTES', 'PUBLICO_GENERAL', 'FI_UNDC'])
 
 const categoriaDe = (event: H3Event) => String(getQuery(event).categoria ?? '').trim().toUpperCase()
 

@@ -58,7 +58,8 @@ export interface EventoPublico {
   datosPago: DatosPago | null
 }
 
-export type CodigoCategoria = 'ESTUDIANTES' | 'PUBLICO_GENERAL'
+/** Categorías con página en la landing (`FI_UNDC`: docentes, egresados y administrativos de la FI). */
+export type CodigoCategoria = 'ESTUDIANTES' | 'PUBLICO_GENERAL' | 'FI_UNDC'
 
 export interface CaracteristicaPlan {
   icon: string
