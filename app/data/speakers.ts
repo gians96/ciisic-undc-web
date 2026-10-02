@@ -80,6 +80,16 @@ const speakerProfiles: Speaker[] = [
     summary: 'Docente universitario, consultor e investigador especializado en inteligencia de negocios, minería de datos, Big Data, Six Sigma y asesoría de tesis.',
     areas: ['Business Intelligence', 'Data Mining', 'Big Data'],
   },
+  {
+    name: 'Cesar Armando Beltran Castañon',
+    degreeLevel: 'Doctor',
+    degree: 'Doctor en Bioinformática por la Universidad de São Paulo',
+    country: 'Perú',
+    flag: '🇵🇪',
+    image: '/images/ponentes/2026/cesar-beltran.webp',
+    summary: 'Profesor principal e investigador senior de la Pontificia Universidad Católica del Perú. Lidera grupos de inteligencia artificial e innovación científica, y trabaja en aprendizaje automático, analítica de datos, visión computacional y bioinformática.',
+    areas: ['Inteligencia artificial', 'Visión computacional', 'Bioinformática'],
+  },
 ]
 
 
