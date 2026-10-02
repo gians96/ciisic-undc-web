@@ -65,6 +65,12 @@ export interface CaracteristicaPlan {
   text: string
 }
 
+/**
+ * A quién se ofrece un tipo (spec 016 de backend-ciisic): a todos, solo a quien recibe el precio
+ * institucional (comunidad UNDC) o solo a quien no lo recibe (externos).
+ */
+export type DisponiblePara = 'TODOS' | 'INSTITUCIONAL' | 'EXTERNOS'
+
 export interface TipoInscripcionApi {
   id: number
   codigo: string
@@ -74,6 +80,8 @@ export interface TipoInscripcionApi {
   caracteristicas: CaracteristicaPlan[] | null
   precio: number | string
   precioInstitucional: number | string | null
+  /** Ausente en un backend anterior: equivale a `TODOS`. */
+  disponiblePara?: DisponiblePara | null
 }
 
 export interface CategoriaInscripcionApi {

@@ -157,7 +157,7 @@
                         </div>
                         <small class="form-hint">
                             <template v-if="!availablePlans.length">
-                                No hay tipos de inscripción disponibles por ahora
+                                {{ avisoPlanes || 'No hay tipos de inscripción disponibles por ahora' }}
                             </template>
                             <template v-else-if="!camposCompletos">
                                 Completa los campos anteriores para habilitar la selección de planes
@@ -166,6 +166,8 @@
                                 Selecciona el plan que mejor se adapte a tus necesidades
                             </template>
                         </small>
+                        <!-- Planes solo para la comunidad UNDC o solo para externos (spec 016 del backend) -->
+                        <small class="form-hint plan-aviso" :class="{ 'plan-aviso-vacio': !availablePlans.length || !avisoPlanes }" aria-live="polite">{{ availablePlans.length && avisoPlanes ? avisoPlanes : '' }}</small>
                     </div>
                     <!-- Campo de clasificación para estudiantes con transición avanzada -->
                     <Transition name="height-expand" @enter="onClassificationEnter" @leave="onClassificationLeave"
@@ -489,6 +491,7 @@ const {
     verificarCorreoGoogle,
     usarOtroCorreo,
     availablePlans,
+    avisoPlanes,
     planId,
     selectPlan,
     camposCompletos,
@@ -996,6 +999,15 @@ input[type="date"]:valid {
     line-height: 1rem;
     color: #94a3b8;
     font-style: italic;
+}
+
+.plan-aviso {
+    color: #67e8f9;
+    font-style: normal;
+}
+
+.plan-aviso-vacio {
+    margin-top: 0;
 }
 
 /* Chip de verificación de estudiante UNDC */

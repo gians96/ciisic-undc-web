@@ -49,6 +49,8 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 - El navegador **nunca** llama al backend ni conoce el token del evento; todo pasa por Nitro.
 - El precio lo calcula el backend; la landing solo muestra. El precio UNDC de estudiantes
   requiere la verificación de SIVIRENO (token firmado por el backend).
+- Los planes con `disponiblePara` «solo comunidad UNDC» o «solo externos» se ocultan con la misma
+  condición del precio (`planDisponible`); el backend igual los rechaza (`REGISTRATION_TYPE_NOT_AVAILABLE`).
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales
@@ -92,7 +94,8 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 ## SDD con Spec Kit
 
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
-`specs/001-landing-multi-evento/` (landing multi-evento + BFF) y `specs/002-google-en-inscripcion/`.
+`specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/` y
+`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

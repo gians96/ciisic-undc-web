@@ -1,7 +1,7 @@
 // ============================================================================
 // PLANES DE INSCRIPCIÓN: API → TARJETAS Y REGLA DE PRECIO (funciones puras)
 // ============================================================================
-import type { CaracteristicaPlan, CategoriaInscripcionApi, TipoInscripcionApi } from '../types/evento'
+import type { CaracteristicaPlan, CategoriaInscripcionApi, DisponiblePara, TipoInscripcionApi } from '../types/evento'
 
 /** Forma de la tarjeta de plan que usan /estudiantes y /general. */
 export interface PlanInscripcion {
@@ -15,7 +15,14 @@ export interface PlanInscripcion {
   features: CaracteristicaPlan[]
   categoria: string
   esEstudiantil: boolean
+  disponiblePara: DisponiblePara
 }
+
+const DISPONIBILIDADES: readonly DisponiblePara[] = ['TODOS', 'INSTITUCIONAL', 'EXTERNOS']
+
+/** Valor desconocido o ausente (backend anterior) → `TODOS`, el comportamiento de siempre. */
+const aDisponibilidad = (valor: unknown): DisponiblePara =>
+  DISPONIBILIDADES.includes(valor as DisponiblePara) ? valor as DisponiblePara : 'TODOS'
 
 const normalizar = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim().toUpperCase()
 
@@ -58,6 +65,7 @@ function aPlan(tipo: TipoInscripcionApi, categoria: CategoriaInscripcionApi): Pl
     features: caracteristicasValidas(tipo.caracteristicas),
     categoria: categoria.codigo,
     esEstudiantil: categoria.esEstudiantil === true,
+    disponiblePara: aDisponibilidad(tipo.disponiblePara),
   }
 }
 
@@ -82,6 +90,42 @@ export function aplicaPrecioInstitucional(entrada: { esEstudiantil: boolean; esE
 
 export function precioPlan(plan: Pick<PlanInscripcion, 'basePrice' | 'institutionalPrice'>, institucional: boolean): number {
   return institucional ? plan.institutionalPrice : plan.basePrice
+}
+
+/**
+ * Réplica de `tipoDisponible` del backend (spec 016): con la misma condición del precio
+ * institucional, un plan «solo comunidad UNDC» o «solo externos» se oculta a quien no corresponde.
+ * El backend igual rechaza la inscripción (`REGISTRATION_TYPE_NOT_AVAILABLE`).
+ */
+export function planDisponible(plan: Pick<PlanInscripcion, 'disponiblePara'>, institucional: boolean): boolean {
+  if (plan.disponiblePara === 'INSTITUCIONAL') return institucional
+  if (plan.disponiblePara === 'EXTERNOS') return !institucional
+  return true
+}
+
+/**
+ * Si el plan elegido dejó de ofrecerse (planes recargados o cambió la condición UNDC) se limpia la
+ * selección, salvo mientras una verificación está en curso: su resultado puede volver a mostrarlo.
+ */
+export function debeLimpiarPlan(entrada: { planId: number | null; disponibles: readonly number[]; verificando: boolean }): boolean {
+  return entrada.planId !== null && !entrada.verificando && !entrada.disponibles.includes(entrada.planId)
+}
+
+/** Por qué no se ven todos los planes (los ocultos son de una sola categoría por página). */
+export function avisoPlanesOcultos(entrada: {
+  ocultos: readonly Pick<PlanInscripcion, 'disponiblePara' | 'esEstudiantil'>[]
+  dominio: string
+}): string | null {
+  const [oculto] = entrada.ocultos
+  if (!oculto) return null
+  if (oculto.disponiblePara === 'EXTERNOS') {
+    return oculto.esEstudiantil
+      ? 'Como estudiante UNDC verificado, solo se muestran los planes para la comunidad UNDC.'
+      : `Con un correo @${entrada.dominio} solo se muestran los planes para la comunidad UNDC.`
+  }
+  return oculto.esEstudiantil
+    ? `Hay planes solo para estudiantes UNDC verificados: usa tu correo @${entrada.dominio} para verificarte.`
+    : `Hay planes solo para la comunidad UNDC: aparecen al escribir un correo @${entrada.dominio}.`
 }
 
 /** `ana@undc.edu.pe` pertenece a `undc.edu.pe` (sin subdominios ni mayúsculas). */

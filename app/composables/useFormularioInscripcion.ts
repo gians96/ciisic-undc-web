@@ -9,7 +9,7 @@ import { formatearSoles, nombreBilletera, nombreDescargaQr, titularBilletera, ur
 import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { modalidadesDisponibles, resolverMedioPago, type EleccionPago } from '~/utils/medios-pago'
-import { aplicaPrecioInstitucional, esCorreoDelDominio, precioPlan } from '~/utils/planes'
+import { aplicaPrecioInstitucional, avisoPlanesOcultos, debeLimpiarPlan, esCorreoDelDominio, planDisponible, precioPlan } from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
 
 export type EstadoPaginaInscripcion = 'cargando' | 'error' | 'cerradas' | 'abiertas'
@@ -298,23 +298,39 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     && esCelularValido(celular.value),
   ))
 
-  // Réplica informativa de la regla del backend: el monto definitivo lo calcula el servidor
-  const availablePlans = computed(() => planes.value.map((plan) => {
+  // Réplica informativa de la regla del backend: el monto definitivo lo calcula el servidor. Con la
+  // misma condición se ocultan los planes «solo comunidad UNDC» o «solo externos» (spec 016 del backend)
+  const planesSegunCondicion = computed(() => planes.value.map((plan) => {
     const institucional = aplicaPrecioInstitucional({
       esEstudiantil: plan.esEstudiantil,
       esEstudianteUndc: esEstudianteUndc.value,
       correoInstitucional: esCorreoInstitucional.value,
     })
-    return { ...plan, price: formatearSoles(precioPlan(plan, institucional)) }
+    return { plan, institucional, disponible: planDisponible(plan, institucional) }
+  }))
+
+  const availablePlans = computed(() => planesSegunCondicion.value
+    .filter(item => item.disponible)
+    .map(({ plan, institucional }) => ({ ...plan, price: formatearSoles(precioPlan(plan, institucional)) })))
+
+  /** Explica por qué no se ven todos los planes (p. ej. con correo UNDC no se ofrece «sin kit»). */
+  const avisoPlanes = computed(() => avisoPlanesOcultos({
+    ocultos: planesSegunCondicion.value.filter(item => !item.disponible).map(item => item.plan),
+    dominio: dominioInstitucional.value,
   }))
 
   const selectedPlan = computed(() => availablePlans.value.find(plan => plan.id === planId.value) ?? null)
   // El ciclo solo se pide en /estudiantes y para planes de la categoría estudiantil
   const isStudentPlan = computed(() => conVerificacion && selectedPlan.value?.esEstudiantil === true)
 
-  // Si los planes se recargan y el elegido ya no existe, se limpia la selección
-  watch(planes, (lista) => {
-    if (planId.value !== null && !lista.some(plan => plan.id === planId.value)) planId.value = null
+  // Si el plan elegido deja de ofrecerse (planes recargados o cambió la condición UNDC) se limpia la
+  // selección; mientras una verificación está en curso se espera su resultado
+  watch([availablePlans, estadoVerificacion, estadoCorreoGoogle], ([lista, estado, estadoGoogle]) => {
+    if (debeLimpiarPlan({
+      planId: planId.value,
+      disponibles: lista.map(plan => plan.id),
+      verificando: estado === 'verificando' || estadoGoogle === 'verificando',
+    })) planId.value = null
   })
 
   const getBadgeClass = (badge: string) => (badge.includes('SIN') ? 'badge-warning' : 'badge-success')
@@ -492,7 +508,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
       showError(apiError.value || (error instanceof Error && error.message) || '❌ Error al procesar la inscripción. Inténtalo nuevamente.')
       // El estado del evento o los planes cambiaron en el backend: se vuelven a pedir
       if (errorCode.value === 'REGISTRATION_CLOSED') recargarEvento()
-      if (errorCode.value === 'REGISTRATION_TYPE_INVALID') {
+      if (errorCode.value === 'REGISTRATION_TYPE_INVALID' || errorCode.value === 'REGISTRATION_TYPE_NOT_AVAILABLE') {
         planId.value = null
         recargarPlanes()
       }
@@ -544,6 +560,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     usarOtroCorreo,
     // Planes
     availablePlans,
+    avisoPlanes,
     planId,
     selectPlan,
     camposCompletos,

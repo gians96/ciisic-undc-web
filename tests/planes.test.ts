@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { CategoriaInscripcionApi } from '../app/types/evento'
-import { aplicaPrecioInstitucional, esCorreoDelDominio, mapearPlanes, precioPlan, tituloPlan } from '../app/utils/planes'
+import {
+  aplicaPrecioInstitucional, avisoPlanesOcultos, debeLimpiarPlan, esCorreoDelDominio, mapearPlanes, planDisponible, precioPlan, tituloPlan,
+} from '../app/utils/planes'
 
 // Respuesta real de GET /api/v1/public/events/ciisic-viii-2026/registration-types (recortada)
 const categorias: CategoriaInscripcionApi[] = [
@@ -55,6 +57,17 @@ const categorias: CategoriaInscripcionApi[] = [
         precio: 140,
         precioInstitucional: null,
       },
+      {
+        id: 4,
+        codigo: 'general_sin_kit',
+        nombre: 'PROFESIONALES Y PUBLICO EN GENERAL',
+        etiqueta: 'SIN KIT',
+        descripcion: null,
+        caracteristicas: null,
+        precio: 80,
+        precioInstitucional: 80,
+        disponiblePara: 'EXTERNOS',
+      },
     ],
   },
 ]
@@ -76,6 +89,8 @@ describe('mapearPlanes', () => {
       ],
       categoria: 'ESTUDIANTES',
       esEstudiantil: true,
+      // sin el campo (backend anterior) el plan se ofrece a todos
+      disponiblePara: 'TODOS',
     })
     expect(sinKit).toMatchObject({ title: 'ESTUDIANTES SIN KIT', basePrice: 60, institutionalPrice: 40, description: '' })
     expect(general).toMatchObject({
@@ -101,6 +116,12 @@ describe('mapearPlanes', () => {
     }])
     expect(planes).toHaveLength(1)
     expect(planes[0]).toMatchObject({ id: 10, title: 'Z', badge: '', basePrice: 0, features: [{ icon: 'heroicons:ticket', text: 'Acceso' }] })
+  })
+
+  it('conserva a quién se ofrece el plan y trata un valor desconocido como TODOS', () => {
+    expect(mapearPlanes(categorias).find(plan => plan.codigo === 'general_sin_kit')).toMatchObject({ badge: 'SIN KIT', disponiblePara: 'EXTERNOS' })
+    const [desconocido] = mapearPlanes([{ ...categorias[1]!, tipos: [{ ...categorias[1]!.tipos[0]!, disponiblePara: 'SOLO_UNDC' as never }] }])
+    expect(desconocido?.disponiblePara).toBe('TODOS')
   })
 
   it('tolera respuestas vacías', () => {
@@ -139,5 +160,44 @@ describe('regla de precio (réplica informativa del backend)', () => {
     expect(esCorreoDelDominio('ana@undc.edu.pe.com', 'undc.edu.pe')).toBe(false)
     expect(esCorreoDelDominio('@undc.edu.pe', 'undc.edu.pe')).toBe(false)
     expect(esCorreoDelDominio('ana@undc.edu.pe', '')).toBe(false)
+  })
+})
+
+describe('disponibilidad del plan (spec 016 del backend)', () => {
+  it.each([
+    ['TODOS', true, true],
+    ['TODOS', false, true],
+    ['INSTITUCIONAL', true, true],
+    ['INSTITUCIONAL', false, false],
+    ['EXTERNOS', true, false],
+    ['EXTERNOS', false, true],
+  ] as const)('%s con precio institucional=%s → se muestra=%s', (disponiblePara, institucional, esperado) => {
+    expect(planDisponible({ disponiblePara }, institucional)).toBe(esperado)
+  })
+
+  it('con correo UNDC en /general solo queda el plan con kit (a su precio UNDC)', () => {
+    const planes = mapearPlanes([categorias[1]!])
+    const visibles = (institucional: boolean) => planes.filter(plan => planDisponible(plan, institucional)).map(plan => plan.codigo)
+    expect(visibles(true)).toEqual(['general_con_kit'])
+    expect(visibles(false)).toEqual(['general_con_kit', 'general_sin_kit'])
+  })
+
+  it('limpia la selección si el plan ya no se ofrece, salvo durante una verificación', () => {
+    expect(debeLimpiarPlan({ planId: 4, disponibles: [3], verificando: false })).toBe(true)
+    expect(debeLimpiarPlan({ planId: 4, disponibles: [3], verificando: true })).toBe(false)
+    expect(debeLimpiarPlan({ planId: 3, disponibles: [3], verificando: false })).toBe(false)
+    expect(debeLimpiarPlan({ planId: null, disponibles: [], verificando: false })).toBe(false)
+  })
+
+  it('explica por qué no se ven todos los planes', () => {
+    expect(avisoPlanesOcultos({ ocultos: [], dominio: 'undc.edu.pe' })).toBeNull()
+    expect(avisoPlanesOcultos({ ocultos: [{ disponiblePara: 'EXTERNOS', esEstudiantil: false }], dominio: 'undc.edu.pe' }))
+      .toBe('Con un correo @undc.edu.pe solo se muestran los planes para la comunidad UNDC.')
+    expect(avisoPlanesOcultos({ ocultos: [{ disponiblePara: 'EXTERNOS', esEstudiantil: true }], dominio: 'undc.edu.pe' }))
+      .toContain('estudiante UNDC verificado')
+    expect(avisoPlanesOcultos({ ocultos: [{ disponiblePara: 'INSTITUCIONAL', esEstudiantil: false }], dominio: 'undc.edu.pe' }))
+      .toContain('aparecen al escribir un correo @undc.edu.pe')
+    expect(avisoPlanesOcultos({ ocultos: [{ disponiblePara: 'INSTITUCIONAL', esEstudiantil: true }], dominio: 'undc.edu.pe' }))
+      .toContain('usa tu correo @undc.edu.pe para verificarte')
   })
 })
