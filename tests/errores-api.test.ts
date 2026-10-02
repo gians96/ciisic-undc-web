@@ -18,6 +18,7 @@ describe('mensajeErrorInscripcion', () => {
     ['OPERATION_ALREADY_REGISTERED', 409, /número de operación ya fue registrado/],
     ['REGISTRATION_CLOSED', 409, /inscripciones para este evento están cerradas/],
     ['REGISTRATION_TYPE_INVALID', 422, /tipo de inscripción elegido ya no está disponible/],
+    ['REGISTRATION_TYPE_NOT_AVAILABLE', 422, /no está disponible para tu tipo de participante \(comunidad UNDC o externo\)/],
     ['VOUCHER_REQUIRED', 422, /Adjunta el voucher/],
     ['INVALID_FILE_CONTENT', 422, /no coincide con su formato/],
     ['INVALID_FILE_TYPE', 422, /Formato de voucher no permitido/],

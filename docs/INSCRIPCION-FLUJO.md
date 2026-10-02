@@ -15,7 +15,14 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
   y ciclos (`useCatalogos` → `/api/publico/catalogos`), cargados con `useAsyncData` (compatibles con SSR).
 - Muestran "Inscripciones cerradas", "Cargando" o un error con "Reintentar" según el estado del evento.
 - `/estudiantes` verifica al estudiante UNDC (`/api/publico/verificacion-estudiante`) y muestra el precio UNDC
-  solo si `esEstudianteUndc === true`.
+  solo si `esEstudianteUndc === true`. En `/general` el precio UNDC depende del dominio del correo.
+- Con esa misma condición se ocultan los planes que no corresponden (`disponiblePara`, spec 016 del
+  backend; `planDisponible` en `app/utils/planes.ts`): un plan «solo externos» no se muestra con correo
+  `@undc.edu.pe` (o a un estudiante verificado) y uno «solo comunidad UNDC» solo aparece con esa condición.
+  Un aviso explica por qué faltan planes y, si el plan elegido deja de ofrecerse, se limpia la selección
+  (salvo durante una verificación en curso). Si el backend lo rechaza igual (p. ej. el DNI ya estaba
+  registrado con un correo UNDC), responde `REGISTRATION_TYPE_NOT_AVAILABLE` y se vuelve a elegir el plan.
+  Detalles en `specs/003-disponibilidad-planes/`.
 - Junto al correo, ambas páginas ofrecen «Continuar con Google» (opcional, `InscripcionCorreoGoogle`) si la
   configuración del sitio (`/api/publico/configuracion`) trae client ID. La credencial de Google va a
   `/api/publico/verificacion-google`; al verificarse, el correo queda fijado y de solo lectura, los nombres
