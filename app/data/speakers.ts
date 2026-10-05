@@ -90,6 +90,16 @@ const speakerProfiles: Speaker[] = [
     summary: 'Profesor principal e investigador senior de la Pontificia Universidad Católica del Perú. Lidera grupos de inteligencia artificial e innovación científica, y trabaja en aprendizaje automático, analítica de datos, visión computacional y bioinformática.',
     areas: ['Inteligencia artificial', 'Visión computacional', 'Bioinformática'],
   },
+  {
+    name: 'Enrique Luis Arnáez Braschi',
+    degreeLevel: 'Magíster',
+    degree: 'Magíster en Ingeniería de Control y Automatización',
+    country: 'Perú',
+    flag: '🇵🇪',
+    image: '/images/ponentes/2026/enrique-arnaez.webp',
+    summary: 'Contralmirante de la Marina de Guerra en situación de retiro, con treinta y ocho años de experiencia en liderazgo, planeamiento, ciberseguridad, ciberdefensa, automatización industrial y docencia universitaria.',
+    areas: ['Ciberseguridad', 'Automatización industrial', 'Liderazgo'],
+  },
 ]
 
 
