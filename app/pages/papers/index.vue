@@ -57,7 +57,15 @@
                   >
                     {{ action.label }}
                   </a>
-                  <NuxtLink to="/papers/registro" class="btn-primary rounded-lg px-4 py-2.5 text-center text-sm font-semibold sm:px-6 sm:py-3 sm:text-base">Registrar paper</NuxtLink>
+                  <a
+                    href="https://easychair.org/conferences/?conf=viiiciisic2026"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-primary rounded-lg px-4 py-2.5 text-center text-sm font-semibold sm:px-6 sm:py-3 sm:text-base"
+                  >
+                    Registrar paper
+                    <span class="sr-only"> en EasyChair (se abre en una pestaña nueva)</span>
+                  </a>
                 </div>
                 <p class="text-sm text-primary-300">Haz clic en Registrar paper para enviar tu artículo. Las fechas de evaluación se anunciarán próximamente.</p>
               </div>
