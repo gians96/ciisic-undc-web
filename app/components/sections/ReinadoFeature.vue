@@ -23,7 +23,7 @@
         </div>
         <p class="kicker">Cultura · Identidad · Comunidad</p>
         <h2 id="reinado-landing-title" class="mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          Reinado Sistémico 2026
+          Miss &amp; Míster Sistemas 2026
         </h2>
         <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
           Una celebración que reúne representación, creatividad y espíritu universitario como parte de la semana del VIII CIISIC.
@@ -36,7 +36,7 @@
           </div>
           <div class="info-chip">
             <Icon name="heroicons:clock" class="h-5 w-5 text-primary-400" />
-            <span>15:00–23:00 h</span>
+            <span>Inicio: 15:00 h</span>
           </div>
         </div>
 
