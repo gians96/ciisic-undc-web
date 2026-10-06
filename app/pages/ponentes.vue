@@ -60,17 +60,83 @@
         </article>
       </div>
     </section>
+
+    <section id="ponencias-especializadas" class="specialized-section border-t border-white/10 px-6 py-14 lg:px-8 lg:py-20">
+      <div class="mx-auto max-w-7xl 2xl:max-w-[1600px]">
+        <div class="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Conocimiento desde nuestra comunidad</p>
+            <h2 class="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Ponencias especializadas</h2>
+            <p class="mt-4 max-w-3xl text-base leading-relaxed text-slate-300 sm:text-lg">
+              Investigadores y profesionales compartirán experiencias, herramientas y perspectivas sobre los desafíos actuales de la ingeniería de sistemas.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3 text-sm lg:justify-end">
+            <span class="summary-chip"><Icon name="heroicons:presentation-chart-bar" class="h-5 w-5 text-primary-400" />{{ specializedPresentations.length }} ponencias</span>
+            <span class="summary-chip"><Icon name="heroicons:user-group" class="h-5 w-5 text-primary-400" />{{ specializedSpeakerCount }} especialistas</span>
+          </div>
+        </div>
+
+        <div class="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <article
+            v-for="presentation in specializedPresentations"
+            :key="presentation.id"
+            class="specialized-card group overflow-hidden rounded-3xl border border-white/10"
+          >
+            <div class="specialized-photo relative aspect-[4/5] overflow-hidden bg-[#082d56]">
+              <NuxtImg
+                :src="presentation.image"
+                :alt="`Retrato de ${presentation.speaker}`"
+                width="1122"
+                height="1402"
+                sizes="100vw md:50vw xl:33vw"
+                class="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.025]"
+                loading="lazy"
+              />
+              <div class="photo-shade absolute inset-0" aria-hidden="true" />
+              <span class="absolute left-5 top-5 z-20 rounded-full border border-white/15 bg-[#041d39]/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
+                Ponencia {{ String(presentation.id).padStart(2, '0') }}
+              </span>
+            </div>
+
+            <div class="p-5 sm:p-6">
+              <p class="text-[.68rem] font-bold uppercase tracking-[.18em] text-primary-300">Ponencia especializada</p>
+              <h3 class="mt-2 text-xl font-bold leading-snug text-white sm:text-[1.35rem]">{{ presentation.topic }}</h3>
+              <div class="mt-5 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <Icon name="heroicons:user" class="mt-0.5 h-5 w-5 shrink-0 text-primary-400" />
+                <div>
+                  <p class="text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">Ponente</p>
+                  <p class="mt-1 font-semibold leading-snug text-slate-100">{{ presentation.speaker }}</p>
+                </div>
+              </div>
+
+              <details class="bio-details mt-5 border-t border-white/10 pt-5">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-primary-200">
+                  <span>Ver perfil profesional</span>
+                  <Icon name="heroicons:chevron-down" class="bio-chevron h-5 w-5 shrink-0 transition-transform" />
+                </summary>
+                <p class="mt-4 text-sm leading-7 text-slate-300">{{ presentation.bio }}</p>
+              </details>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { speakers } from '~/data/speakers'
+import { specializedPresentations } from '~/data/specialized-presentations'
+
+const specializedSpeakerCount = new Set(specializedPresentations.map(presentation => presentation.speaker)).size
 
 useSeoMeta({
   title: 'Ponentes | VIII CIISIC 2026',
-  description: 'Conoce a los ponentes nacionales e internacionales invitados al VIII CIISIC 2026 de la Universidad Nacional de Cañete.',
+  description: 'Conoce a los ponentes invitados y las ponencias especializadas del VIII CIISIC 2026 de la Universidad Nacional de Cañete.',
   ogTitle: 'Ponentes | VIII CIISIC 2026',
-  ogDescription: 'Especialistas de Perú, Colombia, Chile y Brasil participarán en el VIII CIISIC 2026.',
+  ogDescription: 'Especialistas nacionales e internacionales compartirán conocimiento en el VIII CIISIC 2026.',
 })
 </script>
 
@@ -81,7 +147,13 @@ useSeoMeta({
 .speaker-card { background: linear-gradient(155deg, #0a3157e6, #062541f2); box-shadow: 0 24px 70px #020f203d; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .speaker-card:hover { transform: translateY(-5px); border-color: #22d3ee66; box-shadow: 0 30px 80px #020f2066; }
 .photo-shade { z-index: 11; pointer-events: none; background: linear-gradient(to top, #041d3966, transparent 32%); }
+.specialized-section { background: radial-gradient(circle at 82% 8%, #087dd829, transparent 34%), linear-gradient(180deg, #041d39, #031a33); }
+.specialized-card { background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.specialized-card:hover { transform: translateY(-4px); border-color: #22d3ee59; box-shadow: 0 26px 68px #020f2052; }
+.specialized-photo img { transform-origin: center 30%; }
+.bio-details[open] .bio-chevron { transform: rotate(180deg); }
+.bio-details summary::-webkit-details-marker { display: none; }
 @media (min-width: 768px) and (max-width: 1279px) { .speaker-card:last-child:nth-child(odd) { width: calc(50% - .75rem); grid-column: 1 / -1; justify-self: center; } }
 @media (min-width: 1280px) { .speaker-card:last-child:nth-child(3n + 1) { grid-column-start: 2; } }
-@media (prefers-reduced-motion: reduce) { .speaker-card, .speaker-photo img { transition: none; }.speaker-card:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .speaker-card, .speaker-photo img, .specialized-card, .specialized-photo img, .bio-chevron { transition: none; }.speaker-card:hover, .specialized-card:hover { transform: none; } }
 </style>

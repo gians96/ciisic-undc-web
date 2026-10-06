@@ -93,6 +93,8 @@
 
     <LandingActivities />
 
+    <ReinadoFeature />
+
     <section
       class="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24 2xl:max-w-[1600px]"
     >
@@ -244,6 +246,7 @@
 <script setup lang="ts">
 import SpeakersCarousel from "./SpeakersCarousel.vue";
 import LandingActivities from "./LandingActivities.vue";
+import ReinadoFeature from "./ReinadoFeature.vue";
 import PreviousCongressCarousel from "./PreviousCongressCarousel.vue";
 import EventCountdown from "../countdown/Countdown.vue";
 
