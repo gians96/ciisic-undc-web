@@ -3,7 +3,7 @@
     <section class="reinado-hero relative overflow-hidden border-b border-white/10">
       <NuxtImg
         src="/images/eventos/reinado.webp"
-        alt="Participantes y organizadores del Reinado Sistémico durante una edición anterior"
+        alt="Ganadores y estudiantes reunidos durante el Reinado Sistémico de la edición anterior"
         width="1920"
         height="1200"
         sizes="100vw"

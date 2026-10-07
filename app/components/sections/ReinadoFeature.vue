@@ -4,7 +4,7 @@
       <figure class="relative min-h-[310px] overflow-hidden sm:min-h-[400px] lg:min-h-[520px]">
         <NuxtImg
           src="/images/eventos/reinado.webp"
-          alt="Participantes y organizadores del Reinado Sistémico durante una edición anterior"
+          alt="Ganadores y estudiantes reunidos durante el Reinado Sistémico de la edición anterior"
           width="1920"
           height="1200"
           sizes="100vw lg:55vw"
