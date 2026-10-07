@@ -36,7 +36,7 @@
               <div class="text-gray-300 text-lg leading-relaxed space-y-4">
                 <p>
 
-                  La conferencia VIII CIISIC invita a la presentación de artículos de investigación originales, redactados en  español o inglés, con una extensión de <strong class="text-white">6 a 8 páginas</strong>,
+                  La conferencia VIII CIISIC invita a la presentación de artículos de investigación originales, redactados en  español o inglés, con una extensión de <strong class="text-white">8 a 10 páginas</strong>,
                   considerando tanto el resumen como las referencias bibliográficas.
                 </p>
                 <p>
@@ -67,7 +67,7 @@
                     <span class="sr-only"> en EasyChair (se abre en una pestaña nueva)</span>
                   </a>
                 </div>
-                <p class="text-sm text-primary-300">Haz clic en Registrar paper para enviar tu artículo. Las fechas de evaluación se anunciarán próximamente.</p>
+                <p class="text-sm text-primary-300">Haz clic en Registrar paper para enviar tu artículo. La recepción de papers es del 05 al 14 de octubre.</p>
               </div>
             </div>
           </div>
@@ -75,8 +75,9 @@
           <!-- Columna de Imagen (6 columnas) -->
           <div class="col-span-12 lg:col-span-6 flex justify-center items-center">
             <div class="w-full lg:w-[75%] h-auto">
+              <!-- Al cambiar el afiche, sube ?v= para que Cloudflare y los navegadores no muestren el anterior -->
               <img
-                src="/images/eventos/papers.webp"
+                src="/images/eventos/papers.webp?v=2026-10-06"
                 alt="Afiche de Call for Papers de la edición 2026"
                 class="w-full h-auto object-cover rounded-xl shadow-2xl"
               >
@@ -217,42 +218,42 @@ const thematicAxes = [
   { title: 'Educación en Ingeniería y Tecnología', icon: 'heroicons:academic-cap', desc: 'Innovación educativa y formación en áreas STEM.' },
 ]
 
-// Línea de tiempo
+// Línea de tiempo (fechas en hora de Lima, UTC-5)
 const timelineEvents = [
   {
-    title: 'Apertura de convocatoria',
-    date: 'Por confirmar',
+    title: 'Apertura',
+    date: '05 de octubre',
     icon: 'heroicons:calendar-days',
-    startDate: '',
-    endDate: ''
+    startDate: '2026-10-05T00:00:00-05:00',
+    endDate: '2026-10-05T23:59:59-05:00'
   },
   {
     title: 'Recepción de papers',
-    date: 'Por confirmar',
+    date: '05 - 14 de octubre',
     icon: 'heroicons:arrow-up-tray',
-    startDate: '',
-    endDate: ''
+    startDate: '2026-10-05T00:00:00-05:00',
+    endDate: '2026-10-14T23:59:59-05:00'
   },
   {
     title: 'Evaluación de papers',
-    date: 'Por confirmar',
+    date: '15 - 20 de octubre',
     icon: 'heroicons:clipboard-document-check',
-    startDate: '',
-    endDate: ''
+    startDate: '2026-10-15T00:00:00-05:00',
+    endDate: '2026-10-20T23:59:59-05:00'
   },
   {
     title: 'Notificación de aceptación',
-    date: 'Por confirmar',
+    date: '21 - 22 de octubre',
     icon: 'heroicons:envelope',
-    startDate: '',
-    endDate: ''
+    startDate: '2026-10-21T00:00:00-05:00',
+    endDate: '2026-10-22T23:59:59-05:00'
   },
   {
     title: 'Presentación de papers',
-    date: 'Por confirmar',
+    date: '27 - 28 de octubre',
     icon: 'heroicons:megaphone',
-    startDate: '',
-    endDate: ''
+    startDate: '2026-10-27T00:00:00-05:00',
+    endDate: '2026-10-28T23:59:59-05:00'
   },
 ]
 
