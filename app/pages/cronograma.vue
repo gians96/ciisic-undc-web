@@ -116,7 +116,7 @@ const schedule: ScheduleDay[] = [
     { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
     { time: '09:00 - 10:30', title: 'HUMAN-AI CO-INTELLIGENCE ARTEFACT FOR STRATEGIC DECISION-MAKING IN ENTERPRISE ARCHITECTURE', detail: 'Dra. María Fernanda Díaz Velásquez', meta: 'Colombia · Presencial', category: 'academic' },
     { time: '10:30 - 11:15', title: 'INTELIGENCIA ARTIFICIAL: UN MUNDO DE OPORTUNIDADES PARA INVESTIGAR, INNOVAR Y TRANSFORMAR', detail: 'Dr. Hugo David Calderón Vilca', meta: 'Perú', category: 'academic' },
-    { time: '11:15 - 12:00', title: 'CIBERSEGURIDAD EN LA ERA DE LA INTELIGENCIA ARTIFICIAL', detail: 'Contralmte. Mg. Enrique Luis Arnáez Braschi', meta: 'Perú', category: 'academic' },
+    { time: '11:15 - 12:00', title: 'BOTS, AGENTES DE IA Y RANSOMWARE EN CIBERSEGURIDAD', detail: 'Contralmte. Mg. Enrique Luis Arnáez Braschi', meta: 'Perú', category: 'academic' },
     { time: '12:00 - 12:20', title: 'Ponencias de Investigación', category: 'academic' },
     { time: '12:20 - 12:45', title: 'Clausura', category: 'institutional' },
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
