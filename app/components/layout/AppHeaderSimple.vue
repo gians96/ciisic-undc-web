@@ -165,7 +165,7 @@ watch(
   () => useRoute().path,
   () => {
     closeMobileMenu();
-  }
+  },
 );
 </script>
 

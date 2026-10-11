@@ -110,7 +110,7 @@
             <div class="w-full lg:w-[75%] h-auto">
               <!-- Al cambiar el afiche, sube ?v= para que Cloudflare y los navegadores no muestren el anterior -->
               <img
-                src="/images/eventos/papers.webp?v=2026-10-06"
+                src="/images/eventos/papers.jpeg?v=2026-10-06"
                 alt="Afiche de Call for Papers de la edición 2026"
                 class="w-full h-auto object-cover rounded-xl shadow-2xl"
               />
