@@ -108,6 +108,7 @@
                     <!-- Selección de Tipo de Inscripción - Cards Simples -->
                     <div class="form-group col-span-6 form-section-below-classification">
                         <label id="tipoInscripcionLabel" class="form-label">Tipo de inscripción</label>
+                        <InscripcionKitModal v-if="availablePlans.length" />
                         <div class="plan-cards-container" role="radiogroup" aria-labelledby="tipoInscripcionLabel">
                             <div v-for="plan in availablePlans" :key="plan.id" role="radio"
                                 :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="`${plan.title}, ${plan.price}`"
