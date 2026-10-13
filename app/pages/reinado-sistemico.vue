@@ -112,7 +112,7 @@
           </p>
 
           <dl class="mt-6 space-y-3 rounded-2xl border border-white/10 bg-[#041d39]/45 p-5 text-sm">
-            <div class="flex items-start justify-between gap-4"><dt class="text-slate-400">Cierre</dt><dd class="text-right font-semibold text-white">12 de octubre de 2026</dd></div>
+            <div class="flex items-start justify-between gap-4"><dt class="text-slate-400">Cierre</dt><dd class="text-right font-semibold text-white">15 de octubre de 2026</dd></div>
             <div class="flex items-start justify-between gap-4"><dt class="text-slate-400">Inscripción</dt><dd class="text-right font-semibold text-white">S/ 50 por participante</dd></div>
             <div class="flex items-start justify-between gap-4"><dt class="text-slate-400">Modalidad</dt><dd class="text-right font-semibold text-white">Registro individual</dd></div>
           </dl>
@@ -163,7 +163,7 @@ const officialFacts = [
   { icon: 'heroicons:user-group', label: 'Representación', value: 'Una pareja —Miss y Míster— por cada ciclo académico.' },
   { icon: 'heroicons:academic-cap', label: 'Quiénes participan', value: 'Estudiantes de Ingeniería de Sistemas matriculados en el semestre 2026-II.' },
   { icon: 'heroicons:clipboard-document-check', label: 'Registro', value: 'La inscripción de cada participante es individual.' },
-  { icon: 'heroicons:calendar-days', label: 'Plazo', value: 'Inscripciones abiertas hasta el lunes 12 de octubre.' },
+  { icon: 'heroicons:calendar-days', label: 'Plazo', value: 'Inscripciones abiertas hasta el lunes 15 de octubre.' },
 ]
 
 const competitionStages = [
