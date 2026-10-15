@@ -131,8 +131,9 @@
             Una semana para pensar el futuro juntos.
           </h2>
           <p class="mt-5 max-w-xl leading-relaxed text-slate-300">
-            El programa detallado y los ponentes se anunciarán próximamente. Por
-            ahora, guarda las fechas y descubre cómo participar.
+            Ponencias magistrales y especializadas, actividades académicas y
+            culturales: conoce a los ponentes, revisa el cronograma y organiza
+            tu semana en el congreso.
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
             <NuxtLink
@@ -145,7 +146,7 @@
             ><NuxtLink
               to="/ponentes"
               class="action-secondary rounded-xl px-5 py-3 font-semibold"
-              >Ponentes
+              >Ponencias
               <Icon name="heroicons:arrow-right" class="ml-1 inline h-4 w-4"
             /></NuxtLink>
           </div>

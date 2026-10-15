@@ -120,6 +120,14 @@
             <p class="text-gray-300 text-sm">
               {{ item.description }}
             </p>
+            <NuxtLink
+              v-if="item.to"
+              :to="item.to"
+              class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline focus-visible:outline-primary"
+            >
+              {{ item.linkLabel }}
+              <Icon name="heroicons:arrow-right" class="h-4 w-4" aria-hidden="true" />
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -130,6 +138,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { speakers } from '~/data/speakers'
+import { specializedTalks } from '~/data/ponencias-especializadas'
 
 // ============================================================================
 // SEO Y META TAGS
@@ -283,22 +293,29 @@ const congressInfo = {
   image: '/images/about/casa-de-la-cultura.png'
 }
 
+// Ponencias magistrales + especializadas (el «+» cubre las ponencias de investigación del jueves).
+const totalPonencias = speakers.length + specializedTalks.length
+
 const stats = [
   { value: '200+', label: 'Asistentes' },
   { value: '3+', label: 'Países representados' },
-  { value: '8+', label: 'Ponencias' }
+  { value: `${totalPonencias}+`, label: 'Ponencias' }
 ]
 
-const teamSections = [
+const teamSections: { icon: string; title: string; description: string; to?: string; linkLabel?: string }[] = [
   {
     icon: 'heroicons:user-group',
     title: 'Ponentes invitados',
-    description: 'Expertos reconocidos a nivel nacional e internacional que compartirán su experiencia, casos reales y tendencias del sector.'
+    description: 'Expertos reconocidos a nivel nacional e internacional que compartirán su experiencia, casos reales y tendencias del sector.',
+    to: '/ponentes',
+    linkLabel: 'Conoce a los ponentes invitados'
   },
   {
     icon: 'heroicons:academic-cap',
     title: 'Ponentes especializados',
-    description: 'Profesionales y académicos con trayectoria en áreas específicas que profundizan en metodologías, herramientas y buenas prácticas.'
+    description: 'Profesionales y académicos con trayectoria en áreas específicas que profundizan en metodologías, herramientas y buenas prácticas.',
+    to: '/ponencias-especializadas',
+    linkLabel: 'Ver ponencias especializadas'
   },
   {
     icon: 'heroicons:light-bulb',

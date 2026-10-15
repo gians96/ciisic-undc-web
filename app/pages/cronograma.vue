@@ -47,6 +47,9 @@
                   <h2 class="event-title">{{ event.title }}</h2>
                   <div v-if="event.detail" class="event-speaker"><Icon name="heroicons:microphone" class="h-4 w-4 text-primary-400" /><span>{{ event.detail }}</span></div>
                   <p v-if="event.meta" class="event-description">{{ event.meta }}</p>
+                  <NuxtLink v-if="event.href" :to="event.href" class="event-link" :aria-label="`Ver ponentes y temas: ${event.title}`">
+                    Ver ponentes y temas<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
+                  </NuxtLink>
                 </article>
               </div>
             </div>
@@ -63,6 +66,9 @@
                   <h3 class="calendar-event-title">{{ event.title }}</h3>
                   <p v-if="event.detail" class="calendar-event-speaker">{{ event.detail }}</p>
                   <p v-if="event.meta" class="calendar-event-type">{{ event.meta }}</p>
+                  <NuxtLink v-if="event.href" :to="event.href" class="event-link event-link-sm" :aria-label="`Ver ponentes y temas: ${event.title}, ${day.short} ${day.dayNumber}`">
+                    Ver ponentes y temas<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
+                  </NuxtLink>
                 </article>
               </div>
             </article>
@@ -74,9 +80,8 @@
 </template>
 
 <script setup lang="ts">
-type EventCategory = 'academic' | 'institutional' | 'cultural'
-interface ScheduleEvent { time: string; title: string; detail?: string; meta?: string; category: EventCategory }
-interface ScheduleDay { short: string; dayNumber: string; date: string; events: ScheduleEvent[] }
+import { schedule } from '~/data/cronograma'
+import type { EventCategory } from '~/data/cronograma'
 
 const heroRef = ref<HTMLElement>()
 const selectedDay = ref(0)
@@ -86,48 +91,6 @@ const effectiveViewMode = computed(() => isMobile.value ? 'timeline' : viewMode.
 let mobileQuery: MediaQueryList | undefined
 const updateViewport = () => { isMobile.value = mobileQuery?.matches ?? false }
 const categoryLabel: Record<EventCategory, string> = { academic: 'Ponencia', institutional: 'Institucional', cultural: 'Actividades' }
-
-const schedule: ScheduleDay[] = [
-  { short: 'Lunes', dayNumber: '26', date: '26/10', events: [
-    { time: '08:00 - 09:00', title: 'Recepción de delegaciones', category: 'institutional' },
-    { time: '09:00 - 10:30', title: 'Actividades de integración y socioculturales', category: 'cultural' },
-    { time: '15:00 - 20:00', title: 'Comparsa Sistémica', category: 'cultural' },
-  ] },
-  { short: 'Martes', dayNumber: '27', date: '27/10', events: [
-    { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
-    { time: '09:00 - 10:30', title: '¿QUIÉN ESTÁ PREPARADO PARA USAR IA GENERATIVA EN SALUD? CÓMO MEDIR Y PREDECIR SU ADOPCIÓN CON AYUDA PROPIA DE LA IA', detail: 'Ponente internacional Ph.D. Patricio Ramírez Correa', meta: 'Chile · Presencial', category: 'institutional' },
-    { time: '10:30 - 11:15', title: 'CIBERSEGURIDAD 2030: AMENAZAS EMERGENTES, INTELIGENCIA ARTIFICIAL Y EL FUTURO DE LA PROTECCIÓN DIGITAL', detail: 'M.Sc. Daniel Alejandro Yucra Sotomayor', meta: 'Perú', category: 'academic' },
-    { time: '11:15 - 12:00', title: 'GRAPH MACHINE LEARNING: APLICACIONES', detail: 'Dr. César Armando Beltrán Castañón', meta: 'Perú', category: 'academic' },
-    { time: '12:00 - 12:45', title: 'Ponencias Especializadas', category: 'academic' },
-    { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '15:00 - 18:00', title: 'E-Sports / Concurso de Programación / Elevator Pitch', category: 'cultural' },
-    { time: '18:00 - 20:00', title: 'Encuentro de Egresados', category: 'cultural' },
-  ] },
-  { short: 'Miércoles', dayNumber: '28', date: '28/10', events: [
-    { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
-    { time: '09:00 - 10:00', title: 'IMAGE CAPTIONING CON VISION TRANSFORMERS E IA MULTIMODAL', detail: 'Dr. Abraham Gamarra Moreno', meta: 'Perú', category: 'academic' },
-    { time: '10:00 - 10:50', title: 'INGENIERÍA DE SOFTWARE INTELIGENTE: ARQUITECTURAS, AUTOMATIZACIÓN Y NUEVOS DESAFÍOS EN LA ERA DE LA INTELIGENCIA ARTIFICIAL', detail: 'Dr. Jorge Risco Becerra', meta: 'Brasil · Virtual', category: 'academic' },
-    { time: '10:50 - 11:40', title: 'DEL PDF AL KNOWLEDGE GRAPH DE CONTRIBUCIONES: UN PIPELINE HÍBRIDO, TRAZABLE Y AUDITABLE CON DOCKER, GROBID Y LLM', detail: 'Dr. Javier Gamboa Cruzado', meta: 'Perú', category: 'academic' },
-    { time: '11:40 - 12:00', title: 'NASA Space Apps', category: 'academic' },
-    { time: '12:00 - 12:45', title: 'Ponencias Especializadas', category: 'academic' },
-    { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '15:00 - 23:00', title: 'Reinado', category: 'cultural' },
-  ] },
-  { short: 'Jueves', dayNumber: '29', date: '29/10', events: [
-    { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
-    { time: '09:00 - 10:30', title: 'HUMAN-AI CO-INTELLIGENCE ARTEFACT FOR STRATEGIC DECISION-MAKING IN ENTERPRISE ARCHITECTURE', detail: 'Dra. María Fernanda Díaz Velásquez', meta: 'Colombia · Presencial', category: 'academic' },
-    { time: '10:30 - 11:15', title: 'INTELIGENCIA ARTIFICIAL: UN MUNDO DE OPORTUNIDADES PARA INVESTIGAR, INNOVAR Y TRANSFORMAR', detail: 'Dr. Hugo David Calderón Vilca', meta: 'Perú', category: 'academic' },
-    { time: '11:15 - 12:00', title: 'BOTS, AGENTES DE IA Y RANSOMWARE EN CIBERSEGURIDAD', detail: 'Contralmte. Mg. Enrique Luis Arnáez Braschi', meta: 'Perú', category: 'academic' },
-    { time: '12:00 - 12:20', title: 'Ponencias de Investigación', category: 'academic' },
-    { time: '12:20 - 12:45', title: 'Clausura', category: 'institutional' },
-    { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '14:00 - 18:00', title: 'E-Sports / Hackathon', category: 'cultural' },
-  ] },
-  { short: 'Viernes', dayNumber: '30', date: '30/10', events: [
-    { time: '09:00 - 12:00', title: 'Actividades Culturales y Deportivas', category: 'cultural' },
-    { time: '12:00 - 12:45', title: 'Break', category: 'cultural' },
-  ] },
-]
 
 const currentDay = computed(() => schedule[selectedDay.value]!)
 
@@ -171,6 +134,12 @@ useSeoMeta({ title: 'Cronograma | VIII CIISIC 2026', description: 'Agenda del VI
 .event-title { margin-bottom: .35rem; color: white; font-size: 1.125rem; font-weight: 600; line-height: 1.375; }
 .event-speaker { display: flex; align-items: center; gap: .5rem; color: #d1d5db; font-size: .9rem; font-weight: 500; }
 .event-description { margin-top: .35rem; color: #9ca3af; font-size: .875rem; }
+.event-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .85rem; border-radius: .375rem; color: #67e8f9; font-size: .875rem; font-weight: 600; text-decoration: underline; text-decoration-color: #67e8f966; text-underline-offset: 4px; transition: color .2s ease, text-decoration-color .2s ease; }
+.event-link:hover { color: #a5f3fc; text-decoration-color: currentColor; }
+.event-link:focus-visible { outline: 2px solid #00d9e8; outline-offset: 3px; }
+.event-link-icon { transition: transform .2s ease; }
+.event-link:hover .event-link-icon { transform: translateX(3px); }
+.event-link-sm { margin-top: .6rem; font-size: .75rem; }
 .calendar-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 1rem; }
 .calendar-day-card { overflow: hidden; border: 1px solid #47556980; border-radius: .75rem; background: #1e29334d; }
 .calendar-day-header { border-bottom: 1px solid #47556980; background: #00d9e81a; padding: 1rem; }
@@ -182,5 +151,5 @@ useSeoMeta({ title: 'Cronograma | VIII CIISIC 2026', description: 'Agenda del VI
 .fade-enter-active,.fade-leave-active { transition: all .3s ease; }.fade-enter-from { opacity: 0; transform: translateY(20px); }.fade-leave-to { opacity: 0; transform: translateY(-20px); }
 @keyframes fade-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
 @media (max-width: 767px) { .timeline-item-full { gap: 1rem; }.timeline-marker { min-width: 20px; }.timeline-dot { height: 1.25rem; width: 1.25rem; }.event-card-full { padding: 1rem; }.event-header { flex-direction: column; align-items: flex-start; }.calendar-grid { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .fade-in-element,.timeline-item-full { opacity: 1; transform: none; transition: none; animation: none; }.pulse-bg::before { animation: none; }.day-nav-btn-hero:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-in-element,.timeline-item-full { opacity: 1; transform: none; transition: none; animation: none; }.pulse-bg::before { animation: none; }.day-nav-btn-hero:hover { transform: none; }.event-link,.event-link-icon { transition: none; }.event-link:hover .event-link-icon { transform: none; } }
 </style>

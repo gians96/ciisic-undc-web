@@ -85,6 +85,11 @@
           <div class="flex flex-col p-6 sm:p-7">
             <p class="text-xs font-bold uppercase tracking-[.18em] text-primary-300">{{ speaker.degreeLevel }}</p>
             <h3 class="mt-2 text-2xl font-bold leading-tight text-white">{{ speaker.name }}</h3>
+            <p v-if="sesionDe(speaker.name)" class="session-chip mt-4">
+              <span class="sr-only">Ponencia: </span>
+              <span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 shrink-0 text-primary-300" aria-hidden="true" />{{ sesionDe(speaker.name)?.dia }}</span>
+              <span class="inline-flex items-center gap-2"><Icon name="heroicons:clock" class="h-5 w-5 shrink-0 text-primary-300" aria-hidden="true" />{{ sesionDe(speaker.name)?.hora }}</span>
+            </p>
             <div class="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[.035] p-4">
               <Icon name="heroicons:academic-cap" class="mt-0.5 h-5 w-5 shrink-0 text-primary-400" />
               <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Grado académico más alto</p><p class="mt-1 font-semibold leading-snug text-slate-100">{{ speaker.degree }}</p></div>
@@ -101,7 +106,13 @@
 </template>
 
 <script setup lang="ts">
+import { schedule } from '~/data/cronograma'
 import { speakers } from '~/data/speakers'
+import { sesionesDePonentes } from '~/utils/cronograma'
+
+// Día y hora de cada ponente: salen del cronograma, que es la única fuente.
+const sesiones = sesionesDePonentes(schedule)
+const sesionDe = (nombre: string) => sesiones.get(nombre)
 
 useSeoMeta({
   title: 'Ponencias del Congreso | VIII CIISIC 2026',
@@ -121,6 +132,7 @@ useSeoMeta({
 .when-link { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid #22d3ee47; border-radius: 9999px; background: #00d9e80f; padding: .6rem 1rem; color: #a5f3fc; transition: background-color .25s ease, border-color .25s ease; }
 .when-link:hover { border-color: #22d3ee99; background: #00d9e826; }
 .when-link:focus-visible { outline: 2px solid #00d9e8; outline-offset: 2px; }
+.session-chip { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.25rem; border: 1px solid #00d9e83d; border-radius: .75rem; background: #00d9e812; padding: .6rem .85rem; color: #a5f3fc; font-size: .875rem; font-weight: 600; }
 .speaker-card { background: linear-gradient(155deg, #0a3157e6, #062541f2); box-shadow: 0 24px 70px #020f203d; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .speaker-card:hover { transform: translateY(-5px); border-color: #22d3ee66; box-shadow: 0 30px 80px #020f2066; }
 .photo-shade { z-index: 11; pointer-events: none; background: linear-gradient(to top, #041d3966, transparent 32%); }
