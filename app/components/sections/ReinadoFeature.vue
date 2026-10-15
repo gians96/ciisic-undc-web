@@ -40,7 +40,7 @@
           </div>
         </div>
 
-        <NuxtLink to="/reinado-sistemico" class="details-link mt-8 inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold">
+        <NuxtLink to="/semana-sistemica/reinado" class="details-link mt-8 inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold">
           Ver detalles
           <Icon name="heroicons:arrow-right" class="h-5 w-5" />
         </NuxtLink>

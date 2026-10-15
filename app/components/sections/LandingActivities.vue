@@ -18,10 +18,10 @@
         <h2 id="comparsa-title" class="mt-3 max-w-lg text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">Comparsa Sistémica</h2>
         <p class="mt-4 max-w-lg leading-relaxed text-slate-300">El congreso también se vive en las calles. Súmate a una celebración que reúne a estudiantes, docentes y visitantes en Cañete.</p>
         <div class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-200">
-          <Icon name="heroicons:calendar-days" class="h-5 w-5" /> Lunes 26 de octubre · 15:00 a 20:00
+          <Icon name="heroicons:calendar-days" class="h-5 w-5" /> {{ etiquetaDia(comparsa.fecha) }} · {{ comparsa.horaTexto.toLowerCase() }}
         </div>
-        <NuxtLink to="/cronograma" class="activity-link mt-8 inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold">
-          Ver en el cronograma <Icon name="heroicons:arrow-right" class="h-5 w-5" />
+        <NuxtLink :to="comparsa.ruta" class="activity-link mt-8 inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold">
+          Ver detalles <Icon name="heroicons:arrow-right" class="h-5 w-5" />
         </NuxtLink>
       </div>
     </div>
@@ -59,6 +59,11 @@
 </template>
 
 <script setup lang="ts">
+import { actividadPorSlug } from '~/data/semana-sistemica'
+import { etiquetaDia } from '~/utils/ponencias-especializadas'
+
+const comparsa = actividadPorSlug('comparsa')
+
 const academicEvents = [
   {
     title: 'eSports',
