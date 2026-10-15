@@ -34,7 +34,10 @@
             ><NuxtLink to="/cronograma">Cronograma</NuxtLink
             ><NuxtLink to="/ponentes">Ponencias · Congreso</NuxtLink
             ><NuxtLink to="/ponencias-especializadas">Ponencias especializadas</NuxtLink
-            ><NuxtLink to="/sede">Sede</NuxtLink>
+            ><NuxtLink to="/sede">Sede</NuxtLink
+            ><NuxtLink v-for="item in SEMANA_SISTEMICA_MENU" :key="item.id" :to="item.href"
+              >Semana Sistémica · {{ item.label }}</NuxtLink
+            >
           </nav>
         </div>
         <div>
@@ -86,6 +89,10 @@
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+import { SEMANA_SISTEMICA_MENU } from '~/data/semana-sistemica'
+</script>
 
 <style scoped>
 .footer {

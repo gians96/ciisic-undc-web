@@ -139,6 +139,8 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useNavigationStore } from '~/stores/navigation'
 import { useLayoutStore } from '~/stores/layout'
+import { RUTA_SEMANA_SISTEMICA, SEMANA_SISTEMICA_MENU } from '~/data/semana-sistemica'
+import { rutaEnGrupo } from '~/utils/semana-sistemica'
 
 // ============================================================================
 // STORES
@@ -210,6 +212,14 @@ const mainNavigation = ref<MobileNavItem[]>([
     isActive: false
   },
   {
+    id: 'semana-sistemica',
+    label: 'Semana Sistémica',
+    href: RUTA_SEMANA_SISTEMICA,
+    icon: 'heroicons:calendar-days',
+    isActive: false,
+    children: SEMANA_SISTEMICA_MENU.map(item => ({ ...item }))
+  },
+  {
     id: 'contacto',
     label: 'Contacto',
     href: '/contacto',
@@ -251,7 +261,7 @@ const alternarSubmenu = (id: string) => {
 }
 
 // El grupo se marca como activo cuando la ruta actual es una de sus páginas hijas.
-const grupoActivo = (item: MobileNavItem) => !!item.children?.some((hijo) => hijo.href === route.path)
+const grupoActivo = (item: MobileNavItem) => !!item.children?.some((hijo) => rutaEnGrupo(route.path, [hijo.href]))
 
 // ============================================================================
 // KEYBOARD NAVIGATION

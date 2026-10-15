@@ -9,63 +9,31 @@
         <div class="flex items-center justify-between h-20">
           <!-- Logo -->
           <div class="flex items-center">
-            <NuxtLink to="/" class="flex items-center space-x-3">
+            <NuxtLink to="/" class="flex shrink-0 items-center space-x-3">
               <NuxtImg
                 src="images/logo/preloader.png"
                 alt="Logo CIISIC"
                 class="w-10 h-10 object-contain"
               />
-              <span class="text-white font-bold text-xl tracking-wide sm:text-2xl">VIII CIISIC<span class="ml-2 text-sm font-semibold text-primary-300">2026</span></span>
+              <!-- Entre 1024 y 1149 px el menú de escritorio (7 items) no deja sitio para el año. -->
+              <span class="whitespace-nowrap text-white font-bold text-xl tracking-wide sm:text-2xl">VIII CIISIC<span class="ml-2 text-sm font-semibold text-primary-300 lg:max-[1149px]:hidden">2026</span></span>
             </NuxtLink>
           </div>
 
           <!-- Navegación Principal (Desktop) -->
-          <nav class="hidden lg:flex items-center gap-3 xl:gap-6" aria-label="Navegación principal">
+          <nav class="hidden lg:flex items-center gap-2 xl:gap-6" aria-label="Navegación principal">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
             <NuxtLink to="/about" class="nav-link">Congreso</NuxtLink>
             <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
             <NuxtLink to="/papers" class="nav-link">Call for Papers</NuxtLink>
-            <div ref="ponenciasRef" class="relative" @focusout="alSalirFoco">
-              <button
-                type="button"
-                class="nav-link inline-flex items-center gap-1"
-                :class="{ 'is-active': ponenciasActivo }"
-                aria-haspopup="true"
-                aria-controls="menu-ponencias"
-                :aria-expanded="menuPonencias"
-                @click="alternarMenu"
-              >
-                Ponencias
-                <Icon
-                  name="heroicons:chevron-down"
-                  class="h-4 w-4 transition-transform duration-200"
-                  :class="{ 'rotate-180': menuPonencias }"
-                  aria-hidden="true"
-                />
-              </button>
-              <Transition name="dropdown">
-                <div v-show="menuPonencias" class="absolute left-0 top-full z-50 pt-3">
-                  <ul
-                    id="menu-ponencias"
-                    class="w-72 rounded-xl border border-white/10 bg-[#041d39]/95 p-2 shadow-xl shadow-black/40 backdrop-blur-xl"
-                  >
-                    <li>
-                      <NuxtLink to="/ponentes" class="submenu-link" @click="cerrarMenu()">
-                        <Icon name="heroicons:user-group" class="h-5 w-5 shrink-0 text-primary-400" aria-hidden="true" />
-                        Congreso
-                      </NuxtLink>
-                    </li>
-                    <li>
-                      <NuxtLink to="/ponencias-especializadas" class="submenu-link" @click="cerrarMenu()">
-                        <Icon name="heroicons:presentation-chart-bar" class="h-5 w-5 shrink-0 text-primary-400" aria-hidden="true" />
-                        Ponencias especializadas
-                      </NuxtLink>
-                    </li>
-                  </ul>
-                </div>
-              </Transition>
-            </div>
+            <LayoutNavDropdown id="ponencias" etiqueta="Ponencias" :items="MENU_PONENCIAS" :activo="ponenciasActivo" />
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
+            <LayoutNavDropdown
+              id="semana-sistemica"
+              etiqueta="Semana Sistémica"
+              :items="SEMANA_SISTEMICA_MENU"
+              :activo="semanaSistemicaActivo"
+            />
           </nav>
 
           <div class="flex items-center space-x-4">
@@ -81,7 +49,7 @@
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-flex items-center justify-center rounded-xl bg-primary-500 px-5 py-3 text-sm font-bold text-[#032f5f] transition hover:-translate-y-0.5 hover:bg-primary-300"
+              class="hidden lg:inline-flex items-center justify-center rounded-xl bg-primary-500 px-4 py-3 text-sm font-bold text-[#032f5f] transition hover:-translate-y-0.5 hover:bg-primary-300 xl:px-5"
             >
               INSCRIPCIONES
             </NuxtLink>
@@ -110,6 +78,8 @@
 import { useLayoutStore } from "~/stores/layout";
 import { useNavigationStore } from "~/stores/navigation";
 import MobileMenuOverlay from "~/components/layout/MobileMenuOverlay.vue";
+import { RUTA_SEMANA_SISTEMICA, SEMANA_SISTEMICA_MENU } from "~/data/semana-sistemica";
+import { rutaEnGrupo } from "~/utils/semana-sistemica";
 
 // ============================================================================
 // STORES
@@ -151,42 +121,18 @@ watch(
 );
 
 // ============================================================================
-// MENÚ DESPLEGABLE «PONENCIAS» (ESCRITORIO)
+// MENÚS DESPLEGABLES (ESCRITORIO)
 // ============================================================================
 
 const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas"];
 
-const menuPonencias = ref(false);
-const ponenciasRef = ref<HTMLElement | null>(null);
+const MENU_PONENCIAS = [
+  { label: "Congreso", href: "/ponentes", icon: "heroicons:user-group" },
+  { label: "Ponencias especializadas", href: "/ponencias-especializadas", icon: "heroicons:presentation-chart-bar" },
+];
 
-const ponenciasActivo = computed(() =>
-  RUTAS_PONENCIAS.some((ruta) => route.path === ruta || route.path.startsWith(`${ruta}/`)),
-);
-
-const cerrarMenu = (devolverFoco = false) => {
-  menuPonencias.value = false;
-  if (devolverFoco) ponenciasRef.value?.querySelector("button")?.focus();
-};
-
-// Se abre y se cierra con clic o con el teclado (Enter/Espacio); Esc, clic fuera o
-// salir del menú con el foco también lo cierran.
-const alternarMenu = () => {
-  menuPonencias.value = !menuPonencias.value;
-};
-
-const alSalirFoco = (event: FocusEvent) => {
-  if (!ponenciasRef.value?.contains(event.relatedTarget as Node | null)) menuPonencias.value = false;
-};
-
-const alHacerClicFuera = (event: MouseEvent) => {
-  if (menuPonencias.value && !ponenciasRef.value?.contains(event.target as Node)) cerrarMenu();
-};
-
-const alPulsarTecla = (event: KeyboardEvent) => {
-  if (event.key === "Escape" && menuPonencias.value) cerrarMenu(true);
-};
-
-watch(() => route.path, () => cerrarMenu());
+const ponenciasActivo = computed(() => rutaEnGrupo(route.path, RUTAS_PONENCIAS));
+const semanaSistemicaActivo = computed(() => rutaEnGrupo(route.path, [RUTA_SEMANA_SISTEMICA]));
 
 // ============================================================================
 // LIFECYCLE HOOKS
@@ -197,13 +143,6 @@ onMounted(() => {
   if (typeof window !== "undefined") {
     document.documentElement.style.scrollBehavior = "smooth";
   }
-  document.addEventListener("click", alHacerClicFuera);
-  document.addEventListener("keydown", alPulsarTecla);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", alHacerClicFuera);
-  document.removeEventListener("keydown", alPulsarTecla);
 });
 
 // ============================================================================
@@ -236,9 +175,16 @@ useHead({
   color: #cbd5e1;
   font-weight: 600;
   letter-spacing: 0.01em;
-  font-size: 0.875rem;
+  /* Un poco más compacto bajo 1280 px: con 7 items el menú no cabe a 1024 px. */
+  font-size: 0.8125rem;
   transition: all 0.3s ease;
   position: relative;
+}
+
+@media (min-width: 1280px) {
+  .nav-link {
+    font-size: 0.875rem;
+  }
 }
 
 .nav-link:hover {
@@ -262,13 +208,8 @@ useHead({
 }
 
 .nav-link:hover::after,
-.nav-link.router-link-exact-active::after,
-.nav-link.is-active::after {
+.nav-link.router-link-exact-active::after {
   width: 100%;
-}
-
-.nav-link.is-active {
-  color: #00d9e8;
 }
 
 .nav-link:focus-visible {
@@ -277,49 +218,7 @@ useHead({
   border-radius: 0.25rem;
 }
 
-/* Submenú «Ponencias» */
-.submenu-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border-radius: 0.5rem;
-  padding: 0.65rem 0.75rem;
-  color: #cbd5e1;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.submenu-link:hover,
-.submenu-link:focus-visible {
-  background-color: rgb(255 255 255 / 0.07);
-  color: #00d9e8;
-  outline: none;
-}
-
-.submenu-link.router-link-exact-active {
-  background-color: rgb(0 217 232 / 0.1);
-  color: #00d9e8;
-}
-
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dropdown-enter-active,
-  .dropdown-leave-active,
-  .submenu-link {
-    transition: none;
-  }
-}
+/* Los desplegables («Ponencias», «Semana Sistémica») llevan sus estilos en LayoutNavDropdown. */
 
 .skip-link {
   position: fixed;
