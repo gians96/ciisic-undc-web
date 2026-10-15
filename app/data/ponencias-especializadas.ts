@@ -34,7 +34,7 @@ export const specializedSpeakers: SpecializedSpeaker[] = [
   },
   {
     id: 'mario-ormachea',
-    name: 'Ing. Mario Jesús Ormachea Mejía',
+    name: 'M.Sc. Mario Jesús Ormachea Mejía',
     image: `${FOTOS}/mario-ormachea.webp`,
     external: true,
     bio: 'Ingeniero de Sistemas con Maestría en Gestión de TIC por la Universidad Nacional de Huancavelica y estudios de Doctorado en Ciencias de la Educación (UAC). Posee más de dos décadas de experiencia liderando proyectos de conectividad, infraestructura de redes, servidores y soluciones TIC. Actualmente es docente en la Universidad Nacional Amazónica de Madre de Dios, directivo empresarial, investigador con publicaciones científicas indexadas y ponente en congresos internacionales de computación e innovación tecnológica.',
