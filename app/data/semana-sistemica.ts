@@ -8,6 +8,9 @@ export type ActividadSlug = 'comparsa' | 'reinado' | 'deportes'
 export interface ImagenActividad {
   src: string
   alt: string
+  /** Tamaño real en píxeles: reserva el espacio y evita saltos de diseño al cargar. */
+  ancho: number
+  alto: number
 }
 
 export interface FilaDato {
@@ -55,6 +58,8 @@ export const RUTA_SEMANA_SISTEMICA = '/semana-sistemica'
 
 const IMAGENES = '/images/semana-sistemica'
 
+const imagen = (src: string, ancho: number, alto: number, alt: string): ImagenActividad => ({ src, ancho, alto, alt })
+
 /** En orden cronológico: lunes 26, miércoles 28 y viernes 30 de octubre de 2026. */
 export const actividades: readonly ActividadSemanaSistemica[] = [
   {
@@ -68,19 +73,13 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
     horaTexto: 'Concentración 2:30 p. m.',
     lugar: 'Casa de la Cultura → Plaza de Armas, San Vicente de Cañete',
     acento: '#fbbf24',
-    portada: {
-      src: `${IMAGENES}/comparsa-01.webp`,
-      alt: 'Estudiantes y mascotas bailando en la plaza durante la comparsa sistémica de la edición anterior',
-    },
+    portada: imagen(`${IMAGENES}/comparsa-01.webp`, 1920, 1078, 'Estudiantes y mascotas bailando en la plaza durante la comparsa sistémica de la edición anterior'),
     galeria: [
-      { src: `${IMAGENES}/comparsa-02.webp`, alt: 'Delegación con disfraces de cartón y arco de globos en la comparsa de la edición anterior' },
-      { src: `${IMAGENES}/comparsa-03.webp`, alt: 'Estudiantes con máscaras y un dragón azul en la comparsa de la edición anterior' },
-      { src: `${IMAGENES}/comparsa-04.webp`, alt: 'Foto de grupo de una delegación con polos blanco y morado en la comparsa de la edición anterior' },
+      imagen(`${IMAGENES}/comparsa-02.webp`, 1600, 898, 'Delegación con disfraces de cartón y arco de globos en la comparsa de la edición anterior'),
+      imagen(`${IMAGENES}/comparsa-03.webp`, 1600, 898, 'Estudiantes con máscaras y un dragón azul en la comparsa de la edición anterior'),
+      imagen(`${IMAGENES}/comparsa-04.webp`, 1600, 898, 'Foto de grupo de una delegación con polos blanco y morado en la comparsa de la edición anterior'),
     ],
-    afiche: {
-      src: `${IMAGENES}/flyer-comparsa.webp`,
-      alt: 'Afiche oficial de la Comparsa Sistémica: lunes 26 de octubre, de la Casa de la Cultura a la Plaza de Armas',
-    },
+    afiche: imagen(`${IMAGENES}/flyer-comparsa.webp`, 1080, 1440, 'Afiche oficial de la Comparsa Sistémica: lunes 26 de octubre, de la Casa de la Cultura a la Plaza de Armas'),
     inscripcion: {
       url: 'https://forms.gle/CtvPThWie2uBRA9NA',
       texto: 'Inscribir a mi delegación',
@@ -111,19 +110,13 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
     horaTexto: '3:00 p. m.',
     lugar: 'Auditorio de la Casa de la Cultura, San Vicente de Cañete',
     acento: '#e879f9',
-    portada: {
-      src: '/images/eventos/reinado.webp',
-      alt: 'Ganadores y estudiantes reunidos durante el Reinado Sistémico de la edición anterior',
-    },
+    portada: imagen('/images/eventos/reinado.webp', 2400, 1347, 'Ganadores y estudiantes reunidos durante el Reinado Sistémico de la edición anterior'),
     galeria: [
-      { src: `${IMAGENES}/reinado-01.webp`, alt: 'Mister y Miss Sistemas de la edición anterior con sus bandas y ramos de flores' },
-      { src: `${IMAGENES}/reinado-02.webp`, alt: 'Candidatas y candidatos del reinado de la edición anterior con ramos de flores' },
-      { src: `${IMAGENES}/reinado-03.webp`, alt: 'Candidatas y candidatos en el escenario del reinado de la edición anterior' },
+      imagen(`${IMAGENES}/reinado-01.webp`, 1600, 1067, 'Mister y Miss Sistemas de la edición anterior con sus bandas y ramos de flores'),
+      imagen(`${IMAGENES}/reinado-02.webp`, 1600, 1067, 'Candidatas y candidatos del reinado de la edición anterior con ramos de flores'),
+      imagen(`${IMAGENES}/reinado-03.webp`, 1600, 1067, 'Candidatas y candidatos en el escenario del reinado de la edición anterior'),
     ],
-    afiche: {
-      src: `${IMAGENES}/flyer-reinado.webp`,
-      alt: 'Afiche oficial de Miss & Mister Sistemas 2026: miércoles 28 de octubre, 3:00 p. m., Auditorio de la Casa de la Cultura',
-    },
+    afiche: imagen(`${IMAGENES}/flyer-reinado.webp`, 1080, 1440, 'Afiche oficial de Miss & Mister Sistemas 2026: miércoles 28 de octubre, 3:00 p. m., Auditorio de la Casa de la Cultura'),
     inscripcion: {
       url: 'https://forms.gle/iS2ab99EJiPBPrEA8',
       texto: 'Inscribirme ahora',
@@ -154,15 +147,9 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
     horaTexto: '8:00 a. m. a 8:00 p. m.',
     lugar: 'Campus UNDC, canchas deportivas',
     acento: '#a3e635',
-    portada: {
-      src: `${IMAGENES}/deportes-01.webp`,
-      alt: 'Estudiantes jugando vóley en las canchas del campus de la UNDC',
-    },
+    portada: imagen(`${IMAGENES}/deportes-01.webp`, 1600, 1322, 'Estudiantes jugando vóley en las canchas del campus de la UNDC'),
     galeria: [],
-    afiche: {
-      src: `${IMAGENES}/flyer-deportes.webp`,
-      alt: 'Afiche oficial del torneo deportivo de la Semana Sistémica: 30 de octubre de 2026 en el campus universitario',
-    },
+    afiche: imagen(`${IMAGENES}/flyer-deportes.webp`, 1080, 1365, 'Afiche oficial del torneo deportivo de la Semana Sistémica: 30 de octubre de 2026 en el campus universitario'),
     inscripcion: {
       url: 'https://deportes.episundc.pe/eventos/2',
       texto: 'Inscribir a mi equipo',
