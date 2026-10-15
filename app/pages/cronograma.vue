@@ -109,7 +109,7 @@ const schedule: ScheduleDay[] = [
     { time: '10:00 - 10:50', title: 'INGENIERÍA DE SOFTWARE INTELIGENTE: ARQUITECTURAS, AUTOMATIZACIÓN Y NUEVOS DESAFÍOS EN LA ERA DE LA INTELIGENCIA ARTIFICIAL', detail: 'Dr. Jorge Risco Becerra', meta: 'Brasil · Virtual', category: 'academic' },
     { time: '10:50 - 11:40', title: 'DEL PDF AL KNOWLEDGE GRAPH DE CONTRIBUCIONES: UN PIPELINE HÍBRIDO, TRAZABLE Y AUDITABLE CON DOCKER, GROBID Y LLM', detail: 'Dr. Javier Gamboa Cruzado', meta: 'Perú', category: 'academic' },
     { time: '11:40 - 12:00', title: 'NASA Space Apps', category: 'academic' },
-    { time: '12:00 - 13:00', title: 'Ponencias Especializadas', category: 'academic' },
+    { time: '12:00 - 12:45', title: 'Ponencias Especializadas', category: 'academic' },
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
     { time: '15:00 - 23:00', title: 'Reinado', category: 'cultural' },
   ] },

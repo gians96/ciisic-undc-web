@@ -32,7 +32,8 @@
           <nav class="mt-5 flex flex-col gap-3" aria-label="Explora">
             <NuxtLink to="/about">El congreso</NuxtLink
             ><NuxtLink to="/cronograma">Cronograma</NuxtLink
-            ><NuxtLink to="/ponentes">Ponentes</NuxtLink
+            ><NuxtLink to="/ponentes">Ponencias · Congreso</NuxtLink
+            ><NuxtLink to="/ponencias-especializadas">Ponencias especializadas</NuxtLink
             ><NuxtLink to="/sede">Sede</NuxtLink>
           </nav>
         </div>

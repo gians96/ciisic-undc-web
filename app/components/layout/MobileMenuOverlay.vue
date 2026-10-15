@@ -60,16 +60,52 @@
               <ul class="space-y-2">
                 <!-- Navigation Items -->
                 <li v-for="item in mainNavigation" :key="item.id">
+                  <!-- Ítem con submenú (acordeón) -->
+                  <template v-if="item.children?.length">
+                    <button
+                      type="button"
+                      class="mobile-nav-link"
+                      :class="{ 'active': grupoActivo(item) }"
+                      :aria-expanded="submenuAbierto(item.id)"
+                      :aria-controls="`submenu-${item.id}`"
+                      @click="alternarSubmenu(item.id)"
+                    >
+                      <Icon
+                        v-if="item.icon"
+                        :name="item.icon"
+                        class="h-5 w-5 mr-3 text-primary"
+                      />
+                      <span class="flex-1 text-left">{{ item.label }}</span>
+                      <Icon
+                        name="heroicons:chevron-down"
+                        class="h-4 w-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': submenuAbierto(item.id) }"
+                        aria-hidden="true"
+                      />
+                    </button>
+                    <Transition name="slide-down">
+                      <ul v-show="submenuAbierto(item.id)" :id="`submenu-${item.id}`" class="mt-1 space-y-1 pl-4">
+                        <li v-for="hijo in item.children" :key="hijo.id">
+                          <NuxtLink :to="hijo.href" @click="closeMenu" class="mobile-submenu-link">
+                            <Icon v-if="hijo.icon" :name="hijo.icon" class="h-4 w-4 mr-3 text-primary" aria-hidden="true" />
+                            <span>{{ hijo.label }}</span>
+                          </NuxtLink>
+                        </li>
+                      </ul>
+                    </Transition>
+                  </template>
+
                   <NuxtLink
+                    v-else
                     :to="item.href"
                     @click="closeMenu"
                     class="mobile-nav-link"
                     :class="{ 'active': item.isActive }"
                   >
-                    <Icon 
-                      v-if="item.icon" 
-                      :name="item.icon" 
-                      class="h-5 w-5 mr-3 text-primary" 
+                    <Icon
+                      v-if="item.icon"
+                      :name="item.icon"
+                      class="h-5 w-5 mr-3 text-primary"
                     />
                     <span>{{ item.label }}</span>
                   </NuxtLink>
@@ -117,7 +153,16 @@ const { isMobileMenuOpen } = storeToRefs(layoutStore)
 // NAVEGACIÓN LOCAL PARA CIISIC
 // ============================================================================
 
-const mainNavigation = ref([
+interface MobileNavItem {
+  id: string
+  label: string
+  href: string
+  icon?: string
+  isActive?: boolean
+  children?: MobileNavItem[]
+}
+
+const mainNavigation = ref<MobileNavItem[]>([
   {
     id: 'home',
     label: 'Inicio',
@@ -147,11 +192,15 @@ const mainNavigation = ref([
     isActive: false
   },
   {
-    id: 'ponentes',
-    label: 'Ponentes',
+    id: 'ponencias',
+    label: 'Ponencias',
     href: '/ponentes',
     icon: 'heroicons:user-group',
-    isActive: false
+    isActive: false,
+    children: [
+      { id: 'ponencias-congreso', label: 'Congreso', href: '/ponentes', icon: 'heroicons:user-group' },
+      { id: 'ponencias-especializadas', label: 'Ponencias especializadas', href: '/ponencias-especializadas', icon: 'heroicons:presentation-chart-bar' }
+    ]
   },
   {
     id: 'sede',
@@ -174,6 +223,7 @@ const mainNavigation = ref([
 // ============================================================================
 
 const openSubmenus = ref<string[]>([])
+const route = useRoute()
 
 // ============================================================================
 // COMPUTED
@@ -191,6 +241,17 @@ const closeMenu = () => {
   layoutStore.closeMobileMenu()
   openSubmenus.value = []
 }
+
+const submenuAbierto = (id: string) => openSubmenus.value.includes(id)
+
+const alternarSubmenu = (id: string) => {
+  openSubmenus.value = submenuAbierto(id)
+    ? openSubmenus.value.filter((abierto) => abierto !== id)
+    : [...openSubmenus.value, id]
+}
+
+// El grupo se marca como activo cuando la ruta actual es una de sus páginas hijas.
+const grupoActivo = (item: MobileNavItem) => !!item.children?.some((hijo) => hijo.href === route.path)
 
 // ============================================================================
 // KEYBOARD NAVIGATION
@@ -218,6 +279,10 @@ onUnmounted(() => {
 })
 
 watch(isOpen, (newValue) => {
+  // Al abrir el menú, se despliega el grupo que contiene la página actual.
+  if (newValue) {
+    openSubmenus.value = mainNavigation.value.filter(grupoActivo).map((item) => item.id)
+  }
   if (process.client) {
     if (newValue) {
       document.body.style.overflow = 'hidden'
@@ -271,7 +336,8 @@ watch(isOpen, (newValue) => {
   background-color: rgb(55 65 81);
 }
 
-.mobile-submenu-link.active {
+.mobile-submenu-link.active,
+.mobile-submenu-link.router-link-exact-active {
   color: #00d9e8;
   background-color: rgba(0, 217, 232, 0.1);
 }

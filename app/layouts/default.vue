@@ -25,7 +25,46 @@
             <NuxtLink to="/about" class="nav-link">Congreso</NuxtLink>
             <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
             <NuxtLink to="/papers" class="nav-link">Call for Papers</NuxtLink>
-            <NuxtLink to="/ponentes" class="nav-link">Ponentes</NuxtLink>
+            <div ref="ponenciasRef" class="relative" @focusout="alSalirFoco">
+              <button
+                type="button"
+                class="nav-link inline-flex items-center gap-1"
+                :class="{ 'is-active': ponenciasActivo }"
+                aria-haspopup="true"
+                aria-controls="menu-ponencias"
+                :aria-expanded="menuPonencias"
+                @click="alternarMenu"
+              >
+                Ponencias
+                <Icon
+                  name="heroicons:chevron-down"
+                  class="h-4 w-4 transition-transform duration-200"
+                  :class="{ 'rotate-180': menuPonencias }"
+                  aria-hidden="true"
+                />
+              </button>
+              <Transition name="dropdown">
+                <div v-show="menuPonencias" class="absolute left-0 top-full z-50 pt-3">
+                  <ul
+                    id="menu-ponencias"
+                    class="w-72 rounded-xl border border-white/10 bg-[#041d39]/95 p-2 shadow-xl shadow-black/40 backdrop-blur-xl"
+                  >
+                    <li>
+                      <NuxtLink to="/ponentes" class="submenu-link" @click="cerrarMenu()">
+                        <Icon name="heroicons:user-group" class="h-5 w-5 shrink-0 text-primary-400" aria-hidden="true" />
+                        Congreso
+                      </NuxtLink>
+                    </li>
+                    <li>
+                      <NuxtLink to="/ponencias-especializadas" class="submenu-link" @click="cerrarMenu()">
+                        <Icon name="heroicons:presentation-chart-bar" class="h-5 w-5 shrink-0 text-primary-400" aria-hidden="true" />
+                        Ponencias especializadas
+                      </NuxtLink>
+                    </li>
+                  </ul>
+                </div>
+              </Transition>
+            </div>
             <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
           </nav>
 
@@ -112,6 +151,44 @@ watch(
 );
 
 // ============================================================================
+// MENÚ DESPLEGABLE «PONENCIAS» (ESCRITORIO)
+// ============================================================================
+
+const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas"];
+
+const menuPonencias = ref(false);
+const ponenciasRef = ref<HTMLElement | null>(null);
+
+const ponenciasActivo = computed(() =>
+  RUTAS_PONENCIAS.some((ruta) => route.path === ruta || route.path.startsWith(`${ruta}/`)),
+);
+
+const cerrarMenu = (devolverFoco = false) => {
+  menuPonencias.value = false;
+  if (devolverFoco) ponenciasRef.value?.querySelector("button")?.focus();
+};
+
+// Se abre y se cierra con clic o con el teclado (Enter/Espacio); Esc, clic fuera o
+// salir del menú con el foco también lo cierran.
+const alternarMenu = () => {
+  menuPonencias.value = !menuPonencias.value;
+};
+
+const alSalirFoco = (event: FocusEvent) => {
+  if (!ponenciasRef.value?.contains(event.relatedTarget as Node | null)) menuPonencias.value = false;
+};
+
+const alHacerClicFuera = (event: MouseEvent) => {
+  if (menuPonencias.value && !ponenciasRef.value?.contains(event.target as Node)) cerrarMenu();
+};
+
+const alPulsarTecla = (event: KeyboardEvent) => {
+  if (event.key === "Escape" && menuPonencias.value) cerrarMenu(true);
+};
+
+watch(() => route.path, () => cerrarMenu());
+
+// ============================================================================
 // LIFECYCLE HOOKS
 // ============================================================================
 
@@ -120,6 +197,13 @@ onMounted(() => {
   if (typeof window !== "undefined") {
     document.documentElement.style.scrollBehavior = "smooth";
   }
+  document.addEventListener("click", alHacerClicFuera);
+  document.addEventListener("keydown", alPulsarTecla);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", alHacerClicFuera);
+  document.removeEventListener("keydown", alPulsarTecla);
 });
 
 // ============================================================================
@@ -178,8 +262,63 @@ useHead({
 }
 
 .nav-link:hover::after,
-.nav-link.router-link-exact-active::after {
+.nav-link.router-link-exact-active::after,
+.nav-link.is-active::after {
   width: 100%;
+}
+
+.nav-link.is-active {
+  color: #00d9e8;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid #00d9e8;
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+/* Submenú «Ponencias» */
+.submenu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.submenu-link:hover,
+.submenu-link:focus-visible {
+  background-color: rgb(255 255 255 / 0.07);
+  color: #00d9e8;
+  outline: none;
+}
+
+.submenu-link.router-link-exact-active {
+  background-color: rgb(0 217 232 / 0.1);
+  color: #00d9e8;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-enter-active,
+  .dropdown-leave-active,
+  .submenu-link {
+    transition: none;
+  }
 }
 
 .skip-link {
