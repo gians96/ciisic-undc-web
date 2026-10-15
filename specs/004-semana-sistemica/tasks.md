@@ -8,4 +8,4 @@
 - [x] T006 Componentes `app/components/semana-sistemica/` (página, panel de inscripción, galería)
 - [x] T007 Páginas `comparsa`, `deportes`, `reinado` (movida) e `index`; redirección de `/reinado-sistemico`
 - [x] T008 Cronograma (`app/data/cronograma.ts`), tarjeta de Comparsa, `ReinadoFeature` y favicon
-- [ ] T009 `AGENTS.md` (páginas) y verificación: lint, typecheck, test, build y revisión visual
+- [x] T009 `AGENTS.md` (páginas) y verificación: lint, typecheck, test, build y revisión visual
