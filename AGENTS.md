@@ -29,7 +29,8 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 ## Arquitectura
 
 - `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `confirmation`,
-  `papers/*`, `contacto`, `login` (redirige al panel), páginas informativas.
+  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado y Deportes, con el contenido estático de
+  `app/data/semana-sistemica.ts`), `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `useConsultation` (DNI), `useVerificacionEstudiante`,
   `useCorreoGoogle` + `useGoogleIdentity` (Google opcional), `useConfiguracionSitio`.
@@ -94,8 +95,9 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 ## SDD con Spec Kit
 
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
-`specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/` y
-`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos).
+`specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
+`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos) y `specs/004-semana-sistemica/`
+(tab «Semana Sistémica»).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

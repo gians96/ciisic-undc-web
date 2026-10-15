@@ -45,7 +45,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica de la UNDC, del 26 al 30 de octubre de 2026.' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: 'images/logo/preloader.png' }
+        { rel: 'icon', type: 'image/x-icon', href: '/images/logo/preloader.png' }
       ]
     },
     pageTransition: {
