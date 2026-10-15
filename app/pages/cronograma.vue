@@ -47,8 +47,8 @@
                   <h2 class="event-title">{{ event.title }}</h2>
                   <div v-if="event.detail" class="event-speaker"><Icon name="heroicons:microphone" class="h-4 w-4 text-primary-400" /><span>{{ event.detail }}</span></div>
                   <p v-if="event.meta" class="event-description">{{ event.meta }}</p>
-                  <NuxtLink v-if="event.href" :to="event.href" class="event-link" :aria-label="`Ver ponentes y temas: ${event.title}`">
-                    Ver ponentes y temas<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
+                  <NuxtLink v-if="event.href" :to="event.href" class="event-link" :aria-label="`${event.etiquetaEnlace ?? 'Ver ponentes y temas'}: ${event.title}`">
+                    {{ event.etiquetaEnlace ?? 'Ver ponentes y temas' }}<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
                   </NuxtLink>
                 </article>
               </div>
@@ -66,8 +66,8 @@
                   <h3 class="calendar-event-title">{{ event.title }}</h3>
                   <p v-if="event.detail" class="calendar-event-speaker">{{ event.detail }}</p>
                   <p v-if="event.meta" class="calendar-event-type">{{ event.meta }}</p>
-                  <NuxtLink v-if="event.href" :to="event.href" class="event-link event-link-sm" :aria-label="`Ver ponentes y temas: ${event.title}, ${day.short} ${day.dayNumber}`">
-                    Ver ponentes y temas<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
+                  <NuxtLink v-if="event.href" :to="event.href" class="event-link event-link-sm" :aria-label="`${event.etiquetaEnlace ?? 'Ver ponentes y temas'}: ${event.title}, ${day.short} ${day.dayNumber}`">
+                    {{ event.etiquetaEnlace ?? 'Ver ponentes y temas' }}<Icon name="heroicons:arrow-right" class="event-link-icon h-4 w-4" aria-hidden="true" />
                   </NuxtLink>
                 </article>
               </div>

@@ -6,6 +6,7 @@ import {
   actividades,
 } from '../app/data/semana-sistemica'
 import { inscripcionAbierta, rutaEnGrupo } from '../app/utils/semana-sistemica'
+import { schedule } from '../app/data/cronograma'
 import { etiquetaDia, formatoHora12 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de la Semana Sistémica', () => {
@@ -128,5 +129,29 @@ describe('inscripcionAbierta', () => {
     expect(inscripcionAbierta(reinado, instante('2026-10-16T08:00:00-05:00'))).toBe(false)
     expect(inscripcionAbierta(deportes, instante('2026-10-16T08:00:00-05:00'))).toBe(true)
     expect(inscripcionAbierta(deportes, instante('2026-10-26T00:00:00-05:00'))).toBe(false)
+  })
+})
+
+describe('cronograma y actividades de la Semana Sistémica', () => {
+  const diaDelCronograma = (fecha: string) => {
+    const [anio, mes, dia] = fecha.split('-')
+    return schedule.find(item => item.date === `${dia}/${mes}` && anio === '2026')
+  }
+
+  it('cada actividad tiene su día en el cronograma y el primer evento enlazado empieza a su hora', () => {
+    for (const actividad of actividades) {
+      const dia = diaDelCronograma(actividad.fecha)
+      expect(dia, actividad.slug).toBeDefined()
+      const enlazado = dia?.events.find(event => event.href === actividad.ruta)
+      expect(enlazado, actividad.slug).toBeDefined()
+      expect(enlazado?.time.startsWith(actividad.horaInicio), `${actividad.slug}: ${enlazado?.time}`).toBe(true)
+    }
+  })
+
+  it('el viernes de deportes cierra con la premiación a la hora final de la actividad', () => {
+    const deportes = actividadPorSlug('deportes')
+    const eventos = diaDelCronograma(deportes.fecha)?.events ?? []
+    expect(eventos.at(-1)?.title).toBe('Premiación')
+    expect(eventos.at(-1)?.time.startsWith(deportes.horaFin ?? '')).toBe(true)
   })
 })

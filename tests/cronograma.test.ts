@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { schedule } from '../app/data/cronograma'
 import type { ScheduleDay } from '../app/data/cronograma'
 import { specializedTalks } from '../app/data/ponencias-especializadas'
+import { SEMANA_SISTEMICA_MENU } from '../app/data/semana-sistemica'
 import { speakers } from '../app/data/speakers'
 import { sesionesDePonentes } from '../app/utils/cronograma'
 
@@ -85,9 +86,21 @@ describe('bloques «Ponencias Especializadas» del cronograma', () => {
     })
   }
 
-  it('solo los bloques de especializadas llevan enlace', () => {
+  it('solo llevan enlace las ponencias especializadas y las actividades de la Semana Sistémica', () => {
     const conEnlace = schedule.flatMap(day => day.events.filter(event => event.href))
-    expect(conEnlace.map(event => event.title)).toEqual(['Ponencias Especializadas', 'Ponencias Especializadas'])
+    expect(conEnlace.map(event => event.title)).toEqual([
+      'Comparsa Sistémica',
+      'Ponencias Especializadas',
+      'Ponencias Especializadas',
+      'Reinado',
+      'Recibimiento y pasacalles',
+      'Deportes en simultáneo',
+    ])
+    const rutasSemana = new Set(SEMANA_SISTEMICA_MENU.map(item => item.href))
+    for (const event of conEnlace.filter(item => item.title !== 'Ponencias Especializadas')) {
+      expect(rutasSemana.has(event.href ?? ''), event.title).toBe(true)
+      expect(event.etiquetaEnlace, event.title).toBe('Ver detalles')
+    }
   })
 })
 

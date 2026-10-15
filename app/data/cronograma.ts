@@ -11,6 +11,8 @@ export interface ScheduleEvent {
   category: EventCategory
   /** Enlace interno que se muestra en la tarjeta del evento. */
   href?: string
+  /** Texto del enlace; sin él es «Ver ponentes y temas» (las ponencias especializadas). */
+  etiquetaEnlace?: string
   /** Ponente invitado de este evento: el `name` exacto de `~/data/speakers`. */
   ponente?: string
 }
@@ -56,7 +58,7 @@ export const schedule: ScheduleDay[] = [
   { short: 'Lunes', dayNumber: '26', date: '26/10', events: [
     { time: '08:00 - 09:00', title: 'Recepción de delegaciones', category: 'institutional' },
     { time: '09:00 - 10:30', title: 'Actividades de integración y socioculturales', category: 'cultural' },
-    { time: '15:00 - 20:00', title: 'Comparsa Sistémica', category: 'cultural' },
+    { time: '14:30 - 17:00', title: 'Comparsa Sistémica', detail: 'Concentración 2:30 p. m. · de la Casa de la Cultura a la Plaza de Armas', category: 'cultural', href: '/semana-sistemica/comparsa', etiquetaEnlace: 'Ver detalles' },
   ] },
   { short: 'Martes', dayNumber: '27', date: '27/10', events: [
     { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
@@ -76,7 +78,7 @@ export const schedule: ScheduleDay[] = [
     { time: '11:40 - 12:00', title: 'NASA Space Apps', category: 'academic' },
     ponenciasEspecializadas('28/10'),
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '15:00 - 23:00', title: 'Reinado', category: 'cultural' },
+    { time: '15:00 - 23:00', title: 'Reinado', detail: 'Auditorio de la Casa de la Cultura', category: 'cultural', href: '/semana-sistemica/reinado', etiquetaEnlace: 'Ver detalles' },
   ] },
   { short: 'Jueves', dayNumber: '29', date: '29/10', events: [
     { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
@@ -89,7 +91,10 @@ export const schedule: ScheduleDay[] = [
     { time: '14:00 - 18:00', title: 'E-Sports / Hackathon', category: 'cultural' },
   ] },
   { short: 'Viernes', dayNumber: '30', date: '30/10', events: [
-    { time: '09:00 - 12:00', title: 'Actividades Culturales y Deportivas', category: 'cultural' },
-    { time: '12:00 - 12:45', title: 'Break', category: 'cultural' },
+    { time: '08:00 - 09:00', title: 'Recibimiento y pasacalles', detail: 'Campus UNDC', category: 'cultural', href: '/semana-sistemica/deportes', etiquetaEnlace: 'Ver detalles' },
+    { time: '10:00 - 12:00', title: 'Gincana', detail: 'Explanada central', category: 'cultural' },
+    { time: '12:00 - 13:30', title: 'Refrigerio', category: 'cultural' },
+    { time: '13:30 - 19:00', title: 'Deportes en simultáneo', detail: 'Básquet, futsal, vóley y ajedrez', category: 'cultural', href: '/semana-sistemica/deportes', etiquetaEnlace: 'Ver detalles' },
+    { time: '20:00 - 21:00', title: 'Premiación', detail: 'A cargo de las autoridades universitarias', category: 'cultural' },
   ] },
 ]
