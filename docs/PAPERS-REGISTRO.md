@@ -9,6 +9,12 @@ La ruta histórica `/papers/registro` se conserva únicamente como redirección 
 EasyChair, para no romper enlaces previamente compartidos. La landing ya no presenta ni procesa un
 formulario de registro de papers.
 
+## Guías de usuario
+
+Debajo de **Registrar paper**, `/papers` muestra dos botones a las guías en Google Drive:
+**Guía: creación de cuentas** y **Guía: subir artículos**. Los enlaces viven en `papersHero.guias`
+de `app/pages/papers/index.vue`; si el equipo reemplaza una guía, solo hay que cambiar su `to`.
+
 ## Integración anterior
 
 El BFF `POST /api/publico/ponencias` y su contrato con `POST /api/v1/site/papers` permanecen en el
