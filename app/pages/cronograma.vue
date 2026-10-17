@@ -85,7 +85,8 @@ import type { EventCategory } from '~/data/cronograma'
 
 const heroRef = ref<HTMLElement>()
 const selectedDay = ref(0)
-const viewMode = ref<'timeline' | 'calendar'>('timeline')
+// Desktop abre en vista calendario; en móvil `effectiveViewMode` fuerza línea de tiempo.
+const viewMode = ref<'timeline' | 'calendar'>('calendar')
 const isMobile = ref(false)
 const effectiveViewMode = computed(() => isMobile.value ? 'timeline' : viewMode.value)
 let mobileQuery: MediaQueryList | undefined

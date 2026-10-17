@@ -15,6 +15,12 @@ export interface ScheduleEvent {
   etiquetaEnlace?: string
   /** Ponente invitado de este evento: el `name` exacto de `~/data/speakers`. */
   ponente?: string
+  /**
+   * Evento que comparte horario con otro a propósito (p. ej. E-Sports y el Concurso de
+   * Programación del martes). El test de solapes solo permite traslapes entre eventos
+   * marcados así; cualquier otro solape sigue fallando.
+   */
+  simultaneo?: true
 }
 
 export interface ScheduleDay {
@@ -67,8 +73,9 @@ export const schedule: ScheduleDay[] = [
     { time: '11:15 - 12:00', title: 'GRAPH MACHINE LEARNING: APLICACIONES', detail: 'Dr. César Armando Beltrán Castañón', meta: 'Perú', category: 'academic', ponente: 'Cesar Armando Beltran Castañon' },
     ponenciasEspecializadas('27/10'),
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '15:00 - 18:00', title: 'E-Sports / Concurso de Programación / Elevator Pitch', category: 'cultural' },
-    { time: '18:00 - 20:00', title: 'Encuentro de Egresados', category: 'cultural' },
+    { time: '15:00 - 20:00', title: 'E-Sports', detail: 'En simultáneo con el Concurso de Programación', category: 'cultural', href: '/semana-sistemica/esports', etiquetaEnlace: 'Ver detalles', simultaneo: true },
+    { time: '17:00 - 19:00', title: 'Concurso de Programación', detail: 'En simultáneo con E-Sports', category: 'cultural', href: '/semana-sistemica/programacion', etiquetaEnlace: 'Ver detalles', simultaneo: true },
+    { time: '18:00 - 20:00', title: 'Encuentro de Egresados', category: 'cultural', simultaneo: true },
   ] },
   { short: 'Miércoles', dayNumber: '28', date: '28/10', events: [
     { time: '08:00 - 09:00', title: 'Registro de participantes', category: 'institutional' },
@@ -88,7 +95,7 @@ export const schedule: ScheduleDay[] = [
     { time: '12:00 - 12:20', title: 'Ponencias de Investigación', category: 'academic' },
     { time: '12:20 - 12:45', title: 'Clausura', category: 'institutional' },
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
-    { time: '14:00 - 18:00', title: 'E-Sports / Hackathon', category: 'cultural' },
+    { time: '18:00 - 23:30', title: 'Hackathon', category: 'cultural', href: '/semana-sistemica/hackathon', etiquetaEnlace: 'Ver detalles' },
   ] },
   { short: 'Viernes', dayNumber: '30', date: '30/10', events: [
     { time: '08:00 - 09:00', title: 'Recibimiento y pasacalles', detail: 'Campus UNDC', category: 'cultural', href: '/semana-sistemica/deportes', etiquetaEnlace: 'Ver detalles' },
