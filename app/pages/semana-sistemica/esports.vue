@@ -17,7 +17,22 @@
       <p class="ss-kicker">Videojuegos y modalidades</p>
       <h2 id="juegos-esports" class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Elige tu torneo</h2>
       <div class="mt-7 grid gap-4 sm:grid-cols-2">
-        <article v-for="juego in juegos" :key="juego.nombre" class="ss-card p-5 sm:p-6">
+        <article
+          v-for="juego in juegos"
+          :key="juego.nombre"
+          class="juego-card ss-card group relative isolate overflow-hidden p-5 transition duration-300 hover:border-primary-300/40 hover:shadow-lg hover:shadow-black/30 hover:bg-[#0b3157] sm:p-6"
+        >
+          <img
+            :src="juego.imagen"
+            :alt="`Imagen de ${juego.nombre}`"
+            :width="juego.anchoImagen"
+            :height="juego.altoImagen"
+            loading="lazy"
+            decoding="async"
+            class="juego-bg pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover opacity-0"
+            aria-hidden="true"
+          >
+          <span class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-[#062541]/92 via-[#062541]/78 to-[#062541]/55" aria-hidden="true" />
           <div class="flex items-start gap-3">
             <span class="ss-icon-box h-10 w-10">
               <Icon :name="juego.icono" class="h-5 w-5" />
@@ -69,6 +84,8 @@ import { actividadPorSlug } from '~/data/semana-sistemica'
 
 const actividad = actividadPorSlug('esports')
 
+// Imagen de cada juego: se muestra tenue al pasar el cursor sobre su tarjeta.
+// Es una imagen externa (portada oficial del juego), por eso no usa @nuxt/image.
 const juegos = [
   {
     icono: 'heroicons:user-group',
@@ -77,7 +94,10 @@ const juegos = [
     descripcion: 'Estudiantes regulares y egresados de la EPIS UNDC. Partidas por campañas, con posibles rondas reducidas según los equipos inscritos.',
     costo: 'S/ 30 por equipo',
     cierre: '23 de octubre, 11:59 p. m.',
-    premio: 'Premio monetario al primer puesto (monto según inscritos)',
+    premio: 'Premio monetario al primer puesto',
+    imagen: 'https://m.gjcdn.net/fireside-post-image/900/35921657-tt7wezcq-v4.webp',
+    anchoImagen: 669,
+    altoImagen: 660,
   },
   {
     icono: 'heroicons:bolt',
@@ -87,6 +107,9 @@ const juegos = [
     costo: 'S/ 6',
     cierre: '23 de octubre, 11:59 p. m.',
     premio: 'Premio monetario al primer puesto',
+    imagen: 'https://images.dwncdn.net/images/t_app-icon-l/p/f4d7618c-99eb-11e6-886f-00163ed833e7/1756106610/2119_4-76475860-icon.webp',
+    anchoImagen: 448,
+    altoImagen: 448,
   },
   {
     icono: 'heroicons:trophy',
@@ -96,6 +119,9 @@ const juegos = [
     costo: 'S/ 6',
     cierre: '23 de octubre, 11:59 p. m.',
     premio: '1.er puesto: S/ 50 · 2.º puesto: S/ 30',
+    imagen: 'https://acdn.mitiendanube.com/stores/001/034/003/products/fifa-25-e19f77ac1792e80c6b17346846089417-640-0.webp',
+    anchoImagen: 453,
+    altoImagen: 453,
   },
   {
     icono: 'heroicons:fire',
@@ -105,6 +131,9 @@ const juegos = [
     costo: 'S/ 6',
     cierre: '22 de octubre, 11:59 p. m.',
     premio: '1.er puesto: S/ 50 · 2.º puesto: S/ 30',
+    imagen: 'https://i.blogs.es/4fcfa2/dragon-ball_-sparking-zero_20241005145018/1366_2000.webp',
+    anchoImagen: 1366,
+    altoImagen: 768,
   },
 ]
 
@@ -116,3 +145,25 @@ useSeoMeta({
   ogImage: '/images/eventos/esports.webp',
 })
 </script>
+
+<style scoped>
+/* Al pasar el cursor, la imagen del juego aparece fundida detrás del texto.
+   Se hace con CSS propio y no con `group-hover:` porque esa variante de Tailwind
+   no genera CSS en este proyecto (afecta a todo el sitio, no solo a esta página). */
+.juego-bg {
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity .5s ease-out, transform .5s ease-out;
+}
+
+.juego-card:hover .juego-bg {
+  opacity: .32;
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .juego-card:hover .juego-bg {
+    transform: none;
+  }
+}
+</style>
