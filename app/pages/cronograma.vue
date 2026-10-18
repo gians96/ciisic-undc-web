@@ -110,14 +110,14 @@ useSeoMeta({ title: 'Cronograma | VIII CIISIC 2026', description: 'Agenda del VI
 .fade-in-element { opacity: 0; transform: translateY(30px); transition: all .8s cubic-bezier(.25,.46,.45,.94); }
 .fade-in-element.visible { opacity: 1; transform: translateY(0); }
 .pulse-bg { position: relative; display: inline-block; z-index: 0; color: #67e8f9; }
-.pulse-bg::before { position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: #00d9e81a; box-shadow: 0 0 0 0 #00d9e866; content: ''; animation: pulse-bg 1.8s infinite ease-out; }
+.pulse-bg::before { position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: #00d9e81a; box-shadow: 0 0 0 0 #00d9e833; content: ''; animation: pulse-bg 1.8s infinite ease-out; }
 @keyframes pulse-bg { to { box-shadow: 0 0 0 10px #00d9e800; } }
 .view-toggle { display: flex; border: 1px solid #ffffff1a; border-radius: .75rem; background: #ffffff08; padding: .25rem; }
 .toggle-btn { display: flex; align-items: center; gap: .5rem; border-radius: .55rem; padding: .7rem 1rem; color: #94a3b8; font-size: .875rem; font-weight: 600; transition: all .25s ease; }
-.toggle-btn.active { background: #00d9e826; color: #67e8f9; box-shadow: 0 0 20px #00d9e826; }
+.toggle-btn.active { background: #00d9e826; color: #67e8f9; }
 .day-nav-btn-hero { min-width: 80px; cursor: pointer; border: 1px solid #00d9e84d; border-radius: .5rem; background: #00d9e81a; padding: .65rem 1rem; color: white; text-align: center; backdrop-filter: blur(10px); transition: all .3s ease; }
 .day-nav-btn-hero:hover { border-color: #00d9e880; background: #00d9e833; transform: translateY(-2px); }
-.day-nav-btn-hero.active { border-color: #00d9e8; background: #00d9e84d; box-shadow: 0 0 20px #00d9e866; }
+.day-nav-btn-hero.active { border-color: #00d9e8; background: #00d9e84d; }
 .timeline-container { position: relative; width: 100%; }
 .timeline-item-full { display: flex; width: 100%; gap: 1.5rem; padding-bottom: 2rem; animation: fade-up .6s ease-out var(--delay) both; }
 .timeline-marker { display: flex; min-width: 24px; flex-direction: column; align-items: center; }

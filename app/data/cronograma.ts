@@ -89,6 +89,7 @@ export const schedule: ScheduleDay[] = [
     { time: '12:20 - 12:45', title: 'Clausura', category: 'institutional' },
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
     { time: '14:00 - 18:00', title: 'E-Sports / Hackathon', category: 'cultural' },
+    { time: '18:00 - 20:00', title: 'Talleres sistémicos', detail: 'Cupos limitados · Ambientes por confirmar', category: 'cultural', href: '/semana-sistemica/talleres', etiquetaEnlace: 'Ver detalles' },
   ] },
   { short: 'Viernes', dayNumber: '30', date: '30/10', events: [
     { time: '08:00 - 09:00', title: 'Recibimiento y pasacalles', detail: 'Campus UNDC', category: 'cultural', href: '/semana-sistemica/deportes', etiquetaEnlace: 'Ver detalles' },

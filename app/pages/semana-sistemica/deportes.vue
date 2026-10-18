@@ -58,21 +58,22 @@
       </div>
     </section>
 
-    <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-deportes">
-      <div class="flex items-start gap-4">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
-          <Icon name="heroicons:information-circle" class="h-6 w-6" />
-        </span>
-        <div>
-          <h2 id="info-deportes" class="text-xl font-bold text-white">Información oficial</h2>
-          <p class="mt-2 leading-7 text-slate-300">
-            Las reglas de cada disciplina, el arbitraje, los reclamos, la seguridad y la premiación están en las bases oficiales. La inscripción implica aceptarlas por completo.
-          </p>
+    <template #lateral>
+      <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-deportes">
+        <div class="flex items-start gap-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
+            <Icon name="heroicons:information-circle" class="h-6 w-6" />
+          </span>
+          <div>
+            <h2 id="info-deportes" class="text-xl font-bold text-white">Información oficial</h2>
+            <p class="mt-2 leading-7 text-slate-300">
+              Las reglas de cada disciplina, el arbitraje, los reclamos, la seguridad y la premiación están en las bases oficiales. La inscripción implica aceptarlas por completo.
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <SemanaSistemicaAfiche :actividad="actividad" />
+      </section>
+      <SemanaSistemicaAfiche :actividad="actividad" />
+    </template>
   </SemanaSistemicaActividadPagina>
 </template>
 

@@ -1,74 +1,199 @@
 <template>
   <div class="landing">
-    <section class="hero relative overflow-hidden">
-      <div class="grid-pattern absolute inset-0" aria-hidden="true" />
+    <section
+      class="hero relative overflow-hidden"
+      @focusin="pausarRotacion"
+      @focusout="reanudarRotacion"
+    >
       <div
         class="hero-content relative mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-12 lg:grid-cols-2 lg:gap-x-10 lg:gap-y-12 lg:px-8 lg:py-16"
       >
         <div class="min-w-0 text-center lg:text-left">
-          <p
-            class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
-          >
-            <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
-              >Universidad Nacional de Cañete · 2026</span
-            >
-          </p>
-          <h1 class="hero-title font-extrabold tracking-tight text-white">
-            Las ideas que <span class="text-primary-400">conectan</span> el
-            futuro.
-          </h1>
-          <p
-            class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
-          >
-            VIII Congreso Internacional de Ingeniería de Sistemas e
-            Investigación Científica. Cinco días para compartir conocimiento,
-            descubrir perspectivas y crear conexiones en Cañete.
-          </p>
-          <EventCountdown class="mx-auto mt-7 lg:mx-0" />
+          <div class="hero-stack">
+            <div class="hero-slide" :class="{ 'is-active': indice === 0 }">
+              <p
+                class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+              >
+                <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
+                  >Universidad Nacional de Cañete · 2026</span
+                >
+              </p>
+              <h1 class="hero-title font-extrabold tracking-tight text-white">
+                Las ideas que <span class="text-primary-400">conectan</span> el
+                futuro.
+              </h1>
+              <p
+                class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
+              >
+                VIII Congreso Internacional de Ingeniería de Sistemas e
+                Investigación Científica. Cinco días para compartir
+                conocimiento, descubrir perspectivas y crear conexiones en
+                Cañete.
+              </p>
+              <EventCountdown class="mx-auto mt-7 lg:mx-0" />
+              <div
+                class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
+              >
+                <NuxtLink
+                  to="/planes"
+                  class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
+                  >Inscríbete ahora
+                  <Icon
+                    name="heroicons:arrow-up-right"
+                    class="h-5 w-5 shrink-0"
+                /></NuxtLink>
+                <NuxtLink
+                  to="/about"
+                  class="action-secondary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-semibold"
+                  >Conoce el congreso
+                  <Icon
+                    name="heroicons:arrow-right"
+                    class="h-5 w-5 shrink-0"
+                /></NuxtLink>
+              </div>
+            </div>
+            <!-- ⚠️ CONTENIDO PENDIENTE: Nasa Space es un evento futuro; fecha,
+                 sede, bases e imagen se confirmarán después. -->
+            <div class="hero-slide" :class="{ 'is-active': indice === 1 }">
+              <p
+                class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+              >
+                <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
+                  >Universidad Nacional de Cañete · Próximamente</span
+                >
+              </p>
+              <h1 class="hero-title font-extrabold tracking-tight text-white">
+                Nasa <span class="text-primary-400">Space</span>
+              </h1>
+              <p
+                class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
+              >
+                Un nuevo evento de la Escuela Profesional de Ingeniería de
+                Sistemas. Próximamente compartiremos fecha, sede y bases.
+              </p>
+              <div
+                class="mx-auto mt-7 flex flex-wrap justify-center gap-3 lg:mx-0 lg:justify-start"
+              >
+                <span
+                  class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                >
+                  <Icon
+                    name="heroicons:calendar-days"
+                    class="h-4 w-4 shrink-0 text-primary-300"
+                  />Fecha por confirmar
+                </span>
+                <span
+                  class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                >
+                  <Icon
+                    name="heroicons:map-pin"
+                    class="h-4 w-4 shrink-0 text-primary-300"
+                  />Sede por confirmar
+                </span>
+              </div>
+              <div
+                class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
+              >
+                <NuxtLink
+                  to="/nasa-space"
+                  class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
+                  >Conoce el Nasa Space
+                  <Icon
+                    name="heroicons:arrow-up-right"
+                    class="h-5 w-5 shrink-0"
+                /></NuxtLink>
+              </div>
+            </div>
+          </div>
           <div
-            class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
+            class="hero-dots mt-6 flex items-center justify-center gap-1 lg:justify-start"
+            role="group"
+            aria-label="Eventos destacados del inicio"
           >
-            <NuxtLink
-              to="/planes"
-              class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
-              >Inscríbete ahora
-              <Icon name="heroicons:arrow-up-right" class="h-5 w-5 shrink-0"
-            /></NuxtLink>
-            <NuxtLink
-              to="/about"
-              class="action-secondary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-semibold"
-              >Conoce el congreso
-              <Icon name="heroicons:arrow-right" class="h-5 w-5 shrink-0"
-            /></NuxtLink>
+            <button
+              v-for="evento in eventosHero"
+              :key="evento.indice"
+              type="button"
+              class="hero-dot inline-flex h-6 w-6 items-center justify-center rounded-full"
+              :class="{ 'is-on': indice === evento.indice }"
+              :aria-label="`Mostrar ${evento.nombre}`"
+              :aria-current="indice === evento.indice ? 'true' : undefined"
+              @click="elegirDiapositiva(evento.indice)"
+            />
           </div>
         </div>
-        <figure
-          class="event-card relative mx-auto w-full min-w-0 max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
-        >
+        <div class="hero-stack relative w-full min-w-0">
           <div
-            class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
+            class="hero-slide event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
+            :class="{ 'is-active': indice === 0 }"
           >
-            <img
-              :src="previousCongressImage"
-              alt="Participantes del VII CIISIC reunidos en el auditorio de la UNDC"
-              width="1600"
-              height="898"
-              class="block h-auto w-full"
-              fetchpriority="high"
-            />
-            <figcaption
-              class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
+            <figure
+              class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
             >
-              <span
-                class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
-                >Edición anterior · VII CIISIC</span
+              <img
+                :src="previousCongressImage"
+                alt="Participantes del VII CIISIC reunidos en el auditorio de la UNDC"
+                width="1600"
+                height="898"
+                class="block h-auto w-full"
+                fetchpriority="high"
               >
-              <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
-                Una comunidad que sigue creciendo.
-              </p>
-            </figcaption>
+              <figcaption
+                class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
+              >
+                <span
+                  class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
+                  >Edición anterior · VII CIISIC</span
+                >
+                <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                  Una comunidad que sigue creciendo.
+                </p>
+              </figcaption>
+            </figure>
           </div>
-        </figure>
+          <!-- ⚠️ CONTENIDO PENDIENTE: arte provisional del Nasa Space; sustituir
+               por la fotografía oficial del evento cuando exista. -->
+          <div
+            class="hero-slide event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
+            :class="{ 'is-active': indice === 1 }"
+          >
+            <figure
+              class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
+            >
+              <div
+                class="nasa-art relative flex aspect-video w-full flex-col items-center justify-center gap-4 px-6 text-center"
+              >
+                <span
+                  class="nasa-art-icon inline-flex h-16 w-16 items-center justify-center rounded-2xl sm:h-20 sm:w-20"
+                >
+                  <Icon
+                    name="heroicons:rocket-launch"
+                    class="h-8 w-8 sm:h-10 sm:w-10"
+                  />
+                </span>
+                <div>
+                  <p class="text-xl font-bold text-white sm:text-2xl">
+                    Nasa Space
+                  </p>
+                  <p class="mt-1 text-sm text-slate-300">
+                    Imagen del evento por confirmar
+                  </p>
+                </div>
+              </div>
+              <figcaption
+                class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
+              >
+                <span
+                  class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
+                  >Próximamente · Nasa Space</span
+                >
+                <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                  Un nuevo evento de la Escuela de Sistemas.
+                </p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
         <div
           class="grid gap-6 rounded-2xl border border-white/10 bg-[#06294f] px-5 py-6 md:grid-cols-3 lg:col-span-2"
         >
@@ -270,35 +395,142 @@ const facts = [
     value: "Universidad Nacional de Cañete",
   },
 ];
+
+// Rotación del hero: alterna entre el VIII CIISIC y el Nasa Space cada 15 s.
+// WCAG 2.2.2: la rotación se detiene para siempre al elegir uno de los
+// indicadores y se pausa mientras el hero recibe foco de teclado.
+const DURACION_DIAPOSITIVA_MS = 15000;
+
+const eventosHero = [
+  { indice: 0, nombre: "VIII CIISIC 2026" },
+  { indice: 1, nombre: "Nasa Space" },
+];
+
+const indice = ref(0);
+const rotacionAutomatica = ref(true);
+let temporizadorRotacion: ReturnType<typeof setTimeout> | null = null;
+
+function cancelarRotacion() {
+  if (temporizadorRotacion !== null) {
+    clearTimeout(temporizadorRotacion);
+    temporizadorRotacion = null;
+  }
+}
+
+function programarRotacion() {
+  if (!rotacionAutomatica.value) return;
+  cancelarRotacion();
+  temporizadorRotacion = setTimeout(() => {
+    indice.value = (indice.value + 1) % eventosHero.length;
+    programarRotacion();
+  }, DURACION_DIAPOSITIVA_MS);
+}
+
+function elegirDiapositiva(nuevoIndice: number) {
+  indice.value = nuevoIndice;
+  rotacionAutomatica.value = false;
+  cancelarRotacion();
+}
+
+function pausarRotacion() {
+  cancelarRotacion();
+}
+
+function reanudarRotacion() {
+  programarRotacion();
+}
+
+onMounted(() => {
+  programarRotacion();
+});
+
+onBeforeUnmount(() => {
+  cancelarRotacion();
+});
 </script>
 
 <style scoped>
 .landing {
   background: #041d39;
   color: white;
+  --ease-hero: cubic-bezier(0.23, 1, 0.32, 1);
 }
 .hero {
-  background:
-    radial-gradient(circle at 75% 45%, #087dd844, transparent 36%),
-    linear-gradient(135deg, #052c54, #041d39 58%, #062e57);
+  background: linear-gradient(180deg, #062a52 0%, #041d39 48%, #03172e 100%);
 }
 .hero-title {
   font-size: clamp(2.25rem, 4.5vw, 3.75rem);
   line-height: 1.08;
   text-wrap: balance;
 }
-.grid-pattern {
-  opacity: 0.22;
-  background-image:
-    linear-gradient(#1d7fb455 1px, transparent 1px),
-    linear-gradient(90deg, #1d7fb455 1px, transparent 1px);
-  background-size: 68px 68px;
-  mask-image: linear-gradient(to right, transparent, black);
+.hero-stack {
+  display: grid;
+}
+.hero-slide {
+  grid-area: 1 / 1;
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity 0.3s var(--ease-hero),
+    transform 0.3s var(--ease-hero),
+    visibility 0s linear 0.3s;
+}
+.hero-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 0.45s var(--ease-hero) 0.1s,
+    transform 0.45s var(--ease-hero) 0.1s,
+    visibility 0s;
+}
+.hero-chip {
+  background: #092f57d9;
+  border: 1px solid #ffffff1c;
+  color: #e2e8f0;
+}
+.nasa-art {
+  background: linear-gradient(150deg, #0a4a80 0%, #063a6e 45%, #04223f 100%);
+}
+.nasa-art-icon {
+  background: rgba(0, 217, 232, 0.1);
+  border: 1px solid rgba(103, 232, 249, 0.35);
+  color: #67e8f9;
+}
+.hero-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.35);
+  transition:
+    background 0.2s,
+    transform 0.2s var(--ease-hero);
+}
+.hero-dot.is-on::before {
+  background: #22d3ee;
+}
+.hero-dot:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-dot:hover::before {
+    background: rgba(255, 255, 255, 0.7);
+    transform: scale(1.3);
+  }
+  .hero-dot.is-on:hover::before {
+    background: #67e8f9;
+  }
 }
 .eyebrow,
 .event-card {
   background: #092f57d9;
-  border: 1px solid #ffffff24;
+  border: 1px solid #ffffff1c;
 }
 .eyebrow {
   color: #a5f3fc;
@@ -307,9 +539,8 @@ const facts = [
   backdrop-filter: blur(20px);
 }
 .photo-frame {
-  background:
-    radial-gradient(circle at 50% 35%, #10649488, transparent 55%), #082d56;
-  border: 1px solid #ffffff1a;
+  background: #082d56;
+  border: 1px solid #ffffff14;
 }
 .photo-caption {
   background: linear-gradient(transparent, #041d39f2);
@@ -317,7 +548,7 @@ const facts = [
 .action-primary {
   background: #00d9e8;
   color: #032f5f;
-  box-shadow: 0 12px 34px #00d9e82b;
+  box-shadow: 0 14px 32px -16px rgba(0, 217, 232, 0.55);
   transition:
     transform 0.2s,
     background 0.2s;
@@ -325,6 +556,9 @@ const facts = [
 .action-primary:hover {
   background: #67e8f9;
   transform: translateY(-2px);
+}
+.action-primary:active {
+  transform: translateY(0) scale(0.98);
 }
 .action-secondary {
   background: #ffffff0d;
@@ -349,27 +583,14 @@ const facts = [
   background: #082b51;
 }
 .feature-art {
-  background:
-    repeating-linear-gradient(135deg, transparent 0 32px, #ffffff0a 33px 34px),
-    #053a70;
+  background: linear-gradient(140deg, #063a6e, #052c54);
+  box-shadow: inset 1px 0 0 #ffffff12;
 }
 .venue-card {
   background: #06335f;
 }
 .venue-placeholder {
-  background:
-    radial-gradient(circle at 68% 20%, #0b75e58f, transparent 42%),
-    linear-gradient(135deg, #0b447b, #032548);
-}
-.venue-placeholder::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  opacity: 0.2;
-  background-image:
-    linear-gradient(#67e8f929 1px, transparent 1px),
-    linear-gradient(90deg, #67e8f929 1px, transparent 1px);
-  background-size: 44px 44px;
+  background: linear-gradient(160deg, #07345f, #04223f);
 }
 .venue-placeholder > * {
   position: relative;
@@ -387,6 +608,28 @@ const facts = [
   .action-primary,
   .action-secondary {
     transition: none;
+  }
+  .hero-slide,
+  .hero-slide.is-active {
+    transform: none;
+  }
+  .hero-slide {
+    transition:
+      opacity 0.15s linear,
+      visibility 0s linear 0.15s;
+  }
+  .hero-slide.is-active {
+    transition:
+      opacity 0.15s linear,
+      visibility 0s;
+  }
+  .hero-dot::before {
+    transition: background 0.15s linear;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+  .hero-dot:hover::before {
+    transform: none;
   }
 }
 </style>

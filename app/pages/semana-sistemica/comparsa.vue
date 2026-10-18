@@ -58,22 +58,26 @@
       </div>
     </section>
 
-    <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-comparsa">
-      <div class="flex items-start gap-4">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
-          <Icon name="heroicons:information-circle" class="h-6 w-6" />
-        </span>
-        <div>
-          <h2 id="info-comparsa" class="text-xl font-bold text-white">Información oficial</h2>
-          <p class="mt-2 leading-7 text-slate-300">
-            Los criterios de evaluación, el jurado, las sanciones y las subtemáticas sugeridas por ciclo están en las bases oficiales. La participación implica aceptarlas.
-          </p>
-        </div>
-      </div>
-    </section>
+    <template #ancho>
+      <SemanaSistemicaGaleria id="comparsa" :imagenes="actividad.galeria" />
+    </template>
 
-    <SemanaSistemicaGaleria id="comparsa" :imagenes="actividad.galeria" />
-    <SemanaSistemicaAfiche :actividad="actividad" />
+    <template #lateral>
+      <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-comparsa">
+        <div class="flex items-start gap-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
+            <Icon name="heroicons:information-circle" class="h-6 w-6" />
+          </span>
+          <div>
+            <h2 id="info-comparsa" class="text-xl font-bold text-white">Información oficial</h2>
+            <p class="mt-2 leading-7 text-slate-300">
+              Los criterios de evaluación, el jurado, las sanciones y las subtemáticas sugeridas por ciclo están en las bases oficiales. La participación implica aceptarlas.
+            </p>
+          </div>
+        </div>
+      </section>
+      <SemanaSistemicaAfiche :actividad="actividad" />
+    </template>
   </SemanaSistemicaActividadPagina>
 </template>
 

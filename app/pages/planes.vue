@@ -52,7 +52,7 @@ const dominioInstitucional = computed(() => evento.value?.dominioInstitucional |
 </script>
 
 <style scoped>
-.registration-page { background: radial-gradient(circle at 50% 0, #0a4b7a, transparent 38%), #041d39; }
+.registration-page { background: linear-gradient(180deg, #062a52 0%, #041d39 52%); }
 .kicker { color: #67e8f9; font-size: .75rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 .plan-card, .support-card { background: #082c52; border: 1px solid #ffffff1c; }
 .plan-card { transition: transform .25s, background .25s, border-color .25s; }

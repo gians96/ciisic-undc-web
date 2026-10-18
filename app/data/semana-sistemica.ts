@@ -1,9 +1,9 @@
 // ============================================================================
-// SEMANA SISTÉMICA: COMPARSA, REINADO Y DEPORTES (contenido estático)
+// SEMANA SISTÉMICA: COMPARSA, REINADO, TALLERES Y DEPORTES (contenido estático)
 // Fuente de bases y flyers: comisiones de cada actividad, octubre de 2026.
 // ============================================================================
 
-export type ActividadSlug = 'comparsa' | 'reinado' | 'deportes'
+export type ActividadSlug = 'comparsa' | 'reinado' | 'talleres' | 'deportes'
 
 export interface ImagenActividad {
   src: string
@@ -60,7 +60,7 @@ const IMAGENES = '/images/semana-sistemica'
 
 const imagen = (src: string, ancho: number, alto: number, alt: string): ImagenActividad => ({ src, ancho, alto, alt })
 
-/** En orden cronológico: lunes 26, miércoles 28 y viernes 30 de octubre de 2026. */
+/** En orden cronológico: lunes 26, miércoles 28, jueves 29 y viernes 30 de octubre de 2026. */
 export const actividades: readonly ActividadSemanaSistemica[] = [
   {
     slug: 'comparsa',
@@ -134,6 +134,44 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
       texto: 'Ver bases oficiales',
     },
     contacto: { texto: '+51 955 204 231', href: 'https://wa.me/51955204231' },
+  },
+  {
+    // ⚠️ CONTENIDO PENDIENTE: fecha, horario, lugar, cuotas, enlaces, contactos e imágenes son
+    // provisionales. La comisión de Talleres debe confirmar cada valor y subir los WebP
+    // (talleres-01.webp y flyer-talleres.webp) antes de publicar.
+    slug: 'talleres',
+    nombre: 'Talleres sistémicos',
+    etiqueta: 'Talleres',
+    icono: 'heroicons:academic-cap',
+    ruta: `${RUTA_SEMANA_SISTEMICA}/talleres`,
+    fecha: '2026-10-29',
+    horaInicio: '18:00',
+    horaFin: '20:00',
+    horaTexto: '6:00 p. m. a 8:00 p. m.',
+    lugar: 'Campus UNDC · Ambientes por confirmar',
+    acento: '#2dd4bf',
+    portada: imagen(`${IMAGENES}/talleres-01.webp`, 1600, 900, 'Estudiantes en una sesión práctica de taller de una edición anterior de la Semana Sistémica'),
+    galeria: [],
+    afiche: imagen(`${IMAGENES}/flyer-talleres.webp`, 1080, 1440, 'Afiche oficial de los Talleres sistémicos: jueves 29 de octubre de 2026 en el campus de la UNDC'),
+    inscripcion: {
+      // TODO(comisión): reemplazar con el formulario oficial de inscripción.
+      url: 'https://forms.gle/pendiente',
+      texto: 'Inscribirme al taller',
+      cierre: '2026-10-26T23:59:59-05:00',
+      titulo: 'Reserva tu cupo en los talleres',
+      descripcion: 'Completa el formulario de la comisión para elegir taller y turno. Los cupos son limitados.',
+      filas: [
+        { label: 'Fecha', valor: '29 de octubre de 2026' },
+        { label: 'Horario', valor: '6:00 p. m. a 8:00 p. m.' },
+        { label: 'Cupos', valor: 'Limitados por taller' },
+        { label: 'Certificado', valor: 'Por confirmar' },
+      ],
+    },
+    bases: {
+      // TODO(comisión): reemplazar con las bases oficiales.
+      url: 'https://drive.google.com/pendiente',
+      texto: 'Ver bases oficiales',
+    },
   },
   {
     slug: 'deportes',

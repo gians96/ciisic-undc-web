@@ -1,5 +1,7 @@
 <!-- Marco común de las páginas de la Semana Sistémica: portada con fecha, hora y lugar, columna de
-     contenido (slot) y panel de inscripción. Los estilos `.ss-*` son compartidos por las tres páginas. -->
+     contenido (slot), a la derecha el panel de inscripción con el slot `lateral` debajo (afiche,
+     información oficial) y, tras el grid, el slot `ancho` a todo el ancho del contenedor (galería).
+     Los estilos `.ss-*` son compartidos. -->
 <template>
   <div class="ss-pagina min-h-screen bg-[#041d39] text-white" :style="{ '--acento': actividad.acento }">
     <section class="relative overflow-hidden border-b border-white/10">
@@ -42,8 +44,12 @@
     <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8 lg:py-20 2xl:max-w-[1600px]">
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,.8fr)] lg:items-start">
         <div><slot /></div>
-        <SemanaSistemicaPanelInscripcion :actividad="actividad" />
+        <div>
+          <SemanaSistemicaPanelInscripcion :actividad="actividad" />
+          <slot name="lateral" />
+        </div>
       </div>
+      <slot name="ancho" />
     </div>
   </div>
 </template>
@@ -79,8 +85,9 @@ withDefaults(defineProps<{
 .ss-timeline > li::before { content: ''; position: absolute; top: 1.15rem; left: calc(var(--ss-hora) + var(--ss-gap) / 2 - .45rem); height: .9rem; width: .9rem; border-radius: 9999px; background: var(--acento); box-shadow: 0 0 0 4px #041d39; }
 .ss-timeline-hora { color: #67e8f9; font-size: .875rem; font-weight: 700; line-height: 1.6; font-variant-numeric: tabular-nums; }
 .ss-btn { display: inline-flex; min-height: 3rem; width: 100%; align-items: center; justify-content: center; gap: .5rem; border-radius: .75rem; padding: .75rem 1.25rem; font-weight: 700; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
-.ss-btn-primary { background: #00d9e8; color: #032f5f; box-shadow: 0 12px 34px #00d9e82b; }
+.ss-btn-primary { background: #00d9e8; color: #032f5f; box-shadow: 0 14px 32px -16px rgba(0, 217, 232, 0.5); }
 .ss-btn-primary:hover { background: #67e8f9; transform: translateY(-2px); }
+.ss-btn-primary:active { transform: translateY(0) scale(0.98); }
 .ss-btn-secondary { border: 1px solid #67e8f94d; background: #67e8f912; color: #cffafe; }
 .ss-btn-secondary:hover { border-color: #67e8f9; background: #67e8f91f; }
 .ss-back:focus-visible, .ss-btn:focus-visible, .ss-link:focus-visible { outline: 2px solid #67e8f9; outline-offset: 3px; }

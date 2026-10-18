@@ -1,4 +1,4 @@
-<!-- Desplegable del menú de escritorio (Ponencias, Semana Sistémica). Se abre y se cierra con clic o con el
+<!-- Desplegable del menú de escritorio (Congreso, Ponencias, Semana Sistémica). Se abre y se cierra con clic o con el
      teclado (Enter/Espacio); Esc, clic fuera o salir del menú con el foco también lo cierran. -->
 <template>
   <div ref="raiz" class="relative" @focusout="alSalirFoco">
@@ -113,7 +113,6 @@ onBeforeUnmount(() => {
 
 .nav-link:hover {
   color: #00d9e8;
-  transform: translateY(-1px);
 }
 
 .nav-link::after {
@@ -122,8 +121,8 @@ onBeforeUnmount(() => {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #00d9e8, #075bcb);
+  height: 1px;
+  background: #00d9e8;
   transition: width 0.3s ease;
 }
 

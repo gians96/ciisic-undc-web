@@ -77,9 +77,9 @@ module.exports = {
         'gradient-secondary': 'linear-gradient(90deg, #032f5f 0%, #06467d 100%)',
       },
       boxShadow: {
-        'neon': '0 0 20px rgba(0, 217, 232, 0.3)',
-        'neon-lg': '0 0 30px rgba(0, 217, 232, 0.5)',
-        'neon-xl': '0 0 40px rgba(0, 217, 232, 0.7)',
+        'neon': '0 14px 34px -16px rgba(0, 217, 232, 0.4)',
+        'neon-lg': '0 18px 40px -16px rgba(0, 217, 232, 0.5)',
+        'neon-xl': '0 22px 48px -18px rgba(0, 217, 232, 0.55)',
       },
       animation: {
         'rotation': 'spin 12s linear infinite',

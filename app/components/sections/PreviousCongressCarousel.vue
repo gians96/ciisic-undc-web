@@ -143,7 +143,7 @@ onUnmounted(() => window.removeEventListener('resize', updateVisibleCards))
 .gallery-track { grid-auto-columns: 88%; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-inline: contain; }
 .gallery-track::-webkit-scrollbar { display: none; }
 .gallery-card { box-shadow: 0 20px 60px #020f2038; }
-.photo-placeholder { background: radial-gradient(circle at 50% 30%, #0b78a566, transparent 44%), linear-gradient(145deg, #0a3a68, #062746); }
+.photo-placeholder { background: linear-gradient(145deg, #0a3a68, #062746); }
 .photo-placeholder::before { position: absolute; inset: 0; content: ''; opacity: .24; background-image: linear-gradient(#67e8f929 1px, transparent 1px), linear-gradient(90deg, #67e8f929 1px, transparent 1px); background-size: 40px 40px; }
 .photo-placeholder > * { position: relative; }
 .card-overlay { background: linear-gradient(to top, #041d39f5 0%, #041d3966 42%, transparent 68%); pointer-events: none; }

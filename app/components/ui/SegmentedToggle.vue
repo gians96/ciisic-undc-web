@@ -68,7 +68,7 @@ const onKeydown = (event: KeyboardEvent, index: number) => {
 .segmented-toggle { display: inline-flex; max-width: 100%; border: 1px solid #ffffff1a; border-radius: .75rem; background: #ffffff08; padding: .25rem; }
 .segmented-btn { display: flex; flex: 1 1 auto; align-items: center; justify-content: center; gap: .5rem; border-radius: .55rem; padding: .7rem 1rem; color: #94a3b8; font-size: .875rem; font-weight: 600; transition: all .25s ease; }
 .segmented-btn:hover { color: #e2e8f0; }
-.segmented-btn.active { background: #00d9e826; color: #67e8f9; box-shadow: 0 0 20px #00d9e826; }
+.segmented-btn.active { background: #00d9e826; color: #67e8f9; }
 .segmented-btn:focus-visible { outline: 2px solid #00d9e8; outline-offset: 2px; }
 @media (max-width: 479px) { .segmented-toggle { display: flex; width: 100%; } .segmented-btn { padding: .7rem .6rem; font-size: .8rem; gap: .4rem; } }
 @media (prefers-reduced-motion: reduce) { .segmented-btn { transition: none; } }

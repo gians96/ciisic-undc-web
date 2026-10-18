@@ -29,7 +29,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 ## Arquitectura
 
 - `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `confirmation`,
-  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado y Deportes, con el contenido estático de
+  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado, Talleres y Deportes, con el contenido estático de
   `app/data/semana-sistemica.ts`), `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `useConsultation` (DNI), `useVerificacionEstudiante`,
