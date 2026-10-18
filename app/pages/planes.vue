@@ -5,7 +5,7 @@
         <p class="kicker mb-4">VIII CIISIC 2026 · Inscripciones</p>
         <h1 class="text-5xl font-extrabold tracking-tight text-white sm:text-6xl">Tu lugar en el <span class="text-primary-400">congreso</span> comienza aquí.</h1>
         <p class="mt-6 text-lg leading-relaxed text-slate-300">Elige la modalidad que te corresponde y completa el formulario de inscripción. La confirmación y el precio definitivo se mostrarán durante el proceso de registro.</p>
-        <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span><a v-if="!evento || inscripcionesAbiertas" href="#kit" class="inline-flex items-center gap-2 font-semibold text-primary-300 underline-offset-4 hover:underline"><Icon name="heroicons:gift" class="h-5 w-5 text-primary-400" />Ver kit oficial</a></div>
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span><a v-if="!evento || inscripcionesAbiertas" href="#merchandising-oficial" class="inline-flex items-center gap-2 font-semibold text-primary-300 underline-offset-4 hover:underline"><Icon name="heroicons:gift" class="h-5 w-5 text-primary-400" />Ver merchandising oficial</a></div>
       </div>
 
       <EstadoInscripciones v-if="evento && !inscripcionesAbiertas" estado="cerradas" />
@@ -36,7 +36,7 @@
         </NuxtLink>
       </div>
 
-      <InscripcionKitShowcase v-if="!evento || inscripcionesAbiertas" class="mt-8" />
+      <InscripcionTomatodoOficial v-if="!evento || inscripcionesAbiertas" class="mt-8" />
 
       <div class="support-card mt-8 flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 class="text-xl font-bold text-white">¿Inscribirás una delegación?</h2><p class="mt-1 text-slate-300">Comunícate con el equipo organizador para coordinar tu registro.</p></div><a href="https://wa.me/51955204231" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary-400/50 px-5 py-3 font-semibold text-primary-300 transition hover:bg-primary-400/10"><Icon name="heroicons:chat-bubble-left-right" class="h-5 w-5" />Escribir por WhatsApp</a></div>
     </div>
