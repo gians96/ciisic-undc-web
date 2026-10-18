@@ -12,9 +12,11 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 
 - Nuxt 4 (SSR) + Nitro, Tailwind CSS v3 vía `@nuxtjs/tailwindcss` (se mantiene en este repo),
   Pinia, Vitest. Gestor: **bun** (`bun install`).
-- Variables (runtime, solo servidor; ver [`.env.example`](.env.example)):
-  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. Nada más: el client ID de Google y la URL
-  del panel vienen del backend.
+- Variables privadas de runtime (ver [`.env.example`](.env.example)):
+  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. El Encuentro de Egresados solo usa la
+  variable pública segura `NUXT_PUBLIC_ALUMNI_FORM_URL` para enlazar a Google Forms; el corte está
+  fijado en `nuxt.config.ts`, no usa credenciales ni accede a Sheets. El client ID de Google y la URL
+  del panel general siguen viniendo del backend.
 - Comandos:
 
   | Tarea | Comando |
@@ -68,8 +70,9 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 ## Ecosistema y comunicación entre sistemas
 
 Contratos: `backend-ciisic/docs/arquitectura-ecosistema.md` (esta landing es el consumidor del
-**contrato 3**, API del sitio, y usa el contrato 5 para Google). Este repositorio **no expone
-API**; **consume** backend-ciisic `/api/v1/site/*` con el token del evento desde su servidor.
+**contrato 3**, API del sitio, y usa el contrato 5 para Google). Este repositorio consume
+backend-ciisic `/api/v1/site/*` con el token del evento desde su servidor. El Encuentro de Egresados
+no modifica contratos, pagos ni inscripciones del backend: abre el Google Forms oficial en otra pestaña.
 
 | Sistema | Repositorio | Relación |
 |---|---|---|

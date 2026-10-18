@@ -41,16 +41,31 @@ describe('nuxt.config: configuración del BFF', () => {
     expect(JSON.stringify(runtimeConfig)).not.toContain('evt_no-debe-quedar-en-el-build')
   })
 
-  it('no hay client ID de Google ni URL del panel en runtimeConfig: se leen de la API del sitio', async () => {
+  it('el enlace de Google Forms queda vacío y el corte confirmado es público y estable', async () => {
+    const { runtimeConfig } = await cargarConfigNuxt()
+
+    expect(runtimeConfig).not.toHaveProperty('alumniRegistrationEnabled')
+    expect(runtimeConfig).not.toHaveProperty('alumniSheetsSpreadsheetId')
+    expect(runtimeConfig).not.toHaveProperty('alumniGoogleCredentialsPath')
+    expect(runtimeConfig.public).toMatchObject({
+      alumniFormUrl: '',
+      alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
+    })
+    expect(runtimeConfig.public).not.toHaveProperty('alumniRegistrationEnabled')
+    expect(Object.keys(runtimeConfig.public)).not.toContain('alumniGooglePrivateKey')
+    expect(JSON.stringify(runtimeConfig)).not.toContain('iam.gserviceaccount.com')
+  })
+
+  it('no hay client ID de Google del login ni URL del panel en runtimeConfig público: se leen de la API del sitio', async () => {
     // Variables de la versión anterior (o que alguien podría intentar definir) no tienen efecto
     vi.stubEnv('NUXT_PUBLIC_ADMIN_URL', 'https://panel.no-debe-quedar.test')
     vi.stubEnv('NUXT_PUBLIC_URL_PANEL', 'https://panel.no-debe-quedar.test')
     vi.stubEnv('NUXT_PUBLIC_GOOGLE_CLIENT_ID', `no-debe-quedar-${CLIENT_ID}`)
 
     const { runtimeConfig } = await cargarConfigNuxt()
-    const claves = [...Object.keys(runtimeConfig), ...Object.keys(runtimeConfig.public)]
+    const clavesPublicas = Object.keys(runtimeConfig.public)
 
-    for (const clave of claves) expect(clave).not.toMatch(/admin|panel|google|client/i)
+    for (const clave of clavesPublicas) expect(clave).not.toMatch(/admin|panel|client/i)
     expect(runtimeConfig.public).not.toHaveProperty('adminUrl')
     expect(JSON.stringify(runtimeConfig)).not.toContain('no-debe-quedar')
     expect(JSON.stringify(runtimeConfig)).not.toContain('googleusercontent')
