@@ -99,6 +99,32 @@
                   Haz clic en Registrar paper para enviar tu artículo. La
                   recepción de papers es del 05 al 14 de octubre.
                 </p>
+                <div class="pt-2">
+                  <h3
+                    class="text-sm font-semibold uppercase tracking-wider text-white"
+                  >
+                    Guías de usuario
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-400">
+                    Paso a paso para crear tu cuenta y subir tu artículo.
+                  </p>
+                  <div
+                    class="mt-3 flex flex-col sm:flex-row gap-3 sm:gap-4 mx-4 sm:mx-0"
+                  >
+                    <a
+                      v-for="guia in papersHero.guias"
+                      :key="guia.label"
+                      :href="guia.to"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn-secondary inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-center text-sm font-semibold sm:px-6 sm:py-3 sm:text-base"
+                    >
+                      <Icon :name="guia.icon" class="h-5 w-5" aria-hidden="true" />
+                      {{ guia.label }}
+                      <span class="sr-only"> (se abre en una pestaña nueva)</span>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -113,7 +139,7 @@
                 src="/images/eventos/papers.jpeg?v=2026-10-06"
                 alt="Afiche de Call for Papers de la edición 2026"
                 class="w-full h-auto object-cover rounded-xl shadow-2xl"
-              />
+              >
               <p class="mt-3 text-center text-sm text-slate-400">
                 Edición 2026
               </p>
@@ -431,6 +457,19 @@ const papersHero = {
       label: "Formato de presentación · referencia 2025",
       to: "/[VII CIISIC] Formato.docx",
       style: "btn-secondary",
+    },
+  ],
+  // Guías de usuario en Google Drive; el equipo las ajusta, basta cambiar el enlace aquí.
+  guias: [
+    {
+      label: "Guía: creación de cuentas",
+      icon: "heroicons:user-plus",
+      to: "https://drive.google.com/open?id=1SUhHsFDu1dVy4un8-RFGxv6GW5hBKy_b&usp=drive_copy",
+    },
+    {
+      label: "Guía: subir artículos",
+      icon: "heroicons:arrow-up-tray",
+      to: "https://drive.google.com/open?id=1IhEiQKHO17IdKAmp7kLUTWPgqx7G0ZKF&usp=drive_copy",
     },
   ],
 };

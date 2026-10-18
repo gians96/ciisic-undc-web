@@ -74,8 +74,16 @@
                 </li>
               </ul>
 
+              <NuxtLink
+                v-if="event.pageUrl"
+                :to="event.pageUrl"
+                class="rules-link mt-7 inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold"
+              >
+                Ver detalles e inscripción
+                <Icon name="heroicons:arrow-right" class="h-5 w-5" />
+              </NuxtLink>
               <a
-                v-if="event.rulesUrl"
+                v-else-if="event.rulesUrl"
                 :href="event.rulesUrl"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -115,6 +123,7 @@ interface AcademicEvent {
   imageAlt: string
   organizer?: string
   rulesUrl?: string
+  pageUrl?: string
   schedule: ScheduleItem[]
 }
 
@@ -168,12 +177,17 @@ const eventDays: EventDay[] = [
         id: 'cyber-clash',
         category: 'Ciberseguridad',
         title: 'Cyber Clash',
-        time: '15:00–17:00 h',
-        image: '/images/eventos/conversatorio.webp',
-        imageAlt: 'Actividad académica durante una edición anterior del CIISIC',
-        organizer: 'Kriptome Cybersecurity',
+        time: '15:00–18:00 h',
+        image: '/images/semana-sistemica/cyber-clash-01.webp',
+        imageAlt: 'Auditorio de ciberseguridad durante Cyber Clash',
+        organizer: 'Kriptome Cybersecurity y EPIS UNDC',
+        pageUrl: '/semana-sistemica/cyber-clash',
         schedule: [
-          { name: 'Evento de ciberseguridad', time: '15:00–17:00 h' },
+          { name: 'Apertura y bienvenida', time: '15:00 h' },
+          { name: 'Phishing e ingeniería social', time: '15:20 h' },
+          { name: 'Ransomware y amenazas emergentes', time: '16:00 h' },
+          { name: 'Análisis de ciberataque en vivo', time: '16:50 h' },
+          { name: 'Buenas prácticas y cierre', time: '17:35 h' },
         ],
       },
       {
