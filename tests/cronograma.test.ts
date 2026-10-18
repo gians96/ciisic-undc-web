@@ -93,6 +93,7 @@ describe('bloques «Ponencias Especializadas» del cronograma', () => {
       'Ponencias Especializadas',
       'Ponencias Especializadas',
       'Reinado',
+      'Cyber Clash — Kriptome Cybersecurity',
       'Recibimiento y pasacalles',
       'Deportes en simultáneo',
     ])

@@ -3,7 +3,7 @@
 // Fuente de bases y flyers: comisiones de cada actividad, octubre de 2026.
 // ============================================================================
 
-export type ActividadSlug = 'comparsa' | 'reinado' | 'deportes'
+export type ActividadSlug = 'comparsa' | 'reinado' | 'cyber-clash' | 'deportes'
 
 export interface ImagenActividad {
   src: string
@@ -60,7 +60,7 @@ const IMAGENES = '/images/semana-sistemica'
 
 const imagen = (src: string, ancho: number, alto: number, alt: string): ImagenActividad => ({ src, ancho, alto, alt })
 
-/** En orden cronológico: lunes 26, miércoles 28 y viernes 30 de octubre de 2026. */
+/** En orden cronológico: lunes 26, miércoles 28, jueves 29 y viernes 30 de octubre de 2026. */
 export const actividades: readonly ActividadSemanaSistemica[] = [
   {
     slug: 'comparsa',
@@ -134,6 +134,40 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
       texto: 'Ver bases oficiales',
     },
     contacto: { texto: '+51 955 204 231', href: 'https://wa.me/51955204231' },
+  },
+  {
+    slug: 'cyber-clash',
+    nombre: 'Cyber Clash — Kriptome Cybersecurity',
+    etiqueta: 'Cyber Clash',
+    icono: 'heroicons:shield-check',
+    ruta: `${RUTA_SEMANA_SISTEMICA}/cyber-clash`,
+    fecha: '2026-10-29',
+    horaInicio: '15:00',
+    horaFin: '18:00',
+    horaTexto: '3:00 p. m.',
+    lugar: 'Casa de la Cultura, San Vicente de Cañete',
+    acento: '#06b6d4',
+    portada: imagen(`${IMAGENES}/cyber-clash-01.webp`, 1920, 1080, 'Auditorio de ciberseguridad con expositores y pantallas de defensa digital'),
+    galeria: [],
+    afiche: imagen(`${IMAGENES}/flyer-cyber-clash.webp`, 819, 1024, 'Afiche oficial de Cyber Clash - Kriptome Cybersecurity: jueves 29 de octubre, 3:00 p. m., Casa de la Cultura'),
+    inscripcion: {
+      url: 'https://forms.gle/D1axfaofKhsTr9c56',
+      texto: 'Inscribirme en Cyber Clash',
+      cierre: '2026-10-29T23:59:59-05:00',
+      titulo: 'Inscripción a Cyber Clash',
+      descripcion: 'Regístrate en el formulario oficial de Google para asegurar tu vacante y la emisión de tu certificado de asistente.',
+      filas: [
+        { label: 'Fecha y hora', valor: 'Jueves 29 de octubre de 2026 · 3:00 p. m.' },
+        { label: 'Lugar', valor: 'Casa de la Cultura' },
+        { label: 'Precio de inscripción', valor: 'S/ 4.00' },
+        { label: 'Dirigido a', valor: 'Estudiantes de la EPIS y público en general' },
+        { label: 'Certificación', valor: 'Certificado de asistente' },
+      ],
+    },
+    bases: {
+      url: 'https://forms.gle/D1axfaofKhsTr9c56',
+      texto: 'Ver formulario de inscripción',
+    },
   },
   {
     slug: 'deportes',
