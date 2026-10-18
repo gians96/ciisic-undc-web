@@ -87,7 +87,7 @@ const academicEvents = [
     description: 'Desafío de ciberseguridad organizado por Kriptome Cybersecurity.',
     image: '/images/eventos/conversatorio.webp',
     alt: 'Actividad académica durante una edición anterior del CIISIC',
-    href: '/eventos-academicos#cyber-clash',
+    href: '/semana-sistemica/cyber-clash',
   },
   {
     title: 'Hackathon',

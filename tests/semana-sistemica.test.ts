@@ -10,8 +10,8 @@ import { schedule } from '../app/data/cronograma'
 import { etiquetaDia, formatoHora12 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de la Semana Sistémica', () => {
-  it('tiene Comparsa, Reinado y Deportes en orden cronológico', () => {
-    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'reinado', 'deportes'])
+  it('tiene las actividades en orden cronológico', () => {
+    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'reinado', 'cyber-clash', 'deportes'])
     const fechas = actividades.map(actividad => actividad.fecha)
     expect([...fechas].sort()).toEqual(fechas)
   })
@@ -19,6 +19,7 @@ describe('datos de la Semana Sistémica', () => {
   it('cada actividad cae en el día de la semana publicado en los flyers', () => {
     expect(etiquetaDia(actividadPorSlug('comparsa').fecha)).toBe('Lunes 26 de octubre')
     expect(etiquetaDia(actividadPorSlug('reinado').fecha)).toBe('Miércoles 28 de octubre')
+    expect(etiquetaDia(actividadPorSlug('cyber-clash').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('deportes').fecha)).toBe('Viernes 30 de octubre')
   })
 
@@ -65,7 +66,7 @@ describe('datos de la Semana Sistémica', () => {
 
   it('el submenú tiene un item por actividad con su ruta', () => {
     expect(SEMANA_SISTEMICA_MENU.map(item => item.href)).toEqual(actividades.map(actividad => actividad.ruta))
-    expect(SEMANA_SISTEMICA_MENU.map(item => item.label)).toEqual(['Comparsa', 'Reinado', 'Deportes'])
+    expect(SEMANA_SISTEMICA_MENU.map(item => item.label)).toEqual(['Comparsa', 'Reinado', 'Cyber Clash', 'Deportes'])
     expect(new Set(SEMANA_SISTEMICA_MENU.map(item => item.id)).size).toBe(SEMANA_SISTEMICA_MENU.length)
   })
 
