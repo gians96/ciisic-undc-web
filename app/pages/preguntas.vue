@@ -109,6 +109,8 @@
 </template>
 
 <script setup lang="ts">
+import { respuestaModalidadVirtual } from '~/utils/preguntas'
+
 // ============================================================================
 // SEO Y META TAGS
 // ============================================================================
@@ -144,7 +146,11 @@ const categories = ref([
   { id: 'sede', name: 'Sede' }
 ])
 
-const faqs = ref([
+// ¿La API devuelve planes VIRTUAL? Solo entonces la FAQ 9 anuncia la inscripción virtual (spec 005); si la
+// carga falla o aún no hay datos, conserva el texto anterior y no contradice a /estudiantes ni a /general
+const { oferta: ofertaVirtual } = useOfertaVirtual()
+
+const faqs = computed(() => [
   {
     id: 1,
     category: 'registro',
@@ -197,7 +203,7 @@ const faqs = ref([
     id: 9,
     category: 'evento',
     question: '¿Habrá modalidad virtual?',
-    answer: 'Sí. Además de la asistencia presencial, existe la inscripción virtual: al inscribirte, elige el plan Virtual. La organización te compartirá las indicaciones para conectarte a la transmisión del congreso. Los talleres prácticos y sesiones de networking son exclusivamente presenciales.'
+    answer: respuestaModalidadVirtual(ofertaVirtual.value !== null)
   }
 ])
 
