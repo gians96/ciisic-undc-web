@@ -33,8 +33,11 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
   planes virtuales viven dentro de las mismas categorías (no hay página `/virtual`) y las páginas de inscripción los
   muestran en un grupo «Virtual (en línea)» debajo de «Presencial». Con una sola modalidad a la vista no hay
   encabezados (lo de siempre). Un plan virtual tiene el mismo precio para todos (`precio == precioInstitucional`),
-  así que ningún correo cambia el monto: el aviso «Se aplicará descuento UNDC» solo sale si algún plan visible
-  cuesta menos para la comunidad UNDC, y el botón «Ver qué incluye el kit» solo si hay algún plan presencial.
+  así que ningún correo cambia el monto: sin planes virtuales el aviso del correo institucional es el de siempre
+  («Se aplicará descuento UNDC»); con planes virtuales a la vista y ningún plan con descuento dice solo «Correo
+  institucional» (`avisoCorreoInstitucional`). El botón «Ver qué incluye el kit» solo sale si hay algún plan
+  presencial. La FAQ «¿Habrá modalidad virtual?» anuncia el plan Virtual solo si la API devuelve planes virtuales
+  (`respuestaModalidadVirtual`).
   Un estudiante virtual de `/estudiantes` sigue pasando por el ciclo y la verificación SIVIRENO. La landing no
   envía la modalidad: la deduce el servidor del tipo elegido.
 

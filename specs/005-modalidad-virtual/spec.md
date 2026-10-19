@@ -39,14 +39,21 @@ inscripción) y su `docs/arquitectura-ecosistema.md`; esta landing solo lo consu
 2. **Given** un plan virtual a S/ 30.00 (o S/ 50.00), **When** escribo cualquier correo (incluido
    `@undc.edu.pe`) o me verifico como estudiante UNDC, **Then** el monto sigue igual, el plan no se oculta y la
    confirmación no muestra «Precio UNDC aplicado».
-3. **Given** que ningún plan visible tiene precio institucional menor que el regular, **When** escribo un
-   correo `@undc.edu.pe` en `/general`, **Then** el aviso del correo dice «Correo válido» y no «Se aplicará
-   descuento UNDC».
+3. **Given** planes virtuales a la vista y ningún plan visible con precio institucional menor que el regular,
+   **When** escribo un correo `@undc.edu.pe` en `/general`, **Then** el aviso del correo dice «Correo
+   institucional» (reconoce el dominio) y no promete «Se aplicará descuento UNDC». **Given** que no hay planes
+   virtuales a la vista, **Then** el aviso es el de siempre («Correo institucional - Se aplicará descuento
+   UNDC»), aunque ningún plan tenga descuento (SC-001: lo presencial no cambia).
 4. **Given** que no hay ningún plan presencial a la vista, **Then** no aparece «Ver qué incluye el kit».
 5. **Given** que solo hay una modalidad a la vista (el caso de hoy, sin tipos virtuales), **Then** la página se
    ve exactamente igual que antes: un solo grupo, sin encabezados.
-6. **Given** el grupo de planes, **Then** sigue siendo un `radiogroup` con teclado (Enter y espacio) y el aviso
-   de planes ocultos conserva su `aria-live`; cada grupo con encabezado es un `group` rotulado por él.
+6. **Given** el grupo de planes, **Then** sigue siendo un único `radiogroup` con teclado (Enter y espacio) que
+   solo contiene radios (ARIA exige que el `radiogroup` posea radios): los encabezados «Presencial» y «Virtual
+   (en línea)» son visuales (`aria-hidden`, sin `role="group"`) y la modalidad llega a los lectores de pantalla
+   por el `aria-label` de cada tarjeta (`etiquetaAccesiblePlan`); el aviso de planes ocultos conserva su
+   `aria-live`. Validado con axe-core 4.10.2 sobre la página compilada (`/general` con planes presenciales y
+   virtuales): sin violaciones de `aria-required-children`; el único aviso, `heading-order` del `h4` del título de
+   la tarjeta, ya existía sin planes virtuales.
 
 ### User Story 2 - `/planes` anuncia la participación virtual (Priority: P1)
 
@@ -66,14 +73,18 @@ inscripción) y su `docs/arquitectura-ecosistema.md`; esta landing solo lo consu
 
 ### User Story 4 - La FAQ es coherente (Priority: P3)
 
-1. **Given** `/preguntas`, **Then** «¿Habrá modalidad virtual?» explica que existe la inscripción virtual (se
-   elige el plan Virtual), sin citar montos y manteniendo que talleres y networking son presenciales.
+1. **Given** `/preguntas` y que la API devuelve planes `VIRTUAL`, **Then** «¿Habrá modalidad virtual?» explica
+   que existe la inscripción virtual (se elige el plan Virtual), sin citar montos y manteniendo que talleres y
+   networking son presenciales.
+2. **Given** que la API no devuelve planes virtuales (datos aún sin crear, backend anterior o fallo de carga),
+   **Then** la respuesta es el texto anterior, idéntico: la FAQ nunca anuncia un plan que `/estudiantes` y
+   `/general` no muestran.
 
 ### Edge Cases
 
 - Backend 018 desplegado después de la landing, o datos virtuales aún no creados: no hay planes `VIRTUAL`, todo
-  se ve como hoy (la franja de `/planes` no aparece). **Excepción**: la FAQ 9 es texto estático y ya anuncia la
-  inscripción virtual; conviene desplegar la landing cuando los tipos virtuales estén cargados.
+  se ve como hoy (la franja de `/planes` no aparece y la FAQ 9 conserva su texto anterior): el orden de
+  despliegue no deja ninguna contradicción visible.
 - Backend 018 y datos virtuales listos antes que esta landing: la landing anterior ignora `modalidad` y muestra
   los planes virtuales como un plan más (sin encabezados), con el monto de la API; la inscripción funciona.
 - Un correo que deja una sola modalidad a la vista (p. ej. solo virtuales) muestra un grupo sin encabezado.
@@ -95,11 +106,12 @@ y **nada se bloquea** en la landing.
   `PRESENCIAL`), igual que `aDisponibilidad`.
 - **FR-003**: `agruparPlanesPorModalidad` (Presencial primero; sin encabezados con una sola modalidad),
   `hayPlanesVirtuales`, `hayPlanesPresenciales`, `precioDesdeVirtual`, `categoriasConPlanesVirtuales`,
-  `resumirOfertaVirtual`, `hayDescuentoInstitucional` y `claseBadgePlan` en `app/utils/planes.ts`, con
-  pruebas; los montos salen siempre de la API.
+  `resumirOfertaVirtual`, `hayDescuentoInstitucional`, `avisoCorreoInstitucional`, `etiquetaAccesiblePlan` y
+  `claseBadgePlan` en `app/utils/planes.ts`, con pruebas; los montos salen siempre de la API.
 - **FR-004**: `useFormularioInscripcion` expone `gruposPlanes` y `mostrarKit`; `FormularioGeneral.vue` y
   `estudiantes.vue` (plantilla duplicada) renderizan las tarjetas agrupadas; el modal del kit solo con algún
-  plan presencial; el aviso del descuento UNDC solo si algún plan visible lo tiene.
+  plan presencial; el aviso del correo institucional (`avisoCorreoInstitucional`) conserva su texto de siempre
+  salvo que haya planes virtuales a la vista y ninguno con descuento UNDC.
 - **FR-005**: `/planes` muestra la franja dinámica con `useOfertaVirtual` (oculta si no hay planes virtuales o
   si falla la carga).
 - **FR-006**: `app/utils/confirmacion.ts` (`proximosPasos`) y `confirmation.vue` ramifican por
@@ -107,6 +119,9 @@ y **nada se bloquea** en la landing.
 - **FR-007**: el POST no envía la modalidad; el BFF no cambia (reenvía el JSON tal cual) y la lista blanca de
   categorías de `/api/publico/planes` no cambia.
 - **FR-008**: sin variables de entorno nuevas ni cambios en el contrato del BFF más allá del campo aditivo.
+- **FR-009**: la FAQ «¿Habrá modalidad virtual?» (`preguntas.vue`) elige su respuesta con
+  `respuestaModalidadVirtual(oferta !== null)` (`app/utils/preguntas.ts`, `useOfertaVirtual`): el plan Virtual se
+  anuncia solo si la API lo devuelve; sin planes virtuales el texto es el anterior.
 
 ## Success Criteria
 
