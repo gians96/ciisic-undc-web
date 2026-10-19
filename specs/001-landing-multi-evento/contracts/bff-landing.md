@@ -22,10 +22,10 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | Backend | Uso |
 |---|---|
 | `GET /event` | Evento público (forma `EventoPublico`) |
-| `GET /registration-types?categoria=` | Categorías y tipos activos; cada tipo trae `disponiblePara` (`TODOS` \| `INSTITUCIONAL` \| `EXTERNOS`, spec 016 del backend; ausente = `TODOS`) |
+| `GET /registration-types?categoria=` | Categorías y tipos activos; cada tipo trae `disponiblePara` (`TODOS` \| `INSTITUCIONAL` \| `EXTERNOS`, spec 016 del backend; ausente = `TODOS`) y `modalidad` (modalidad de **asistencia**: `PRESENCIAL` \| `VIRTUAL`, spec 018 del backend; ausente, `null` o desconocida = `PRESENCIAL`) |
 | `GET /catalogs` | `{ clasificaciones: [{ id, nombre }], tiposDocumento: [{ id, nombre, abreviatura }] }` |
 | `GET /config` | `{ google: { clientId: string \| null }, urlPanel: string \| null }` |
-| `POST /inscriptions` | multipart: `participante` JSON + campos + `voucher` (+ `verificacionCorreoToken` opcional); la respuesta agrega `esCorreoVerificado`; `422 REGISTRATION_TYPE_NOT_AVAILABLE` si el tipo no corresponde a la persona (spec 016 del backend) |
+| `POST /inscriptions` | multipart: `participante` JSON + campos + `voucher` (+ `verificacionCorreoToken` opcional); la respuesta agrega `esCorreoVerificado` y `tipoInscripcion.modalidad` (spec 018; ausente = `PRESENCIAL`); `422 REGISTRATION_TYPE_NOT_AVAILABLE` si el tipo no corresponde a la persona (spec 016 del backend) |
 | `POST /student-verification` | JSON `{ correo, tipoDocumento, numeroDocumento }` |
 | `POST /google-verification` | JSON `{ idToken }` (ver abajo) |
 | `GET /document-lookup/dni/:numero` | `404 DOCUMENT_NOT_FOUND`, `503 LOOKUP_UNAVAILABLE`, `429` |
@@ -63,6 +63,12 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 
 Reglas comunes:
 
+- **Modalidad de asistencia (spec 005 de esta landing, spec 018 del backend)**: `modalidad` es un campo
+  **aditivo** que vive siempre dentro del objeto del tipo (`tipo.modalidad`, `tipoInscripcion.modalidad`),
+  nunca en la raíz de la inscripción, donde `modalidadPago` es otra cosa (`banco` \| `billetera`). El BFF
+  reenvía el JSON sin transformarlo, no cambia la lista blanca de categorías (los tipos virtuales viven dentro
+  de `ESTUDIANTES` y `PUBLICO_GENERAL`) y la landing **no envía** la modalidad en `POST /inscripciones`: la
+  deduce el servidor del tipo elegido. Sin el campo (backend anterior) todo equivale a `PRESENCIAL`.
 - El cuerpo se reenvía tal cual (mismo `Content-Type`, incluido el `boundary` del multipart),
   salvo en `/verificacion-google`: el navegador envía `{ credential }` (la respuesta de Google
   Identity Services) y el BFF reenvía solo `{ idToken: credential }` como `application/json`.
