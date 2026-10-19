@@ -13,12 +13,12 @@ import {
 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de las ponencias especializadas', () => {
-  it('tiene 16 ponentes únicos y 17 temas', () => {
-    expect(specializedSpeakers).toHaveLength(16)
-    expect(new Set(specializedSpeakers.map(speaker => speaker.id)).size).toBe(16)
-    expect(new Set(specializedSpeakers.map(speaker => speaker.name)).size).toBe(16)
-    expect(specializedTalks).toHaveLength(17)
-    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(17)
+  it('tiene 18 ponentes únicos y 19 temas', () => {
+    expect(specializedSpeakers).toHaveLength(18)
+    expect(new Set(specializedSpeakers.map(speaker => speaker.id)).size).toBe(18)
+    expect(new Set(specializedSpeakers.map(speaker => speaker.name)).size).toBe(18)
+    expect(specializedTalks).toHaveLength(19)
+    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(19)
   })
 
   it('cada tema apunta a un ponente existente y cada ponente dicta al menos un tema', () => {
@@ -30,7 +30,7 @@ describe('datos de las ponencias especializadas', () => {
 
   it('todos los ponentes tienen foto, perfil y los temas tienen título y ambiente', () => {
     for (const speaker of specializedSpeakers) {
-      expect(speaker.image).toMatch(/^\/images\/ponentes\/2026\/especializados\/.+\.webp$/)
+      expect(speaker.image).toMatch(/^\/images\/ponentes\/2026\/(especializados\/)?.+\.webp$/)
       expect(speaker.bio.trim().length).toBeGreaterThan(40)
     }
     for (const talk of specializedTalks) {
@@ -85,7 +85,7 @@ describe('ponentesOrdenados', () => {
 
   it('muestra a cada persona una sola vez, con Echaccaya incluido', () => {
     const ordenados = ponentesOrdenados(specializedSpeakers)
-    expect(ordenados).toHaveLength(16)
+    expect(ordenados).toHaveLength(18)
     expect(ordenados.slice(0, 2).map(speaker => speaker.id)).toEqual(['janeth-marino', 'mario-ormachea'])
     expect(ordenados.filter(speaker => speaker.id === 'jhonatan-echaccaya')).toHaveLength(1)
   })
@@ -100,10 +100,10 @@ describe('ponentesOrdenados', () => {
 describe('temasPorDia', () => {
   const dias = temasPorDia(specializedTalks)
 
-  it('agrupa en martes 27 (9 temas) y miércoles 28 (8 temas), en ese orden', () => {
+  it('agrupa en martes 27 (9 temas) y miércoles 28 (10 temas), en ese orden', () => {
     expect(dias.map(dia => [dia.etiqueta, dia.talks.length])).toEqual([
       ['Martes 27 de octubre', 9],
-      ['Miércoles 28 de octubre', 8],
+      ['Miércoles 28 de octubre', 10],
     ])
   })
 
@@ -113,8 +113,8 @@ describe('temasPorDia', () => {
       'Laboratorio 6', 'Laboratorio 7', 'Laboratorio 8', 'Aula 5',
     ])
     expect(dias[1]?.talks.map(talk => talk.room)).toEqual([
-      'Laboratorio 2', 'Laboratorio 4', 'Laboratorio 5', 'Laboratorio 6', 'Laboratorio 7',
-      'Laboratorio 8', 'Aula 5', 'Aula 6',
+      'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 6',
+      'Laboratorio 7', 'Laboratorio 8', 'Aula 3', 'Aula 5', 'Aula 6',
     ])
   })
 

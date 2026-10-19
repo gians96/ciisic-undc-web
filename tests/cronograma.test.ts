@@ -60,7 +60,7 @@ describe('sesiones de los ponentes invitados', () => {
 describe('bloques «Ponencias Especializadas» del cronograma', () => {
   const dias = [
     { dia: 'Martes', date: '2026-10-27', cantidad: 9 },
-    { dia: 'Miércoles', date: '2026-10-28', cantidad: 8 },
+    { dia: 'Miércoles', date: '2026-10-28', cantidad: 10 },
   ]
 
   for (const { dia, date, cantidad } of dias) {
