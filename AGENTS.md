@@ -13,10 +13,10 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 - Nuxt 4 (SSR) + Nitro, Tailwind CSS v3 vía `@nuxtjs/tailwindcss` (se mantiene en este repo),
   Pinia, Vitest. Gestor: **bun** (`bun install`).
 - Variables privadas de runtime (ver [`.env.example`](.env.example)):
-  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. El Encuentro de Egresados solo usa la
-  variable pública segura y opcional `NUXT_PUBLIC_ALUMNI_FORM_URL` para sobrescribir el Google Forms oficial; el corte está
-  fijado en `nuxt.config.ts`, no usa credenciales ni accede a Sheets. El client ID de Google y la URL
-  del panel general siguen viniendo del backend.
+  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. El Encuentro de Egresados usa el Google
+  Forms oficial versionado en código y el corte fijado en `nuxt.config.ts`; no depende de variables
+  locales, no usa credenciales ni accede a Sheets. El client ID de Google y la URL del panel general
+  siguen viniendo del backend.
 - Comandos:
 
   | Tarea | Comando |

@@ -31,8 +31,7 @@ export default defineNuxtConfig({
     public: {
       appName: 'VIII CIISIC 2026',
       appVersion: '1.0.0',
-      // Sobrescritura opcional del enlace público versionado. Nunca usar un enlace /edit.
-      alumniFormUrl: '',
+      // Corte exclusivo confirmado en hora de Lima; el formulario oficial está versionado en código.
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00'
     }
   },

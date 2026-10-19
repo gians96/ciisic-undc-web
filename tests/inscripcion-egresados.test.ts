@@ -7,35 +7,39 @@ import {
   formatearCierreInscripcionEgresados,
   normalizarConfiguracionInscripcionEgresados,
   URL_FORMULARIO_OFICIAL_EGRESADOS,
-  urlFormularioEgresadosValida,
 } from '../app/utils/inscripcion-egresados'
 import { encuentroEgresados } from '../app/data/encuentro-egresados'
+
+const URL_FORMULARIO_ANTERIOR = [
+  'https://docs.google.com/forms/d/e/',
+  '1FAIpQLSer4Mw09ZcdlHnbSBE1MY1W1jGS0X_bXTO4twq8ltU5ln4yQA/viewform?usp=publish-editor',
+].join('')
 
 describe('inscripción del Encuentro de Egresados mediante Google Forms', () => {
   afterEach(() => vi.useRealTimers())
 
   it('usa el formulario oficial y abre la inscripción sin configuración local', () => {
     const sinEnlace = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: '',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
+    expect(URL_FORMULARIO_OFICIAL_EGRESADOS).toBe('https://forms.gle/BxEHiBNkGf69LdEc7')
     expect(sinEnlace.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
     expect(estadoInscripcionEgresados(sinEnlace, Date.parse('2026-10-23T23:59:59.999-05:00'))).toBe('abierta')
   })
 
-  it('respeta una URL válida configurada explícitamente', () => {
-    const urlConfigurada = 'https://forms.gle/AbCdEf123456'
+  it('ignora el formulario anterior heredado del entorno', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: urlConfigurada,
+      alumniFormUrl: URL_FORMULARIO_ANTERIOR,
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
-    expect(configuracion.url).toBe(urlConfigurada)
+    expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    expect(configuracion.url).not.toBe(URL_FORMULARIO_ANTERIOR)
   })
 
-  it.each([undefined, null, '', '   ', 'https://ejemplo.com/formulario', 'https://docs.google.com/forms/d/FORM_ID/edit'])(
-    'usa el formulario oficial cuando la configuración es vacía o inválida: %j',
+  it.each([undefined, null, '', '   ', 'https://forms.gle/OtroFormulario'])(
+    'mantiene exclusivamente el formulario aprobado ante una sobrescritura heredada: %j',
     (alumniFormUrl) => {
       const configuracion = normalizarConfiguracionInscripcionEgresados({
         alumniFormUrl,
@@ -48,17 +52,15 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
 
   it('abre con un URL público válido antes del corte confirmado', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=sf_link',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
     expect(estadoInscripcionEgresados(configuracion, Date.parse('2026-10-23T23:59:59.999-05:00'))).toBe('abierta')
-    expect(configuracion.url).toContain('/viewform')
+    expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
   })
 
   it('cierra exactamente en el instante exclusivo confirmado en hora de Lima', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
@@ -70,7 +72,6 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
     vi.useFakeTimers()
     const cierre = '2026-10-24T00:00:00-05:00'
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: cierre,
     })
 
@@ -90,30 +91,12 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
     expect(demoraHastaCierreInscripcionEgresados(cierre)).toBeNull()
   })
 
-  it('rechaza dominios ajenos, esquemas peligrosos y enlaces de edición o envío', () => {
-    expect(urlFormularioEgresadosValida('https://forms.gle/AbCdEf123456')).toMatch(/^https:\/\/forms\.gle\//)
-    expect(urlFormularioEgresadosValida('https://docs.google.com/forms/d/e/FORM_ID/viewform')).toContain('/viewform')
-
-    for (const invalida of [
-      'javascript:alert(1)',
-      'https://ejemplo.com/forms/viewform',
-      'https://docs.google.com/forms/d/FORM_ID/edit',
-      'https://docs.google.com/forms/d/e/FORM_ID/formResponse',
-      'https://usuario:clave@forms.gle/AbCdEf123456',
-      '',
-      null,
-    ]) {
-      expect(urlFormularioEgresadosValida(invalida)).toBeNull()
-    }
-  })
-
   it('acepta solo cierres con offset explícito de Lima y falla de forma segura', () => {
     expect(cierreInscripcionEgresadosValido('2026-10-24T00:00:00-05:00')).toBe('2026-10-24T00:00:00-05:00')
     expect(cierreInscripcionEgresadosValido('2026-10-27T04:59:59Z')).toBeNull()
     expect(cierreInscripcionEgresadosValido('por confirmar')).toBeNull()
 
     const invalida = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: '2026-10-27T04:59:59Z',
     })
     expect(estadoInscripcionEgresados(invalida)).toBe('proximamente')

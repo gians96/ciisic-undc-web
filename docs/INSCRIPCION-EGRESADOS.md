@@ -13,11 +13,9 @@ Landing CIISIC
   → Google almacena la respuesta en la hoja institucional vinculada
 ```
 
-El enlace oficial está versionado como valor predeterminado y pasa la misma validación local.
-Opcionalmente puede sustituirse mediante una configuración pública válida.
-Se aceptan enlaces `https://forms.gle/...` y
-`https://docs.google.com/forms/d/.../viewform`; se rechazan otros dominios, credenciales embebidas,
-esquemas diferentes de HTTPS y rutas `/edit` o `formResponse`.
+El enlace oficial `https://forms.gle/BxEHiBNkGf69LdEc7` está versionado en el módulo como única
+fuente aprobada. No se sustituye mediante variables de entorno, de modo que una configuración local,
+vacía o heredada no pueda restaurar un formulario anterior.
 
 ## Datos confirmados
 
@@ -29,25 +27,12 @@ esquemas diferentes de HTTPS y rutas `/edit` o `formResponse`.
 - Corte exclusivo: `2026-10-24T00:00:00-05:00` (America/Lima).
 - La hoja institucional ya está vinculada al formulario. La landing no necesita su ID ni permisos.
 
-## Configuración pública de runtime
+## Configuración
 
-| Variable | Uso |
-|---|---|
-| `NUXT_PUBLIC_ALUMNI_FORM_URL` | Sobrescritura opcional del URL público oficial. Nunca usar `/edit`. |
-
-La variable es opcional y pública por diseño: permite sustituir el enlace que el visitante debe poder
-abrir. No debe contener tokens, IDs de hojas, credenciales ni datos personales. Si está ausente, vacía
-o no es válida, se utiliza el URL oficial versionado. El corte confirmado se mantiene como configuración
-pública estable en `nuxt.config.ts`.
-
-Para sustituir explícitamente el valor predeterminado, se puede configurar:
-
-```dotenv
-NUXT_PUBLIC_ALUMNI_FORM_URL=https://docs.google.com/forms/d/e/1FAIpQLSer4Mw09ZcdlHnbSBE1MY1W1jGS0X_bXTO4twq8ltU5ln4yQA/viewform?usp=publish-editor
-```
-
-El `.env` local está ignorado por Git y no se copia automáticamente al despliegue. No es necesario
-crear esta variable en producción mientras el formulario oficial versionado siga siendo el aprobado.
+El formulario oficial no requiere una variable pública de runtime ni una entrada en `.env`. El corte
+confirmado se mantiene como configuración pública estable en `nuxt.config.ts`. Si el comité aprueba
+otro formulario en el futuro, debe actualizarse el valor versionado, sus pruebas y esta documentación
+en un mismo cambio revisable.
 
 ## Estados
 
@@ -71,7 +56,7 @@ Antes de difundir el formulario o sustituir su URL público, el comité debe:
    de 2026 a las 12:00 a. m., hora de Perú. El cierre visual de
    la landing no impide por sí solo que Google Forms reciba respuestas.
 5. Probar los estados sin enviar respuestas reales. Si el URL oficial cambia, actualizar el valor
-   versionado o configurar `NUXT_PUBLIC_ALUMNI_FORM_URL` de forma coordinada.
+   versionado, sus pruebas y esta documentación de forma coordinada.
 
 ## Integración anterior retirada
 
