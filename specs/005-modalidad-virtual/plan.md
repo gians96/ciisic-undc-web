@@ -77,9 +77,11 @@ del backend 018 y de los datos; nada se bloquea por la modalidad (preguntas de n
 - Los tipos virtuales los crea el dueño del proyecto (script SQL idempotente o panel), no el código: en
   `ciisic-viii-2026`, `estudiantes_virtual` (S/ 30.00/30.00, `TODOS`, `VIRTUAL`) en `ESTUDIANTES` y
   `general_virtual` (S/ 50.00/50.00, `TODOS`, `VIRTUAL`) en `PUBLICO_GENERAL`.
-- Orden recomendado: backend 018 → datos virtuales → landing. La landing por sí sola no cambia nada visible
-  (la FAQ 9 también depende de los datos); en cualquier otro orden, `/preguntas`, `/planes` y los formularios
-  coinciden entre sí.
+- Orden único (el de `backend-ciisic/docs/operacion.md`): respaldo → backend 018 → panel y landing → datos virtuales
+  → verificar. La landing por sí sola no cambia nada visible (la FAQ 9 y la franja de `/planes` también dependen de
+  los datos), pero los datos creados antes de publicar esta landing se verían en la landing anterior mezclados con
+  los presenciales y con los próximos pasos de siempre: si hay que crearlos antes, con `@activo = 0` (o «Activo»
+  apagado en el panel) hasta que esta landing esté publicada.
 - Hay hasta ~60 s de caché de Nitro (`swr`) tras crear los datos.
 
 ## Riesgos
