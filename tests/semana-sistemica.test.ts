@@ -63,9 +63,19 @@ describe('datos de la Semana Sistémica', () => {
     }
   })
 
-  it('el submenú tiene un item por actividad con su ruta', () => {
-    expect(SEMANA_SISTEMICA_MENU.map(item => item.href)).toEqual(actividades.map(actividad => actividad.ruta))
-    expect(SEMANA_SISTEMICA_MENU.map(item => item.label)).toEqual(['Comparsa', 'Reinado', 'Deportes'])
+  it('el submenú incluye las actividades y el Encuentro de Egresados', () => {
+    expect(SEMANA_SISTEMICA_MENU.map(item => item.href)).toEqual([
+      '/semana-sistemica/comparsa',
+      '/semana-sistemica/encuentro-egresados',
+      '/semana-sistemica/reinado',
+      '/semana-sistemica/deportes',
+    ])
+    expect(SEMANA_SISTEMICA_MENU.map(item => item.label)).toEqual([
+      'Comparsa',
+      'Encuentro de Egresados',
+      'Reinado',
+      'Deportes',
+    ])
     expect(new Set(SEMANA_SISTEMICA_MENU.map(item => item.id)).size).toBe(SEMANA_SISTEMICA_MENU.length)
   })
 

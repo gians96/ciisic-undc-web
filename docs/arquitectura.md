@@ -35,6 +35,13 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 
 Los errores nunca se guardan en caché. Sin token o sin URL del backend: `503 SITE_NOT_CONFIGURED`.
 
+## Inscripción independiente del Encuentro de Egresados
+
+Este flujo no usa los planes, el backend ni una ruta Nitro. La página solo presenta el estado de
+apertura y, cuando está autorizado, abre el URL público de respuesta de Google Forms en otra pestaña.
+La landing no recibe ni persiste datos personales. Google Forms almacena sus respuestas en la hoja
+institucional vinculada. Consulta [INSCRIPCION-EGRESADOS.md](INSCRIPCION-EGRESADOS.md).
+
 ## Inscripción
 
 `useFormularioInscripcion` (compartido por `/estudiantes` y `/general`):

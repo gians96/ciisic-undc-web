@@ -178,13 +178,25 @@ export interface ItemMenuSemana {
   icon: string
 }
 
+const itemEncuentroEgresados: ItemMenuSemana = {
+  id: 'semana-encuentro-egresados',
+  label: 'Encuentro de Egresados',
+  href: `${RUTA_SEMANA_SISTEMICA}/encuentro-egresados`,
+  icon: 'heroicons:academic-cap',
+}
+
 /** Submenú «Semana Sistémica»: lo consumen el header, el menú móvil y el pie de página. */
-export const SEMANA_SISTEMICA_MENU: readonly ItemMenuSemana[] = actividades.map(actividad => ({
-  id: `semana-${actividad.slug}`,
-  label: actividad.etiqueta,
-  href: actividad.ruta,
-  icon: actividad.icono,
-}))
+export const SEMANA_SISTEMICA_MENU: readonly ItemMenuSemana[] = actividades.flatMap((actividad) => {
+  const item = {
+    id: `semana-${actividad.slug}`,
+    label: actividad.etiqueta,
+    href: actividad.ruta,
+    icon: actividad.icono,
+  }
+
+  // El encuentro (martes 27) se intercala entre Comparsa (lunes) y Reinado (miércoles).
+  return actividad.slug === 'reinado' ? [itemEncuentroEgresados, item] : [item]
+})
 
 export function actividadPorSlug(slug: ActividadSlug): ActividadSemanaSistemica {
   const actividad = actividades.find(item => item.slug === slug)
