@@ -95,6 +95,7 @@ describe('bloques «Ponencias Especializadas» del cronograma', () => {
       'Concurso de Programación',
       'Ponencias Especializadas',
       'Reinado',
+      'Cyber Clash — Kriptome Cybersecurity',
       'Hackathon',
       'Recibimiento y pasacalles',
       'Deportes en simultáneo',

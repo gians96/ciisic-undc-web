@@ -10,8 +10,8 @@ import { schedule } from '../app/data/cronograma'
 import { etiquetaDia, formatoHora12 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de la Semana Sistémica', () => {
-  it('tiene las seis actividades en orden cronológico', () => {
-    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'programacion', 'esports', 'reinado', 'hackathon', 'deportes'])
+  it('tiene las siete actividades en orden cronológico', () => {
+    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'programacion', 'esports', 'reinado', 'cyber-clash', 'hackathon', 'deportes'])
     const fechas = actividades.map(actividad => actividad.fecha)
     expect([...fechas].sort()).toEqual(fechas)
   })
@@ -21,6 +21,7 @@ describe('datos de la Semana Sistémica', () => {
     expect(etiquetaDia(actividadPorSlug('programacion').fecha)).toBe('Martes 27 de octubre')
     expect(etiquetaDia(actividadPorSlug('esports').fecha)).toBe('Martes 27 de octubre')
     expect(etiquetaDia(actividadPorSlug('reinado').fecha)).toBe('Miércoles 28 de octubre')
+    expect(etiquetaDia(actividadPorSlug('cyber-clash').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('hackathon').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('deportes').fecha)).toBe('Viernes 30 de octubre')
   })
@@ -82,6 +83,7 @@ describe('datos de la Semana Sistémica', () => {
       '/semana-sistemica/esports',
       '/semana-sistemica/encuentro-egresados',
       '/semana-sistemica/reinado',
+      '/semana-sistemica/cyber-clash',
       '/semana-sistemica/hackathon',
       '/semana-sistemica/deportes',
     ])
@@ -91,6 +93,7 @@ describe('datos de la Semana Sistémica', () => {
       'eSports',
       'Encuentro de Egresados',
       'Reinado',
+      'Cyber Clash',
       'Hackathon',
       'Deportes',
     ])

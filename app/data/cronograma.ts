@@ -95,6 +95,7 @@ export const schedule: ScheduleDay[] = [
     { time: '12:00 - 12:20', title: 'Ponencias de Investigación', category: 'academic' },
     { time: '12:20 - 12:45', title: 'Clausura', category: 'institutional' },
     { time: '13:00 - 14:00', title: 'Break', category: 'cultural' },
+    { time: '15:00 - 18:00', title: 'Cyber Clash — Kriptome Cybersecurity', detail: 'Auditorio de la Casa de la Cultura · Ciberseguridad, ransomware y buenas prácticas', category: 'cultural', href: '/semana-sistemica/cyber-clash', etiquetaEnlace: 'Ver detalles' },
     { time: '18:00 - 23:30', title: 'Hackathon', category: 'cultural', href: '/semana-sistemica/hackathon', etiquetaEnlace: 'Ver detalles' },
   ] },
   { short: 'Viernes', dayNumber: '30', date: '30/10', events: [
