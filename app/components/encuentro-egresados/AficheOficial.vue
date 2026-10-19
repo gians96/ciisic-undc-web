@@ -1,22 +1,22 @@
 <template>
   <section id="afiche-oficial-egresados" class="poster-section mt-16 lg:mt-20" aria-labelledby="afiche-oficial-title">
     <div class="max-w-3xl">
-      <p class="poster-kicker">Material oficial</p>
+      <p class="poster-kicker">Afiche oficial</p>
       <h2 id="afiche-oficial-title" class="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Afiche oficial del Encuentro de Egresados 2026
+        Afiche del Encuentro de Egresados 2026
       </h2>
       <p class="mt-5 leading-7 text-slate-300">
-        Consulta el afiche completo del evento, amplíalo para revisar sus detalles o descarga la versión original en alta calidad.
+        Conoce el afiche del encuentro y compártelo con otros egresados.
       </p>
     </div>
 
-    <div class="poster-card mt-8 grid gap-8 overflow-hidden rounded-[2rem] border border-white/10 p-5 sm:p-8 lg:grid-cols-[minmax(280px,.78fr)_minmax(0,1fr)] lg:items-center lg:gap-12 lg:p-10">
-      <figure class="mx-auto w-full max-w-[31rem]">
+    <div class="poster-card mx-auto mt-8 grid max-w-6xl gap-7 overflow-hidden rounded-[2rem] border border-white/10 p-5 sm:p-8 lg:grid-cols-[minmax(320px,1fr)_minmax(240px,.62fr)] lg:items-center lg:gap-10 lg:p-10">
+      <figure class="mx-auto w-full max-w-[36rem]">
         <button
           type="button"
           class="poster-preview group relative block w-full overflow-hidden rounded-2xl border border-white/15 bg-[#031a32]"
           aria-haspopup="dialog"
-          aria-label="Ver afiche oficial completo"
+          aria-label="Ampliar afiche oficial"
           @click="abrir"
         >
           <picture>
@@ -32,41 +32,26 @@
             >
           </picture>
           <span class="poster-preview-shade absolute inset-0" aria-hidden="true" />
-          <span class="poster-zoom absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold">
+          <span class="poster-zoom absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full" aria-hidden="true">
             <Icon name="heroicons:magnifying-glass-plus" class="h-5 w-5" aria-hidden="true" />
-            Ampliar afiche
           </span>
         </button>
         <figcaption class="mt-3 text-center text-xs leading-5 text-slate-400">
-          Afiche institucional del evento actual · Formato vertical A4
+          Afiche institucional del evento actual · 1122 × 1402 px
         </figcaption>
       </figure>
 
-      <div>
+      <div class="poster-actions rounded-2xl border border-white/10 p-6 sm:p-8">
         <span class="poster-icon inline-flex h-14 w-14 items-center justify-center rounded-2xl">
           <Icon name="heroicons:document-text" class="h-7 w-7" aria-hidden="true" />
         </span>
-        <p class="mt-6 text-xs font-bold uppercase tracking-[.16em] text-primary-300">Encuentro de Egresados</p>
-        <h3 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Información oficial en un solo vistazo</h3>
-        <p class="mt-4 max-w-2xl leading-7 text-slate-300">
-          El material reúne la fecha, el horario, el lugar y el acceso mediante QR al formulario oficial de inscripción.
-        </p>
+        <p class="mt-6 text-xs font-bold uppercase tracking-[.16em] text-primary-300">Material para compartir</p>
+        <h3 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Consulta la versión oficial</h3>
 
-        <dl class="mt-6 grid gap-3 text-sm sm:grid-cols-2">
-          <div class="poster-detail rounded-xl border border-white/10 p-4">
-            <dt class="text-slate-400">Fecha</dt>
-            <dd class="mt-1 font-bold text-white">27 de octubre de 2026</dd>
-          </div>
-          <div class="poster-detail rounded-xl border border-white/10 p-4">
-            <dt class="text-slate-400">Lugar</dt>
-            <dd class="mt-1 font-bold text-white">Casa de la Cultura</dd>
-          </div>
-        </dl>
-
-        <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <div class="mt-7 flex flex-col gap-3">
           <button type="button" class="poster-button poster-button-primary" @click="abrir">
             <Icon name="heroicons:magnifying-glass-plus" class="h-5 w-5" aria-hidden="true" />
-            Ver afiche completo
+            Ampliar afiche
           </button>
           <a
             :href="afiche.original"
@@ -76,29 +61,6 @@
             <Icon name="heroicons:arrow-down-tray" class="h-5 w-5" aria-hidden="true" />
             Descargar afiche
           </a>
-        </div>
-
-        <div class="mt-3" aria-live="polite">
-          <a
-            v-if="estado === 'abierta' && configuracion.url"
-            :href="configuracion.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="poster-button poster-button-registration"
-            @click="validarDisponibilidadAntesDeAbrir"
-          >
-            <Icon name="heroicons:clipboard-document-check" class="h-5 w-5" aria-hidden="true" />
-            Inscribirme gratuitamente
-            <span class="sr-only"> (se abre en una pestaña nueva)</span>
-          </a>
-          <p v-else-if="estado === 'cerrada'" class="poster-status" role="status">
-            <Icon name="heroicons:lock-closed" class="h-5 w-5 shrink-0" aria-hidden="true" />
-            Inscripciones cerradas
-          </p>
-          <p v-else class="poster-status" role="status">
-            <Icon name="heroicons:clock" class="h-5 w-5 shrink-0" aria-hidden="true" />
-            Inscripción no disponible
-          </p>
         </div>
       </div>
     </div>
@@ -149,10 +111,8 @@
 
 <script setup lang="ts">
 import { encuentroEgresados } from '~/data/encuentro-egresados'
-import { useInscripcionEgresados } from '~/composables/useInscripcionEgresados'
 
 const afiche = encuentroEgresados.afiche
-const { configuracion, estado, validarDisponibilidadAntesDeAbrir } = useInscripcionEgresados()
 const visorAbierto = ref(false)
 const botonCerrar = ref<HTMLButtonElement | null>(null)
 const dialogo = ref<HTMLElement | null>(null)
@@ -217,7 +177,7 @@ onUnmounted(() => {
   box-shadow: 0 28px 80px #020f204d;
 }
 .poster-preview {
-  aspect-ratio: 707 / 1000;
+  aspect-ratio: 561 / 701;
   box-shadow: 0 22px 55px #020f2066;
   transition: border-color .2s ease, transform .2s ease;
 }
@@ -237,7 +197,7 @@ onUnmounted(() => {
   background: #f59e0b17;
   color: #fcd34d;
 }
-.poster-detail { background: #031a3266; }
+.poster-actions { background: #031a3266; }
 .poster-button {
   display: inline-flex;
   min-height: 3rem;
@@ -250,31 +210,14 @@ onUnmounted(() => {
   transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
 .poster-button:hover { transform: translateY(-2px); }
-.poster-button-primary,
-.poster-button-registration { background: #00d9e8; color: #032f5f; }
-.poster-button-primary:hover,
-.poster-button-registration:hover { background: #67e8f9; }
+.poster-button-primary { background: #00d9e8; color: #032f5f; }
+.poster-button-primary:hover { background: #67e8f9; }
 .poster-button-secondary {
   border: 1px solid #67e8f94d;
   background: #082d50;
   color: #cffafe;
 }
 .poster-button-secondary:hover { border-color: #67e8f9; background: #0a3d64; }
-.poster-button-registration { width: 100%; }
-.poster-status {
-  display: inline-flex;
-  min-height: 3rem;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  border: 1px solid #fbbf2440;
-  border-radius: .75rem;
-  background: #f59e0b12;
-  padding: .75rem 1.1rem;
-  color: #fde68a;
-  font-weight: 700;
-}
 .poster-preview:focus-visible,
 .poster-button:focus-visible,
 .lightbox-control:focus-visible { outline: 2px solid #67e8f9; outline-offset: 3px; }

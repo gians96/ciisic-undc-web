@@ -34,8 +34,8 @@ export const encuentroEgresados = {
     preview: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.webp',
     nombreDescarga: 'Afiche-oficial-Encuentro-de-Egresados-2026.png',
     alt: 'Afiche oficial del Encuentro de Egresados 2026 de Ingeniería de Sistemas de la UNDC',
-    ancho: 1414,
-    alto: 2000,
+    ancho: 1122,
+    alto: 1402,
   },
   portada: imagen(
     '2024-portada-auditorio.webp',

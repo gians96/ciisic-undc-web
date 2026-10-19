@@ -7,17 +7,17 @@ const resolverRutaPublica = (ruta: string) => resolve(process.cwd(), 'public', r
 const resolverRutaProyecto = (ruta: string) => resolve(process.cwd(), ruta)
 
 describe('afiche oficial del Encuentro de Egresados', () => {
-  it('declara los recursos finales con proporción vertical A4 y descarga descriptiva', () => {
+  it('declara los recursos finales con la proporción intrínseca y descarga descriptiva', () => {
     const { afiche } = encuentroEgresados
 
     expect(afiche).toMatchObject({
       original: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.png',
       preview: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.webp',
       nombreDescarga: 'Afiche-oficial-Encuentro-de-Egresados-2026.png',
-      ancho: 1414,
-      alto: 2000,
+      ancho: 1122,
+      alto: 1402,
     })
-    expect(afiche.ancho / afiche.alto).toBeCloseTo(1 / Math.sqrt(2), 3)
+    expect(afiche.ancho / afiche.alto).not.toBeCloseTo(1 / Math.sqrt(2), 3)
   })
 
   it('incluye un PNG original y una previsualización WebP válida y más liviana', () => {
@@ -45,17 +45,33 @@ describe('afiche oficial del Encuentro de Egresados', () => {
     expect(posicionAfiche).toBeLessThan(posicionGaleria)
   })
 
-  it('ofrece visor accesible, descarga y la lógica compartida de inscripción', () => {
+  it('ofrece visor accesible y descarga del mismo recurso oficial', () => {
     const componente = readFileSync(resolverRutaProyecto('app/components/encuentro-egresados/AficheOficial.vue'), 'utf8')
 
-    expect(componente).toContain('Ver afiche completo')
+    expect(componente).toContain('Ampliar afiche')
+    expect(componente).toContain('<source :srcset="afiche.preview" type="image/webp">')
+    expect(componente.match(/:src="afiche.original"/g)).toHaveLength(2)
     expect(componente).toContain(':download="afiche.nombreDescarga"')
     expect(componente).toContain('role="dialog"')
     expect(componente).toContain('aria-modal="true"')
     expect(componente).toContain("event.key === 'Escape'")
-    expect(componente).toContain('useInscripcionEgresados()')
-    expect(componente).toContain('target="_blank"')
-    expect(componente).toContain('rel="noopener noreferrer"')
+    expect(componente).not.toContain('useInscripcionEgresados')
     expect(componente).not.toContain('https://forms.gle/')
+  })
+
+  it('simplifica la sección del afiche sin retirar la información ni la inscripción principal', () => {
+    const componente = readFileSync(resolverRutaProyecto('app/components/encuentro-egresados/AficheOficial.vue'), 'utf8')
+    const pagina = readFileSync(resolverRutaProyecto('app/pages/semana-sistemica/encuentro-egresados.vue'), 'utf8')
+    const tarjeta = readFileSync(resolverRutaProyecto('app/components/encuentro-egresados/TarjetaInscripcion.vue'), 'utf8')
+
+    expect(componente).toContain('Afiche del Encuentro de Egresados 2026')
+    expect(componente).toContain('Conoce el afiche del encuentro y compártelo con otros egresados.')
+    expect(componente).not.toContain('Información oficial en un solo vistazo')
+    expect(componente).not.toContain('27 de octubre de 2026')
+    expect(componente).not.toContain('Casa de la Cultura')
+    expect(componente).not.toContain('Inscribirme gratuitamente')
+    expect(pagina).toContain('encuentroEgresados.fecha')
+    expect(pagina).toContain('encuentroEgresados.lugar')
+    expect(tarjeta).toContain('Inscribirme gratuitamente')
   })
 })
