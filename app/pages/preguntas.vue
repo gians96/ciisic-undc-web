@@ -197,7 +197,7 @@ const faqs = ref([
     id: 9,
     category: 'evento',
     question: '¿Habrá modalidad virtual?',
-    answer: 'El congreso es presencial, pero las conferencias magistrales principales serán transmitidas en vivo y quedarán disponibles en nuestra plataforma virtual para los participantes registrados. Los talleres prácticos y sesiones de networking son exclusivamente presenciales.'
+    answer: 'Sí. Además de la asistencia presencial, existe la inscripción virtual: al inscribirte, elige el plan Virtual. La organización te compartirá las indicaciones para conectarte a la transmisión del congreso. Los talleres prácticos y sesiones de networking son exclusivamente presenciales.'
   }
 ])
 
