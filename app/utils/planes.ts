@@ -1,7 +1,7 @@
 // ============================================================================
 // PLANES DE INSCRIPCIÓN: API → TARJETAS Y REGLA DE PRECIO (funciones puras)
 // ============================================================================
-import type { CaracteristicaPlan, CategoriaInscripcionApi, DisponiblePara, TipoInscripcionApi } from '../types/evento'
+import type { CaracteristicaPlan, CategoriaInscripcionApi, DisponiblePara, ModalidadAsistencia, TipoInscripcionApi } from '../types/evento'
 
 /** Forma de la tarjeta de plan que usan /estudiantes y /general. */
 export interface PlanInscripcion {
@@ -16,6 +16,8 @@ export interface PlanInscripcion {
   categoria: string
   esEstudiantil: boolean
   disponiblePara: DisponiblePara
+  /** Modalidad de asistencia del tipo (spec 018 del backend); sin el dato (backend anterior) es `PRESENCIAL`. */
+  modalidad: ModalidadAsistencia
 }
 
 const DISPONIBILIDADES: readonly DisponiblePara[] = ['TODOS', 'INSTITUCIONAL', 'EXTERNOS']
@@ -23,6 +25,16 @@ const DISPONIBILIDADES: readonly DisponiblePara[] = ['TODOS', 'INSTITUCIONAL', '
 /** Valor desconocido o ausente (backend anterior) → `TODOS`, el comportamiento de siempre. */
 const aDisponibilidad = (valor: unknown): DisponiblePara =>
   DISPONIBILIDADES.includes(valor as DisponiblePara) ? valor as DisponiblePara : 'TODOS'
+
+/** Orden de presentación: lo presencial primero y luego lo virtual. */
+const MODALIDADES: readonly ModalidadAsistencia[] = ['PRESENCIAL', 'VIRTUAL']
+
+/**
+ * Valor ausente, `null` (p. ej. cortesía sin tipo) o desconocido (backend anterior) → `PRESENCIAL`,
+ * el comportamiento de siempre. Es la modalidad de asistencia, no la de pago.
+ */
+export const aModalidad = (valor: unknown): ModalidadAsistencia =>
+  MODALIDADES.includes(valor as ModalidadAsistencia) ? valor as ModalidadAsistencia : 'PRESENCIAL'
 
 const normalizar = (texto: string) => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim().toUpperCase()
 
@@ -66,6 +78,7 @@ function aPlan(tipo: TipoInscripcionApi, categoria: CategoriaInscripcionApi): Pl
     categoria: categoria.codigo,
     esEstudiantil: categoria.esEstudiantil === true,
     disponiblePara: aDisponibilidad(tipo.disponiblePara),
+    modalidad: aModalidad(tipo.modalidad),
   }
 }
 
@@ -133,4 +146,80 @@ export function esCorreoDelDominio(correo: string | null | undefined, dominio: s
   const partes = String(correo ?? '').trim().toLowerCase().split('@')
   const esperado = String(dominio ?? '').trim().toLowerCase()
   return Boolean(esperado) && partes.length === 2 && Boolean(partes[0]) && partes[1] === esperado
+}
+
+// ============================================================================
+// MODALIDAD DE ASISTENCIA (spec 005): presencial o virtual, un atributo del tipo
+// ============================================================================
+
+/** Encabezados de los grupos cuando se ofrecen las dos modalidades a la vez. */
+const TITULOS_MODALIDAD: Record<ModalidadAsistencia, string> = {
+  PRESENCIAL: 'Presencial',
+  VIRTUAL: 'Virtual (en línea)',
+}
+
+/** Planes de una modalidad; `titulo` solo existe si hay más de una modalidad que distinguir. */
+export interface GrupoPlanes<T> {
+  modalidad: ModalidadAsistencia
+  titulo: string | null
+  planes: T[]
+}
+
+/**
+ * Agrupa los planes visibles por modalidad: «Presencial» primero y luego «Virtual (en línea)», cada
+ * grupo en el orden en que los entrega el backend. Con una sola modalidad (hoy, mientras no existan
+ * tipos virtuales) devuelve un único grupo sin encabezado, de modo que no cambia nada visible.
+ */
+export function agruparPlanesPorModalidad<T extends Pick<PlanInscripcion, 'modalidad'>>(planes: readonly T[]): GrupoPlanes<T>[] {
+  const grupos = MODALIDADES
+    .map(modalidad => ({ modalidad, planes: planes.filter(plan => aModalidad(plan.modalidad) === modalidad) }))
+    .filter(grupo => grupo.planes.length > 0)
+  const conEncabezado = grupos.length > 1
+  return grupos.map(grupo => ({ ...grupo, titulo: conEncabezado ? TITULOS_MODALIDAD[grupo.modalidad] : null }))
+}
+
+type ConModalidad = Pick<PlanInscripcion, 'modalidad'>
+
+export const hayPlanesVirtuales = (planes: readonly ConModalidad[]): boolean =>
+  planes.some(plan => aModalidad(plan.modalidad) === 'VIRTUAL')
+
+/** El kit (y su modal) solo tiene sentido si hay algún plan presencial a la vista. */
+export const hayPlanesPresenciales = (planes: readonly ConModalidad[]): boolean =>
+  planes.some(plan => aModalidad(plan.modalidad) === 'PRESENCIAL')
+
+/**
+ * Precio regular más bajo entre los planes virtuales («desde S/ X»), o `null` si no hay ninguno.
+ * El monto sale siempre de la API: ningún texto lo escribe a mano.
+ */
+export function precioDesdeVirtual(planes: readonly (ConModalidad & Pick<PlanInscripcion, 'basePrice'>)[]): number | null {
+  const precios = planes.filter(plan => aModalidad(plan.modalidad) === 'VIRTUAL').map(plan => plan.basePrice)
+  return precios.length ? Math.min(...precios) : null
+}
+
+/** Categorías (sin repetir, en el orden recibido) que ofrecen al menos un plan virtual. */
+export const categoriasConPlanesVirtuales = (planes: readonly (ConModalidad & Pick<PlanInscripcion, 'categoria'>)[]): string[] =>
+  [...new Set(planes.filter(plan => aModalidad(plan.modalidad) === 'VIRTUAL').map(plan => plan.categoria))]
+
+/**
+ * Resumen de la oferta virtual para `/planes` («También puedes participar de forma virtual, desde
+ * S/ X»): precio mínimo y categorías donde se ofrece, o `null` si no hay ningún plan virtual.
+ */
+export function resumirOfertaVirtual(
+  planes: readonly (ConModalidad & Pick<PlanInscripcion, 'basePrice' | 'categoria'>)[],
+): { desde: number; categorias: string[] } | null {
+  const desde = precioDesdeVirtual(planes)
+  return desde === null ? null : { desde, categorias: categoriasConPlanesVirtuales(planes) }
+}
+
+/**
+ * ¿Algún plan visible cuesta menos para la comunidad UNDC? Solo entonces tiene sentido avisar
+ * «Se aplicará descuento UNDC» (los planes virtuales tienen el mismo precio para todos).
+ */
+export const hayDescuentoInstitucional = (planes: readonly Pick<PlanInscripcion, 'basePrice' | 'institutionalPrice'>[]): boolean =>
+  planes.some(plan => plan.institutionalPrice < plan.basePrice)
+
+/** `VIRTUAL` usa el estilo de éxito; en lo presencial se conserva la regla de siempre («SIN KIT» → advertencia). */
+export function claseBadgePlan(plan: Pick<PlanInscripcion, 'badge' | 'modalidad'>): 'badge-success' | 'badge-warning' {
+  if (aModalidad(plan.modalidad) === 'VIRTUAL') return 'badge-success'
+  return plan.badge.includes('SIN') ? 'badge-warning' : 'badge-success'
 }
