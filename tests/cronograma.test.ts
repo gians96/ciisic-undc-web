@@ -91,8 +91,11 @@ describe('bloques «Ponencias Especializadas» del cronograma', () => {
     expect(conEnlace.map(event => event.title)).toEqual([
       'Comparsa Sistémica',
       'Ponencias Especializadas',
+      'E-Sports',
+      'Concurso de Programación',
       'Ponencias Especializadas',
       'Reinado',
+      'Hackathon',
       'Recibimiento y pasacalles',
       'Deportes en simultáneo',
     ])
@@ -115,12 +118,30 @@ describe('horarios del cronograma', () => {
     }
   })
 
-  it('no hay eventos que se solapen dentro de un mismo día', () => {
+  it('no hay eventos que se solapen dentro de un mismo día, salvo simultáneos declarados', () => {
     for (const day of schedule) {
       const ordenados = [...day.events].sort((a, b) => rango(a.time).inicio - rango(b.time).inicio)
       ordenados.slice(1).forEach((event, index) => {
         const anterior = ordenados[index]!
+        if (event.simultaneo && anterior.simultaneo) return
         expect(rango(event.time).inicio, `${day.short}: «${anterior.title}» y «${event.title}»`).toBeGreaterThanOrEqual(rango(anterior.time).fin)
+      })
+    }
+  })
+
+  it('todo solape del cronograma está declarado como simultáneo en ambos eventos', () => {
+    for (const day of schedule) {
+      const eventos = day.events
+      eventos.forEach((event, i) => {
+        eventos.slice(i + 1).forEach((otro) => {
+          const a = rango(event.time)
+          const b = rango(otro.time)
+          const haySolape = a.inicio < b.fin && b.inicio < a.fin
+          if (haySolape) {
+            expect(event.simultaneo, `${day.short}: «${event.title}»`).toBe(true)
+            expect(otro.simultaneo, `${day.short}: «${otro.title}»`).toBe(true)
+          }
+        })
       })
     }
   })

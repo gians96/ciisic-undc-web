@@ -10,15 +10,18 @@ import { schedule } from '../app/data/cronograma'
 import { etiquetaDia, formatoHora12 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de la Semana Sistémica', () => {
-  it('tiene Comparsa, Reinado y Deportes en orden cronológico', () => {
-    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'reinado', 'deportes'])
+  it('tiene las seis actividades en orden cronológico', () => {
+    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'programacion', 'esports', 'reinado', 'hackathon', 'deportes'])
     const fechas = actividades.map(actividad => actividad.fecha)
     expect([...fechas].sort()).toEqual(fechas)
   })
 
   it('cada actividad cae en el día de la semana publicado en los flyers', () => {
     expect(etiquetaDia(actividadPorSlug('comparsa').fecha)).toBe('Lunes 26 de octubre')
+    expect(etiquetaDia(actividadPorSlug('programacion').fecha)).toBe('Martes 27 de octubre')
+    expect(etiquetaDia(actividadPorSlug('esports').fecha)).toBe('Martes 27 de octubre')
     expect(etiquetaDia(actividadPorSlug('reinado').fecha)).toBe('Miércoles 28 de octubre')
+    expect(etiquetaDia(actividadPorSlug('hackathon').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('deportes').fecha)).toBe('Viernes 30 de octubre')
   })
 
@@ -48,8 +51,17 @@ describe('datos de la Semana Sistémica', () => {
   it('cada actividad tiene portada, afiche y texto alternativo en las imágenes', () => {
     for (const actividad of actividades) {
       for (const imagen of [actividad.portada, actividad.afiche, ...actividad.galeria]) {
-        expect(imagen.src).toMatch(/^\/images\/.+\.webp$/)
+        // La portada con crédito externo es la única imagen remota permitida.
+        if (imagen === actividad.portada && actividad.creditoPortada) {
+          expect(imagen.src, actividad.slug).toMatch(/^https:\/\//)
+        } else {
+          expect(imagen.src, actividad.slug).toMatch(/^\/images\/.+\.webp$/)
+        }
         expect(imagen.alt.length).toBeGreaterThan(10)
+      }
+      if (actividad.creditoPortada) {
+        expect(actividad.creditoPortada.href, actividad.slug).toMatch(/^https:\/\//)
+        expect(actividad.creditoPortada.texto.length).toBeGreaterThan(0)
       }
     }
   })
@@ -63,17 +75,23 @@ describe('datos de la Semana Sistémica', () => {
     }
   })
 
-  it('el submenú incluye las actividades y el Encuentro de Egresados', () => {
+  it('el submenú tiene un item por actividad y el Encuentro de Egresados entre el martes y el miércoles', () => {
     expect(SEMANA_SISTEMICA_MENU.map(item => item.href)).toEqual([
       '/semana-sistemica/comparsa',
+      '/semana-sistemica/programacion',
+      '/semana-sistemica/esports',
       '/semana-sistemica/encuentro-egresados',
       '/semana-sistemica/reinado',
+      '/semana-sistemica/hackathon',
       '/semana-sistemica/deportes',
     ])
     expect(SEMANA_SISTEMICA_MENU.map(item => item.label)).toEqual([
       'Comparsa',
+      'Programación',
+      'eSports',
       'Encuentro de Egresados',
       'Reinado',
+      'Hackathon',
       'Deportes',
     ])
     expect(new Set(SEMANA_SISTEMICA_MENU.map(item => item.id)).size).toBe(SEMANA_SISTEMICA_MENU.length)
