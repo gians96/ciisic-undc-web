@@ -119,41 +119,53 @@
                     <!-- Selección de Tipo de Inscripción - Cards Simples -->
                     <div class="form-group col-span-6 form-section-below-classification">
                         <label id="tipoInscripcionLabel" class="form-label">Tipo de inscripción</label>
-                        <InscripcionKitModal v-if="availablePlans.length" />
-                        <div class="plan-cards-container" role="radiogroup" aria-labelledby="tipoInscripcionLabel">
-                            <div v-for="plan in availablePlans" :key="plan.id" role="radio"
-                                :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="`${plan.title}, ${plan.price}`"
-                                :tabindex="camposCompletos ? 0 : -1" @click="selectPlan(plan.id)"
-                                @keydown.enter.prevent="selectPlan(plan.id)" @keydown.space.prevent="selectPlan(plan.id)"
-                                class="plan-card-simple" :class="{
-                                    'selected': planId === plan.id,
-                                    'disabled': !camposCompletos
-                                }">
-                                <div class="plan-card-header">
-                                    <h4 class="plan-card-title">{{ plan.title }}</h4>
-                                    <span v-if="plan.badge" class="plan-card-badge" :class="getBadgeClass(plan.badge)">{{ plan.badge
-                                    }}</span>
-                                </div>
-                                <div class="plan-card-price">{{ plan.price }}</div>
-                                <div class="plan-card-description">{{ plan.description }}</div>
+                        <InscripcionKitModal v-if="mostrarKit" />
+                        <!-- Presencial primero y luego virtual; con una sola modalidad no hay encabezados -->
+                        <div class="plan-grupos" role="radiogroup" aria-labelledby="tipoInscripcionLabel">
+                            <div
+                                v-for="grupo in gruposPlanes"
+                                :key="grupo.modalidad"
+                                class="plan-grupo"
+                                :role="grupo.titulo ? 'group' : undefined"
+                                :aria-labelledby="grupo.titulo ? `plan-grupo-${grupo.modalidad}` : undefined"
+                            >
+                                <h3 v-if="grupo.titulo" :id="`plan-grupo-${grupo.modalidad}`" class="plan-grupo-titulo">{{ grupo.titulo }}</h3>
+                                <div class="plan-cards-container">
+                                    <div v-for="plan in grupo.planes" :key="plan.id" role="radio"
+                                        :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="`${plan.title}, ${plan.price}`"
+                                        :tabindex="camposCompletos ? 0 : -1" @click="selectPlan(plan.id)"
+                                        @keydown.enter.prevent="selectPlan(plan.id)" @keydown.space.prevent="selectPlan(plan.id)"
+                                        class="plan-card-simple" :class="{
+                                            'selected': planId === plan.id,
+                                            'disabled': !camposCompletos
+                                        }">
+                                        <div class="plan-card-header">
+                                            <h4 class="plan-card-title">{{ plan.title }}</h4>
+                                            <span v-if="plan.badge" class="plan-card-badge" :class="getBadgeClass(plan)">{{ plan.badge
+                                            }}</span>
+                                        </div>
+                                        <div class="plan-card-price">{{ plan.price }}</div>
+                                        <div class="plan-card-description">{{ plan.description }}</div>
 
-                                <!-- Lista de características -->
-                                <ul class="plan-features-list">
-                                    <li v-for="feature in plan.features" :key="feature.text" class="plan-feature-item">
-                                        <Icon :name="feature.icon"
-                                            :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-icon excluded' : 'plan-feature-icon included'" />
-                                        <span
-                                            :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-text excluded' : 'plan-feature-text'">
-                                            {{ feature.text }}
-                                        </span>
-                                    </li>
-                                </ul>
-                                <div class="plan-card-selector">
-                                    <div class="plan-selector-radio" :class="{ 'selected': planId === plan.id }">
-                                        <div v-if="planId === plan.id" class="plan-selector-dot"></div>
+                                        <!-- Lista de características -->
+                                        <ul class="plan-features-list">
+                                            <li v-for="feature in plan.features" :key="feature.text" class="plan-feature-item">
+                                                <Icon :name="feature.icon"
+                                                    :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-icon excluded' : 'plan-feature-icon included'" />
+                                                <span
+                                                    :class="feature.icon === 'heroicons:x-mark' ? 'plan-feature-text excluded' : 'plan-feature-text'">
+                                                    {{ feature.text }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                        <div class="plan-card-selector">
+                                            <div class="plan-selector-radio" :class="{ 'selected': planId === plan.id }">
+                                                <div v-if="planId === plan.id" class="plan-selector-dot"></div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <small class="form-hint">
@@ -492,6 +504,8 @@ const {
     verificarCorreoGoogle,
     usarOtroCorreo,
     availablePlans,
+    gruposPlanes,
+    mostrarKit,
     avisoPlanes,
     planId,
     selectPlan,
@@ -1058,6 +1072,30 @@ input[type="date"]:valid {
 .verification-chip__retry:focus-visible {
     outline: 2px solid #00d9e8;
     outline-offset: 2px;
+}
+
+/* Grupos por modalidad de asistencia: sin encabezado cuando solo hay una */
+.plan-grupo + .plan-grupo {
+    margin-top: 1.5rem;
+}
+
+.plan-grupo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #67e8f9;
+}
+
+.plan-grupo-titulo::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #334155;
 }
 
 /* Plan Cards Compact Styling - Similar a Digital Ocean */
