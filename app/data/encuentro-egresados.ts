@@ -29,6 +29,14 @@ export const encuentroEgresados = {
   lugar: 'Casa de la Cultura',
   participacion: 'Inscripción gratuita',
   dirigidoA: 'Egresados de Ingeniería de Sistemas de la UNDC',
+  afiche: {
+    original: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.png',
+    preview: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.webp',
+    nombreDescarga: 'Afiche-oficial-Encuentro-de-Egresados-2026.png',
+    alt: 'Afiche oficial del Encuentro de Egresados 2026 de Ingeniería de Sistemas de la UNDC',
+    ancho: 1414,
+    alto: 2000,
+  },
   portada: imagen(
     '2024-portada-auditorio.webp',
     'Participantes y representantes reunidos en un aula durante un encuentro anterior de egresados de Ingeniería de Sistemas',

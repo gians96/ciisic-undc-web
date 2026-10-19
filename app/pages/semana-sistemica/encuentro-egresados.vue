@@ -95,6 +95,8 @@
 
       <EncuentroEgresadosTarjetaInscripcion class="mt-16 lg:mt-20" />
 
+      <EncuentroEgresadosAficheOficial />
+
       <section class="mt-16 lg:mt-20" aria-labelledby="experiencia-anterior-title">
         <div class="max-w-3xl">
           <p class="section-kicker">Recuerdos de un encuentro anterior</p>

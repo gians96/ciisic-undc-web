@@ -115,6 +115,7 @@ describe('contenido confirmado y archivo fotográfico', () => {
     expect(encuentroEgresados.participacion).not.toMatch(/independiente|planes del congreso/i)
 
     const contenidoPublico = [
+      '../app/components/encuentro-egresados/AficheOficial.vue',
       '../app/components/encuentro-egresados/TarjetaInscripcion.vue',
       '../app/pages/semana-sistemica/encuentro-egresados.vue',
       '../app/pages/privacidad.vue',
