@@ -59,10 +59,6 @@
             <Icon name="heroicons:shield-check" class="mt-0.5 h-5 w-5 shrink-0 text-primary-300" aria-hidden="true" />
             <span>El registro se realizará únicamente mediante el formulario oficial de Google.</span>
           </p>
-          <p class="mt-3 flex items-start gap-3">
-            <Icon name="heroicons:information-circle" class="mt-0.5 h-5 w-5 shrink-0 text-primary-300" aria-hidden="true" />
-            <span>Esta inscripción es independiente de los planes del congreso.</span>
-          </p>
         </div>
       </div>
     </div>

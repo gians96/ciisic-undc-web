@@ -31,8 +31,7 @@ export default defineNuxtConfig({
     public: {
       appName: 'VIII CIISIC 2026',
       appVersion: '1.0.0',
-      // Al pegar un enlace público de respuesta válido, la inscripción se abre hasta el corte.
-      // Nunca usar el enlace /edit del formulario.
+      // Sobrescritura opcional del enlace público versionado. Nunca usar un enlace /edit.
       alumniFormUrl: '',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00'
     }

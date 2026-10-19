@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   cierreInscripcionEgresadosValido,
@@ -5,6 +6,7 @@ import {
   estadoInscripcionEgresados,
   formatearCierreInscripcionEgresados,
   normalizarConfiguracionInscripcionEgresados,
+  URL_FORMULARIO_OFICIAL_EGRESADOS,
   urlFormularioEgresadosValida,
 } from '../app/utils/inscripcion-egresados'
 import { encuentroEgresados } from '../app/data/encuentro-egresados'
@@ -12,14 +14,37 @@ import { encuentroEgresados } from '../app/data/encuentro-egresados'
 describe('inscripción del Encuentro de Egresados mediante Google Forms', () => {
   afterEach(() => vi.useRealTimers())
 
-  it('mantiene el estado próximamente mientras no exista el enlace público', () => {
+  it('usa el formulario oficial y abre la inscripción sin configuración local', () => {
     const sinEnlace = normalizarConfiguracionInscripcionEgresados({
       alumniFormUrl: '',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
-    expect(estadoInscripcionEgresados(sinEnlace)).toBe('proximamente')
+    expect(sinEnlace.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    expect(estadoInscripcionEgresados(sinEnlace, Date.parse('2026-10-23T23:59:59.999-05:00'))).toBe('abierta')
   })
+
+  it('respeta una URL válida configurada explícitamente', () => {
+    const urlConfigurada = 'https://forms.gle/AbCdEf123456'
+    const configuracion = normalizarConfiguracionInscripcionEgresados({
+      alumniFormUrl: urlConfigurada,
+      alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
+    })
+
+    expect(configuracion.url).toBe(urlConfigurada)
+  })
+
+  it.each([undefined, null, '', '   ', 'https://ejemplo.com/formulario', 'https://docs.google.com/forms/d/FORM_ID/edit'])(
+    'usa el formulario oficial cuando la configuración es vacía o inválida: %j',
+    (alumniFormUrl) => {
+      const configuracion = normalizarConfiguracionInscripcionEgresados({
+        alumniFormUrl,
+        alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
+      })
+
+      expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    },
+  )
 
   it('abre con un URL público válido antes del corte confirmado', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
@@ -102,6 +127,19 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
 })
 
 describe('contenido confirmado y archivo fotográfico', () => {
+  it('mantiene la inscripción gratuita sin afirmar una relación con los planes', () => {
+    expect(encuentroEgresados.participacion).toBe('Inscripción gratuita')
+    expect(encuentroEgresados.participacion).not.toMatch(/independiente|planes del congreso/i)
+
+    const contenidoPublico = [
+      '../app/components/encuentro-egresados/TarjetaInscripcion.vue',
+      '../app/pages/semana-sistemica/encuentro-egresados.vue',
+      '../app/pages/privacidad.vue',
+    ].map(ruta => readFileSync(new URL(ruta, import.meta.url), 'utf8')).join('\n')
+
+    expect(contenidoPublico).not.toMatch(/independiente.{0,100}(?:planes|congreso)|(?:planes|congreso).{0,100}independiente/is)
+  })
+
   it('publica el lugar confirmado sin alterar la procedencia interna de las fotos', () => {
     expect(encuentroEgresados.lugar).toBe('Casa de la Cultura')
 

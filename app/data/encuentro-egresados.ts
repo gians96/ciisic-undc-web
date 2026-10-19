@@ -27,7 +27,7 @@ export const encuentroEgresados = {
   fechaCorta: 'Martes 27 de octubre',
   horario: '6:00 p. m. – 8:00 p. m.',
   lugar: 'Casa de la Cultura',
-  participacion: 'Inscripción gratuita e independiente del congreso',
+  participacion: 'Inscripción gratuita',
   dirigidoA: 'Egresados de Ingeniería de Sistemas de la UNDC',
   portada: imagen(
     '2024-portada-auditorio.webp',

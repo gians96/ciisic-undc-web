@@ -6,6 +6,8 @@ export interface ConfiguracionInscripcionEgresados {
   cierreValido: boolean
 }
 
+export const URL_FORMULARIO_OFICIAL_EGRESADOS = 'https://docs.google.com/forms/d/e/1FAIpQLSer4Mw09ZcdlHnbSBE1MY1W1jGS0X_bXTO4twq8ltU5ln4yQA/viewform?usp=publish-editor'
+
 /** Solo acepta enlaces HTTPS de respuesta de Google Forms; nunca enlaces de edición. */
 export function urlFormularioEgresadosValida(valor: unknown): string | null {
   if (typeof valor !== 'string' || !valor.trim()) return null
@@ -45,7 +47,7 @@ export function normalizarConfiguracionInscripcionEgresados(
   const cierre = cierreInscripcionEgresadosValido(cierreOriginal)
 
   return {
-    url: urlFormularioEgresadosValida(config.alumniFormUrl),
+    url: urlFormularioEgresadosValida(config.alumniFormUrl) ?? URL_FORMULARIO_OFICIAL_EGRESADOS,
     cierre,
     cierreValido: Boolean(cierre),
   }

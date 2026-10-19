@@ -14,7 +14,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Pinia, Vitest. Gestor: **bun** (`bun install`).
 - Variables privadas de runtime (ver [`.env.example`](.env.example)):
   `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. El Encuentro de Egresados solo usa la
-  variable pública segura `NUXT_PUBLIC_ALUMNI_FORM_URL` para enlazar a Google Forms; el corte está
+  variable pública segura y opcional `NUXT_PUBLIC_ALUMNI_FORM_URL` para sobrescribir el Google Forms oficial; el corte está
   fijado en `nuxt.config.ts`, no usa credenciales ni accede a Sheets. El client ID de Google y la URL
   del panel general siguen viniendo del backend.
 - Comandos:

@@ -56,14 +56,12 @@ curl -fsSL https://bun.sh/install | bash
 |---|---|
 | `NUXT_BACKEND_BASE_URL` | URL de `backend-ciisic` alcanzable por el servidor Nitro (la landing llama a `/api/v1/site`). Solo servidor. |
 | `NUXT_BACKEND_EVENT_TOKEN` | Token de acceso del evento. **Secreto de servidor**: solo en runtime, nunca en el build ni en variables `NUXT_PUBLIC_*`. |
-| `NUXT_PUBLIC_ALUMNI_FORM_URL` | URL público de respuesta (`forms.gle` o `docs.google.com/.../viewform`). Nunca usar un enlace `/edit`. |
+| `NUXT_PUBLIC_ALUMNI_FORM_URL` | Sobrescritura opcional del URL público oficial (`forms.gle` o `docs.google.com/.../viewform`). Nunca usar un enlace `/edit`. |
 
-El corte del Encuentro de Egresados está fijado en la configuración pública de Nuxt para el
-`2026-10-24T00:00:00-05:00`. Al configurar un URL de respuesta válido, el botón queda disponible
-hasta ese instante exclusivo; no se necesita un segundo interruptor de activación.
-El valor aprobado para este evento está documentado en [`docs/INSCRIPCION-EGRESADOS.md`](docs/INSCRIPCION-EGRESADOS.md);
-debe configurarse explícitamente tanto en el `.env` local como en las variables del entorno de producción
-antes de ejecutar el build.
+El URL oficial del Encuentro de Egresados está versionado como valor predeterminado seguro. La variable
+permite sustituirlo explícitamente por otro URL público válido sin que la aplicación dependa de un `.env`.
+El corte está fijado en la configuración pública de Nuxt para el `2026-10-24T00:00:00-05:00`;
+el botón queda disponible hasta ese instante exclusivo.
 
 Excepto por `NUXT_PUBLIC_ALUMNI_FORM_URL`, no se configuran aquí variables públicas con datos del backend:
 el client ID de Google (botón «Continuar con Google» de la inscripción) y la URL del panel (`/login`

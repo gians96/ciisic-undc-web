@@ -41,7 +41,7 @@ describe('nuxt.config: configuración del BFF', () => {
     expect(JSON.stringify(runtimeConfig)).not.toContain('evt_no-debe-quedar-en-el-build')
   })
 
-  it('el enlace de Google Forms queda vacío y el corte confirmado es público y estable', async () => {
+  it('el enlace de Google Forms admite sobrescritura y el corte confirmado es público y estable', async () => {
     const { runtimeConfig } = await cargarConfigNuxt()
 
     expect(runtimeConfig).not.toHaveProperty('alumniRegistrationEnabled')
