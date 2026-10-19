@@ -218,6 +218,30 @@ export function resumirOfertaVirtual(
 export const hayDescuentoInstitucional = (planes: readonly Pick<PlanInscripcion, 'basePrice' | 'institutionalPrice'>[]): boolean =>
   planes.some(plan => plan.institutionalPrice < plan.basePrice)
 
+/**
+ * Aviso bajo el correo cuando es del dominio institucional (solo /general y /fi-undc, sin verificación de
+ * estudiante). Sin planes virtuales a la vista es EXACTAMENTE el texto de siempre. Solo si hay planes
+ * virtuales (mismo precio para todos) y ningún plan visible cuesta menos para la comunidad UNDC, reconoce
+ * el dominio sin prometer un descuento que no existe.
+ */
+export function avisoCorreoInstitucional(
+  planes: readonly (ConModalidad & Pick<PlanInscripcion, 'basePrice' | 'institutionalPrice'>)[],
+): string {
+  const sinDescuento = hayPlanesVirtuales(planes) && !hayDescuentoInstitucional(planes)
+  return sinDescuento ? 'Correo institucional' : 'Correo institucional - Se aplicará descuento UNDC'
+}
+
+/**
+ * Etiqueta accesible de la tarjeta («título, precio»). El encabezado visual del grupo se oculta a los
+ * lectores de pantalla (no puede vivir dentro del `radiogroup`), así que un plan virtual cuyo título no
+ * diga «virtual» lo añade aquí. Lo presencial queda idéntico a siempre.
+ */
+export function etiquetaAccesiblePlan(plan: Pick<PlanInscripcion, 'title' | 'modalidad'> & { price: string }): string {
+  const base = `${plan.title}, ${plan.price}`
+  const diceVirtual = normalizar(plan.title).includes('VIRTUAL')
+  return aModalidad(plan.modalidad) === 'VIRTUAL' && !diceVirtual ? `${base}, modalidad virtual` : base
+}
+
 /** `VIRTUAL` usa el estilo de éxito; en lo presencial se conserva la regla de siempre («SIN KIT» → advertencia). */
 export function claseBadgePlan(plan: Pick<PlanInscripcion, 'badge' | 'modalidad'>): 'badge-success' | 'badge-warning' {
   if (aModalidad(plan.modalidad) === 'VIRTUAL') return 'badge-success'

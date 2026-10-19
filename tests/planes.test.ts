@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { CategoriaInscripcionApi } from '../app/types/evento'
 import {
-  agruparPlanesPorModalidad, aModalidad, aplicaPrecioInstitucional, avisoPlanesOcultos, categoriasConPlanesVirtuales, claseBadgePlan,
-  debeLimpiarPlan, esCorreoDelDominio, hayDescuentoInstitucional, hayPlanesPresenciales, hayPlanesVirtuales, mapearPlanes,
-  planDisponible, precioDesdeVirtual, precioPlan, resumirOfertaVirtual, tituloPlan,
+  agruparPlanesPorModalidad, aModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, categoriasConPlanesVirtuales,
+  claseBadgePlan, debeLimpiarPlan, esCorreoDelDominio, etiquetaAccesiblePlan, hayDescuentoInstitucional, hayPlanesPresenciales,
+  hayPlanesVirtuales, mapearPlanes, planDisponible, precioDesdeVirtual, precioPlan, resumirOfertaVirtual, tituloPlan,
 } from '../app/utils/planes'
 
 // Respuesta real de GET /api/v1/public/events/ciisic-viii-2026/registration-types (recortada)
@@ -363,6 +363,63 @@ describe('modalidad de asistencia (spec 018 del backend)', () => {
     expect(claseBadgePlan({ badge: 'SINCRÓNICO', modalidad: 'PRESENCIAL' })).toBe('badge-warning')
     expect(claseBadgePlan({ badge: 'SIN KIT', modalidad: 'PRESENCIAL' })).toBe('badge-warning')
     expect(claseBadgePlan({ badge: 'CON KIT', modalidad: 'PRESENCIAL' })).toBe('badge-success')
+  })
+})
+
+describe('aviso del correo institucional (SC-001: lo presencial no cambia)', () => {
+  const CON_DESCUENTO = 'Correo institucional - Se aplicará descuento UNDC'
+
+  /** Lo que ve alguien con correo @undc.edu.pe: los planes de las categorías, filtrados como el formulario. */
+  const visiblesConCorreoUndc = (respuesta: CategoriaInscripcionApi[]) => {
+    const planes = mapearPlanes(respuesta)
+    return planes.filter(plan => planDisponible(plan, aplicaPrecioInstitucional({
+      esEstudiantil: plan.esEstudiantil,
+      esEstudianteUndc: false,
+      correoInstitucional: true,
+    })))
+  }
+
+  it('solo presencial: el texto de siempre aunque ningún plan visible tenga descuento (respuesta real de /general)', () => {
+    const visibles = visiblesConCorreoUndc([categorias[1]!]) // CON KIT 140 sin institucional; SIN KIT es solo para externos
+    expect(visibles.map(plan => plan.codigo)).toEqual(['general_con_kit'])
+    expect(hayDescuentoInstitucional(visibles)).toBe(false)
+    expect(avisoCorreoInstitucional(visibles)).toBe(CON_DESCUENTO)
+  })
+
+  it('solo presencial con descuento y sin planes: el texto de siempre', () => {
+    expect(avisoCorreoInstitucional(visiblesConCorreoUndc([categorias[0]!]))).toBe(CON_DESCUENTO)
+    expect(avisoCorreoInstitucional([])).toBe(CON_DESCUENTO)
+  })
+
+  it('con planes virtuales y ningún descuento a la vista: reconoce el dominio sin prometer un descuento', () => {
+    const general = visiblesConCorreoUndc([{ ...categorias[1]!, tipos: [...categorias[1]!.tipos, ...categoriasVirtual[1]!.tipos] }])
+    expect(general.map(plan => plan.codigo)).toEqual(['general_con_kit', 'general_virtual'])
+    expect(avisoCorreoInstitucional(general)).toBe('Correo institucional')
+    expect(avisoCorreoInstitucional(visiblesConCorreoUndc(categoriasVirtual))).toBe('Correo institucional')
+  })
+
+  it('con planes virtuales pero algún plan presencial con descuento: sigue anunciándolo', () => {
+    expect(avisoCorreoInstitucional(visiblesConCorreoUndc(categoriasMixtas))).toBe(CON_DESCUENTO)
+  })
+})
+
+describe('etiqueta accesible de la tarjeta', () => {
+  it('lo presencial queda como siempre: «título, precio»', () => {
+    const [conKit] = mapearPlanes(categorias)
+    expect(etiquetaAccesiblePlan({ ...conKit!, price: 'S/ 120.00' })).toBe('ESTUDIANTES CON KIT, S/ 120.00')
+    expect(etiquetaAccesiblePlan({ title: 'X VIRTUAL', modalidad: 'PRESENCIAL', price: 'S/ 1.00' })).toBe('X VIRTUAL, S/ 1.00')
+  })
+
+  it('un plan virtual cuyo título ya dice «virtual» no lo repite', () => {
+    const [virtual] = mapearPlanes(categoriasVirtual)
+    expect(etiquetaAccesiblePlan({ ...virtual!, price: 'S/ 30.00' })).toBe('ESTUDIANTES VIRTUAL, S/ 30.00')
+  })
+
+  it('un plan virtual cuyo título no lo dice lo añade (el encabezado del grupo está oculto a los lectores de pantalla)', () => {
+    const etiquetaSinVirtual = { ...categoriasVirtual[0]!.tipos[0]!, etiqueta: 'ONLINE' }
+    const [virtual] = mapearPlanes([{ ...categoriasVirtual[0]!, tipos: [etiquetaSinVirtual] }])
+    expect(virtual!.title).toBe('ESTUDIANTES ONLINE')
+    expect(etiquetaAccesiblePlan({ ...virtual!, price: 'S/ 30.00' })).toBe('ESTUDIANTES ONLINE, S/ 30.00, modalidad virtual')
   })
 })
 

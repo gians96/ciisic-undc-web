@@ -10,8 +10,8 @@ import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { modalidadesDisponibles, resolverMedioPago, type EleccionPago } from '~/utils/medios-pago'
 import {
-  agruparPlanesPorModalidad, aplicaPrecioInstitucional, avisoPlanesOcultos, claseBadgePlan, debeLimpiarPlan, esCorreoDelDominio,
-  hayDescuentoInstitucional, hayPlanesPresenciales, planDisponible, precioPlan, type PlanInscripcion,
+  agruparPlanesPorModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, claseBadgePlan, debeLimpiarPlan,
+  esCorreoDelDominio, etiquetaAccesiblePlan, hayPlanesPresenciales, planDisponible, precioPlan, type PlanInscripcion,
 } from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
 
@@ -242,11 +242,9 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
       return conVerificacion ? `Si eres estudiante UNDC, usa tu correo institucional @${dominioInstitucional.value}` : 'Ingresa tu correo electrónico'
     }
     if (!isEmailValid.value) return 'Ingresa un correo electrónico válido'
-    // El descuento solo se anuncia si algún plan a la vista cuesta menos para la comunidad UNDC
-    // (los planes virtuales tienen el mismo precio para todos)
-    if (!conVerificacion && esCorreoInstitucional.value && hayDescuentoInstitucional(availablePlans.value)) {
-      return 'Correo institucional - Se aplicará descuento UNDC'
-    }
+    // Sin planes virtuales el texto es el de siempre; con ellos (mismo precio para todos) y sin ningún plan
+    // con descuento a la vista, reconoce el dominio sin prometer un descuento inexistente
+    if (!conVerificacion && esCorreoInstitucional.value) return avisoCorreoInstitucional(availablePlans.value)
     return 'Correo válido'
   }
 
@@ -346,6 +344,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
   })
 
   const getBadgeClass = (plan: Pick<PlanInscripcion, 'badge' | 'modalidad'>) => claseBadgePlan(plan)
+  const etiquetaPlan = (plan: Pick<PlanInscripcion, 'title' | 'modalidad'> & { price: string }) => etiquetaAccesiblePlan(plan)
 
   const selectPlan = (id: number) => {
     if (!camposCompletos.value) {
@@ -579,6 +578,7 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     selectPlan,
     camposCompletos,
     getBadgeClass,
+    etiquetaPlan,
     isStudentPlan,
     clasificacion,
     clasificaciones,

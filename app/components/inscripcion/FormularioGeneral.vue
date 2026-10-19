@@ -109,19 +109,15 @@
                     <div class="form-group col-span-6 form-section-below-classification">
                         <label id="tipoInscripcionLabel" class="form-label">Tipo de inscripción</label>
                         <InscripcionKitModal v-if="mostrarKit" />
-                        <!-- Presencial primero y luego virtual; con una sola modalidad no hay encabezados -->
+                        <!-- Presencial primero y luego virtual; con una sola modalidad no hay encabezados.
+                             El radiogroup solo contiene radios: el encabezado del grupo es visual (aria-hidden) y la
+                             modalidad llega a los lectores de pantalla por el aria-label de cada tarjeta -->
                         <div class="plan-grupos" role="radiogroup" aria-labelledby="tipoInscripcionLabel">
-                            <div
-                                v-for="grupo in gruposPlanes"
-                                :key="grupo.modalidad"
-                                class="plan-grupo"
-                                :role="grupo.titulo ? 'group' : undefined"
-                                :aria-labelledby="grupo.titulo ? `plan-grupo-${grupo.modalidad}` : undefined"
-                            >
-                                <h3 v-if="grupo.titulo" :id="`plan-grupo-${grupo.modalidad}`" class="plan-grupo-titulo">{{ grupo.titulo }}</h3>
+                            <div v-for="grupo in gruposPlanes" :key="grupo.modalidad" class="plan-grupo">
+                                <h3 v-if="grupo.titulo" class="plan-grupo-titulo" aria-hidden="true">{{ grupo.titulo }}</h3>
                                 <div class="plan-cards-container">
                                     <div v-for="plan in grupo.planes" :key="plan.id" role="radio"
-                                        :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="`${plan.title}, ${plan.price}`"
+                                        :aria-checked="planId === plan.id" :aria-disabled="!camposCompletos" :aria-label="etiquetaPlan(plan)"
                                         :tabindex="camposCompletos ? 0 : -1" @click="selectPlan(plan.id)"
                                         @keydown.enter.prevent="selectPlan(plan.id)" @keydown.space.prevent="selectPlan(plan.id)"
                                         class="plan-card-simple"
@@ -492,6 +488,7 @@ const {
     selectPlan,
     camposCompletos,
     getBadgeClass,
+    etiquetaPlan,
     bancos,
     billeteras,
     titular,
