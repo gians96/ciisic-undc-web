@@ -4,6 +4,8 @@ import {
   alternarSeleccion,
   cuerpoInscripcion,
   depurarSeleccion,
+  destinoTrasElegir,
+  filtrarPonencias,
   formularioVacio,
   mensajeErrorInscripcionPonencias,
   motivoNoDisponible,
@@ -12,6 +14,7 @@ import {
   pideNombres,
   ponenciaEnConflicto,
   ponenciasPorDia,
+  ponenciasVisibles,
   programaNoDisponible,
   seCruzan,
   textoCupos,
@@ -111,17 +114,82 @@ describe('selección', () => {
   })
 })
 
+describe('búsqueda', () => {
+  const kali = ponencia({ id: 7, tema: 'Ciberseguridad con Kali Linux', ambiente: 'Laboratorio 3', ponente: { nombre: 'M.Sc. Daniel Alejandro Yucra Sotomayor', bio: null, foto: null, externo: false } })
+  const lista = [MARTES_1, kali, MIERCOLES]
+
+  it('sin texto devuelve todas y no modifica el arreglo original', () => {
+    expect(filtrarPonencias(lista, '')).toEqual(lista)
+    expect(filtrarPonencias(lista, '   ')).toEqual(lista)
+    expect(filtrarPonencias(lista, '')).not.toBe(lista)
+  })
+
+  it('busca por tema, ponente, ambiente, hora y día, sin tildes ni mayúsculas', () => {
+    expect(filtrarPonencias(lista, 'KALI').map(p => p.id)).toEqual([7])
+    expect(filtrarPonencias(lista, 'yucra').map(p => p.id)).toEqual([7])
+    expect(filtrarPonencias(lista, 'laboratorio 3').map(p => p.id)).toEqual([7])
+    expect(filtrarPonencias(lista, 'miercoles').map(p => p.id)).toEqual([4])
+    expect(filtrarPonencias(lista, 'miércoles').map(p => p.id)).toEqual([4])
+    expect(filtrarPonencias(lista, '12:00')).toHaveLength(3)
+  })
+
+  it('exige todas las palabras y no encuentra lo que no existe', () => {
+    expect(filtrarPonencias(lista, 'kali daniel').map(p => p.id)).toEqual([7])
+    expect(filtrarPonencias(lista, 'kali edwin')).toEqual([])
+    expect(filtrarPonencias(lista, 'blockchain')).toEqual([])
+  })
+})
+
+describe('vista de la elección', () => {
+  const delMartes = [MARTES_1, MARTES_2, MARTES_TARDE]
+
+  it('sin elección muestra todas, o solo las que coinciden con la búsqueda', () => {
+    expect(ponenciasVisibles(delMartes, [], TODAS, '').map(p => p.id)).toEqual([1, 2, 3])
+    expect(ponenciasVisibles(delMartes, [], TODAS, 'aula').map(p => p.id)).toEqual([3])
+  })
+
+  it('al elegir una se ocultan las demás de su horario y se conservan las de otro horario', () => {
+    expect(ponenciasVisibles(delMartes, [1], TODAS, '').map(p => p.id)).toEqual([1, 3])
+    // La de la tarde no se cruza con las del mediodía: elegirla no oculta ninguna
+    expect(ponenciasVisibles(delMartes, [3], TODAS, '').map(p => p.id)).toEqual([1, 2, 3])
+  })
+
+  it('la elegida sigue visible aunque no coincida con la búsqueda, y al quitarla vuelven todas', () => {
+    expect(ponenciasVisibles(delMartes, [1], TODAS, 'aula').map(p => p.id)).toEqual([1, 3])
+    expect(ponenciasVisibles(delMartes, [], TODAS, '').map(p => p.id)).toEqual([1, 2, 3])
+  })
+
+  it('pasa al siguiente día que aún tenga algo por elegir y, si no hay, a los datos', () => {
+    const dias = ponenciasPorDia(TODAS)
+    expect(destinoTrasElegir(dias, [1], '2026-10-27')).toBe('dia-2026-10-28')
+    expect(destinoTrasElegir(dias, [1, 4], '2026-10-27')).toBe('titulo-datos')
+    expect(destinoTrasElegir(dias, [4], '2026-10-28')).toBe('titulo-datos')
+  })
+
+  it('no manda a un día sin ponencias disponibles', () => {
+    const agotada = ponencia({ id: 8, fecha: '2026-10-28', llena: true, cuposDisponibles: 0 })
+    expect(destinoTrasElegir(ponenciasPorDia([MARTES_1, agotada]), [1], '2026-10-27')).toBe('titulo-datos')
+  })
+})
+
 describe('formulario', () => {
-  const valido = () => ({ ...formularioVacio(), numeroDocumento: '12345678' })
+  const valido = () => ({ ...formularioVacio(), numeroDocumento: '12345678', correo: 'ana@gmail.com', celular: '987654321' })
 
   it('el documento se limpia según el tipo', () => {
     expect(normalizarDocumento('DNI', '12 345-678 99')).toBe('12345678')
     expect(normalizarDocumento('CE', 'ab-12 3456789012')).toBe('ab1234567890')
   })
 
-  it('solo el documento y al menos una ponencia son obligatorios', () => {
+  it('el documento, el correo, el celular y al menos una ponencia son obligatorios', () => {
     expect(validarFormulario(valido(), [1], { nombresObligatorios: false })).toEqual({})
-    expect(validarFormulario(formularioVacio(), [], { nombresObligatorios: false })).toEqual({ numeroDocumento: 'Ingresa tu número de documento.', ponencias: 'Elige al menos una ponencia.' })
+    expect(validarFormulario(formularioVacio(), [], { nombresObligatorios: false })).toEqual({
+      numeroDocumento: 'Ingresa tu número de documento.',
+      correo: 'Ingresa tu correo.',
+      celular: 'Ingresa tu celular.',
+      ponencias: 'Elige al menos una ponencia.',
+    })
+    expect(validarFormulario({ ...valido(), correo: '   ' }, [1], { nombresObligatorios: false })).toEqual({ correo: 'Ingresa tu correo.' })
+    expect(validarFormulario({ ...valido(), celular: ' - ' }, [1], { nombresObligatorios: false })).toEqual({ celular: 'Ingresa tu celular.' })
     expect(validarFormulario({ ...valido(), numeroDocumento: '1234' }, [1], { nombresObligatorios: false }).numeroDocumento).toContain('8 dígitos')
     expect(validarFormulario({ ...valido(), tipoDocumento: 'CE', numeroDocumento: 'AB123' }, [1], { nombresObligatorios: true }).numeroDocumento).toContain('carné')
     expect(validarFormulario(valido(), [1, 2, 3, 4, 5], { nombresObligatorios: false }).ponencias).toContain('hasta 4')
@@ -133,14 +201,14 @@ describe('formulario', () => {
     expect(validarFormulario({ ...valido(), nombres: 'Ana', apellidos: 'Pérez' }, [1], { nombresObligatorios: true })).toEqual({})
   })
 
-  it('correo y celular solo se validan si se escriben', () => {
-    expect(validarFormulario({ ...valido(), correo: 'no-es-correo' }, [1], { nombresObligatorios: false }).correo).toBeDefined()
-    expect(validarFormulario({ ...valido(), celular: '123' }, [1], { nombresObligatorios: false }).celular).toBeDefined()
+  it('el correo y el celular escritos deben ser válidos', () => {
+    expect(validarFormulario({ ...valido(), correo: 'no-es-correo' }, [1], { nombresObligatorios: false }).correo).toBe('Ingresa un correo válido.')
+    expect(validarFormulario({ ...valido(), celular: '123' }, [1], { nombresObligatorios: false }).celular).toContain('9 y 15 dígitos')
     expect(validarFormulario({ ...valido(), correo: 'ana@gmail.com', celular: '987 654 321' }, [1], { nombresObligatorios: false })).toEqual({})
   })
 
   it('el cuerpo usa el tipo en minúsculas, omite los vacíos y normaliza correo y celular', () => {
-    expect(cuerpoInscripcion(valido(), [2, 1])).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678' }, ponenciaIds: [2, 1] })
+    expect(cuerpoInscripcion(valido(), [2, 1])).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com', celular: '987654321' }, ponenciaIds: [2, 1] })
     expect(cuerpoInscripcion({ tipoDocumento: 'CE', numeroDocumento: 'AB1234567', nombres: ' Ana ', apellidos: 'Pérez', correo: ' Ana@Gmail.com ', celular: '987 654-321', procedencia: 'EXTERNO' }, [3]))
       .toEqual({ asistente: { tipoDocumento: 'ce', numeroDocumento: 'AB1234567', nombres: 'Ana', apellidos: 'Pérez', correo: 'ana@gmail.com', celular: '987654321', procedencia: 'EXTERNO' }, ponenciaIds: [3] })
   })

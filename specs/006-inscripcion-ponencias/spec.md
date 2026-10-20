@@ -14,11 +14,15 @@ reserva. No se toca la página estática, salvo un botón «Inscríbete a las po
 
 1. **Elegir**: las ponencias por día (tema, ponente con foto o iniciales, ambiente, horario y duración,
    modalidad, cupos que quedan). Las agotadas y las de pago se muestran deshabilitadas con su motivo. Las del
-   mismo horario son excluyentes: elegir una reemplaza a la anterior y la tarjeta lo avisa. Hasta 4 por envío.
+   mismo horario son excluyentes: **al elegir una se ocultan las demás de su horario** (queda solo la elegida,
+   que se pulsa de nuevo para quitarla) y la vista pasa al siguiente día que aún tenga algo por elegir o, si no
+   queda ninguno, a «Tus datos»; al quitarla vuelven a verse todas, sin desplazar la página. Hasta 4 por envío.
+   Un **buscador** filtra por tema, ponente, ambiente, hora o día (sin tildes ni mayúsculas, todas las palabras);
+   la ponencia elegida se sigue viendo aunque no coincida.
 2. **Datos**: tipo y número de documento; con un DNI de 8 dígitos se consultan los nombres
    (`GET /api/publico/consulta-dni/:numero`) y quedan de solo lectura; si la consulta falla (o con carné) se
-   escriben. Correo y celular son opcionales; «¿Perteneces a la UNDC?» (interno/externo) también. Solo el
-   documento es obligatorio.
+   escriben. **Documento, correo y celular son obligatorios** en la landing (el backend los acepta opcionales
+   porque el staff inscribe en puerta solo con el DNI); «¿Perteneces a la UNDC?» (interno/externo) es opcional.
 3. **Enviar**: `POST /api/publico/ponencias-especializadas/inscripciones` (todo o nada). Éxito: resumen con día,
    horario y ambiente de cada ponencia y «Lleva tu DNI»; si ya estaba inscrito en alguna, se le dice. Errores
    por código: sin cupos, cruce de horario, ponencia terminada, ya no disponible, nombres requeridos, límite de
@@ -35,7 +39,8 @@ reserva. No se toca la página estática, salvo un botón «Inscríbete a las po
   `server/api/publico/ponencias-especializadas/*`.
 - **FR-002**: la landing no decide cupos ni cruces: los muestra y los evita (`alternarSeleccion`), pero el
   backend es la autoridad (`409 TALK_FULL`, `409 SCHEDULE_CONFLICT`).
-- **FR-003**: el tipo de documento viaja en minúsculas (`dni` | `ce`); los opcionales vacíos no se envían.
+- **FR-003**: el tipo de documento viaja en minúsculas (`dni` | `ce`); los opcionales vacíos (nombres con DNI,
+  procedencia) no se envían.
 - **FR-004**: accesibilidad: casillas reales (`sr-only`) dentro de `label`, foco visible, errores con
   `role="alert"`, consulta del DNI y confirmación en regiones `status`, y `prefers-reduced-motion`.
 - **FR-005**: privacidad: aviso con enlace a `/privacidad`; la respuesta del backend enmascara el documento.

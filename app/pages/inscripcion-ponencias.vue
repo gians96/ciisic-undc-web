@@ -6,7 +6,7 @@
         <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary-300">VIII CIISIC UNDC · 2026</p>
         <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">Inscripción a ponencias especializadas</h1>
         <p class="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-          Elige las ponencias a las que asistirás y deja tu documento. Son gratuitas, con cupos limitados, y la asistencia se registra con tu DNI en la puerta.
+          Elige las ponencias a las que asistirás y deja tus datos. Son gratuitas, con cupos limitados, y la asistencia se registra con tu DNI en la puerta.
         </p>
         <div class="mt-7 flex flex-wrap justify-center gap-3 text-sm">
           <span class="summary-chip"><Icon name="heroicons:ticket" class="h-5 w-5 text-primary-400" aria-hidden="true" />Gratuitas</span>
@@ -76,19 +76,48 @@
             <h2 id="titulo-eleccion" class="mt-2 text-3xl font-bold tracking-tight">Elige tus ponencias</h2>
             <p class="mt-3 flex items-start gap-3 rounded-2xl border border-primary-400/25 bg-primary-400/[.07] p-4 leading-relaxed text-slate-200">
               <Icon name="heroicons:information-circle" class="mt-0.5 h-6 w-6 shrink-0 text-primary-300" aria-hidden="true" />
-              <span>Las ponencias de cada día se dictan <strong class="text-white">al mismo tiempo</strong>: puedes elegir una por horario. Si eliges otra del mismo horario, reemplaza a la anterior.</span>
+              <span>Las ponencias de cada día se dictan <strong class="text-white">al mismo tiempo</strong>: elige una por horario. Al elegirla se ocultan las demás; púlsala de nuevo para cambiarla.</span>
             </p>
           </div>
 
+          <div class="mb-10 max-w-xl" role="search">
+            <label for="buscar-ponencia" class="campo-label">Buscar ponencia</label>
+            <div class="relative">
+              <Icon name="heroicons:magnifying-glass" class="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <input
+                id="buscar-ponencia"
+                v-model="busqueda"
+                type="search"
+                class="campo buscador"
+                placeholder="Tema, ponente, ambiente o día…"
+                autocomplete="off"
+                enterkeyhint="search"
+              >
+              <button
+                v-if="busqueda"
+                type="button"
+                class="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-300 hover:bg-white/10 hover:text-white"
+                aria-label="Borrar búsqueda"
+                @click="busqueda = ''"
+              >
+                <Icon name="heroicons:x-mark" class="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+            <p class="mt-2 min-h-5 text-xs text-slate-400" role="status" aria-live="polite">{{ resumenBusqueda }}</p>
+          </div>
+
           <div class="space-y-12">
-            <section v-for="dia in dias" :key="dia.fecha" :aria-labelledby="`dia-${dia.fecha}`">
+            <section v-for="{ dia, visibles, resumen } in vistaDias" :key="dia.fecha" :aria-labelledby="`dia-${dia.fecha}`">
               <div class="mb-5 flex flex-wrap items-end justify-between gap-3 border-l-4 border-primary-400 pl-4">
-                <h3 :id="`dia-${dia.fecha}`" class="text-2xl font-extrabold tracking-tight">{{ dia.etiqueta }}</h3>
-                <p class="text-sm text-slate-400">{{ dia.ponencias.length }} ponencias</p>
+                <h3 :id="`dia-${dia.fecha}`" tabindex="-1" class="scroll-mt-32 text-2xl font-extrabold tracking-tight outline-none">{{ dia.etiqueta }}</h3>
+                <p class="text-sm text-slate-400">{{ resumen }}</p>
               </div>
-              <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <p v-if="!visibles.length" class="rounded-2xl border border-white/10 bg-white/[.03] p-5 text-slate-300" role="status">
+                Ninguna ponencia de este día coincide con «{{ busqueda.trim() }}».
+              </p>
+              <div v-else class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <label
-                  v-for="ponencia in dia.ponencias"
+                  v-for="ponencia in visibles"
                   :key="ponencia.id"
                   :for="`ponencia-${ponencia.id}`"
                   class="opcion flex h-full flex-col rounded-3xl border p-5"
@@ -100,7 +129,7 @@
                     class="sr-only"
                     :checked="estaElegida(ponencia)"
                     :disabled="Boolean(motivoNoDisponible(ponencia)) && !estaElegida(ponencia)"
-                    @change="alternar(ponencia)"
+                    @change="alternarYAvanzar(ponencia)"
                   >
                   <span class="flex items-start justify-between gap-3">
                     <span class="check" aria-hidden="true"><Icon v-if="estaElegida(ponencia)" name="heroicons:check" class="h-4 w-4" /></span>
@@ -121,8 +150,8 @@
                       <span class="block font-semibold leading-snug text-slate-100">{{ ponencia.ponente.nombre }}</span>
                     </span>
                   </span>
-                  <span v-if="motivoNoDisponible(ponencia)" class="mt-3 text-xs font-semibold text-amber-200">{{ TEXTO_NO_DISPONIBLE[motivoNoDisponible(ponencia)!] }}</span>
-                  <span v-else-if="reemplazaA(ponencia)" class="mt-3 text-xs text-slate-400">Reemplaza tu elección de este horario: «{{ reemplazaA(ponencia)!.ambiente }}».</span>
+                  <span v-if="estaElegida(ponencia)" class="mt-3 text-xs font-semibold text-primary-300">Elegida · púlsala para quitarla y ver las demás.</span>
+                  <span v-else-if="motivoNoDisponible(ponencia)" class="mt-3 text-xs font-semibold text-amber-200">{{ TEXTO_NO_DISPONIBLE[motivoNoDisponible(ponencia)!] }}</span>
                 </label>
               </div>
             </section>
@@ -133,8 +162,8 @@
         <section class="border-t border-white/10 bg-[#03172d] px-6 py-12 lg:px-8 lg:py-16" aria-labelledby="titulo-datos">
           <form class="mx-auto max-w-3xl" novalidate @submit.prevent="enviar">
             <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso 2</p>
-            <h2 id="titulo-datos" class="mt-2 text-3xl font-bold tracking-tight">Tus datos</h2>
-            <p class="mt-3 text-slate-300">Solo el documento es obligatorio. Con tu DNI completamos tus nombres automáticamente.</p>
+            <h2 id="titulo-datos" tabindex="-1" class="mt-2 scroll-mt-40 text-3xl font-bold tracking-tight outline-none">Tus datos</h2>
+            <p class="mt-3 text-slate-300">Documento, correo y celular son obligatorios. Con tu DNI completamos tus nombres automáticamente.</p>
 
             <div class="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-4" aria-live="polite">
               <p class="text-sm font-semibold text-slate-300">Tu elección ({{ elegidas.length }})</p>
@@ -181,12 +210,12 @@
                 <p v-if="errores.apellidos" class="campo-error" role="alert">{{ errores.apellidos }}</p>
               </div>
               <div>
-                <label for="correo" class="campo-label">Correo <span class="font-normal text-slate-400">(opcional)</span></label>
+                <label for="correo" class="campo-label">Correo <span aria-hidden="true">*</span></label>
                 <input id="correo" v-model="form.correo" type="email" class="campo" maxlength="191" autocomplete="email" :aria-invalid="errores.correo ? true : undefined">
                 <p v-if="errores.correo" class="campo-error" role="alert">{{ errores.correo }}</p>
               </div>
               <div>
-                <label for="celular" class="campo-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
+                <label for="celular" class="campo-label">Celular <span aria-hidden="true">*</span></label>
                 <input id="celular" v-model="form.celular" type="tel" inputmode="tel" class="campo" maxlength="20" placeholder="987654321" autocomplete="tel" :aria-invalid="errores.celular ? true : undefined">
                 <p v-if="errores.celular" class="campo-error" role="alert">{{ errores.celular }}</p>
               </div>
@@ -233,13 +262,15 @@ import {
   alternarSeleccion,
   cuerpoInscripcion,
   depurarSeleccion,
+  destinoTrasElegir,
+  filtrarPonencias,
   formularioVacio,
   mensajeErrorInscripcionPonencias,
   motivoNoDisponible,
   nivelDeCupos,
   normalizarDocumento,
   pideNombres,
-  ponenciaEnConflicto,
+  ponenciasVisibles,
   programaNoDisponible,
   TEXTO_NO_DISPONIBLE,
   textoCupos,
@@ -267,6 +298,7 @@ const { documentTypes, consultDni } = useConsultation()
 
 const form = reactive(formularioVacio())
 const seleccion = ref<number[]>([])
+const busqueda = ref('')
 const errores = ref<ErroresFormulario>({})
 const errorEnvio = ref('')
 const enviando = ref(false)
@@ -285,11 +317,43 @@ const nombresObligatorios = computed(() =>
   form.tipoDocumento === 'CE' || nombresManuales.value || (form.tipoDocumento === 'DNI' && consulta.value.estado === 'FALLO' && consulta.value.numero === form.numeroDocumento))
 const primerNombre = computed(() => resultado.value?.asistente.nombres.split(' ')[0] ?? '')
 
+const buscando = computed(() => busqueda.value.trim().length > 0)
+const resumenBusqueda = computed(() => {
+  if (!buscando.value) return ''
+  const coinciden = filtrarPonencias(ponencias.value, busqueda.value).length
+  return coinciden
+    ? `${coinciden} de ${ponencias.value.length} ponencias coinciden con tu búsqueda.`
+    : `No encontramos ponencias con «${busqueda.value.trim()}».`
+})
+
+/** Cada día con lo que se ve de él: al elegir una ponencia se ocultan las demás de su horario. */
+const vistaDias = computed(() => dias.value.map((dia) => {
+  const visibles = ponenciasVisibles(dia.ponencias, seleccion.value, ponencias.value, busqueda.value)
+  const elegidasDelDia = dia.ponencias.filter(p => seleccion.value.includes(p.id)).length
+  const total = dia.ponencias.length
+  const resumen = elegidasDelDia
+    ? `Elegiste ${elegidasDelDia} de ${total} · las demás están ocultas`
+    : buscando.value ? `${visibles.length} de ${total} ponencias` : `${total} ponencias`
+  return { dia, visibles, resumen }
+}))
+
 const estaElegida = (ponencia: PonenciaEspecializadaPublica) => seleccion.value.includes(ponencia.id)
-const reemplazaA = (ponencia: PonenciaEspecializadaPublica) => (estaElegida(ponencia) ? null : ponenciaEnConflicto(ponencia, seleccion.value, ponencias.value))
 const alternar = (ponencia: PonenciaEspecializadaPublica) => {
   seleccion.value = alternarSeleccion(seleccion.value, ponencia, ponencias.value)
   errores.value = { ...errores.value, ponencias: undefined }
+}
+
+/** Elegir oculta las demás del horario y pasa al siguiente día pendiente o a los datos; quitar solo las vuelve a mostrar. */
+async function alternarYAvanzar(ponencia: PonenciaEspecializadaPublica) {
+  const eraElegida = estaElegida(ponencia)
+  alternar(ponencia)
+  if (eraElegida || !estaElegida(ponencia)) return
+  await nextTick()
+  const destino = document.getElementById(destinoTrasElegir(dias.value, seleccion.value, ponencia.fecha))
+  if (!destino) return
+  const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  destino.scrollIntoView({ behavior: sinMovimiento ? 'auto' : 'smooth', block: 'start' })
+  destino.focus({ preventScroll: true })
 }
 const iniciales = (nombre: string) => nombre.replace(/^(dr|dra|mg|m\.sc|ph\.d)\.?\s+/i, '').split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('')
 
@@ -382,6 +446,7 @@ function nuevaInscripcion() {
   turnoConsulta++
   consulta.value = { estado: 'INICIAL', numero: '', mensaje: '' }
   Object.assign(form, formularioVacio())
+  busqueda.value = ''
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
@@ -393,7 +458,8 @@ function nuevaInscripcion() {
 .listo-card { background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; }
 .listo-card:focus { outline: none; }
 
-.opcion { cursor: pointer; border-color: #ffffff1a; background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.opcion { cursor: pointer; border-color: #ffffff1a; background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; animation: aparece .3s ease both; }
+@keyframes aparece { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .opcion:hover { transform: translateY(-3px); border-color: #22d3ee59; }
 .opcion:has(input:focus-visible) { outline: 2px solid #22d3ee; outline-offset: 3px; }
 .opcion.is-selected { border-color: #22d3ee; box-shadow: 0 0 0 1px #22d3ee, 0 20px 55px #020f2052; }
@@ -411,6 +477,8 @@ function nuevaInscripcion() {
 .campo::placeholder { color: #94a3b8; }
 .campo:focus { outline: none; border-color: #22d3ee; background: #ffffff14; }
 .campo[aria-invalid='true'] { border-color: #f87171; }
+.buscador { padding-left: 2.9rem; padding-right: 2.9rem; }
+.buscador::-webkit-search-cancel-button { display: none; }
 .campo-bloqueado { opacity: .75; cursor: default; }
 .campo-error { margin-top: .35rem; font-size: .8rem; color: #fca5a5; }
 select.campo option { color: #0f172a; }
@@ -418,5 +486,5 @@ select.campo option { color: #0f172a; }
 .radio-chip:hover { border-color: #22d3ee80; }
 .radio-chip.activo { border-color: #22d3ee; background: #22d3ee1f; color: #fff; }
 .radio-chip:has(input:focus-visible) { outline: 2px solid #22d3ee; outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .opcion, .check, .campo, .radio-chip, .summary-chip { transition: none; } .opcion:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .opcion, .check, .campo, .radio-chip, .summary-chip { transition: none; } .opcion { animation: none; } .opcion:hover { transform: none; } }
 </style>

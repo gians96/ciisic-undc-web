@@ -68,9 +68,11 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 - **Ponencias especializadas** (spec 006; contrato en la spec 019 del backend): la página
   `/inscripcion-ponencias` es **plana** (una carpeta `pages/ponencias-especializadas/` convertiría en ruta padre
   a la página estática `ponencias-especializadas.vue` y la rompería). Solo ofrece las gratuitas con cupo; en cada
-  horario se elige una (elegir otra del mismo horario reemplaza a la anterior); el servidor decide cupos,
-  cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. Solo el
-  documento es obligatorio. Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
+  horario se elige una (al elegirla se ocultan las demás de ese horario y se pasa al siguiente bloque; quitarla
+  las vuelve a mostrar; hay un buscador por tema, ponente, ambiente, hora o día); el servidor decide cupos,
+  cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
+  obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
+  Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales

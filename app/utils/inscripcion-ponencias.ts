@@ -97,6 +97,49 @@ export function depurarSeleccion(seleccion: readonly number[], todas: readonly P
   })
 }
 
+// ─── Búsqueda y vista de la elección ────────────────────────────────────────
+
+/** Minúsculas y sin tildes, para comparar «Miércoles» con «miercoles». */
+function sinTildes(texto: string): string {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
+/**
+ * Ponencias que contienen todas las palabras buscadas en el tema, el ponente, el ambiente, la hora o el
+ * día («miércoles», «27 de octubre»); sin tildes ni mayúsculas. Sin texto devuelve todas.
+ */
+export function filtrarPonencias(ponencias: readonly Ponencia[], busqueda: string): Ponencia[] {
+  const palabras = sinTildes(busqueda).split(/\s+/).filter(Boolean)
+  if (!palabras.length) return [...ponencias]
+  return ponencias.filter(ponencia => {
+    const texto = sinTildes([ponencia.tema, ponencia.ponente.nombre, ponencia.ambiente, ponencia.horaInicio, etiquetaDia(ponencia.fecha)].join(' '))
+    return palabras.every(palabra => texto.includes(palabra))
+  })
+}
+
+/**
+ * Lo que se muestra de un día: la ponencia elegida de cada horario siempre (para poder quitarla) y, de los
+ * horarios sin elección, solo las que coinciden con la búsqueda. Al elegir una se ocultan las demás de su
+ * horario; al quitarla vuelven a verse.
+ */
+export function ponenciasVisibles(delDia: readonly Ponencia[], seleccion: readonly number[], todas: readonly Ponencia[], busqueda: string): Ponencia[] {
+  const coinciden = new Set(filtrarPonencias(delDia, busqueda).map(ponencia => ponencia.id))
+  return delDia.filter(ponencia =>
+    seleccion.includes(ponencia.id) || (!ponenciaEnConflicto(ponencia, seleccion, todas) && coinciden.has(ponencia.id)))
+}
+
+/**
+ * A dónde pasar tras elegir una ponencia del día `fecha`: el siguiente día que aún tenga algo por elegir
+ * (alguna ponencia disponible y ninguna elegida) o, si no queda ninguno, el título del formulario de datos.
+ * Devuelve el `id` del elemento al que desplazarse.
+ */
+export function destinoTrasElegir(dias: readonly Pick<DiaDePonenciasApi, 'fecha' | 'ponencias'>[], seleccion: readonly number[], fecha: string): string {
+  const pendiente = dias
+    .filter(dia => dia.fecha > fecha)
+    .find(dia => dia.ponencias.some(p => motivoNoDisponible(p) === null) && !dia.ponencias.some(p => seleccion.includes(p.id)))
+  return pendiente ? `dia-${pendiente.fecha}` : 'titulo-datos'
+}
+
 // ─── Formulario ─────────────────────────────────────────────────────────────
 
 export type TipoDocumentoPonencia = 'DNI' | 'CE'
@@ -133,8 +176,9 @@ export interface ErroresFormulario {
 }
 
 /**
- * Errores antes de enviar. Los nombres se exigen si el DNI no los trajo (o con carné); correo y celular
- * son opcionales y solo se validan si se escriben.
+ * Errores antes de enviar. El documento, el correo y el celular son obligatorios en la landing (el backend
+ * los acepta opcionales porque el staff inscribe en puerta solo con el DNI); los nombres se exigen si el
+ * DNI no los trajo (o con carné).
  */
 export function validarFormulario(form: FormularioPonencias, seleccion: readonly number[], opciones: { nombresObligatorios: boolean }): ErroresFormulario {
   const errores: ErroresFormulario = {}
@@ -149,9 +193,11 @@ export function validarFormulario(form: FormularioPonencias, seleccion: readonly
     else if (valor && (valor.length < 2 || valor.length > 120)) errores[campo] = 'Debe tener entre 2 y 120 caracteres.'
   }
   const correo = form.correo.trim()
-  if (correo && (!CORREO.test(correo) || correo.length > 191)) errores.correo = 'Ingresa un correo válido.'
+  if (!correo) errores.correo = 'Ingresa tu correo.'
+  else if (!CORREO.test(correo) || correo.length > 191) errores.correo = 'Ingresa un correo válido.'
   const celular = form.celular.replace(/[\s\-()]/g, '')
-  if (celular && !CELULAR.test(celular)) errores.celular = 'El celular debe tener entre 9 y 15 dígitos.'
+  if (!celular) errores.celular = 'Ingresa tu celular.'
+  else if (!CELULAR.test(celular)) errores.celular = 'El celular debe tener entre 9 y 15 dígitos.'
   if (!seleccion.length) errores.ponencias = 'Elige al menos una ponencia.'
   else if (seleccion.length > MAX_PONENCIAS_POR_INSCRIPCION) errores.ponencias = `Puedes elegir hasta ${MAX_PONENCIAS_POR_INSCRIPCION} ponencias a la vez.`
   return errores
@@ -190,7 +236,7 @@ const MENSAJES_PONENCIAS: Record<string, string> = {
   TALK_NOT_FOUND: 'Alguna de las ponencias elegidas ya no está disponible. Actualizamos la lista: revisa tu elección.',
   NAMES_REQUIRED: 'No pudimos obtener tus nombres con ese documento. Escríbelos para continuar.',
   RATE_LIMITED: 'Hiciste varios intentos seguidos. Espera unos minutos e inténtalo nuevamente.',
-  VALIDATION_ERROR: 'Revisa tus datos: documento válido y, si los escribes, correo y celular correctos.',
+  VALIDATION_ERROR: 'Revisa tus datos: documento, correo y celular válidos.',
   EVENT_NOT_FOUND: 'El evento no está disponible en este momento. Recarga la página o comunícate con la organización.',
 }
 
