@@ -10,8 +10,9 @@ import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { modalidadesDisponibles, resolverMedioPago, type EleccionPago } from '~/utils/medios-pago'
 import {
-  agruparPlanesPorModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, claseBadgePlan, debeLimpiarPlan,
-  esCorreoDelDominio, etiquetaAccesiblePlan, hayPlanesPresenciales, planDisponible, precioPlan, type PlanInscripcion,
+  agruparPlanesPorModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, avisoPlanesSinEstudiantes, claseBadgePlan,
+  debeLimpiarPlan, esCorreoDelDominio, esEstudianteUndcDelFormulario, etiquetaAccesiblePlan, hayPlanesPresenciales, planDisponible, precioPlan,
+  type PlanInscripcion,
 } from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
 
@@ -305,13 +306,23 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
 
   // Réplica informativa de la regla del backend: el monto definitivo lo calcula el servidor. Con la
   // misma condición se ocultan los planes «solo comunidad UNDC» o «solo externos» (spec 016 del backend)
+  // Spec 020 del backend: los planes que no admiten estudiantes UNDC (los virtuales) se ocultan al estudiante
+  // verificado o con correo de código; el backend igual los rechaza
+  const estudianteUndc = computed(() => esEstudianteUndcDelFormulario({
+    verificado: esEstudianteUndc.value,
+    correo: email.value,
+    dominio: dominioInstitucional.value,
+  }))
+
   const planesSegunCondicion = computed(() => planes.value.map((plan) => {
     const institucional = aplicaPrecioInstitucional({
       esEstudiantil: plan.esEstudiantil,
       esEstudianteUndc: esEstudianteUndc.value,
       correoInstitucional: esCorreoInstitucional.value,
     })
-    return { plan, institucional, disponible: planDisponible(plan, institucional) }
+    const disponiblePorTipo = planDisponible(plan, institucional)
+    const disponible = planDisponible(plan, institucional, estudianteUndc.value)
+    return { plan, institucional, disponible, ocultoPorEstudiante: disponiblePorTipo && !disponible }
   }))
 
   const availablePlans = computed(() => planesSegunCondicion.value
@@ -324,10 +335,13 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
   const mostrarKit = computed(() => hayPlanesPresenciales(availablePlans.value))
 
   /** Explica por qué no se ven todos los planes (p. ej. con correo UNDC no se ofrece «sin kit»). */
-  const avisoPlanes = computed(() => avisoPlanesOcultos({
-    ocultos: planesSegunCondicion.value.filter(item => !item.disponible).map(item => item.plan),
-    dominio: dominioInstitucional.value,
-  }))
+  const avisoPlanes = computed(() => [
+    avisoPlanesOcultos({
+      ocultos: planesSegunCondicion.value.filter(item => !item.disponible && !item.ocultoPorEstudiante).map(item => item.plan),
+      dominio: dominioInstitucional.value,
+    }),
+    avisoPlanesSinEstudiantes(planesSegunCondicion.value.filter(item => item.ocultoPorEstudiante).map(item => item.plan)),
+  ].filter(Boolean).join(' ') || null)
 
   const selectedPlan = computed(() => availablePlans.value.find(plan => plan.id === planId.value) ?? null)
   // El ciclo solo se pide en /estudiantes y para planes de la categoría estudiantil

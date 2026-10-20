@@ -18,6 +18,8 @@ export interface PlanInscripcion {
   disponiblePara: DisponiblePara
   /** Modalidad de asistencia del tipo (spec 018 del backend); sin el dato (backend anterior) es `PRESENCIAL`. */
   modalidad: ModalidadAsistencia
+  /** Spec 020 del backend: no se ofrece a estudiantes UNDC; sin el dato (backend anterior) es `false`. */
+  excluyeEstudiantesUndc: boolean
 }
 
 const DISPONIBILIDADES: readonly DisponiblePara[] = ['TODOS', 'INSTITUCIONAL', 'EXTERNOS']
@@ -79,6 +81,7 @@ function aPlan(tipo: TipoInscripcionApi, categoria: CategoriaInscripcionApi): Pl
     esEstudiantil: categoria.esEstudiantil === true,
     disponiblePara: aDisponibilidad(tipo.disponiblePara),
     modalidad: aModalidad(tipo.modalidad),
+    excluyeEstudiantesUndc: tipo.excluyeEstudiantesUndc === true,
   }
 }
 
@@ -109,8 +112,16 @@ export function precioPlan(plan: Pick<PlanInscripcion, 'basePrice' | 'institutio
  * Réplica de `tipoDisponible` del backend (spec 016): con la misma condición del precio
  * institucional, un plan «solo comunidad UNDC» o «solo externos» se oculta a quien no corresponde.
  * El backend igual rechaza la inscripción (`REGISTRATION_TYPE_NOT_AVAILABLE`).
+ *
+ * Spec 020: un plan que `excluyeEstudiantesUndc` también se oculta a un estudiante UNDC (`estudianteUndc`);
+ * sin ese tercer parámetro no oculta a nadie, como antes.
  */
-export function planDisponible(plan: Pick<PlanInscripcion, 'disponiblePara'>, institucional: boolean): boolean {
+export function planDisponible(
+  plan: Pick<PlanInscripcion, 'disponiblePara'> & Partial<Pick<PlanInscripcion, 'excluyeEstudiantesUndc'>>,
+  institucional: boolean,
+  estudianteUndc = false,
+): boolean {
+  if (plan.excluyeEstudiantesUndc === true && estudianteUndc) return false
   if (plan.disponiblePara === 'INSTITUCIONAL') return institucional
   if (plan.disponiblePara === 'EXTERNOS') return !institucional
   return true
@@ -146,6 +157,33 @@ export function esCorreoDelDominio(correo: string | null | undefined, dominio: s
   const partes = String(correo ?? '').trim().toLowerCase().split('@')
   const esperado = String(dominio ?? '').trim().toLowerCase()
   return Boolean(esperado) && partes.length === 2 && Boolean(partes[0]) && partes[1] === esperado
+}
+
+// ============================================================================
+// PLANES SIN ESTUDIANTES UNDC (spec 007; spec 020 del backend)
+// ============================================================================
+
+/** Código de estudiante: 8 a 12 dígitos (la parte local de `2020123456@undc.edu.pe`). */
+const PATRON_CODIGO_ESTUDIANTE = /^\d{8,12}$/
+
+/** `2020123456@undc.edu.pe` es el correo de un estudiante; `garias@undc.edu.pe` (docente o administrativo) no. */
+export function esCorreoDeEstudianteUndc(correo: string | null | undefined, dominio: string | null | undefined): boolean {
+  return esCorreoDelDominio(correo, dominio) && PATRON_CODIGO_ESTUDIANTE.test(String(correo).trim().split('@')[0] ?? '')
+}
+
+/**
+ * Réplica informativa de `estudianteUndcExcluido` del backend: estudiante UNDC = verificado con SIVIRENO
+ * o con correo `<código>@<dominio>`. El backend igual rechaza la inscripción.
+ */
+export const esEstudianteUndcDelFormulario = (entrada: { verificado: boolean; correo: string; dominio: string }): boolean =>
+  entrada.verificado === true || esCorreoDeEstudianteUndc(entrada.correo, entrada.dominio)
+
+/** Por qué no se ven planes que excluyen a estudiantes UNDC (solo planes virtuales → los nombra). */
+export function avisoPlanesSinEstudiantes(ocultos: readonly Pick<PlanInscripcion, 'modalidad'>[]): string | null {
+  if (!ocultos.length) return null
+  return ocultos.every(plan => aModalidad(plan.modalidad) === 'VIRTUAL')
+    ? 'Los planes virtuales no están disponibles para estudiantes de la UNDC: elige un plan presencial.'
+    : 'Algunos planes no están disponibles para estudiantes de la UNDC.'
 }
 
 // ============================================================================
@@ -205,10 +243,13 @@ export const categoriasConPlanesVirtuales = (planes: readonly (ConModalidad & Pi
  * S/ X»): precio mínimo y categorías donde se ofrece, o `null` si no hay ningún plan virtual.
  */
 export function resumirOfertaVirtual(
-  planes: readonly (ConModalidad & Pick<PlanInscripcion, 'basePrice' | 'categoria'>)[],
-): { desde: number; categorias: string[] } | null {
+  planes: readonly (ConModalidad & Pick<PlanInscripcion, 'basePrice' | 'categoria'> & Partial<Pick<PlanInscripcion, 'excluyeEstudiantesUndc'>>)[],
+): { desde: number; categorias: string[]; sinEstudiantesUndc?: true } | null {
   const desde = precioDesdeVirtual(planes)
-  return desde === null ? null : { desde, categorias: categoriasConPlanesVirtuales(planes) }
+  if (desde === null) return null
+  // Spec 020: si algún plan virtual no admite estudiantes UNDC, la página lo aclara (sin la clave, no)
+  const sinEstudiantes = planes.some(plan => aModalidad(plan.modalidad) === 'VIRTUAL' && plan.excluyeEstudiantesUndc === true)
+  return { desde, categorias: categoriasConPlanesVirtuales(planes), ...(sinEstudiantes ? { sinEstudiantesUndc: true as const } : {}) }
 }
 
 /**

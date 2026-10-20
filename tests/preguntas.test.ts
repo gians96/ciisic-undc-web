@@ -20,6 +20,15 @@ describe('respuestaModalidadVirtual (FAQ 9)', () => {
     expect(respuesta).toContain('exclusivamente presenciales')
   })
 
+  it('si la API marca que los virtuales no admiten estudiantes UNDC, la respuesta lo dice (spec 020)', () => {
+    const respuesta = respuestaModalidadVirtual(true, true)
+    expect(respuesta).toContain('elige el plan Virtual')
+    expect(respuesta).toContain('Los estudiantes de la UNDC se inscriben en modalidad presencial.')
+    expect(respuestaModalidadVirtual(true, false)).toBe(respuestaModalidadVirtual(true))
+    // Sin planes virtuales no se menciona (no hay inscripción virtual de la que excluirlos)
+    expect(respuestaModalidadVirtual(false, true)).toBe(respuestaModalidadVirtual(false))
+  })
+
   it('las dos respuestas son distintas', () => {
     expect(respuestaModalidadVirtual(true)).not.toBe(respuestaModalidadVirtual(false))
   })

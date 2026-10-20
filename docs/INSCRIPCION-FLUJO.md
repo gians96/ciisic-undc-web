@@ -23,6 +23,12 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
   (salvo durante una verificación en curso). Si el backend lo rechaza igual (p. ej. el DNI ya estaba
   registrado con un correo UNDC), responde `REGISTRATION_TYPE_NOT_AVAILABLE` y se vuelve a elegir el plan.
   Detalles en `specs/003-disponibilidad-planes/`.
+- Los planes que `excluyeEstudiantesUndc` (spec 020 del backend; hoy los virtuales) se ocultan también a un
+  estudiante UNDC —verificado con SIVIRENO o con correo `<código>@undc.edu.pe`—, no a docentes, administrativos
+  ni externos (`planDisponible(plan, institucional, estudianteUndc)`). El aviso dice «Los planes virtuales no
+  están disponibles para estudiantes de la UNDC: elige un plan presencial.»; `/planes` y la FAQ lo aclaran si la
+  API lo marca. Si el backend lo rechaza igual, responde `REGISTRATION_TYPE_NOT_AVAILABLE`. Detalles en
+  `specs/007-virtual-sin-estudiantes-undc/`.
 - Junto al correo, ambas páginas ofrecen «Continuar con Google» (opcional, `InscripcionCorreoGoogle`) si la
   configuración del sitio (`/api/publico/configuracion`) trae client ID. La credencial de Google va a
   `/api/publico/verificacion-google`; al verificarse, el correo queda fijado y de solo lectura, los nombres

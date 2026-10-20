@@ -37,7 +37,7 @@ const MENSAJES_INSCRIPCION: Record<string, string> = {
   REGISTRATION_CLOSED: 'Las inscripciones para este evento están cerradas.',
   REGISTRATION_TYPE_INVALID: 'El tipo de inscripción elegido ya no está disponible. Elige otro plan.',
   // Spec 016 del backend: plan solo para la comunidad UNDC o solo para externos
-  REGISTRATION_TYPE_NOT_AVAILABLE: 'Ese plan no está disponible para tu tipo de participante (comunidad UNDC o externo). Si ya participaste antes, cuenta el correo con el que te registraste. Elige otro plan.',
+  REGISTRATION_TYPE_NOT_AVAILABLE: 'Ese plan no está disponible para tu tipo de participante (comunidad UNDC o externo). Si ya participaste antes, cuenta el correo con el que te registraste. Elige otro plan. Los estudiantes de la UNDC no pueden tomar los planes virtuales: elige uno presencial.',
   CLASSIFICATION_INVALID: 'La clasificación (ciclo) seleccionada no es válida. Elige otra opción.',
   VOUCHER_REQUIRED: 'Adjunta el voucher de pago.',
   INVALID_FILE_CONTENT: 'El archivo del voucher está dañado o no coincide con su formato. Sube un PDF, JPG, PNG o WebP válido.',

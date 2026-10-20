@@ -39,7 +39,7 @@
           <span class="icon-tile inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"><Icon name="heroicons:computer-desktop" class="h-6 w-6" /></span>
           <div class="min-w-0 flex-1">
             <h2 id="oferta-virtual-titulo" class="text-xl font-bold text-white">También puedes participar de forma virtual, desde <span class="whitespace-nowrap">{{ formatearSoles(ofertaVirtual.desde) }}</span></h2>
-            <p class="mt-1 text-sm leading-relaxed text-slate-300">Al inscribirte, elige el plan Virtual.</p>
+            <p class="mt-1 text-sm leading-relaxed text-slate-300">Al inscribirte, elige el plan Virtual.<template v-if="ofertaVirtual.sinEstudiantesUndc"> Los estudiantes de la UNDC se inscriben en modalidad presencial.</template></p>
           </div>
           <div class="flex shrink-0 flex-col gap-2 sm:items-end">
             <NuxtLink v-for="enlace in ofertaVirtual.enlaces" :key="enlace.ruta" :to="enlace.ruta" class="inline-flex items-center gap-2 font-bold text-primary-300 underline-offset-4 hover:underline">{{ enlace.texto }} <Icon name="heroicons:arrow-right" class="h-4 w-4" aria-hidden="true" /></NuxtLink>

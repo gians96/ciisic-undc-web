@@ -203,7 +203,7 @@ const faqs = computed(() => [
     id: 9,
     category: 'evento',
     question: '¿Habrá modalidad virtual?',
-    answer: respuestaModalidadVirtual(ofertaVirtual.value !== null)
+    answer: respuestaModalidadVirtual(ofertaVirtual.value !== null, ofertaVirtual.value?.sinEstudiantesUndc === true)
   }
 ])
 

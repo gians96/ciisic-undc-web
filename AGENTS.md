@@ -65,6 +65,13 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Terminología: la «modalidad» de asistencia **no es** `ModalidadPago` (`banco` | `billetera`, en el pago) ni
   las tarjetas «Modalidad 0N» de `/planes` (categorías), ni el «fotocheck virtual» del portal. Ver
   `specs/005-modalidad-virtual/`.
+- **Planes sin estudiantes UNDC** (spec 007; contrato en la spec 020 del backend): `tipo.excluyeEstudiantesUndc`
+  (lo enciende el panel en los planes virtuales) oculta el plan al estudiante UNDC —verificado con SIVIRENO o con
+  correo `<8–12 dígitos>@<dominio>`, `esEstudianteUndcDelFormulario`— con `planDisponible(plan, institucional,
+  estudianteUndc)`; docentes, administrativos y externos lo siguen viendo. El backend igual rechaza con
+  `REGISTRATION_TYPE_NOT_AVAILABLE`; `/planes` y la FAQ aclaran que los estudiantes UNDC se inscriben de forma
+  presencial solo si la API marca un plan virtual con el interruptor. Ausente = `false`. Un estudiante con correo
+  no institucional no se detecta.
 - **Ponencias especializadas** (spec 006; contrato en la spec 019 del backend): la página
   `/inscripcion-ponencias` es **plana** (una carpeta `pages/ponencias-especializadas/` convertiría en ruta padre
   a la página estática `ponencias-especializadas.vue` y la rompería). Solo ofrece las gratuitas con cupo; en cada
@@ -118,5 +125,15 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
 `specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
-`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sist
+`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
+(tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual),
+`specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas) y
+`specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC).
+Flujo: spec → plan → tasks; marcar tasks al implementar.
 
+## Antes de dar por terminado
+
+1. `bun run typecheck`, `bun run lint` (0 errores), `bun run test` y `bun run build` en verde.
+2. El token del evento no aparece en `.output` ni en el HTML servido.
+3. Probar el flujo afectado contra el backend local (inscripción, DNI, verificación, Google si aplica).
+4. Documentación de `docs/` y contratos del BFF al día.

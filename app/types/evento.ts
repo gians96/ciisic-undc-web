@@ -93,6 +93,8 @@ export interface TipoInscripcionApi {
   disponiblePara?: DisponiblePara | null
   /** Ausente, `null` o desconocida (backend anterior): equivale a `PRESENCIAL`. */
   modalidad?: ModalidadAsistencia | null
+  /** Spec 020 del backend: el tipo no admite estudiantes UNDC. Ausente (backend anterior) equivale a `false`. */
+  excluyeEstudiantesUndc?: boolean | null
 }
 
 export interface CategoriaInscripcionApi {

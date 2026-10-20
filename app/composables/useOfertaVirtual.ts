@@ -24,6 +24,8 @@ export const useOfertaVirtual = () => {
     return {
       desde: resumen.desde,
       enlaces: PAGINAS_CON_VIRTUAL.filter(pagina => resumen.categorias.includes(pagina.categoria)),
+      // Spec 020 del backend: los estudiantes de la UNDC asisten de forma presencial
+      sinEstudiantesUndc: resumen.sinEstudiantesUndc === true,
     }
   })
 

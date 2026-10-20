@@ -4,6 +4,7 @@ import {
   agruparPlanesPorModalidad, aModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, categoriasConPlanesVirtuales,
   claseBadgePlan, debeLimpiarPlan, esCorreoDelDominio, etiquetaAccesiblePlan, hayDescuentoInstitucional, hayPlanesPresenciales,
   hayPlanesVirtuales, mapearPlanes, planDisponible, precioDesdeVirtual, precioPlan, resumirOfertaVirtual, tituloPlan,
+  avisoPlanesSinEstudiantes, esCorreoDeEstudianteUndc, esEstudianteUndcDelFormulario,
 } from '../app/utils/planes'
 
 // Respuesta real de GET /api/v1/public/events/ciisic-viii-2026/registration-types (recortada)
@@ -153,6 +154,7 @@ describe('mapearPlanes', () => {
       disponiblePara: 'TODOS',
       // sin el campo (backend anterior) la asistencia es presencial
       modalidad: 'PRESENCIAL',
+      excluyeEstudiantesUndc: false,
     })
     expect(sinKit).toMatchObject({ title: 'ESTUDIANTES SIN KIT', basePrice: 60, institutionalPrice: 40, description: '' })
     expect(general).toMatchObject({
@@ -316,6 +318,7 @@ describe('modalidad de asistencia (spec 018 del backend)', () => {
       esEstudiantil: true,
       disponiblePara: 'TODOS',
       modalidad: 'VIRTUAL',
+      excluyeEstudiantesUndc: false,
     })
     expect(planes[1]).toMatchObject({
       codigo: 'general_virtual',
@@ -511,5 +514,75 @@ describe('oferta virtual en /planes', () => {
     expect(resumirOfertaVirtual(mapearPlanes(categoriasMixtas))).toEqual({ desde: 30, categorias: ['ESTUDIANTES', 'PUBLICO_GENERAL'] })
     // si falla la carga de una categoría solo suma la otra
     expect(resumirOfertaVirtual(mapearPlanes([categoriasVirtual[1]!]))).toEqual({ desde: 50, categorias: ['PUBLICO_GENERAL'] })
+  })
+})
+
+describe('planes que no admiten estudiantes UNDC (spec 020 del backend)', () => {
+  const conExclusion = (categoria: CategoriaInscripcionApi): CategoriaInscripcionApi => ({
+    ...categoria,
+    tipos: categoria.tipos.map(tipo => ({ ...tipo, excluyeEstudiantesUndc: true })),
+  })
+  const [virtualEstudiantes, virtualGeneral] = mapearPlanes(categoriasVirtual.map(conExclusion))
+  const [presencial] = mapearPlanes(categorias)
+
+  it('mapearPlanes lee el interruptor; ausente, null o un valor raro es false (backend anterior)', () => {
+    expect(virtualEstudiantes!.excluyeEstudiantesUndc).toBe(true)
+    expect(presencial!.excluyeEstudiantesUndc).toBe(false)
+    const raro = { ...categoriasVirtual[0]!.tipos[0]!, excluyeEstudiantesUndc: null }
+    expect(mapearPlanes([{ ...categoriasVirtual[0]!, tipos: [raro] }])[0]!.excluyeEstudiantesUndc).toBe(false)
+    const texto = { ...categoriasVirtual[0]!.tipos[0]!, excluyeEstudiantesUndc: 'true' as unknown as boolean }
+    expect(mapearPlanes([{ ...categoriasVirtual[0]!, tipos: [texto] }])[0]!.excluyeEstudiantesUndc).toBe(false)
+  })
+
+  it('planDisponible oculta el plan al estudiante UNDC, sin importar el precio institucional', () => {
+    for (const institucional of [true, false]) {
+      expect(planDisponible(virtualEstudiantes!, institucional, true)).toBe(false)
+      expect(planDisponible(virtualGeneral!, institucional, true)).toBe(false)
+      expect(planDisponible(virtualGeneral!, institucional, false)).toBe(true)
+    }
+  })
+
+  it('sin el tercer parámetro (o sin el interruptor) nadie queda oculto, como antes', () => {
+    expect(planDisponible(virtualGeneral!, true)).toBe(true)
+    expect(planDisponible({ disponiblePara: 'TODOS' }, true, true)).toBe(true)
+    expect(planDisponible(presencial!, true, true)).toBe(true)
+  })
+
+  it('el interruptor se suma a «Disponible para»: un plan solo externos sigue oculto a la comunidad UNDC', () => {
+    expect(planDisponible({ disponiblePara: 'EXTERNOS', excluyeEstudiantesUndc: true }, true, false)).toBe(false)
+    expect(planDisponible({ disponiblePara: 'EXTERNOS', excluyeEstudiantesUndc: true }, false, false)).toBe(true)
+  })
+
+  it.each([
+    ['2020123456@undc.edu.pe', 'undc.edu.pe', true],
+    ['20201234@UNDC.edu.pe', 'undc.edu.pe', true],
+    ['garias@undc.edu.pe', 'undc.edu.pe', false],
+    ['2020123456@gmail.com', 'undc.edu.pe', false],
+    ['1234567@undc.edu.pe', 'undc.edu.pe', false],
+    ['2020123456@undc.edu.pe.evil.com', 'undc.edu.pe', false],
+    ['2020123456@uni.edu.pe', 'uni.edu.pe', true],
+    ['', 'undc.edu.pe', false],
+  ])('esCorreoDeEstudianteUndc(%s, %s) → %s', (correo, dominio, esperado) => {
+    expect(esCorreoDeEstudianteUndc(correo, dominio)).toBe(esperado)
+  })
+
+  it('es estudiante UNDC si se verificó con SIVIRENO o si su correo es de estudiante', () => {
+    expect(esEstudianteUndcDelFormulario({ verificado: true, correo: 'ana@gmail.com', dominio: 'undc.edu.pe' })).toBe(true)
+    expect(esEstudianteUndcDelFormulario({ verificado: false, correo: '2020123456@undc.edu.pe', dominio: 'undc.edu.pe' })).toBe(true)
+    expect(esEstudianteUndcDelFormulario({ verificado: false, correo: 'garias@undc.edu.pe', dominio: 'undc.edu.pe' })).toBe(false)
+  })
+
+  it('el aviso nombra los planes virtuales y no aparece sin planes ocultos', () => {
+    expect(avisoPlanesSinEstudiantes([])).toBeNull()
+    expect(avisoPlanesSinEstudiantes([virtualEstudiantes!, virtualGeneral!])).toBe('Los planes virtuales no están disponibles para estudiantes de la UNDC: elige un plan presencial.')
+    expect(avisoPlanesSinEstudiantes([virtualEstudiantes!, { ...presencial!, excluyeEstudiantesUndc: true }])).toBe('Algunos planes no están disponibles para estudiantes de la UNDC.')
+  })
+
+  it('resumirOfertaVirtual avisa que los estudiantes UNDC no entran solo si algún plan virtual lo excluye', () => {
+    expect(resumirOfertaVirtual(mapearPlanes(categoriasVirtual.map(conExclusion)))).toEqual({ desde: 30, categorias: ['ESTUDIANTES', 'PUBLICO_GENERAL'], sinEstudiantesUndc: true })
+    expect(resumirOfertaVirtual(mapearPlanes(categoriasVirtual))).toEqual({ desde: 30, categorias: ['ESTUDIANTES', 'PUBLICO_GENERAL'] })
+    // Un plan presencial que excluye no cuenta: la aclaración es de la oferta virtual
+    const soloPresencialExcluye = { ...categorias[0]!, tipos: categorias[0]!.tipos.map(tipo => ({ ...tipo, excluyeEstudiantesUndc: true })) }
+    expect(resumirOfertaVirtual(mapearPlanes([soloPresencialExcluye, ...categoriasVirtual]))).not.toHaveProperty('sinEstudiantesUndc')
   })
 })

@@ -22,7 +22,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | Backend | Uso |
 |---|---|
 | `GET /event` | Evento público (forma `EventoPublico`) |
-| `GET /registration-types?categoria=` | Categorías y tipos activos; cada tipo trae `disponiblePara` (`TODOS` \| `INSTITUCIONAL` \| `EXTERNOS`, spec 016 del backend; ausente = `TODOS`) y `modalidad` (modalidad de **asistencia**: `PRESENCIAL` \| `VIRTUAL`, spec 018 del backend; ausente, `null` o desconocida = `PRESENCIAL`) |
+| `GET /registration-types?categoria=` | Categorías y tipos activos; cada tipo trae `disponiblePara` (`TODOS` \| `INSTITUCIONAL` \| `EXTERNOS`, spec 016 del backend; ausente = `TODOS`) y `modalidad` (modalidad de **asistencia**: `PRESENCIAL` \| `VIRTUAL`, spec 018 del backend; ausente, `null` o desconocida = `PRESENCIAL`) y `excluyeEstudiantesUndc` (booleano, spec 020 del backend: el plan no admite estudiantes UNDC; ausente = `false`) |
 | `GET /catalogs` | `{ clasificaciones: [{ id, nombre }], tiposDocumento: [{ id, nombre, abreviatura }] }` |
 | `GET /config` | `{ google: { clientId: string \| null }, urlPanel: string \| null }` |
 | `POST /inscriptions` | multipart: `participante` JSON + campos + `voucher` (+ `verificacionCorreoToken` opcional); la respuesta agrega `esCorreoVerificado` y `tipoInscripcion.modalidad` (spec 018; ausente = `PRESENCIAL`); `422 REGISTRATION_TYPE_NOT_AVAILABLE` si el tipo no corresponde a la persona (spec 016 del backend) |
