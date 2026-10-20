@@ -14,7 +14,14 @@
           <span class="summary-chip"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" aria-hidden="true" />Laboratorios y aulas</span>
         </div>
 
-        <div class="mt-10 flex justify-center">
+        <div class="mt-8 flex justify-center">
+          <NuxtLink to="/inscripcion-ponencias" class="btn btn-primary">
+            <Icon name="heroicons:ticket" class="h-5 w-5" aria-hidden="true" />
+            Inscríbete a las ponencias
+          </NuxtLink>
+        </div>
+
+        <div class="mt-8 flex justify-center">
           <UiSegmentedToggle v-model="vista" :options="opciones" label="Ver ponentes o temas especializados" id-prefix="vista-tab" />
         </div>
       </div>

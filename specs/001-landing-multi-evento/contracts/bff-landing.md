@@ -32,6 +32,8 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `GET /payment-qr/:archivo` | Imagen del QR de una billetera (`qrArchivo`), solo del evento del token (spec 012 del backend) |
 | `POST /papers` | multipart: `data` JSON + `file` PDF |
 | `POST /contact` | JSON `{ nombres, apellidos, correo, asunto, mensaje }` |
+| `GET /specialized-talks` | Ponencias especializadas `publicada`s del evento con `cuposDisponibles` y `llena`, sin datos de inscritos (spec 019 del backend) |
+| `POST /specialized-talk-registrations` | JSON `{ asistente: { tipoDocumento: 'dni'\|'ce', numeroDocumento, nombres?, apellidos?, correo?, celular?, procedencia?: 'INTERNO'\|'EXTERNO' }, ponenciaIds: [1–4] }`; todo o nada. Errores: `409 TALK_FULL`, `409 SCHEDULE_CONFLICT`, `409 TALK_ENDED`, `404 TALK_NOT_FOUND`, `422 PAID_TALK_UNAVAILABLE`, `422 NAMES_REQUIRED`, `422 VALIDATION_ERROR` |
 
 ### Verificación del correo con Google (lo que usa la landing)
 
@@ -60,6 +62,8 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `POST /api/publico/inscripciones` | `POST /inscriptions` | no | multipart, 5 MB + 512 KB |
 | `POST /api/publico/ponencias` | `POST /papers` | no | multipart, 5 MB + 512 KB |
 | `POST /api/publico/contacto` | `POST /contact` | no | JSON, 100 KB |
+| `GET /api/publico/ponencias-especializadas` | `GET /specialized-talks` | 15 s, clave constante | — |
+| `POST /api/publico/ponencias-especializadas/inscripciones` | `POST /specialized-talk-registrations` | no | JSON, 100 KB |
 
 Reglas comunes:
 

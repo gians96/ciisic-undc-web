@@ -132,8 +132,8 @@ watch(
 // MENÚS DESPLEGABLES (ESCRITORIO)
 // ============================================================================
 
-const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas"];
 const RUTAS_CONGRESO = ["/about", "/cronograma", "/sede"];
+const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas", "/inscripcion-ponencias"];
 
 const MENU_CONGRESO = [
   { label: "El congreso", href: "/about", icon: "heroicons:building-library" },
@@ -144,6 +144,7 @@ const MENU_CONGRESO = [
 const MENU_PONENCIAS = [
   { label: "Congreso", href: "/ponentes", icon: "heroicons:user-group" },
   { label: "Ponencias especializadas", href: "/ponencias-especializadas", icon: "heroicons:presentation-chart-bar" },
+  { label: "Inscripción a ponencias", href: "/inscripcion-ponencias", icon: "heroicons:ticket" },
 ];
 
 const congresoActivo = computed(() => rutaEnGrupo(route.path, RUTAS_CONGRESO));
@@ -244,75 +245,6 @@ useHead({
   background: #00d9e8;
   color: #032f5f;
   padding: .75rem 1rem;
-  font-weight: 700;
-}
-.skip-link:focus { top: 1rem; }
-
-
-
-/* Payment Methods */
-.w-12.h-8 {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.w-12.h-8:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-
-
-/* Smooth scroll para toda la aplicación */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Prevenir scroll horizontal */
-#app {
-  overflow-x: hidden;
-}
-
-/* Transiciones suaves */
-#main-content {
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-/* Estilos para el focus del teclado */
-:focus-visible {
-  outline: 2px solid #00d9e8;
-  outline-offset: 2px;
-}
-
-/* Mejoras de accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  footer .grid > div,
-  footer .absolute.inset-0,
-  footer a[href="#"]:hover,
-  .footer-link:hover,
-  .w-12.h-8:hover {
-    animation: none;
-    transform: none;
-  }
-
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Clase para el botón de registro con clip-path */
-.registro-button-clip {
-  clip-path: polygon(
-    0 0,
-    calc(100% - 15px) 0,
-    100% 100%,
-    15px 100%
-  );
+  font-weight: bold;
 }
 </style>
