@@ -57,13 +57,23 @@ curl -fsSL https://bun.sh/install | bash
 | `NUXT_BACKEND_BASE_URL` | URL de `backend-ciisic` alcanzable por el servidor Nitro (la landing llama a `/api/v1/site`). Solo servidor. |
 | `NUXT_BACKEND_EVENT_TOKEN` | Token de acceso del evento. **Secreto de servidor**: solo en runtime, nunca en el build ni en variables `NUXT_PUBLIC_*`. |
 
-No hay variables públicas: el client ID de Google (botón «Continuar con Google» de la inscripción) y la URL
-del panel (`/login` redirige ahí) se configuran en `backend-ciisic` y la landing los lee en runtime de
+El URL oficial del Encuentro de Egresados está versionado en el módulo y no se sustituye mediante
+variables de entorno, para que una configuración local o heredada no pueda restaurar un enlace anterior.
+El corte está fijado en la configuración pública de Nuxt para el `2026-10-24T00:00:00-05:00`;
+el botón queda disponible hasta ese instante exclusivo.
+
+No se configuran aquí variables públicas con datos del backend:
+el client ID de Google (botón «Continuar con Google» de la inscripción) y la URL del panel (`/login`
+redirige ahí) se configuran en `backend-ciisic` y la landing los lee en runtime de
 `/api/publico/configuracion` (backend `GET /api/v1/site/config`, caché de 60 s).
 
 El navegador solo llama a las rutas BFF `/api/publico/*` de la propia landing; Nitro agrega el token y la IP
 del visitante. Detalles en `specs/001-landing-multi-evento/`, `specs/002-google-en-inscripcion/` y
 `docs/INSCRIPCION-FLUJO.md`.
+
+La inscripción gratuita del Encuentro de Egresados es un flujo separado: la landing no recibe datos
+personales ni escribe en Sheets; solo abre el Google Forms oficial. Su configuración está documentada en
+[`docs/INSCRIPCION-EGRESADOS.md`](docs/INSCRIPCION-EGRESADOS.md).
 
 ## 🚀 Desarrollo
 

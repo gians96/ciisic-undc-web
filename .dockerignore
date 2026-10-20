@@ -14,3 +14,13 @@ Dockerfile
 .DS_Store
 dist
 .turbo
+# Contexto mínimo y caché estable: nada de esto lo usa `nuxt build`,
+# y cada cambio aquí invalidaría la capa de COPY sin aportar nada.
+tests
+docs
+specs
+.specify
+.claude
+.github
+opencode.json
+*.md

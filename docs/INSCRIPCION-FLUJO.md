@@ -8,7 +8,7 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 
 ## Arquitectura
 
-### 1. Páginas `/estudiantes` y `/general`
+### 1. Páginas `/estudiantes` y `/general` (y `/fi-undc`)
 
 - Conservan su template y estilos; la lógica común vive en `useFormularioInscripcion({ categoria, verificarEstudiante })`.
 - Datos del evento (`useEvento` → `/api/publico/evento`), planes (`usePlanes` → `/api/publico/planes?categoria=`)
@@ -29,6 +29,17 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
   vacíos (que no vinieron del DNI) se completan y el `verificacionCorreoToken` (solo en memoria) viaja con la
   inscripción. «Usar otro correo» lo descarta. Google no cambia el precio: los estudiantes siguen
   verificándose con SIVIRENO. Detalles en `specs/002-google-en-inscripcion/`.
+- **Modalidad de asistencia** (`PRESENCIAL` o `VIRTUAL`, atributo del tipo; `specs/005-modalidad-virtual/`): los
+  planes virtuales viven dentro de las mismas categorías (no hay página `/virtual`) y las páginas de inscripción los
+  muestran en un grupo «Virtual (en línea)» debajo de «Presencial». Con una sola modalidad a la vista no hay
+  encabezados (lo de siempre). Un plan virtual tiene el mismo precio para todos (`precio == precioInstitucional`),
+  así que ningún correo cambia el monto: sin planes virtuales el aviso del correo institucional es el de siempre
+  («Se aplicará descuento UNDC»); con planes virtuales a la vista y ningún plan con descuento dice solo «Correo
+  institucional» (`avisoCorreoInstitucional`). El botón «Ver qué incluye el kit» solo sale si hay algún plan
+  presencial. La FAQ «¿Habrá modalidad virtual?» anuncia el plan Virtual solo si la API devuelve planes virtuales
+  (`respuestaModalidadVirtual`).
+  Un estudiante virtual de `/estudiantes` sigue pasando por el ciclo y la verificación SIVIRENO. La landing no
+  envía la modalidad: la deduce el servidor del tipo elegido.
 
 ### 2. Composable `useInscription` (`app/composables/useInscription.ts`)
 
@@ -51,6 +62,10 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 - Lee el store (no hay GET público de inscripciones) y muestra monto, precio regular, descuento
   ("Precio UNDC aplicado"), «Verificado con Google» (`esCorreoVerificado`), datos del pago, estado y el
   contacto del evento.
+- Si `tipoInscripcion.modalidad` es `VIRTUAL` agrega «Modalidad de asistencia: Virtual (en línea)» y unos
+  próximos pasos neutros (sin carnet ni certificado: la organización compartirá las indicaciones para
+  conectarse a la transmisión); sin el campo o `PRESENCIAL`, los pasos de siempre (`proximosPasos` en
+  `app/utils/confirmacion.ts`).
 - Si la configuración del sitio trae `urlPanel`, enlaza a `<urlPanel>/mis-inscripciones` («Ver el estado de mi
   inscripción», en otra pestaña), donde el participante ingresa con la cuenta de Google de su correo.
 - Si no hay datos en el store (recarga o enlace directo), muestra el aviso de sesión expirada (con el mismo
@@ -58,7 +73,7 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 
 ## Flujo Completo
 
-1. El usuario completa el formulario en `/estudiantes` o `/general`.
+1. El usuario completa el formulario en `/estudiantes`, `/general` o `/fi-undc`.
 2. El navegador envía `POST /api/publico/inscripciones` (mismo origen).
 3. Nitro lo reenvía a `POST /api/v1/site/inscriptions` con el token del evento.
 4. El backend calcula el monto y responde `201` con la inscripción creada.

@@ -9,7 +9,10 @@ import { formatearSoles, nombreBilletera, nombreDescargaQr, titularBilletera, ur
 import { nombresDesdeGoogle, tokenCorreoParaEnvio } from '~/utils/google'
 import { VOUCHER_ACCEPT, esCelularValido, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { modalidadesDisponibles, resolverMedioPago, type EleccionPago } from '~/utils/medios-pago'
-import { aplicaPrecioInstitucional, avisoPlanesOcultos, debeLimpiarPlan, esCorreoDelDominio, planDisponible, precioPlan } from '~/utils/planes'
+import {
+  agruparPlanesPorModalidad, aplicaPrecioInstitucional, avisoCorreoInstitucional, avisoPlanesOcultos, claseBadgePlan, debeLimpiarPlan,
+  esCorreoDelDominio, etiquetaAccesiblePlan, hayPlanesPresenciales, planDisponible, precioPlan, type PlanInscripcion,
+} from '~/utils/planes'
 import { esCorreoValido } from '~/utils/verificacion'
 
 export type EstadoPaginaInscripcion = 'cargando' | 'error' | 'cerradas' | 'abiertas'
@@ -239,7 +242,9 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
       return conVerificacion ? `Si eres estudiante UNDC, usa tu correo institucional @${dominioInstitucional.value}` : 'Ingresa tu correo electrónico'
     }
     if (!isEmailValid.value) return 'Ingresa un correo electrónico válido'
-    if (!conVerificacion && esCorreoInstitucional.value) return 'Correo institucional - Se aplicará descuento UNDC'
+    // Sin planes virtuales el texto es el de siempre; con ellos (mismo precio para todos) y sin ningún plan
+    // con descuento a la vista, reconoce el dominio sin prometer un descuento inexistente
+    if (!conVerificacion && esCorreoInstitucional.value) return avisoCorreoInstitucional(availablePlans.value)
     return 'Correo válido'
   }
 
@@ -313,6 +318,11 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     .filter(item => item.disponible)
     .map(({ plan, institucional }) => ({ ...plan, price: formatearSoles(precioPlan(plan, institucional)) })))
 
+  // Presencial primero y luego virtual; con una sola modalidad queda un grupo sin encabezado
+  const gruposPlanes = computed(() => agruparPlanesPorModalidad(availablePlans.value))
+  // El kit y su modal solo aplican si hay algún plan presencial a la vista
+  const mostrarKit = computed(() => hayPlanesPresenciales(availablePlans.value))
+
   /** Explica por qué no se ven todos los planes (p. ej. con correo UNDC no se ofrece «sin kit»). */
   const avisoPlanes = computed(() => avisoPlanesOcultos({
     ocultos: planesSegunCondicion.value.filter(item => !item.disponible).map(item => item.plan),
@@ -333,7 +343,8 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     })) planId.value = null
   })
 
-  const getBadgeClass = (badge: string) => (badge.includes('SIN') ? 'badge-warning' : 'badge-success')
+  const getBadgeClass = (plan: Pick<PlanInscripcion, 'badge' | 'modalidad'>) => claseBadgePlan(plan)
+  const etiquetaPlan = (plan: Pick<PlanInscripcion, 'title' | 'modalidad'> & { price: string }) => etiquetaAccesiblePlan(plan)
 
   const selectPlan = (id: number) => {
     if (!camposCompletos.value) {
@@ -560,11 +571,14 @@ export function useFormularioInscripcion(opciones: OpcionesFormulario) {
     usarOtroCorreo,
     // Planes
     availablePlans,
+    gruposPlanes,
+    mostrarKit,
     avisoPlanes,
     planId,
     selectPlan,
     camposCompletos,
     getBadgeClass,
+    etiquetaPlan,
     isStudentPlan,
     clasificacion,
     clasificaciones,

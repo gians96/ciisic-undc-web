@@ -72,6 +72,14 @@ export interface CaracteristicaPlan {
  */
 export type DisponiblePara = 'TODOS' | 'INSTITUCIONAL' | 'EXTERNOS'
 
+/**
+ * Modalidad de asistencia del tipo de inscripción (spec 018 de backend-ciisic): en el sitio del
+ * congreso o en línea. En el JSON es la clave `modalidad`, siempre dentro del objeto del tipo.
+ * No confundir con `ModalidadPago` (banco | billetera) ni con las tarjetas «Modalidad 0N» de
+ * `/planes`, que son categorías de inscripción.
+ */
+export type ModalidadAsistencia = 'PRESENCIAL' | 'VIRTUAL'
+
 export interface TipoInscripcionApi {
   id: number
   codigo: string
@@ -83,6 +91,8 @@ export interface TipoInscripcionApi {
   precioInstitucional: number | string | null
   /** Ausente en un backend anterior: equivale a `TODOS`. */
   disponiblePara?: DisponiblePara | null
+  /** Ausente, `null` o desconocida (backend anterior): equivale a `PRESENCIAL`. */
+  modalidad?: ModalidadAsistencia | null
 }
 
 export interface CategoriaInscripcionApi {
