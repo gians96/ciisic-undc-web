@@ -6,11 +6,21 @@
     descripcion="Un espacio de innovación y creatividad tecnológica donde estudiantes y egresados desarrollarán soluciones para desafíos reales de la comunidad, con énfasis en Seguridad Ciudadana, Ciudades Inteligentes y Desarrollo Sostenible."
   >
     <section aria-labelledby="about-hackathon">
-      <p class="ss-kicker">«Innovación, Investigación y Tecnología para el Desarrollo Sostenible»</p>
+      <p class="ss-kicker">Sobre la actividad</p>
       <h2 id="about-hackathon" class="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Soluciones reales en una sola jornada.</h2>
       <p class="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
         La Hackathon UNDC 2026 es presencial, por equipos de 2 a 5 integrantes, en los laboratorios y ambientes habilitados de la Universidad Nacional de Cañete. La asignación específica se publica el 25 de octubre. Las categorías compiten y se premian de manera independiente; no se permiten equipos mixtos entre ambas categorías.
       </p>
+
+      <div class="mt-7 grid gap-4 sm:grid-cols-2">
+        <article v-for="fact in datos" :key="fact.label" class="ss-card flex items-start gap-4 p-5">
+          <Icon :name="fact.icon" class="mt-0.5 h-6 w-6 shrink-0 text-primary-400" />
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[.14em] text-slate-400">{{ fact.label }}</p>
+            <p class="mt-1 font-semibold leading-relaxed text-white">{{ fact.value }}</p>
+          </div>
+        </article>
+      </div>
 
       <div class="mt-7 grid gap-4 sm:grid-cols-2">
         <article v-for="categoria in categorias" :key="categoria.nombre" class="ss-card p-5 sm:p-6">
@@ -64,21 +74,26 @@
       </p>
     </section>
 
-    <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-hackathon">
-      <div class="flex items-start gap-4">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
-          <Icon name="heroicons:information-circle" class="h-6 w-6" />
-        </span>
-        <div>
-          <h2 id="info-hackathon" class="text-xl font-bold text-white">Información oficial</h2>
-          <p class="mt-2 leading-7 text-slate-300">
-            Consulta las reglas completas de participación, fases, evaluación, restricciones y premiación en las bases oficiales. La inscripción queda completa cuando se verifican los datos de todos los integrantes y el pago.
-          </p>
-        </div>
-      </div>
-    </section>
+    <template #ancho>
+      <SemanaSistemicaGaleria id="hackathon" :imagenes="actividad.galeria" />
+    </template>
 
-    <SemanaSistemicaAfiche :actividad="actividad" />
+    <template #lateral>
+      <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-hackathon">
+        <div class="flex items-start gap-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
+            <Icon name="heroicons:information-circle" class="h-6 w-6" />
+          </span>
+          <div>
+            <h2 id="info-hackathon" class="text-xl font-bold text-white">Información oficial</h2>
+            <p class="mt-2 leading-7 text-slate-300">
+              Consulta las reglas completas de participación, fases, evaluación, restricciones y premiación en las bases oficiales. La inscripción queda completa cuando se verifican los datos de todos los integrantes y el pago.
+            </p>
+          </div>
+        </div>
+      </section>
+      <SemanaSistemicaAfiche :actividad="actividad" />
+    </template>
   </SemanaSistemicaActividadPagina>
 </template>
 
@@ -86,6 +101,13 @@
 import { actividadPorSlug } from '~/data/semana-sistemica'
 
 const actividad = actividadPorSlug('hackathon')
+
+const datos = [
+  { icon: 'heroicons:user-group', label: 'Quiénes participan', value: 'Estudiantes de pregrado (Categoría A) y egresados de la EPIS (Categoría B), en equipos de 2 a 5 integrantes.' },
+  { icon: 'heroicons:computer-desktop', label: 'Formato', value: 'Presencial, en los laboratorios y ambientes habilitados de la UNDC. La asignación se publica el 25 de octubre.' },
+  { icon: 'heroicons:banknotes', label: 'Costo de inscripción', value: 'S/ 30 por equipo. Cierre el 23 de octubre a las 8:00 p. m.' },
+  { icon: 'heroicons:trophy', label: 'Premiación', value: 'Certificación y premio monetario por categoría. El monto se confirma el 25 de octubre.' },
+]
 
 const categorias = [
   { icono: 'heroicons:academic-cap', nivel: 'Categoría A', nombre: 'Estudiantes de pregrado', descripcion: 'Estudiantes de la UNDC y de universidades e institutos invitados. Se priorizan prototipos funcionales e innovadores orientados a resolver el desafío elegido.' },

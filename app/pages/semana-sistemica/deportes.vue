@@ -58,6 +58,10 @@
       </div>
     </section>
 
+    <template #ancho>
+      <SemanaSistemicaGaleria id="deportes" :imagenes="actividad.galeria" />
+    </template>
+
     <template #lateral>
       <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-deportes">
         <div class="flex items-start gap-4">

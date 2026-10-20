@@ -10,101 +10,108 @@
       >
         <div class="min-w-0 text-center lg:text-left">
           <div class="hero-stack">
-            <div class="hero-slide" :class="{ 'is-active': indice === 0 }">
+            <div class="hero-stack">
               <p
-                class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+                class="eyebrow hero-slide mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+                :class="{ 'is-active': indice === 0 }"
               >
                 <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
                   >Universidad Nacional de Cañete · 2026</span
                 >
               </p>
-              <h1 class="hero-title font-extrabold tracking-tight text-white">
-                Las ideas que <span class="text-primary-400">conectan</span> el
-                futuro.
-              </h1>
               <p
-                class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
-              >
-                VIII Congreso Internacional de Ingeniería de Sistemas e
-                Investigación Científica. Cinco días para compartir
-                conocimiento, descubrir perspectivas y crear conexiones en
-                Cañete.
-              </p>
-              <EventCountdown class="mx-auto mt-7 lg:mx-0" />
-              <div
-                class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
-              >
-                <NuxtLink
-                  to="/planes"
-                  class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
-                  >Inscríbete ahora
-                  <Icon
-                    name="heroicons:arrow-up-right"
-                    class="h-5 w-5 shrink-0"
-                /></NuxtLink>
-                <NuxtLink
-                  to="/about"
-                  class="action-secondary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-semibold"
-                  >Conoce el congreso
-                  <Icon
-                    name="heroicons:arrow-right"
-                    class="h-5 w-5 shrink-0"
-                /></NuxtLink>
-              </div>
-            </div>
-            <!-- Nasa Space: el CTA enlaza al sitio oficial del NASA Space Apps
-                 Challenge (evento local San Vicente de Cañete). ⚠️ CONTENIDO
-                 PENDIENTE: fecha, sede e imagen se confirmarán después. -->
-            <div class="hero-slide" :class="{ 'is-active': indice === 1 }">
-              <p
-                class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+                class="eyebrow hero-slide mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
+                :class="{ 'is-active': indice === 1 }"
               >
                 <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
                   >Universidad Nacional de Cañete · Próximamente</span
                 >
               </p>
-              <h1 class="hero-title font-extrabold tracking-tight text-white">
-                Nasa <span class="text-primary-400">Space</span>
-              </h1>
-              <p
-                class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
-              >
-                Un nuevo evento de la Escuela Profesional de Ingeniería de
-                Sistemas.
-              </p>
-              <div
-                class="mx-auto mt-7 flex flex-wrap justify-center gap-3 lg:mx-0 lg:justify-start"
-              >
-                <span
-                  class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+            </div>
+            <!-- Título compartido: al rotar el hero hace morph (gooey) entre los
+                 dos titulares; mientras el slide Nasa está activo cicla sus textos. -->
+            <h1 class="hero-title font-extrabold tracking-tight text-white">
+              <UiMorphingText
+                :texts="['Nasa Space', 'Space Apps Challenge', 'The Next Frontier']"
+                ancla="Las ideas que conectan el futuro."
+                :activo="indice === 1"
+              />
+            </h1>
+            <div class="hero-stack">
+              <div class="hero-slide" :class="{ 'is-active': indice === 0 }">
+                <p
+                  class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
                 >
-                  <Icon
-                    name="heroicons:calendar-days"
-                    class="h-4 w-4 shrink-0 text-primary-300"
-                  />14 y 15 de noviembre de 2026
-                </span>
-                <span
-                  class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                  VIII Congreso Internacional de Ingeniería de Sistemas e
+                  Investigación Científica. Cinco días para compartir
+                  conocimiento, descubrir perspectivas y crear conexiones en
+                  Cañete.
+                </p>
+                <EventCountdown class="mx-auto mt-7 lg:mx-0" />
+                <div
+                  class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
                 >
-                  <Icon
-                    name="heroicons:map-pin"
-                    class="h-4 w-4 shrink-0 text-primary-300"
-                  />Universidad Nacional de Cañete.
-                </span>
+                  <NuxtLink
+                    to="/planes"
+                    class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
+                    >Inscríbete ahora
+                    <Icon
+                      name="heroicons:arrow-up-right"
+                      class="h-5 w-5 shrink-0"
+                  /></NuxtLink>
+                  <NuxtLink
+                    to="/about"
+                    class="action-secondary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-semibold"
+                    >Conoce el congreso
+                    <Icon
+                      name="heroicons:arrow-right"
+                      class="h-5 w-5 shrink-0"
+                  /></NuxtLink>
+                </div>
               </div>
-              <div
-                class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
-              >
-                <NuxtLink
-                  to="https://www.spaceappschallenge.org/2026/local-events/san-vicente-de-canete/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
-                  >Conoce el Nasa Space
-                  <Icon
-                    name="heroicons:arrow-up-right"
-                    class="h-5 w-5 shrink-0"
-                /></NuxtLink>
+              <!-- Nasa Space: el CTA enlaza al sitio oficial del NASA Space Apps
+                   Challenge (evento local San Vicente de Cañete). -->
+              <div class="hero-slide" :class="{ 'is-active': indice === 1 }">
+                <p
+                  class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
+                >
+                  Un nuevo evento de la Escuela Profesional de Ingeniería de
+                  Sistemas.
+                </p>
+                <div
+                  class="mx-auto mt-7 flex flex-wrap justify-center gap-3 lg:mx-0 lg:justify-start"
+                >
+                  <span
+                    class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    <Icon
+                      name="heroicons:calendar-days"
+                      class="h-4 w-4 shrink-0 text-primary-300"
+                    />14 y 15 de noviembre de 2026
+                  </span>
+                  <span
+                    class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    <Icon
+                      name="heroicons:map-pin"
+                      class="h-4 w-4 shrink-0 text-primary-300"
+                    />Universidad Nacional de Cañete.
+                  </span>
+                </div>
+                <div
+                  class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
+                >
+                  <NuxtLink
+                    to="https://www.spaceappschallenge.org/2026/local-events/san-vicente-de-canete/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
+                    >Conoce el Nasa Space
+                    <Icon
+                      name="heroicons:arrow-up-right"
+                      class="h-5 w-5 shrink-0"
+                  /></NuxtLink>
+                </div>
               </div>
             </div>
           </div>
