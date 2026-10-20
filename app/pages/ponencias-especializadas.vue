@@ -132,7 +132,7 @@ useSeoMeta({
 </script>
 
 <style scoped>
-.esp-hero { background: radial-gradient(circle at 50% 0%, #087dd83d, transparent 48%), #041d39; }
+.esp-hero { background: linear-gradient(180deg, #062a52 0%, #041d39 55%); }
 .esp-grid { opacity: .25; background-image: linear-gradient(#1d7fb43d 1px, transparent 1px), linear-gradient(90deg, #1d7fb43d 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, black, transparent); }
 .summary-chip { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid #ffffff1a; border-radius: 9999px; background: #ffffff08; padding: .55rem .9rem; color: #cbd5e1; }
 .vista-enter-active, .vista-leave-active { transition: opacity .25s ease, transform .25s ease; }

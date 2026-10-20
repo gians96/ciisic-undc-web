@@ -6,11 +6,21 @@
     descripcion="Competencias de videojuegos que promueven la integración, la sana competencia y las habilidades estratégicas de los estudiantes de Ingeniería de Sistemas, mediante torneos presenciales en distintas modalidades."
   >
     <section aria-labelledby="about-esports">
-      <p class="ss-kicker">Sobre el torneo</p>
+      <p class="ss-kicker">Sobre la actividad</p>
       <h2 id="about-esports" class="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Cuatro videojuegos, una misma arena.</h2>
       <p class="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
         El Torneo de Esports EPIS 2026 se juega el martes 27 de octubre en las instalaciones de la Facultad de Ingeniería de Sistemas. Cada videojuego tiene sus propias bases: formato competitivo, criterios de avance, puntualidad, sanciones, requisitos técnicos y premiación.
       </p>
+
+      <div class="mt-7 grid gap-4 sm:grid-cols-2">
+        <article v-for="fact in datos" :key="fact.label" class="ss-card flex items-start gap-4 p-5">
+          <Icon :name="fact.icon" class="mt-0.5 h-6 w-6 shrink-0 text-primary-400" />
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[.14em] text-slate-400">{{ fact.label }}</p>
+            <p class="mt-1 font-semibold leading-relaxed text-white">{{ fact.value }}</p>
+          </div>
+        </article>
+      </div>
     </section>
 
     <section class="mt-12" aria-labelledby="juegos-esports">
@@ -61,21 +71,26 @@
       </div>
     </section>
 
-    <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-esports">
-      <div class="flex items-start gap-4">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
-          <Icon name="heroicons:information-circle" class="h-6 w-6" />
-        </span>
-        <div>
-          <h2 id="info-esports" class="text-xl font-bold text-white">Información oficial</h2>
-          <p class="mt-2 leading-7 text-slate-300">
-            Los participantes recibirán avisos sobre horarios, resultados y organización por los canales indicados por la comisión. La participación implica aceptar las reglas correspondientes a cada torneo.
-          </p>
-        </div>
-      </div>
-    </section>
+    <template #ancho>
+      <SemanaSistemicaGaleria id="esports" :imagenes="actividad.galeria" />
+    </template>
 
-    <SemanaSistemicaAfiche :actividad="actividad" />
+    <template #lateral>
+      <section class="mt-12 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:p-8" aria-labelledby="info-esports">
+        <div class="flex items-start gap-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-400/10 text-primary-300 ring-1 ring-primary-400/20">
+            <Icon name="heroicons:information-circle" class="h-6 w-6" />
+          </span>
+          <div>
+            <h2 id="info-esports" class="text-xl font-bold text-white">Información oficial</h2>
+            <p class="mt-2 leading-7 text-slate-300">
+              Los participantes recibirán avisos sobre horarios, resultados y organización por los canales indicados por la comisión. La participación implica aceptar las reglas correspondientes a cada torneo.
+            </p>
+          </div>
+        </div>
+      </section>
+      <SemanaSistemicaAfiche :actividad="actividad" />
+    </template>
   </SemanaSistemicaActividadPagina>
 </template>
 
@@ -83,6 +98,13 @@
 import { actividadPorSlug } from '~/data/semana-sistemica'
 
 const actividad = actividadPorSlug('esports')
+
+const datos = [
+  { icon: 'heroicons:user-group', label: 'Quiénes participan', value: 'Estudiantes de Ingeniería de Sistemas de la UNDC, en equipos o individual según el videojuego.' },
+  { icon: 'heroicons:bolt', label: 'Cuatro torneos', value: 'Left 4 Dead 2, Clash Royale, FIFA 25 y Dragon Ball: Sparking! ZERO, con bases propias para cada uno.' },
+  { icon: 'heroicons:banknotes', label: 'Costo', value: 'S/ 30 por equipo en Left 4 Dead 2 y S/ 6 por inscripción individual en los demás torneos.' },
+  { icon: 'heroicons:calendar-days', label: 'Cierre de inscripción', value: '23 de octubre a las 11:59 p. m. Dragon Ball cierra el 22 de octubre.' },
+]
 
 // Imagen de cada juego: se muestra tenue al pasar el cursor sobre su tarjeta.
 // Es una imagen externa (portada oficial del juego), por eso no usa @nuxt/image.

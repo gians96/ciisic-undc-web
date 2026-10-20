@@ -1,4 +1,4 @@
-# Feature Specification: Tab «Semana Sistémica» (Comparsa, Reinado y Deportes)
+# Feature Specification: Tab «Semana Sistémica» (Comparsa, Reinado, Talleres y Deportes)
 
 **Feature Branch**: `feat/semana-sistemica` · **Created**: 2026-10-15 · **Status**: Implementado
 
@@ -11,17 +11,17 @@ estático (el evento de la API no trae agenda).
 
 ## User Scenarios & Testing
 
-### User Story 1 - Encuentro las tres actividades desde el menú (Priority: P1)
+### User Story 1 - Encuentro las cuatro actividades desde el menú (Priority: P1)
 
 **Acceptance Scenarios**:
 
-1. **Given** escritorio (≥ 1024 px), **When** abro «Semana Sistémica», **Then** veo Comparsa, Reinado y
-   Deportes; cada enlace lleva a `/semana-sistemica/<actividad>` y el tab queda activo en esas páginas.
-2. **Given** móvil, **When** abro el menú, **Then** «Semana Sistémica» es un acordeón con las mismas tres
+1. **Given** escritorio (≥ 1024 px), **When** abro «Semana Sistémica», **Then** veo Comparsa, Reinado,
+   Talleres y Deportes; cada enlace lleva a `/semana-sistemica/<actividad>` y el tab queda activo en esas páginas.
+2. **Given** móvil, **When** abro el menú, **Then** «Semana Sistémica» es un acordeón con las mismas cuatro
    páginas, abierto si estoy en una de ellas.
 3. **Given** abro «Ponencias» y luego «Semana Sistémica», **Then** el primero se cierra; Esc, clic fuera o
    salir con el foco cierran el abierto.
-4. **Given** el pie de página, **Then** lista las tres páginas en «Explora».
+4. **Given** el pie de página, **Then** lista las cuatro páginas en «Explora».
 
 ### User Story 2 - Sé cuándo, dónde y cómo participar (Priority: P1)
 
@@ -57,7 +57,7 @@ estático (el evento de la API no trae agenda).
 ## Requirements
 
 - **FR-001**: `app/data/semana-sistemica.ts` es la única fuente de fechas, horas, lugares, enlaces, cierres y
-  costos de las tres actividades, y de `SEMANA_SISTEMICA_MENU` (escritorio, móvil y pie de página).
+  costos de las cuatro actividades, y de `SEMANA_SISTEMICA_MENU` (escritorio, móvil y pie de página).
 - **FR-002**: `app/utils/semana-sistemica.ts`: `rutaEnGrupo` (estado activo del tab) e `inscripcionAbierta`
   (cierre en hora de Lima), con pruebas.
 - **FR-003**: `LayoutNavDropdown` reemplaza al desplegable escrito a mano de «Ponencias» sin cambiar su
@@ -69,6 +69,6 @@ estático (el evento de la API no trae agenda).
 
 ## Success Criteria
 
-- **SC-001**: las tres páginas responden 200, `/reinado-sistemico` redirige y el menú no desborda entre 1024 y
+- **SC-001**: las cuatro páginas responden 200, `/reinado-sistemico` redirige y el menú no desborda entre 1024 y
   1280 px.
 - **SC-002**: `lint` (0 errores), `typecheck`, `test` y `build` en verde.

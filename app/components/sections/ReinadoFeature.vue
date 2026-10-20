@@ -50,13 +50,14 @@
 </template>
 
 <style scoped>
-.reinado-panel { background: radial-gradient(circle at 88% 12%, #d946ef24, transparent 34%), linear-gradient(145deg, #092f57, #061f3b); box-shadow: 0 28px 90px #020f204d; }
+.reinado-panel { background: linear-gradient(145deg, #092f57, #061f3b); box-shadow: 0 28px 70px -24px #020f2066; }
 .reinado-photo-shade { pointer-events: none; background: linear-gradient(to top, #041d39bd 0%, transparent 50%); }
-.crown-mark { border: 1px solid #f0abfc40; background: #d946ef1f; color: #f0abfc; box-shadow: 0 12px 35px #d946ef1a; }
+.crown-mark { border: 1px solid #f0abfc40; background: #d946ef1f; color: #f0abfc; }
 .kicker { color: #67e8f9; font-size: .75rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 .info-chip { display: flex; min-height: 3.25rem; align-items: center; gap: .65rem; border: 1px solid #ffffff1a; border-radius: .9rem; background: #ffffff08; padding: .8rem 1rem; color: #e2e8f0; font-size: .9rem; font-weight: 600; }
-.details-link { background: #00d9e8; color: #032f5f; box-shadow: 0 12px 34px #00d9e82b; transition: transform .2s ease, background .2s ease; }
+.details-link { background: #00d9e8; color: #032f5f; box-shadow: 0 14px 32px -16px rgba(0, 217, 232, 0.5); transition: transform .2s ease, background .2s ease; }
 .details-link:hover { background: #67e8f9; transform: translateY(-2px); }
+.details-link:active { transform: translateY(0) scale(0.98); }
 .details-link:focus-visible { outline: 2px solid #67e8f9; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .reinado-panel img, .details-link { transition: none; }.reinado-panel img:hover, .details-link:hover { transform: none; } }
 </style>

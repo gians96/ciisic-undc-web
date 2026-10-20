@@ -9,3 +9,11 @@
 - [x] T007 Páginas `comparsa`, `deportes`, `reinado` (movida) e `index`; redirección de `/reinado-sistemico`
 - [x] T008 Cronograma (`app/data/cronograma.ts`), tarjeta de Comparsa, `ReinadoFeature` y favicon
 - [x] T009 `AGENTS.md` (páginas) y verificación: lint, typecheck, test, build y revisión visual
+
+## Ampliación: actividad «Talleres» (octubre 2026)
+
+- [x] T010 `talleres` en `app/data/semana-sistemica.ts` (datos e imágenes provisional marcados como pendientes)
+- [x] T011 Página `app/pages/semana-sistemica/talleres.vue` (marco, programación, información oficial y afiche)
+- [x] T012 Evento «Talleres sistémicos» en el cronograma (jueves 29, 18:00–20:00)
+- [x] T013 Pruebas: `tests/semana-sistemica.test.ts` y `tests/cronograma.test.ts`
+- [ ] T014 Contenido real de la comisión: fecha, horario, lugar, cuotas, formulario, bases, contacto y WebP (`talleres-01.webp`, `flyer-talleres.webp`, galería)

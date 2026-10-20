@@ -70,6 +70,6 @@ const horario = computed(() => rangoHorario(props.talk.start, props.talk.end))
 .tema-card { background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 .tema-card:hover { transform: translateY(-4px); border-color: #22d3ee59; box-shadow: 0 26px 68px #020f2052; }
 .tema-card.is-external { border-color: #22d3ee47; }
-.fact-room { box-shadow: 0 0 24px #00d9e81a; }
+.fact-room { box-shadow: 0 10px 24px -14px rgba(0, 217, 232, 0.35); }
 @media (prefers-reduced-motion: reduce) { .tema-card { transition: none; } .tema-card:hover { transform: none; } }
 </style>

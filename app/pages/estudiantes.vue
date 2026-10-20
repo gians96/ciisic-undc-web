@@ -652,7 +652,7 @@ const onClassificationAfterLeave = (el: Element) => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 50% 0, #0b75e555, transparent 48%), linear-gradient(135deg, #052c54, #041d39);
+    background: linear-gradient(180deg, #062a52 0%, #041d39 55%);
     z-index: -1;
 }
 

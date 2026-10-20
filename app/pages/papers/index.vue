@@ -139,7 +139,7 @@
                 src="/images/eventos/papers.jpeg?v=2026-10-06"
                 alt="Afiche de Call for Papers de la edición 2026"
                 class="w-full h-auto object-cover rounded-xl shadow-2xl"
-              />
+              >
               <p class="mt-3 text-center text-sm text-slate-400">
                 Edición 2026
               </p>

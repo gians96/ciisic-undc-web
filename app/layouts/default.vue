@@ -9,31 +9,39 @@
         <div class="flex items-center justify-between h-20">
           <!-- Logo -->
           <div class="flex items-center">
-            <NuxtLink to="/" class="flex shrink-0 items-center space-x-3">
+            <NuxtLink
+              to="/"
+              class="flex shrink-0 items-center space-x-3"
+            >
               <NuxtImg
                 src="images/logo/preloader.png"
                 alt="Logo CIISIC"
                 class="w-10 h-10 object-contain"
               />
-              <!-- Entre 1024 y 1149 px el menú de escritorio (7 items) no deja sitio para el año. -->
-              <span class="whitespace-nowrap text-white font-bold text-xl tracking-wide sm:text-2xl">VIII CIISIC<span class="ml-2 text-sm font-semibold text-primary-300 lg:max-[1149px]:hidden">2026</span></span>
+              <span class="whitespace-nowrap text-white font-bold text-xl tracking-wide sm:text-2xl"
+                >VIII CIISIC
+                <span class="ml-2 text-sm font-semibold text-primary-300">2026</span></span
+              >
             </NuxtLink>
           </div>
 
           <!-- Navegación Principal (Desktop) -->
-          <nav class="hidden lg:flex items-center gap-2 xl:gap-6" aria-label="Navegación principal">
+          <nav class="hidden lg:flex items-center gap-2 xl:gap-5" aria-label="Navegación principal">
             <NuxtLink to="/" class="nav-link">Inicio</NuxtLink>
-            <NuxtLink to="/about" class="nav-link">Congreso</NuxtLink>
-            <NuxtLink to="/cronograma" class="nav-link">Cronograma</NuxtLink>
-            <NuxtLink to="/papers" class="nav-link">Call for Papers</NuxtLink>
+            <LayoutNavDropdown
+              id="congreso"
+              etiqueta="Congreso"
+              :items="MENU_CONGRESO"
+              :activo="congresoActivo"
+            />
             <LayoutNavDropdown id="ponencias" etiqueta="Ponencias" :items="MENU_PONENCIAS" :activo="ponenciasActivo" />
-            <NuxtLink to="/sede" class="nav-link">Sede</NuxtLink>
             <LayoutNavDropdown
               id="semana-sistemica"
               etiqueta="Semana Sistémica"
               :items="SEMANA_SISTEMICA_MENU"
               :activo="semanaSistemicaActivo"
             />
+            <NuxtLink to="/papers" class="nav-link">Call for Papers</NuxtLink>
           </nav>
 
           <div class="flex items-center space-x-4">
@@ -124,7 +132,14 @@ watch(
 // MENÚS DESPLEGABLES (ESCRITORIO)
 // ============================================================================
 
+const RUTAS_CONGRESO = ["/about", "/cronograma", "/sede"];
 const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas", "/inscripcion-ponencias"];
+
+const MENU_CONGRESO = [
+  { label: "El congreso", href: "/about", icon: "heroicons:building-library" },
+  { label: "Cronograma", href: "/cronograma", icon: "heroicons:calendar-days" },
+  { label: "Sede", href: "/sede", icon: "heroicons:map-pin" },
+];
 
 const MENU_PONENCIAS = [
   { label: "Congreso", href: "/ponentes", icon: "heroicons:user-group" },
@@ -132,6 +147,7 @@ const MENU_PONENCIAS = [
   { label: "Inscripción a ponencias", href: "/inscripcion-ponencias", icon: "heroicons:ticket" },
 ];
 
+const congresoActivo = computed(() => rutaEnGrupo(route.path, RUTAS_CONGRESO));
 const ponenciasActivo = computed(() => rutaEnGrupo(route.path, RUTAS_PONENCIAS));
 const semanaSistemicaActivo = computed(() => rutaEnGrupo(route.path, [RUTA_SEMANA_SISTEMICA]));
 
@@ -190,7 +206,6 @@ useHead({
 
 .nav-link:hover {
   color: #00d9e8;
-  transform: translateY(-1px);
 }
 
 .nav-link.router-link-exact-active {
@@ -203,8 +218,8 @@ useHead({
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #00d9e8, #075bcb);
+  height: 1px;
+  background: #00d9e8;
   transition: width 0.3s ease;
 }
 
@@ -230,75 +245,6 @@ useHead({
   background: #00d9e8;
   color: #032f5f;
   padding: .75rem 1rem;
-  font-weight: 700;
-}
-.skip-link:focus { top: 1rem; }
-
-
-
-/* Payment Methods */
-.w-12.h-8 {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.w-12.h-8:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-
-
-/* Smooth scroll para toda la aplicación */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Prevenir scroll horizontal */
-#app {
-  overflow-x: hidden;
-}
-
-/* Transiciones suaves */
-#main-content {
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-/* Estilos para el focus del teclado */
-:focus-visible {
-  outline: 2px solid #00d9e8;
-  outline-offset: 2px;
-}
-
-/* Mejoras de accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  footer .grid > div,
-  footer .absolute.inset-0,
-  footer a[href="#"]:hover,
-  .footer-link:hover,
-  .w-12.h-8:hover {
-    animation: none;
-    transform: none;
-  }
-
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Clase para el botón de registro con clip-path */
-.registro-button-clip {
-  clip-path: polygon(
-    0 0,
-    calc(100% - 15px) 0,
-    100% 100%,
-    15px 100%
-  );
+  font-weight: bold;
 }
 </style>

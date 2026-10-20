@@ -31,11 +31,11 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 ## Arquitectura
 
 - `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `fi-undc`, `confirmation`,
-  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado y Deportes, con el contenido estático de
-  `app/data/semana-sistemica.ts`), `ponencias-especializadas` (ponentes y temas, datos estáticos de
-  `app/data/ponencias-especializadas.ts`), `inscripcion-ponencias` (inscripción a ponencias
-  especializadas con las ponencias y cupos del backend), `contacto`, `login` (redirige al panel),
-  páginas informativas.
+  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado, Talleres, E-Sports, Programación, Hackathon,
+  Cyber Clash, Encuentro de Egresados y Deportes, con el contenido estático de `app/data/semana-sistemica.ts`), 
+  `ponencias-especializadas` (ponentes y temas, datos estáticos de `app/data/ponencias-especializadas.ts`), 
+  `inscripcion-ponencias` (inscripción a ponencias especializadas con las ponencias y cupos del backend), 
+  `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `usePonenciasEspecializadas`, `useConsultation` (DNI), `useVerificacionEstudiante`,
   `useCorreoGoogle` + `useGoogleIdentity` (Google opcional), `useConfiguracionSitio`.
@@ -106,8 +106,8 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 `specs/001-landing-multi-evento/contracts/bff-landing.md`; prueba integrada local antes de desplegar.
 
 **Trabajo con agentes (varias sesiones en paralelo)**:
-- Un agente por repositorio a la vez. Al empezar: `git status` y `git log --oneline -10`; si hay
-  cambios sin comitear que no son tuyos, detente y coordina.
+- Un agente por repositorio a la vez. Al empezar: `git status` and `git log --oneline -10`; si hay
+  cambios sin comitear que no son tus, detente y coordina.
 - No modifiques backend-ciisic ni el panel desde aquí: pide el cambio con el contrato propuesto.
 - Git: rama `feat/*` (la de producción documentada es `rama-beni`: nunca la reescribas);
   `git add <rutas explícitas>`; commits convencionales en español; sin push, merge ni despliegues
@@ -118,14 +118,5 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
 `specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
-`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
-(tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual) y
-`specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas).
-Flujo: spec → plan → tasks; marcar tasks al implementar.
+`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sist
 
-## Antes de dar por terminado
-
-1. `bun run typecheck`, `bun run lint` (0 errores), `bun run test` y `bun run build` en verde.
-2. El token del evento no aparece en `.output` ni en el HTML servido.
-3. Probar el flujo afectado contra el backend local (inscripción, DNI, verificación, Google si aplica).
-4. Documentación de `docs/` y contratos del BFF al día.

@@ -10,8 +10,8 @@ import { schedule } from '../app/data/cronograma'
 import { etiquetaDia, formatoHora12 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de la Semana Sistémica', () => {
-  it('tiene las siete actividades en orden cronológico', () => {
-    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'programacion', 'esports', 'reinado', 'cyber-clash', 'hackathon', 'deportes'])
+  it('tiene las ocho actividades en orden cronológico', () => {
+    expect(actividades.map(actividad => actividad.slug)).toEqual(['comparsa', 'programacion', 'esports', 'reinado', 'cyber-clash', 'talleres', 'hackathon', 'deportes'])
     const fechas = actividades.map(actividad => actividad.fecha)
     expect([...fechas].sort()).toEqual(fechas)
   })
@@ -22,6 +22,7 @@ describe('datos de la Semana Sistémica', () => {
     expect(etiquetaDia(actividadPorSlug('esports').fecha)).toBe('Martes 27 de octubre')
     expect(etiquetaDia(actividadPorSlug('reinado').fecha)).toBe('Miércoles 28 de octubre')
     expect(etiquetaDia(actividadPorSlug('cyber-clash').fecha)).toBe('Jueves 29 de octubre')
+    expect(etiquetaDia(actividadPorSlug('talleres').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('hackathon').fecha)).toBe('Jueves 29 de octubre')
     expect(etiquetaDia(actividadPorSlug('deportes').fecha)).toBe('Viernes 30 de octubre')
   })
@@ -76,7 +77,7 @@ describe('datos de la Semana Sistémica', () => {
     }
   })
 
-  it('el submenú tiene un item por actividad y el Encuentro de Egresados entre el martes y el miércoles', () => {
+  it('el submenú tiene un item por actividad y el Encuentro de Egresados entre eSports y el Reinado', () => {
     expect(SEMANA_SISTEMICA_MENU.map(item => item.href)).toEqual([
       '/semana-sistemica/comparsa',
       '/semana-sistemica/programacion',
@@ -84,6 +85,7 @@ describe('datos de la Semana Sistémica', () => {
       '/semana-sistemica/encuentro-egresados',
       '/semana-sistemica/reinado',
       '/semana-sistemica/cyber-clash',
+      '/semana-sistemica/talleres',
       '/semana-sistemica/hackathon',
       '/semana-sistemica/deportes',
     ])
@@ -94,6 +96,7 @@ describe('datos de la Semana Sistémica', () => {
       'Encuentro de Egresados',
       'Reinado',
       'Cyber Clash',
+      'Talleres',
       'Hackathon',
       'Deportes',
     ])
