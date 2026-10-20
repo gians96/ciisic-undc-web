@@ -30,6 +30,7 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 | `POST /api/publico/verificacion-estudiante` | `POST /site/student-verification` | no |
 | `POST /api/publico/verificacion-google` | `POST /site/google-verification` (`credential` → `idToken`) | no |
 | `POST /api/publico/inscripciones` (multipart) | `POST /site/inscriptions` | no |
+| `POST /api/publico/delegaciones` (multipart) | `POST /site/delegations/inscriptions` (registro de delegación: grupo + un solo pago; contrato propuesto en `docs/DELEGACIONES.md`) | no |
 | `POST /api/publico/ponencias` (multipart) | `POST /site/papers` | no |
 | `POST /api/publico/contacto` | `POST /site/contact` | no |
 

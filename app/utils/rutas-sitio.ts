@@ -15,6 +15,12 @@ export const rutasSitio = {
   /** `{ credential }` de Google → backend `POST /google-verification` con `{ idToken }`. */
   verificacionGoogle: '/api/publico/verificacion-google',
   inscripciones: '/api/publico/inscripciones',
+  /** Registro completo de una delegación (representante + integrantes + un solo pago). */
+  delegaciones: '/api/publico/delegaciones',
+  /** Tarifa por persona de las delegaciones del evento. */
+  tarifaDelegaciones: '/api/publico/delegaciones/tarifa',
+  /** Una delegación por su link (para abrir el formulario ya con ella cargada). */
+  delegacionLink: (codigo: string) => `/api/publico/delegaciones/link/${encodeURIComponent(String(codigo).trim())}`,
   ponencias: '/api/publico/ponencias',
   contacto: '/api/publico/contacto',
 } as const

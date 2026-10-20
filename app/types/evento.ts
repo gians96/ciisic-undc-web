@@ -58,7 +58,8 @@ export interface EventoPublico {
   datosPago: DatosPago | null
 }
 
-/** Categorías con página en la landing (`FI_UNDC`: docentes, egresados y administrativos de la FI). */
+/** Categorías con página en la landing (`FI_UNDC`: docentes, egresados y administrativos de la FI).
+ *  Las delegaciones no usan tipos de inscripción: su tarifa la define la delegación (spec 018). */
 export type CodigoCategoria = 'ESTUDIANTES' | 'PUBLICO_GENERAL' | 'FI_UNDC'
 
 export interface CaracteristicaPlan {

@@ -50,7 +50,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | Ruta (landing) | Backend | Caché | Límite de cuerpo |
 |---|---|---|---|
 | `GET /api/publico/evento` | `GET /event` | 60 s, clave constante | — |
-| `GET /api/publico/planes?categoria=ESTUDIANTES\|PUBLICO_GENERAL\|FI_UNDC` | `GET /registration-types` | 60 s por categoría (lista blanca) | — |
+| `GET /api/publico/planes?categoria=ESTUDIANTES\|PUBLICO_GENERAL\|FI_UNDC\|DELEGACIONES` | `GET /registration-types` | 60 s por categoría (lista blanca) | — |
 | `GET /api/publico/catalogos` | `GET /catalogs` | 10 min, clave constante | — |
 | `GET /api/publico/configuracion` | `GET /config` | 60 s, clave constante | — |
 | `GET /api/publico/consulta-dni/:numero` | `GET /document-lookup/dni/:numero` | no (`no-store`) | — |
@@ -58,6 +58,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `POST /api/publico/verificacion-estudiante` | `POST /student-verification` | no | JSON, 100 KB |
 | `POST /api/publico/verificacion-google` | `POST /google-verification` | no | JSON, 8 KB |
 | `POST /api/publico/inscripciones` | `POST /inscriptions` | no | multipart, 5 MB + 512 KB |
+| `POST /api/publico/delegaciones` | `POST /delegations/inscriptions` (registro de una delegación, ver abajo) | no | multipart, 5 MB + 512 KB |
 | `POST /api/publico/ponencias` | `POST /papers` | no | multipart, 5 MB + 512 KB |
 | `POST /api/publico/contacto` | `POST /contact` | no | JSON, 100 KB |
 
@@ -76,6 +77,10 @@ Reglas comunes:
 - `/api/publico/qr/:archivo` es la única ruta binaria: solo acepta nombres `qr-<uuid>.<png|jpg|webp>`
   (otro nombre → `404` sin llamar al backend) y solo devuelve respuestas `image/png`, `image/jpeg` o
   `image/webp` (otra cosa → `502`). La billetera usa esa ruta si tiene `qrArchivo`; si no, su `qrUrl`.
+- `/api/publico/delegaciones` registra una delegación completa (delegación + lista de
+  participantes + un solo pago con voucher). El endpoint del backend sigue el contrato propuesto
+  de `docs/DELEGACIONES.md`; si aún no existe, el backend responde `404` y la landing informa
+  que el registro estará disponible próximamente.
 
 Errores que genera el propio BFF (misma forma `{ success: false, code, message }`):
 

@@ -69,6 +69,23 @@ const CAMPOS: Record<string, string> = {
   'fechaPago': 'Fecha de pago',
   'verificacionToken': 'Verificación de estudiante',
   'verificacionCorreoToken': 'Verificación del correo con Google',
+  // Delegaciones (spec 018): la delegación, el representante y la lista de integrantes
+  'delegacion': 'Datos de la delegación',
+  'delegacion.nombre': 'Nombre de la delegación',
+  'delegacion.institucion': 'Institución',
+  'representante': 'Datos del representante',
+  'representante.nombres': 'Nombres del representante',
+  'representante.apellidos': 'Apellidos del representante',
+  'representante.tipoDocumento': 'Tipo de documento del representante',
+  'representante.numeroDocumento': 'Número de documento del representante',
+  'representante.correo': 'Correo del representante',
+  'representante.celular': 'Celular del representante',
+  'participantes': 'Lista de integrantes',
+  'participantes[0].numeroDocumento': 'Número de documento de un integrante',
+  'participantes[0].nombres': 'Nombres de un integrante',
+  'participantes[0].apellidos': 'Apellidos de un integrante',
+  'participantes[0].correo': 'Correo de un integrante',
+  'participantes[0].celular': 'Celular de un integrante',
 }
 
 /** Qué corregir (los mensajes de validación del backend pueden venir en inglés). */
@@ -126,6 +143,34 @@ const MENSAJES_CONTACTO: Record<string, string> = {
 /** Mensaje para el formulario de contacto. */
 export function mensajeErrorContacto(error: ErrorApi): string {
   return mensajeErrorApi(error, MENSAJES_CONTACTO, 'Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.')
+}
+
+const MENSAJES_DELEGACION: Record<string, string> = {
+  DUPLICATE_PARTICIPANT: 'Hay un documento o un correo repetido en la lista. Revísala e inténtalo de nuevo.',
+  EMAIL_IN_USE: 'Uno de los correos ya está registrado por otra persona. Usa un correo distinto.',
+  PARTICIPANT_ALREADY_REGISTERED: 'Alguien de la lista ya tiene una inscripción en este evento. Si necesitas cambiarla, comunícate con la organización.',
+  REGISTRATION_CLOSED: 'Las inscripciones para este evento están cerradas.',
+  DELEGATION_NOT_FOUND: 'El link de la delegación no es válido. Revísalo o comunícate con la organización.',
+  DELEGATION_INACTIVE: 'Esta delegación ya no acepta inscripciones. Comunícate con la organización.',
+  VOUCHER_REQUIRED: 'Adjunta el voucher de pago.',
+  INVALID_FILE_CONTENT: 'El archivo del voucher está dañado o no coincide con su formato. Sube un PDF, JPG, PNG o WebP válido.',
+  INVALID_FILE_TYPE: 'Formato de voucher no permitido. Usa PDF, JPG, PNG o WebP.',
+  UPLOAD_LIMIT_EXCEEDED: VOUCHER_MUY_GRANDE,
+  OPERATION_ALREADY_REGISTERED: 'Ese número de operación ya fue registrado. Revisa el código de tu voucher.',
+  DUPLICATE_RECORD: 'Ya existe un registro con estos datos.',
+  RATE_LIMITED: 'Hiciste varios intentos de registro seguidos. Espera 15 minutos e inténtalo nuevamente.',
+  EVENT_NOT_FOUND: 'El evento no está disponible en este momento. Recarga la página o comunícate con la organización.',
+  NETWORK_ERROR: SIN_CONEXION,
+}
+
+/** Mensaje del registro de delegaciones (representante + integrantes + un solo pago). */
+export function mensajeErrorDelegacion(error: ErrorApi): string {
+  if (error.code === 'VALIDATION_ERROR') {
+    const detalle = camposConError(error.fields)
+    return detalle.length ? `Revisa estos datos: ${detalle.join('; ')}.` : 'Algunos datos no son válidos. Revisa el formulario.'
+  }
+  if (error.statusCode === 413) return VOUCHER_MUY_GRANDE
+  return mensajeErrorApi(error, MENSAJES_DELEGACION, 'No pudimos registrar la delegación. Revisa los datos e inténtalo nuevamente.')
 }
 
 // La verificación con Google es opcional: cada mensaje recuerda que se puede seguir escribiendo el correo
