@@ -139,7 +139,6 @@
                     Esta web no recopila ni almacena datos de la inscripción gratuita del Encuentro de
                     Egresados. El registro se realiza directamente en el Google Forms oficial, fuera de esta
                     web. Antes de enviar tus datos, revisa la información presentada en el propio formulario.
-                    Este registro es independiente de los planes de pago del congreso.
                   </p>
                 </div>
               </div>

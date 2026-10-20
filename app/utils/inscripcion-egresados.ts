@@ -6,27 +6,8 @@ export interface ConfiguracionInscripcionEgresados {
   cierreValido: boolean
 }
 
-/** Solo acepta enlaces HTTPS de respuesta de Google Forms; nunca enlaces de edición. */
-export function urlFormularioEgresadosValida(valor: unknown): string | null {
-  if (typeof valor !== 'string' || !valor.trim()) return null
-
-  try {
-    const url = new URL(valor.trim())
-    if (url.protocol !== 'https:' || url.username || url.password) return null
-    if (/\/(?:edit|formResponse)\/?$/i.test(url.pathname)) return null
-
-    const host = url.hostname.toLowerCase()
-    if (host === 'forms.gle') {
-      return url.pathname.length > 1 ? url.toString() : null
-    }
-    if (host !== 'docs.google.com') return null
-
-    const esVistaPublica = /^\/forms\/d\/(?:e\/)?[^/]+\/viewform\/?$/i.test(url.pathname)
-    return esVistaPublica ? url.toString() : null
-  } catch {
-    return null
-  }
-}
+/** Único formulario aprobado para el Encuentro de Egresados 2026. */
+export const URL_FORMULARIO_OFICIAL_EGRESADOS = 'https://forms.gle/BxEHiBNkGf69LdEc7'
 
 /** La fecha de cierre debe declarar expresamente el offset de Lima. */
 export function cierreInscripcionEgresadosValido(valor: unknown): string | null {
@@ -45,7 +26,8 @@ export function normalizarConfiguracionInscripcionEgresados(
   const cierre = cierreInscripcionEgresadosValido(cierreOriginal)
 
   return {
-    url: urlFormularioEgresadosValida(config.alumniFormUrl),
+    // El enlace es parte de esta versión del evento: una variable heredada no debe reemplazarlo.
+    url: URL_FORMULARIO_OFICIAL_EGRESADOS,
     cierre,
     cierreValido: Boolean(cierre),
   }

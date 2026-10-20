@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   cierreInscripcionEgresadosValido,
@@ -5,35 +6,61 @@ import {
   estadoInscripcionEgresados,
   formatearCierreInscripcionEgresados,
   normalizarConfiguracionInscripcionEgresados,
-  urlFormularioEgresadosValida,
+  URL_FORMULARIO_OFICIAL_EGRESADOS,
 } from '../app/utils/inscripcion-egresados'
 import { encuentroEgresados } from '../app/data/encuentro-egresados'
+
+const URL_FORMULARIO_ANTERIOR = [
+  'https://docs.google.com/forms/d/e/',
+  '1FAIpQLSer4Mw09ZcdlHnbSBE1MY1W1jGS0X_bXTO4twq8ltU5ln4yQA/viewform?usp=publish-editor',
+].join('')
 
 describe('inscripción del Encuentro de Egresados mediante Google Forms', () => {
   afterEach(() => vi.useRealTimers())
 
-  it('mantiene el estado próximamente mientras no exista el enlace público', () => {
+  it('usa el formulario oficial y abre la inscripción sin configuración local', () => {
     const sinEnlace = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: '',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
-    expect(estadoInscripcionEgresados(sinEnlace)).toBe('proximamente')
+    expect(URL_FORMULARIO_OFICIAL_EGRESADOS).toBe('https://forms.gle/BxEHiBNkGf69LdEc7')
+    expect(sinEnlace.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    expect(estadoInscripcionEgresados(sinEnlace, Date.parse('2026-10-23T23:59:59.999-05:00'))).toBe('abierta')
   })
+
+  it('ignora el formulario anterior heredado del entorno', () => {
+    const configuracion = normalizarConfiguracionInscripcionEgresados({
+      alumniFormUrl: URL_FORMULARIO_ANTERIOR,
+      alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
+    })
+
+    expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    expect(configuracion.url).not.toBe(URL_FORMULARIO_ANTERIOR)
+  })
+
+  it.each([undefined, null, '', '   ', 'https://forms.gle/OtroFormulario'])(
+    'mantiene exclusivamente el formulario aprobado ante una sobrescritura heredada: %j',
+    (alumniFormUrl) => {
+      const configuracion = normalizarConfiguracionInscripcionEgresados({
+        alumniFormUrl,
+        alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
+      })
+
+      expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
+    },
+  )
 
   it('abre con un URL público válido antes del corte confirmado', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=sf_link',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
     expect(estadoInscripcionEgresados(configuracion, Date.parse('2026-10-23T23:59:59.999-05:00'))).toBe('abierta')
-    expect(configuracion.url).toContain('/viewform')
+    expect(configuracion.url).toBe(URL_FORMULARIO_OFICIAL_EGRESADOS)
   })
 
   it('cierra exactamente en el instante exclusivo confirmado en hora de Lima', () => {
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
     })
 
@@ -45,7 +72,6 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
     vi.useFakeTimers()
     const cierre = '2026-10-24T00:00:00-05:00'
     const configuracion = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: cierre,
     })
 
@@ -65,30 +91,12 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
     expect(demoraHastaCierreInscripcionEgresados(cierre)).toBeNull()
   })
 
-  it('rechaza dominios ajenos, esquemas peligrosos y enlaces de edición o envío', () => {
-    expect(urlFormularioEgresadosValida('https://forms.gle/AbCdEf123456')).toMatch(/^https:\/\/forms\.gle\//)
-    expect(urlFormularioEgresadosValida('https://docs.google.com/forms/d/e/FORM_ID/viewform')).toContain('/viewform')
-
-    for (const invalida of [
-      'javascript:alert(1)',
-      'https://ejemplo.com/forms/viewform',
-      'https://docs.google.com/forms/d/FORM_ID/edit',
-      'https://docs.google.com/forms/d/e/FORM_ID/formResponse',
-      'https://usuario:clave@forms.gle/AbCdEf123456',
-      '',
-      null,
-    ]) {
-      expect(urlFormularioEgresadosValida(invalida)).toBeNull()
-    }
-  })
-
   it('acepta solo cierres con offset explícito de Lima y falla de forma segura', () => {
     expect(cierreInscripcionEgresadosValido('2026-10-24T00:00:00-05:00')).toBe('2026-10-24T00:00:00-05:00')
     expect(cierreInscripcionEgresadosValido('2026-10-27T04:59:59Z')).toBeNull()
     expect(cierreInscripcionEgresadosValido('por confirmar')).toBeNull()
 
     const invalida = normalizarConfiguracionInscripcionEgresados({
-      alumniFormUrl: 'https://forms.gle/AbCdEf123456',
       alumniRegistrationDeadline: '2026-10-27T04:59:59Z',
     })
     expect(estadoInscripcionEgresados(invalida)).toBe('proximamente')
@@ -102,6 +110,20 @@ describe('inscripción del Encuentro de Egresados mediante Google Forms', () => 
 })
 
 describe('contenido confirmado y archivo fotográfico', () => {
+  it('mantiene la inscripción gratuita sin afirmar una relación con los planes', () => {
+    expect(encuentroEgresados.participacion).toBe('Inscripción gratuita')
+    expect(encuentroEgresados.participacion).not.toMatch(/independiente|planes del congreso/i)
+
+    const contenidoPublico = [
+      '../app/components/encuentro-egresados/AficheOficial.vue',
+      '../app/components/encuentro-egresados/TarjetaInscripcion.vue',
+      '../app/pages/semana-sistemica/encuentro-egresados.vue',
+      '../app/pages/privacidad.vue',
+    ].map(ruta => readFileSync(new URL(ruta, import.meta.url), 'utf8')).join('\n')
+
+    expect(contenidoPublico).not.toMatch(/independiente.{0,100}(?:planes|congreso)|(?:planes|congreso).{0,100}independiente/is)
+  })
+
   it('publica el lugar confirmado sin alterar la procedencia interna de las fotos', () => {
     expect(encuentroEgresados.lugar).toBe('Casa de la Cultura')
 

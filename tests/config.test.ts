@@ -41,16 +41,15 @@ describe('nuxt.config: configuración del BFF', () => {
     expect(JSON.stringify(runtimeConfig)).not.toContain('evt_no-debe-quedar-en-el-build')
   })
 
-  it('el enlace de Google Forms queda vacío y el corte confirmado es público y estable', async () => {
+  it('el formulario oficial no admite sobrescrituras de entorno y el corte es público y estable', async () => {
+    vi.stubEnv('NUXT_PUBLIC_ALUMNI_FORM_URL', 'https://forms.gle/FormularioAnterior')
     const { runtimeConfig } = await cargarConfigNuxt()
 
     expect(runtimeConfig).not.toHaveProperty('alumniRegistrationEnabled')
     expect(runtimeConfig).not.toHaveProperty('alumniSheetsSpreadsheetId')
     expect(runtimeConfig).not.toHaveProperty('alumniGoogleCredentialsPath')
-    expect(runtimeConfig.public).toMatchObject({
-      alumniFormUrl: '',
-      alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00',
-    })
+    expect(runtimeConfig.public).not.toHaveProperty('alumniFormUrl')
+    expect(runtimeConfig.public.alumniRegistrationDeadline).toBe('2026-10-24T00:00:00-05:00')
     expect(runtimeConfig.public).not.toHaveProperty('alumniRegistrationEnabled')
     expect(Object.keys(runtimeConfig.public)).not.toContain('alumniGooglePrivateKey')
     expect(JSON.stringify(runtimeConfig)).not.toContain('iam.gserviceaccount.com')

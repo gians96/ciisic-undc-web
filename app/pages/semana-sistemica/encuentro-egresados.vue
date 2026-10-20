@@ -62,7 +62,7 @@
             El Encuentro de Egresados forma parte del VIII CIISIC 2026 y propone un momento de reencuentro para la comunidad de la Escuela Profesional de Ingeniería de Sistemas de la UNDC.
           </p>
           <p class="mt-4 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-            La inscripción es gratuita e independiente de los planes del congreso. La actividad se realizará en la Casa de la Cultura; el programa se comunicará cuando sea confirmado oficialmente.
+            La inscripción es gratuita. La actividad se realizará en la Casa de la Cultura; el programa se comunicará cuando sea confirmado oficialmente.
           </p>
         </section>
 
@@ -94,6 +94,8 @@
       </div>
 
       <EncuentroEgresadosTarjetaInscripcion class="mt-16 lg:mt-20" />
+
+      <EncuentroEgresadosAficheOficial />
 
       <section class="mt-16 lg:mt-20" aria-labelledby="experiencia-anterior-title">
         <div class="max-w-3xl">

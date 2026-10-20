@@ -27,8 +27,16 @@ export const encuentroEgresados = {
   fechaCorta: 'Martes 27 de octubre',
   horario: '6:00 p. m. – 8:00 p. m.',
   lugar: 'Casa de la Cultura',
-  participacion: 'Inscripción gratuita e independiente del congreso',
+  participacion: 'Inscripción gratuita',
   dirigidoA: 'Egresados de Ingeniería de Sistemas de la UNDC',
+  afiche: {
+    original: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.png',
+    preview: '/images/encuentro-egresados/afiche-oficial-encuentro-egresados-2026.webp',
+    nombreDescarga: 'Afiche-oficial-Encuentro-de-Egresados-2026.png',
+    alt: 'Afiche oficial del Encuentro de Egresados 2026 de Ingeniería de Sistemas de la UNDC',
+    ancho: 1122,
+    alto: 1402,
+  },
   portada: imagen(
     '2024-portada-auditorio.webp',
     'Participantes y representantes reunidos en un aula durante un encuentro anterior de egresados de Ingeniería de Sistemas',
