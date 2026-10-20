@@ -16,7 +16,16 @@
         fetchpriority="high"
       />
       <div class="ss-hero-overlay absolute inset-0" aria-hidden="true" />
-      <span class="absolute bottom-4 right-4 rounded-full border border-white/20 bg-[#041d39]/85 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
+      <a
+        v-if="actividad.creditoPortada"
+        :href="actividad.creditoPortada.href"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="absolute bottom-4 right-4 rounded-full border border-white/20 bg-[#041d39]/85 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur hover:text-primary-200"
+      >
+        {{ actividad.creditoPortada.texto }}
+      </a>
+      <span v-else class="absolute bottom-4 right-4 rounded-full border border-white/20 bg-[#041d39]/85 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
         Imagen de edición anterior
       </span>
 

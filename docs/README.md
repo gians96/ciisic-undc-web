@@ -6,6 +6,7 @@ Landing del congreso CIISIC (una por edición/evento). Empieza por aquí:
 |---|---|
 | Entender cómo habla con el backend (BFF, token del evento, caché, Google) | [arquitectura.md](arquitectura.md) |
 | El flujo de inscripción y confirmación | [INSCRIPCION-FLUJO.md](INSCRIPCION-FLUJO.md) |
+| La inscripción gratuita del Encuentro de Egresados mediante Google Forms | [INSCRIPCION-EGRESADOS.md](INSCRIPCION-EGRESADOS.md) |
 | El registro de ponencias (papers) | [PAPERS-REGISTRO.md](PAPERS-REGISTRO.md) |
 | Desplegar (variables, validación, rollback) | [DEPLOYMENT-HITO1.md](DEPLOYMENT-HITO1.md) |
 | Contratos entre sistemas del ecosistema | `backend-ciisic/docs/arquitectura-ecosistema.md` |

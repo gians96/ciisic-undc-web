@@ -209,6 +209,8 @@
 
     <LandingActivities />
 
+    <EncuentroEgresadosSection />
+
     <ReinadoFeature />
 
     <section
@@ -363,6 +365,7 @@
 <script setup lang="ts">
 import SpeakersCarousel from "./SpeakersCarousel.vue";
 import LandingActivities from "./LandingActivities.vue";
+import EncuentroEgresadosSection from "./EncuentroEgresadosSection.vue";
 import ReinadoFeature from "./ReinadoFeature.vue";
 import PreviousCongressCarousel from "./PreviousCongressCarousel.vue";
 import EventCountdown from "../countdown/Countdown.vue";

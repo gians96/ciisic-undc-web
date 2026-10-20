@@ -2,6 +2,7 @@
 // INSCRIPCIÓN — BFF POST /api/publico/inscripciones → backend POST /api/v1/site/inscriptions
 // Contrato: backend-ciisic/specs/002-multi-evento/contracts/api-publica.md
 // ============================================================================
+import type { ModalidadAsistencia } from './evento'
 
 export type TipoDocumentoApi = 'dni' | 'ce'
 export type ModalidadPago = 'banco' | 'billetera'
@@ -61,7 +62,17 @@ export interface InscripcionCreada {
     id: number
     evento: { codigo: string; nombreCorto: string }
     participante: ParticipanteInscripcion
-    tipoInscripcion: { id: number; nombre: string; etiqueta: string | null; categoria: string | null } | null
+    /**
+     * `modalidad` es la de asistencia del tipo (spec 018 del backend); ausente o `null` equivale a
+     * `PRESENCIAL`. No es `modalidadPago`, que va en la raíz de la inscripción.
+     */
+    tipoInscripcion: {
+        id: number
+        nombre: string
+        etiqueta: string | null
+        categoria: string | null
+        modalidad?: ModalidadAsistencia | null
+    } | null
     clasificacion: { id: number; nombre: string } | null
     monto: number
     precioRegular: number

@@ -3,7 +3,7 @@
 // Fuente de bases y flyers: comisiones de cada actividad, octubre de 2026.
 // ============================================================================
 
-export type ActividadSlug = 'comparsa' | 'reinado' | 'cyber-clash' | 'talleres' | 'deportes'
+export type ActividadSlug = 'comparsa' | 'programacion' | 'esports' | 'reinado' | 'cyber-clash' | 'talleres' | 'hackathon' | 'deportes'
 
 export interface ImagenActividad {
   src: string
@@ -40,6 +40,11 @@ export interface ActividadSemanaSistemica {
   portada: ImagenActividad
   galeria: ImagenActividad[]
   afiche: ImagenActividad
+  /**
+   * Crédito de la portada cuando la imagen es externa (sin licencia propia).
+   * Si está ausente se muestra la insignia «Imagen de edición anterior».
+   */
+  creditoPortada?: { texto: string, href: string }
   inscripcion: {
     url: string
     /** Texto del botón de inscripción. */
@@ -60,7 +65,7 @@ const IMAGENES = '/images/semana-sistemica'
 
 const imagen = (src: string, ancho: number, alto: number, alt: string): ImagenActividad => ({ src, ancho, alto, alt })
 
-/** En orden cronológico: lunes 26, miércoles 28, jueves 29 y viernes 30 de octubre de 2026. */
+/** En orden cronológico: lunes 26, martes 27 (programación y eSports), miércoles 28, jueves 29 (Cyber Clash y Hackathon) y viernes 30 de octubre de 2026. */
 export const actividades: readonly ActividadSemanaSistemica[] = [
   {
     slug: 'comparsa',
@@ -98,6 +103,72 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
       texto: 'Ver bases oficiales',
     },
     contacto: { texto: '941 844 379', href: 'tel:+51941844379' },
+  },
+  {
+    slug: 'programacion',
+    nombre: 'Concurso de Programación',
+    etiqueta: 'Programación',
+    icono: 'heroicons:code-bracket',
+    ruta: `${RUTA_SEMANA_SISTEMICA}/programacion`,
+    fecha: '2026-10-27',
+    horaInicio: '17:00',
+    horaFin: '19:00',
+    horaTexto: '5:00 p. m. a 7:00 p. m. (sustentación desde las 7:00 p. m.)',
+    lugar: 'Laboratorios de cómputo del Pabellón Académico de la EPIS, UNDC',
+    acento: '#38bdf8',
+    portada: imagen('/images/eventos/programacion.webp', 1920, 1570, 'Participantes con computadoras en un concurso de programación anterior'),
+    galeria: [],
+    afiche: imagen('/images/eventos/programacion.webp', 1920, 1570, 'Imagen del Concurso de Programación de una edición anterior'),
+    inscripcion: {
+      url: 'https://forms.gle/GgiuzeX27gH74KCJA',
+      texto: 'Inscribir a mi equipo',
+      cierre: '2026-10-23T20:00:00-05:00',
+      titulo: 'Inscribe a tu equipo',
+      descripcion: 'Equipos de 2 o 3 estudiantes. La inscripción se completa cuando el Comité de Eventos Académicos verifica el pago.',
+      filas: [
+        { label: 'Periodo', valor: 'Del 9 al 23 de octubre de 2026' },
+        { label: 'Cierre', valor: '23 de octubre, 8:00 p. m.' },
+        { label: 'Costo por equipo', valor: 'S/ 15' },
+        { label: 'Equipos', valor: 'De 2 o 3 estudiantes' },
+      ],
+    },
+    bases: {
+      url: 'https://docs.google.com/document/d/1xw4APHNpu7sVMawPsijbvxIJmEMj9Csy/',
+      texto: 'Ver bases oficiales',
+    },
+    contacto: { texto: '2301010334@undc.edu.pe', href: 'mailto:2301010334@undc.edu.pe' },
+  },
+  {
+    slug: 'esports',
+    nombre: 'eSports',
+    etiqueta: 'eSports',
+    icono: 'heroicons:bolt',
+    ruta: `${RUTA_SEMANA_SISTEMICA}/esports`,
+    fecha: '2026-10-27',
+    horaInicio: '15:00',
+    horaFin: '20:00',
+    horaTexto: '3:00 p. m. a 8:00 p. m.',
+    lugar: 'Instalaciones de la Facultad de Ingeniería de Sistemas, UNDC',
+    acento: '#f472b6',
+    portada: imagen('/images/eventos/esports.webp', 1920, 1168, 'Participantes jugando en computadoras durante un torneo de eSports anterior'),
+    galeria: [],
+    afiche: imagen('/images/eventos/esports.webp', 1920, 1168, 'Imagen del torneo de eSports de una edición anterior'),
+    inscripcion: {
+      url: 'https://forms.gle/QjtNoWLqSdzEXduEA',
+      texto: 'Inscribirme al torneo',
+      cierre: '2026-10-23T23:59:59-05:00',
+      titulo: 'Inscríbete al torneo',
+      descripcion: 'Cuatro torneos presenciales. Revisa el costo y el cierre de cada videojuego antes de registrarte.',
+      filas: [
+        { label: 'Juegos', valor: 'L4D2 · Clash Royale · FIFA 25 · Dragon Ball' },
+        { label: 'Cierre general', valor: '23 de octubre, 11:59 p. m.' },
+        { label: 'Dragon Ball', valor: 'Cierra el 22 de octubre' },
+      ],
+    },
+    bases: {
+      url: 'https://docs.google.com/document/d/14HODTeJ27d4gdEgNZaTEK1DcaolteqVZ/',
+      texto: 'Ver bases oficiales',
+    },
   },
   {
     slug: 'reinado',
@@ -208,6 +279,44 @@ export const actividades: readonly ActividadSemanaSistemica[] = [
     },
   },
   {
+    slug: 'hackathon',
+    nombre: 'Hackathon',
+    etiqueta: 'Hackathon',
+    icono: 'heroicons:light-bulb',
+    ruta: `${RUTA_SEMANA_SISTEMICA}/hackathon`,
+    fecha: '2026-10-29',
+    // Tras los Talleres (18:00–20:00) para no solaparse, según el cronograma local.
+    horaInicio: '20:00',
+    horaFin: '23:30',
+    horaTexto: '8:00 p. m. a 11:30 p. m.',
+    lugar: 'Laboratorios y ambientes habilitados de la UNDC',
+    acento: '#a78bfa',
+    // Imagen externa con crédito visible (sin licencia propia): se recomienda
+    // reemplazarla por una foto propia en cuanto esté disponible.
+    portada: imagen('https://www.futurx.pe/revista/fotos/vrday_grupo.webp', 1400, 933, 'Grupo de participantes en un evento de tecnología'),
+    creditoPortada: { texto: 'Imagen: FuturX', href: 'https://www.futurx.pe' },
+    galeria: [],
+    afiche: imagen('/images/eventos/hackathon.webp', 1920, 1399, 'Participante trabajando en una computadora durante un hackathon anterior'),
+    inscripcion: {
+      url: 'https://forms.gle/bfaEY4AjX3dWajrP7',
+      texto: 'Inscribir a mi equipo',
+      cierre: '2026-10-23T20:00:00-05:00',
+      titulo: 'Inscribe a tu equipo',
+      descripcion: 'Equipos de 2 a 5 integrantes. La inscripción queda completa al verificarse los datos y el pago, hasta cubrir las vacantes.',
+      filas: [
+        { label: 'Costo por equipo', valor: 'S/ 30' },
+        { label: 'Equipos', valor: 'De 2 a 5 integrantes' },
+        { label: 'Cierre', valor: '23 de octubre, 8:00 p. m.' },
+        { label: 'Pago', valor: 'Efectivo, Yape o Plin' },
+      ],
+    },
+    bases: {
+      url: 'https://docs.google.com/document/d/1vtq4BGQXXgDz5kM8cbJHmI-buFLylmug',
+      texto: 'Ver bases oficiales',
+    },
+    contacto: { texto: '2201080337@undc.edu.pe', href: 'mailto:2201080337@undc.edu.pe' },
+  },
+  {
     slug: 'deportes',
     nombre: 'Torneo deportivo',
     etiqueta: 'Deportes',
@@ -250,13 +359,25 @@ export interface ItemMenuSemana {
   icon: string
 }
 
+const itemEncuentroEgresados: ItemMenuSemana = {
+  id: 'semana-encuentro-egresados',
+  label: 'Encuentro de Egresados',
+  href: `${RUTA_SEMANA_SISTEMICA}/encuentro-egresados`,
+  icon: 'heroicons:academic-cap',
+}
+
 /** Submenú «Semana Sistémica»: lo consumen el header, el menú móvil y el pie de página. */
-export const SEMANA_SISTEMICA_MENU: readonly ItemMenuSemana[] = actividades.map(actividad => ({
-  id: `semana-${actividad.slug}`,
-  label: actividad.etiqueta,
-  href: actividad.ruta,
-  icon: actividad.icono,
-}))
+export const SEMANA_SISTEMICA_MENU: readonly ItemMenuSemana[] = actividades.flatMap((actividad) => {
+  const item = {
+    id: `semana-${actividad.slug}`,
+    label: actividad.etiqueta,
+    href: actividad.ruta,
+    icon: actividad.icono,
+  }
+
+  // El encuentro (martes 27) se intercala entre Comparsa (lunes) y Reinado (miércoles).
+  return actividad.slug === 'reinado' ? [itemEncuentroEgresados, item] : [item]
+})
 
 export function actividadPorSlug(slug: ActividadSlug): ActividadSemanaSistemica {
   const actividad = actividades.find(item => item.slug === slug)

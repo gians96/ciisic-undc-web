@@ -126,6 +126,12 @@
                                 <span class="detail-value">{{ tipoInscripcionTexto }}</span>
                             </div>
 
+                            <!-- Solo en la modalidad virtual (spec 005); lo presencial se ve como siempre -->
+                            <div v-if="esVirtual" class="detail-item">
+                                <span class="detail-label">Modalidad de asistencia:</span>
+                                <span class="detail-value">Virtual (en línea)</span>
+                            </div>
+
                             <div class="detail-item">
                                 <span class="detail-label">Monto de inscripción:</span>
                                 <span class="detail-value">
@@ -217,10 +223,7 @@
                     <div class="next-steps">
                         <h3 class="steps-title">Próximos pasos:</h3>
                         <ul class="steps-list">
-                            <li>📧 Recibirás un email de confirmación en los próximos minutos</li>
-                            <li>🔍 Nuestro equipo verificará tu voucher de pago</li>
-                            <li>✅ Una vez aprobado, recibirás tu certificado y carnet digital</li>
-                            <li>📅 Te notificaremos sobre el cronograma de actividades</li>
+                            <li v-for="paso in pasos" :key="paso">{{ paso }}</li>
                         </ul>
                     </div>
 
@@ -261,8 +264,9 @@
 <script setup lang="ts">
 import type { InscripcionCreada } from '~/types/inscription'
 import { urlMisInscripciones } from '~/utils/configuracion-sitio'
+import { proximosPasos } from '~/utils/confirmacion'
 import { enlaceWhatsApp, formatearFechaHoraLima, formatearFechaSoloDia, formatearSoles, nombreBilletera } from '~/utils/formato'
-import { tituloPlan } from '~/utils/planes'
+import { aModalidad, tituloPlan } from '~/utils/planes'
 
 // ===========================================================================
 // SEO Y META TAGS
@@ -302,6 +306,10 @@ const tipoInscripcionTexto = computed(() => {
     const tipo = inscription.value?.tipoInscripcion
     return tipo ? tituloPlan(tipo.nombre, tipo.etiqueta) : '—'
 })
+
+// Modalidad de asistencia del tipo (no la de pago); sin el dato (backend anterior) es presencial
+const esVirtual = computed(() => aModalidad(inscription.value?.tipoInscripcion?.modalidad) === 'VIRTUAL')
+const pasos = computed(() => proximosPasos(inscription.value?.tipoInscripcion?.modalidad))
 
 // El descuento lo calcula el backend (verificación UNDC o correo institucional según la categoría)
 const precioUndcAplicado = computed(() => Number(inscription.value?.descuento ?? 0) > 0)

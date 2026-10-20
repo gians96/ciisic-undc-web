@@ -5,7 +5,7 @@
         <p class="kicker mb-4">VIII CIISIC 2026 · Inscripciones</p>
         <h1 class="text-5xl font-extrabold tracking-tight text-white sm:text-6xl">Tu lugar en el <span class="text-primary-400">congreso</span> comienza aquí.</h1>
         <p class="mt-6 text-lg leading-relaxed text-slate-300">Elige la modalidad que te corresponde y completa el formulario de inscripción. La confirmación y el precio definitivo se mostrarán durante el proceso de registro.</p>
-        <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span><a v-if="!evento || inscripcionesAbiertas" href="#kit" class="inline-flex items-center gap-2 font-semibold text-primary-300 underline-offset-4 hover:underline"><Icon name="heroicons:gift" class="h-5 w-5 text-primary-400" />Ver kit oficial</a></div>
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300"><span class="inline-flex items-center gap-2"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" />26–30 de octubre</span><span class="inline-flex items-center gap-2"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" />San Vicente de Cañete</span><a v-if="!evento || inscripcionesAbiertas" href="#merchandising-oficial" class="inline-flex items-center gap-2 font-semibold text-primary-300 underline-offset-4 hover:underline"><Icon name="heroicons:gift" class="h-5 w-5 text-primary-400" />Ver merchandising oficial</a></div>
       </div>
 
       <EstadoInscripciones v-if="evento && !inscripcionesAbiertas" estado="cerradas" />
@@ -34,9 +34,20 @@
           </div>
           <span class="inline-flex shrink-0 items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5 transition group-hover:translate-x-1" /></span>
         </NuxtLink>
+        <!-- Participación virtual (spec 005): solo aparece si la API devuelve planes VIRTUAL; el monto sale de la API -->
+        <section v-if="ofertaVirtual" class="virtual-band flex flex-col gap-4 rounded-[1.75rem] p-6 sm:flex-row sm:items-center sm:gap-6 sm:px-9 sm:py-6 md:col-span-2" aria-labelledby="oferta-virtual-titulo">
+          <span class="icon-tile inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"><Icon name="heroicons:computer-desktop" class="h-6 w-6" /></span>
+          <div class="min-w-0 flex-1">
+            <h2 id="oferta-virtual-titulo" class="text-xl font-bold text-white">También puedes participar de forma virtual, desde <span class="whitespace-nowrap">{{ formatearSoles(ofertaVirtual.desde) }}</span></h2>
+            <p class="mt-1 text-sm leading-relaxed text-slate-300">Al inscribirte, elige el plan Virtual.</p>
+          </div>
+          <div class="flex shrink-0 flex-col gap-2 sm:items-end">
+            <NuxtLink v-for="enlace in ofertaVirtual.enlaces" :key="enlace.ruta" :to="enlace.ruta" class="inline-flex items-center gap-2 font-bold text-primary-300 underline-offset-4 hover:underline">{{ enlace.texto }} <Icon name="heroicons:arrow-right" class="h-4 w-4" aria-hidden="true" /></NuxtLink>
+          </div>
+        </section>
       </div>
 
-      <InscripcionKitShowcase v-if="!evento || inscripcionesAbiertas" class="mt-8" />
+      <InscripcionTomatodoOficial v-if="!evento || inscripcionesAbiertas" class="mt-8" />
 
       <div class="support-card mt-8 flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"><div><h2 class="text-xl font-bold text-white">¿Inscribirás una delegación?</h2><p class="mt-1 text-slate-300">Comunícate con el equipo organizador para coordinar tu registro.</p></div><a href="https://wa.me/51955204231" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary-400/50 px-5 py-3 font-semibold text-primary-300 transition hover:bg-primary-400/10"><Icon name="heroicons:chat-bubble-left-right" class="h-5 w-5" />Escribir por WhatsApp</a></div>
     </div>
@@ -44,17 +55,23 @@
 </template>
 
 <script setup lang="ts">
+import { formatearSoles } from '~/utils/formato'
+
 useSeoMeta({ title: 'Inscripciones | VIII CIISIC 2026', description: 'Elige tu modalidad e inscríbete en el VIII CIISIC 2026 en San Vicente de Cañete.' })
 
 // Con las inscripciones cerradas en el panel se muestra el aviso en lugar de las modalidades
 const { evento, inscripcionesAbiertas } = useEvento()
 const dominioInstitucional = computed(() => evento.value?.dominioInstitucional || 'undc.edu.pe')
+
+// Franja «También puedes participar de forma virtual»: `null` (oculta) sin planes VIRTUAL o si falla la carga
+const { oferta: ofertaVirtual } = useOfertaVirtual()
 </script>
 
 <style scoped>
 .registration-page { background: linear-gradient(180deg, #062a52 0%, #041d39 52%); }
 .kicker { color: #67e8f9; font-size: .75rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 .plan-card, .support-card { background: #082c52; border: 1px solid #ffffff1c; }
+.virtual-band { background: #082c52; border: 1px dashed #67e8f966; }
 .plan-card { transition: transform .25s, background .25s, border-color .25s; }
 .plan-card:hover { transform: translateY(-5px); background: #0a3868; border-color: #67e8f980; }
 .icon-tile { background: #00d9e81a; color: #67e8f9; }

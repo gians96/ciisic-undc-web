@@ -129,6 +129,18 @@
                     (ubicación, dispositivo) y puedes quitarla cuando quieras.
                   </p>
                 </div>
+
+                <div class="bg-secondary-700 rounded-lg p-6">
+                  <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+                    <Icon name="heroicons:user-group" class="h-5 w-5 mr-2 flex-shrink-0" aria-hidden="true" />
+                    Encuentro de Egresados
+                  </h3>
+                  <p class="text-sm leading-relaxed">
+                    Esta web no recopila ni almacena datos de la inscripción gratuita del Encuentro de
+                    Egresados. El registro se realiza directamente en el Google Forms oficial, fuera de esta
+                    web. Antes de enviar tus datos, revisa la información presentada en el propio formulario.
+                  </p>
+                </div>
               </div>
             </section>
 

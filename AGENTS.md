@@ -12,9 +12,11 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 
 - Nuxt 4 (SSR) + Nitro, Tailwind CSS v3 vía `@nuxtjs/tailwindcss` (se mantiene en este repo),
   Pinia, Vitest. Gestor: **bun** (`bun install`).
-- Variables (runtime, solo servidor; ver [`.env.example`](.env.example)):
-  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. Nada más: el client ID de Google y la URL
-  del panel vienen del backend.
+- Variables privadas de runtime (ver [`.env.example`](.env.example)):
+  `NUXT_BACKEND_BASE_URL` y `NUXT_BACKEND_EVENT_TOKEN`. El Encuentro de Egresados usa el Google
+  Forms oficial versionado en código y el corte fijado en `nuxt.config.ts`; no depende de variables
+  locales, no usa credenciales ni accede a Sheets. El client ID de Google y la URL del panel general
+  siguen viniendo del backend.
 - Comandos:
 
   | Tarea | Comando |
@@ -28,8 +30,9 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 
 ## Arquitectura
 
-- `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `confirmation`,
-  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado, Talleres y Deportes, con el contenido estático de
+- `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `fi-undc`, `confirmation`,
+  `papers/*`, `semana-sistemica/*` (Comparsa, Reinado, Talleres, E-Sports, Programación, Hackathon,
+  Cyber Clash, Encuentro de Egresados y Deportes, con el contenido estático de
   `app/data/semana-sistemica.ts`), `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `useConsultation` (DNI), `useVerificacionEstudiante`,
@@ -52,6 +55,14 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   requiere la verificación de SIVIRENO (token firmado por el backend).
 - Los planes con `disponiblePara` «solo comunidad UNDC» o «solo externos» se ocultan con la misma
   condición del precio (`planDisponible`); el backend igual los rechaza (`REGISTRATION_TYPE_NOT_AVAILABLE`).
+- **Modalidad de asistencia** (`PRESENCIAL` | `VIRTUAL`): atributo del **tipo** de inscripción
+  (`tipo.modalidad`, `tipoInscripcion.modalidad`; ausente, `null` o desconocida = `PRESENCIAL`). Los planes
+  virtuales viven dentro de `ESTUDIANTES` y `PUBLICO_GENERAL` con `precio == precioInstitucional`; la landing
+  los agrupa por modalidad, **nunca envía** la modalidad en el POST (la deduce el servidor) y no bloquea nada
+  ni promete acceso, horas o certificado (textos neutros: la organización compartirá las indicaciones).
+  Terminología: la «modalidad» de asistencia **no es** `ModalidadPago` (`banco` | `billetera`, en el pago) ni
+  las tarjetas «Modalidad 0N» de `/planes` (categorías), ni el «fotocheck virtual» del portal. Ver
+  `specs/005-modalidad-virtual/`.
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales
@@ -68,8 +79,9 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 ## Ecosistema y comunicación entre sistemas
 
 Contratos: `backend-ciisic/docs/arquitectura-ecosistema.md` (esta landing es el consumidor del
-**contrato 3**, API del sitio, y usa el contrato 5 para Google). Este repositorio **no expone
-API**; **consume** backend-ciisic `/api/v1/site/*` con el token del evento desde su servidor.
+**contrato 3**, API del sitio, y usa el contrato 5 para Google). Este repositorio consume
+backend-ciisic `/api/v1/site/*` con el token del evento desde su servidor. El Encuentro de Egresados
+no modifica contratos, pagos ni inscripciones del backend: abre el Google Forms oficial en otra pestaña.
 
 | Sistema | Repositorio | Relación |
 |---|---|---|
@@ -96,8 +108,8 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
 `specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
-`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos) y `specs/004-semana-sistemica/`
-(tab «Semana Sistémica»).
+`specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
+(tab «Semana Sistémica») y `specs/005-modalidad-virtual/` (modalidad de asistencia virtual).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

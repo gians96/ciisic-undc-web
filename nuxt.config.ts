@@ -30,7 +30,9 @@ export default defineNuxtConfig({
     // configuración de la landing: se leen en runtime de la API del sitio (/api/publico/configuracion).
     public: {
       appName: 'VIII CIISIC 2026',
-      appVersion: '1.0.0'
+      appVersion: '1.0.0',
+      // Corte exclusivo confirmado en hora de Lima; el formulario oficial está versionado en código.
+      alumniRegistrationDeadline: '2026-10-24T00:00:00-05:00'
     }
   },
   app: {

@@ -22,7 +22,7 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 | Ruta Nitro | Backend | Caché |
 |---|---|---|
 | `GET /api/publico/evento` | `GET /site/event` | 60 s |
-| `GET /api/publico/planes?categoria=` | `GET /site/registration-types` | 60 s |
+| `GET /api/publico/planes?categoria=` | `GET /site/registration-types` (cada tipo trae `modalidad`: asistencia `PRESENCIAL` \| `VIRTUAL`, aditivo) | 60 s |
 | `GET /api/publico/catalogos` | `GET /site/catalogs` | 10 min |
 | `GET /api/publico/configuracion` | `GET /site/config` (client ID de Google, URL del panel) | 60 s |
 | `GET /api/publico/consulta-dni/:numero` | `GET /site/document-lookup/dni/:numero` | no |
@@ -35,10 +35,21 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 
 Los errores nunca se guardan en caché. Sin token o sin URL del backend: `503 SITE_NOT_CONFIGURED`.
 
+## Inscripción del Encuentro de Egresados
+
+La página solo presenta el estado de
+apertura y, cuando está autorizado, abre el URL público de respuesta de Google Forms en otra pestaña.
+La landing no recibe ni persiste datos personales. Google Forms almacena sus respuestas en la hoja
+institucional vinculada. Consulta [INSCRIPCION-EGRESADOS.md](INSCRIPCION-EGRESADOS.md).
+
 ## Inscripción
 
-`useFormularioInscripcion` (compartido por `/estudiantes` y `/general`):
+`useFormularioInscripcion` (compartido por `/estudiantes`, `/general` y `/fi-undc`):
 1. Planes, datos de pago y ciclos desde el backend (estados de carga, error e "inscripciones cerradas").
+   Los planes se agrupan por **modalidad de asistencia** (Presencial, luego Virtual; sin encabezados si solo
+   hay una) con funciones puras de `app/utils/planes.ts`; `/planes` anuncia la oferta virtual con
+   `useOfertaVirtual` solo si la API devuelve planes virtuales. «Modalidad» de asistencia no es `ModalidadPago`
+   ni las tarjetas «Modalidad 0N» de `/planes` (categorías).
 2. Consulta DNI (RENIEC vía pool del backend); si no hay servicio, nombres a mano.
 3. **Google (opcional)**: `CorreoGoogle.vue` → Google Identity Services (popup) → BFF → backend
    verifica el ID token y devuelve un `verificacionCorreoToken`; el correo queda fijo y los
