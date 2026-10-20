@@ -10,24 +10,26 @@
       >
         <div class="min-w-0 text-center lg:text-left">
           <div class="hero-stack">
-            <div class="hero-stack">
-              <p
-                class="eyebrow hero-slide mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
-                :class="{ 'is-active': indice === 0 }"
-              >
-                <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
-                  >Universidad Nacional de Cañete · 2026</span
+            <UiMorphingCapas class="mb-6" :activo="indice === 1">
+              <template #inactivo>
+                <p
+                  class="eyebrow inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
                 >
-              </p>
-              <p
-                class="eyebrow hero-slide mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
-                :class="{ 'is-active': indice === 1 }"
-              >
-                <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
-                  >Universidad Nacional de Cañete · Próximamente</span
+                  <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
+                    >Universidad Nacional de Cañete · 2026</span
+                  >
+                </p>
+              </template>
+              <template #activo>
+                <p
+                  class="eyebrow inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
                 >
-              </p>
-            </div>
+                  <span class="h-2 w-2 shrink-0 rounded-full bg-primary-400" /><span
+                    >Universidad Nacional de Cañete · Próximamente</span
+                  >
+                </p>
+              </template>
+            </UiMorphingCapas>
             <!-- Título compartido: al rotar el hero hace morph (gooey) entre los
                  dos titulares; mientras el slide Nasa está activo cicla sus textos. -->
             <h1 class="hero-title font-extrabold tracking-tight text-white">
@@ -37,8 +39,10 @@
                 :activo="indice === 1"
               />
             </h1>
-            <div class="hero-stack">
-              <div class="hero-slide" :class="{ 'is-active': indice === 0 }">
+            <!-- Transición completa (párrafo, countdown, CTAs o chips) con el
+                 mismo morph gooey que el título y las tarjetas. -->
+            <UiMorphingCapas :activo="indice === 1">
+              <template #inactivo>
                 <p
                   class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
                 >
@@ -68,10 +72,10 @@
                       class="h-5 w-5 shrink-0"
                   /></NuxtLink>
                 </div>
-              </div>
+              </template>
               <!-- Nasa Space: el CTA enlaza al sitio oficial del NASA Space Apps
                    Challenge (evento local San Vicente de Cañete). -->
-              <div class="hero-slide" :class="{ 'is-active': indice === 1 }">
+              <template #activo>
                 <p
                   class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
                 >
@@ -112,8 +116,8 @@
                       class="h-5 w-5 shrink-0"
                   /></NuxtLink>
                 </div>
-              </div>
-            </div>
+              </template>
+            </UiMorphingCapas>
           </div>
           <div
             class="hero-dots mt-6 flex items-center justify-center gap-1 lg:justify-start"
@@ -132,66 +136,71 @@
             />
           </div>
         </div>
-        <div class="hero-stack relative w-full min-w-0">
-          <div
-            class="hero-slide event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
-            :class="{ 'is-active': indice === 0 }"
-          >
-            <figure
-              class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
+        <UiMorphingCapas
+          class="relative w-full min-w-0"
+          :activo="indice === 1"
+        >
+          <template #inactivo>
+            <div
+              class="event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
             >
-              <img
-                :src="previousCongressImage"
-                alt="Participantes del VII CIISIC reunidos en el auditorio de la UNDC"
-                width="1600"
-                height="898"
-                class="block h-auto w-full"
-                fetchpriority="high"
+              <figure
+                class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
               >
-              <figcaption
-                class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
-              >
-                <span
-                  class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
-                  >Edición anterior · VII CIISIC</span
+                <img
+                  :src="previousCongressImage"
+                  alt="Participantes del VII CIISIC reunidos en el auditorio de la UNDC"
+                  width="1600"
+                  height="898"
+                  class="block h-auto w-full"
+                  fetchpriority="high"
                 >
-                <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
-                  Una comunidad que sigue creciendo.
-                </p>
-              </figcaption>
-            </figure>
-          </div>
+                <figcaption
+                  class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
+                >
+                  <span
+                    class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
+                    >Edición anterior · VII CIISIC</span
+                  >
+                  <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                    Una comunidad que sigue creciendo.
+                  </p>
+                </figcaption>
+              </figure>
+            </div>
+          </template>
           <!-- Logo oficial del NASA Space Apps Challenge 2026 descargado de
                spaceappschallenge.org (Space_Apps_2026_Logo_OG).
                ⚠️ CONTENIDO PENDIENTE: fecha y sede locales por confirmar. -->
-          <div
-            class="hero-slide event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
-            :class="{ 'is-active': indice === 1 }"
-          >
-            <figure
-              class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
+          <template #activo>
+            <div
+              class="event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
             >
-              <img
-                src="/images/eventos/nasa-space.webp"
-                alt="Logo oficial del NASA Space Apps Challenge 2026"
-                width="1920"
-                height="1080"
-                class="block h-auto w-full"
+              <figure
+                class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
               >
-              <figcaption
-                class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
-              >
-                <span
-                  class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
-                  >Próximamente · Nasa Space</span
+                <img
+                  src="/images/eventos/nasa-space.webp"
+                  alt="Logo oficial del NASA Space Apps Challenge 2026"
+                  width="1920"
+                  height="1080"
+                  class="block h-auto w-full"
                 >
-                <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
-                  Un nuevo evento de la Escuela de Sistemas.
-                </p>
-              </figcaption>
-            </figure>
-          </div>
-        </div>
+                <figcaption
+                  class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
+                >
+                  <span
+                    class="text-xs font-bold uppercase tracking-[.2em] text-primary-300"
+                    >Próximamente · Nasa Space</span
+                  >
+                  <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                    Un nuevo evento de la Escuela de Sistemas.
+                  </p>
+                </figcaption>
+              </figure>
+            </div>
+          </template>
+        </UiMorphingCapas>
         <div
           class="grid gap-6 rounded-2xl border border-white/10 bg-[#06294f] px-5 py-6 md:grid-cols-3 lg:col-span-2"
         >
@@ -467,28 +476,6 @@ onBeforeUnmount(() => {
 .hero-stack {
   display: grid;
 }
-.hero-slide {
-  grid-area: 1 / 1;
-  min-width: 0;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  pointer-events: none;
-  transition:
-    opacity 0.3s var(--ease-hero),
-    transform 0.3s var(--ease-hero),
-    visibility 0s linear 0.3s;
-}
-.hero-slide.is-active {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-  pointer-events: auto;
-  transition:
-    opacity 0.45s var(--ease-hero) 0.1s,
-    transform 0.45s var(--ease-hero) 0.1s,
-    visibility 0s;
-}
 .hero-chip {
   background: #092f57d9;
   border: 1px solid #ffffff1c;
@@ -601,20 +588,6 @@ onBeforeUnmount(() => {
   .action-primary,
   .action-secondary {
     transition: none;
-  }
-  .hero-slide,
-  .hero-slide.is-active {
-    transform: none;
-  }
-  .hero-slide {
-    transition:
-      opacity 0.15s linear,
-      visibility 0s linear 0.15s;
-  }
-  .hero-slide.is-active {
-    transition:
-      opacity 0.15s linear,
-      visibility 0s;
   }
   .hero-dot::before {
     transition: background 0.15s linear;

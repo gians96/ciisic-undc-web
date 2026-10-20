@@ -4,6 +4,9 @@
      en un efecto "gooey". Ciclo RAF: morph 1.5 s + pausa 0.5 s.
      `activo=true` cicla `texts`; `activo=false` morfea hacia `ancla` y se queda en
      reposo (o pausa en el texto actual si `ancla` está vacío).
+     Sincronía con la rotación del hero (UiMorphingCapas, 1.5 s): si `activo`
+     cambia a mitad de un morf hacia un texto del ciclo, ese morf se acelera (3×)
+     y la pausa se omite para llegar al `ancla` junto con el resto de capas.
      El tamaño y la alineación se heredan del contexto (p. ej. el h1 del hero). -->
 <template>
   <span
@@ -81,6 +84,20 @@ function objetivo(): string {
   return enReposo
 }
 
+/** Hay un texto pendiente de alcanzar para el estado actual de `activo`. */
+function pendiente(): boolean {
+  if (!props.ancla) return false
+  return props.activo
+    ? enReposo === props.ancla
+    : enReposo !== props.ancla
+}
+
+/** El morf en curso va al revés del estado actual (se acelera para sincronizar). */
+function rumboAnomalo(): boolean {
+  if (!props.ancla || !enMorph) return false
+  return props.activo ? a === props.ancla : a !== props.ancla
+}
+
 function reposo() {
   if (span2.value) {
     span2.value.style.filter = "none"
@@ -108,37 +125,40 @@ function setEstilos(fraction: number) {
   t2.textContent = a
 }
 
-function paso() {
+function paso(dt: number) {
   if (!enMorph) {
-    if (cooldown > 0) {
+    const pausando = cooldown > 0 && !pendiente()
+    if (!pausando) {
+      const obj = objetivo()
+      if (obj !== enReposo) {
+        de = enReposo
+        a = obj
+        enMorph = true
+        morph = 0
+      }
+    }
+    if (!enMorph) {
+      // En reposo `cooldown` solo lleva la pausa; nunca debe acumular dt
+      // negativo (al iniciar un morf se saltearía la transición entera).
+      if (cooldown > 0) cooldown = Math.max(cooldown - dt, 0)
       reposo()
       return
     }
-    const obj = objetivo()
-    if (obj === enReposo) {
-      reposo()
-      return
-    }
-    de = enReposo
-    a = obj
-    enMorph = true
-    morph = 0
   }
 
-  morph -= cooldown
-  cooldown = 0
+  morph += dt
 
   let fraction = morph / MORPH_TIME
-  if (fraction > 1) {
-    cooldown = COOLDOWN_TIME
-    fraction = 1
-  }
+  if (fraction > 1) fraction = 1
 
   setEstilos(fraction)
   if (fraction === 1) {
     enReposo = a
     iCiclo = props.texts.indexOf(a)
     enMorph = false
+    // Sin pausa si quedó un texto pendiente (la rotación del hero acaba de
+    // cambiar `activo`): el morf al `ancla` arranca en el siguiente cuadro.
+    cooldown = pendiente() ? 0 : COOLDOWN_TIME
   }
 }
 
@@ -146,11 +166,12 @@ function animar() {
   cuadro = requestAnimationFrame(animar)
 
   const ahora = Date.now()
-  const dt = (ahora - ultimoTiempo) / 1000
+  // Tope de dt: un salto (pestaña en segundo plano, reloj virtual) no debe
+  // completar el morf de un salto ni desincronizarlo de UiMorphingCapas.
+  const dt = Math.min((ahora - ultimoTiempo) / 1000, 0.1)
   ultimoTiempo = ahora
 
-  cooldown -= dt
-  paso()
+  paso(dt * (rumboAnomalo() ? 3 : 1))
 }
 
 function textoEstatico() {
