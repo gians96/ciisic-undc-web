@@ -52,8 +52,9 @@
                 /></NuxtLink>
               </div>
             </div>
-            <!-- ⚠️ CONTENIDO PENDIENTE: Nasa Space es un evento futuro; fecha,
-                 sede, bases e imagen se confirmarán después. -->
+            <!-- Nasa Space: el CTA enlaza al sitio oficial del NASA Space Apps
+                 Challenge (evento local San Vicente de Cañete). ⚠️ CONTENIDO
+                 PENDIENTE: fecha, sede e imagen se confirmarán después. -->
             <div class="hero-slide" :class="{ 'is-active': indice === 1 }">
               <p
                 class="eyebrow mb-6 inline-flex max-w-full items-center justify-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase leading-relaxed tracking-[0.14em]"
@@ -69,7 +70,7 @@
                 class="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0"
               >
                 Un nuevo evento de la Escuela Profesional de Ingeniería de
-                Sistemas. Próximamente compartiremos fecha, sede y bases.
+                Sistemas.
               </p>
               <div
                 class="mx-auto mt-7 flex flex-wrap justify-center gap-3 lg:mx-0 lg:justify-start"
@@ -80,7 +81,7 @@
                   <Icon
                     name="heroicons:calendar-days"
                     class="h-4 w-4 shrink-0 text-primary-300"
-                  />Fecha por confirmar
+                  />14 y 15 de noviembre de 2026
                 </span>
                 <span
                   class="hero-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
@@ -88,14 +89,16 @@
                   <Icon
                     name="heroicons:map-pin"
                     class="h-4 w-4 shrink-0 text-primary-300"
-                  />Sede por confirmar
+                  />Universidad Nacional de Cañete.
                 </span>
               </div>
               <div
                 class="mx-auto mt-8 flex max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:flex-wrap md:justify-center lg:mx-0 lg:justify-start"
               >
                 <NuxtLink
-                  to="/nasa-space"
+                  to="https://www.spaceappschallenge.org/2026/local-events/san-vicente-de-canete/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
                   >Conoce el Nasa Space
                   <Icon
@@ -151,8 +154,9 @@
               </figcaption>
             </figure>
           </div>
-          <!-- ⚠️ CONTENIDO PENDIENTE: arte provisional del Nasa Space; sustituir
-               por la fotografía oficial del evento cuando exista. -->
+          <!-- Logo oficial del NASA Space Apps Challenge 2026 descargado de
+               spaceappschallenge.org (Space_Apps_2026_Logo_OG).
+               ⚠️ CONTENIDO PENDIENTE: fecha y sede locales por confirmar. -->
           <div
             class="hero-slide event-card relative mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-white/15 p-3 shadow-2xl sm:p-4 lg:max-w-none"
             :class="{ 'is-active': indice === 1 }"
@@ -160,26 +164,13 @@
             <figure
               class="photo-frame relative flex flex-col overflow-hidden rounded-[1.4rem]"
             >
-              <div
-                class="nasa-art relative flex aspect-video w-full flex-col items-center justify-center gap-4 px-6 text-center"
+              <img
+                src="/images/eventos/nasa-space.webp"
+                alt="Logo oficial del NASA Space Apps Challenge 2026"
+                width="1920"
+                height="1080"
+                class="block h-auto w-full"
               >
-                <span
-                  class="nasa-art-icon inline-flex h-16 w-16 items-center justify-center rounded-2xl sm:h-20 sm:w-20"
-                >
-                  <Icon
-                    name="heroicons:rocket-launch"
-                    class="h-8 w-8 sm:h-10 sm:w-10"
-                  />
-                </span>
-                <div>
-                  <p class="text-xl font-bold text-white sm:text-2xl">
-                    Nasa Space
-                  </p>
-                  <p class="mt-1 text-sm text-slate-300">
-                    Imagen del evento por confirmar
-                  </p>
-                </div>
-              </div>
               <figcaption
                 class="photo-caption relative mt-auto px-5 pb-6 pt-8 text-center sm:px-8 sm:pb-8 lg:text-left"
               >
@@ -492,14 +483,6 @@ onBeforeUnmount(() => {
   background: #092f57d9;
   border: 1px solid #ffffff1c;
   color: #e2e8f0;
-}
-.nasa-art {
-  background: linear-gradient(150deg, #0a4a80 0%, #063a6e 45%, #04223f 100%);
-}
-.nasa-art-icon {
-  background: rgba(0, 217, 232, 0.1);
-  border: 1px solid rgba(103, 232, 249, 0.35);
-  color: #67e8f9;
 }
 .hero-dot::before {
   content: "";
