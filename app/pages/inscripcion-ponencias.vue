@@ -1,0 +1,422 @@
+<template>
+  <div class="inscripcion-page min-h-screen bg-[#041d39] text-white">
+    <section class="ins-hero relative overflow-hidden border-b border-white/10 px-6 py-14 sm:py-16 lg:px-8">
+      <div class="ins-grid absolute inset-0" aria-hidden="true" />
+      <div class="relative mx-auto max-w-4xl text-center">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary-300">VIII CIISIC UNDC · 2026</p>
+        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">Inscripción a ponencias especializadas</h1>
+        <p class="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
+          Elige las ponencias a las que asistirás y deja tu documento. Son gratuitas, con cupos limitados, y la asistencia se registra con tu DNI en la puerta.
+        </p>
+        <div class="mt-7 flex flex-wrap justify-center gap-3 text-sm">
+          <span class="summary-chip"><Icon name="heroicons:ticket" class="h-5 w-5 text-primary-400" aria-hidden="true" />Gratuitas</span>
+          <span class="summary-chip"><Icon name="heroicons:identification" class="h-5 w-5 text-primary-400" aria-hidden="true" />Lleva tu DNI</span>
+          <NuxtLink to="/ponencias-especializadas" class="summary-chip hover:border-primary-400/50 hover:text-white">
+            <Icon name="heroicons:user-group" class="h-5 w-5 text-primary-400" aria-hidden="true" />Conoce a los ponentes
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confirmación -->
+    <section v-if="resultado" class="mx-auto max-w-3xl px-6 py-14 lg:px-8" aria-labelledby="titulo-listo">
+      <div ref="bloqueResultado" tabindex="-1" class="listo-card rounded-3xl border border-emerald-300/30 p-7 sm:p-9" role="status">
+        <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/15 text-emerald-300">
+          <Icon name="heroicons:check-circle" class="h-8 w-8" aria-hidden="true" />
+        </span>
+        <h2 id="titulo-listo" class="mt-5 text-3xl font-extrabold">¡Listo, {{ primerNombre }}!</h2>
+        <p class="mt-2 text-slate-300">
+          Quedaste inscrito con tu {{ resultado.asistente.tipoDocumento.toUpperCase() }} {{ resultado.asistente.numeroDocumento }}.
+          Lleva tu documento: con él se registra tu asistencia.
+        </p>
+        <ul class="mt-6 space-y-3">
+          <li v-for="item in resultado.inscripciones" :key="item.id" class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
+            <p class="font-semibold leading-snug text-white">{{ item.ponencia.tema }}</p>
+            <p class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-300">
+              <span class="inline-flex items-center gap-1.5"><Icon name="heroicons:calendar-days" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ etiquetaDia(item.ponencia.fecha) }}</span>
+              <span class="inline-flex items-center gap-1.5"><Icon name="heroicons:clock" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ rangoHorario(item.ponencia.horaInicio, item.ponencia.horaFin) }}</span>
+              <span class="inline-flex items-center gap-1.5"><Icon name="heroicons:map-pin" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ item.ponencia.ambiente }}</span>
+            </p>
+            <p v-if="item.yaInscrito" class="mt-2 text-xs font-semibold text-amber-200">Ya estabas inscrito en esta ponencia.</p>
+          </li>
+        </ul>
+        <p class="mt-6 text-sm text-slate-400">
+          Si no puedes asistir, puedes cambiar de ponencia en la puerta con tu DNI mientras haya cupo.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <button type="button" class="btn btn-primary" @click="nuevaInscripcion">Inscribir a otra persona</button>
+          <NuxtLink to="/ponencias-especializadas" class="btn btn-outline">Ver ponentes y temas</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <template v-else>
+      <!-- Estados del programa -->
+      <section v-if="cargando" class="mx-auto max-w-3xl px-6 py-20 text-center text-slate-300" role="status">
+        <Icon name="heroicons:arrow-path" class="mx-auto h-8 w-8 animate-spin text-primary-400" aria-hidden="true" />
+        <p class="mt-4">Cargando las ponencias…</p>
+      </section>
+
+      <section v-else-if="error || !ponencias.length" class="mx-auto max-w-3xl px-6 py-20 text-center" role="status">
+        <Icon :name="error ? 'heroicons:exclamation-triangle' : 'heroicons:calendar-days'" class="mx-auto h-10 w-10 text-amber-300" aria-hidden="true" />
+        <h2 class="mt-4 text-2xl font-bold">
+          {{ error ? 'No pudimos cargar las ponencias' : 'Aún no hay ponencias abiertas a inscripción' }}
+        </h2>
+        <p class="mx-auto mt-3 max-w-xl text-slate-300">
+          {{ error ? (noDisponible ? 'La inscripción a ponencias aún no está disponible. Vuelve a intentarlo más tarde.' : 'Revisa tu conexión e inténtalo nuevamente.') : 'Cuando la organización las publique aparecerán aquí.' }}
+        </p>
+        <button type="button" class="btn btn-outline mt-6" @click="recargar()">Reintentar</button>
+      </section>
+
+      <template v-else>
+        <!-- Elección -->
+        <section class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16 2xl:max-w-[1600px]" aria-labelledby="titulo-eleccion">
+          <div class="mb-9 max-w-3xl">
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso 1</p>
+            <h2 id="titulo-eleccion" class="mt-2 text-3xl font-bold tracking-tight">Elige tus ponencias</h2>
+            <p class="mt-3 flex items-start gap-3 rounded-2xl border border-primary-400/25 bg-primary-400/[.07] p-4 leading-relaxed text-slate-200">
+              <Icon name="heroicons:information-circle" class="mt-0.5 h-6 w-6 shrink-0 text-primary-300" aria-hidden="true" />
+              <span>Las ponencias de cada día se dictan <strong class="text-white">al mismo tiempo</strong>: puedes elegir una por horario. Si eliges otra del mismo horario, reemplaza a la anterior.</span>
+            </p>
+          </div>
+
+          <div class="space-y-12">
+            <section v-for="dia in dias" :key="dia.fecha" :aria-labelledby="`dia-${dia.fecha}`">
+              <div class="mb-5 flex flex-wrap items-end justify-between gap-3 border-l-4 border-primary-400 pl-4">
+                <h3 :id="`dia-${dia.fecha}`" class="text-2xl font-extrabold tracking-tight">{{ dia.etiqueta }}</h3>
+                <p class="text-sm text-slate-400">{{ dia.ponencias.length }} ponencias</p>
+              </div>
+              <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                <label
+                  v-for="ponencia in dia.ponencias"
+                  :key="ponencia.id"
+                  :for="`ponencia-${ponencia.id}`"
+                  class="opcion flex h-full flex-col rounded-3xl border p-5"
+                  :class="{ 'is-selected': estaElegida(ponencia), 'is-disabled': Boolean(motivoNoDisponible(ponencia)) }"
+                >
+                  <input
+                    :id="`ponencia-${ponencia.id}`"
+                    type="checkbox"
+                    class="sr-only"
+                    :checked="estaElegida(ponencia)"
+                    :disabled="Boolean(motivoNoDisponible(ponencia)) && !estaElegida(ponencia)"
+                    @change="alternar(ponencia)"
+                  >
+                  <span class="flex items-start justify-between gap-3">
+                    <span class="check" aria-hidden="true"><Icon v-if="estaElegida(ponencia)" name="heroicons:check" class="h-4 w-4" /></span>
+                    <span class="nivel" :class="`nivel-${motivoNoDisponible(ponencia) ? 'agotada' : nivelDeCupos(ponencia)}`">
+                      {{ motivoNoDisponible(ponencia) === 'DE_PAGO' ? 'De pago' : textoCupos(ponencia) }}
+                    </span>
+                  </span>
+                  <span class="mt-4 flex-1 text-lg font-bold leading-snug text-white">{{ ponencia.tema }}</span>
+                  <span class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-300">
+                    <span class="inline-flex items-center gap-1.5"><Icon name="heroicons:clock" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ rangoHorario(ponencia.horaInicio, ponencia.horaFin) }} · {{ duracionTexto(ponencia.duracionMin) }}</span>
+                    <span class="inline-flex items-center gap-1.5"><Icon :name="ponencia.modalidad === 'VIRTUAL' ? 'heroicons:video-camera' : 'heroicons:map-pin'" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ ponencia.ambiente }}<template v-if="ponencia.modalidad === 'VIRTUAL'"> · Virtual</template></span>
+                  </span>
+                  <span class="mt-4 flex items-center gap-3 border-t border-white/10 pt-4">
+                    <img v-if="ponencia.ponente.foto" :src="ponencia.ponente.foto" alt="" width="48" height="48" loading="lazy" class="h-10 w-10 shrink-0 rounded-full border border-white/20 object-cover object-top">
+                    <span v-else class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 text-sm font-bold text-primary-200" aria-hidden="true">{{ iniciales(ponencia.ponente.nombre) }}</span>
+                    <span class="min-w-0 text-sm">
+                      <span class="block text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">Ponente<template v-if="ponencia.ponente.externo"> externo</template></span>
+                      <span class="block font-semibold leading-snug text-slate-100">{{ ponencia.ponente.nombre }}</span>
+                    </span>
+                  </span>
+                  <span v-if="motivoNoDisponible(ponencia)" class="mt-3 text-xs font-semibold text-amber-200">{{ TEXTO_NO_DISPONIBLE[motivoNoDisponible(ponencia)!] }}</span>
+                  <span v-else-if="reemplazaA(ponencia)" class="mt-3 text-xs text-slate-400">Reemplaza tu elección de este horario: «{{ reemplazaA(ponencia)!.ambiente }}».</span>
+                </label>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- Datos -->
+        <section class="border-t border-white/10 bg-[#03172d] px-6 py-12 lg:px-8 lg:py-16" aria-labelledby="titulo-datos">
+          <form class="mx-auto max-w-3xl" novalidate @submit.prevent="enviar">
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso 2</p>
+            <h2 id="titulo-datos" class="mt-2 text-3xl font-bold tracking-tight">Tus datos</h2>
+            <p class="mt-3 text-slate-300">Solo el documento es obligatorio. Con tu DNI completamos tus nombres automáticamente.</p>
+
+            <div class="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-4" aria-live="polite">
+              <p class="text-sm font-semibold text-slate-300">Tu elección ({{ elegidas.length }})</p>
+              <p v-if="!elegidas.length" class="mt-1 text-sm text-slate-400">Aún no elegiste ninguna ponencia.</p>
+              <ul v-else class="mt-2 space-y-2">
+                <li v-for="ponencia in elegidas" :key="ponencia.id" class="flex items-start justify-between gap-3 text-sm">
+                  <span><strong class="text-white">{{ etiquetaDia(ponencia.fecha) }} · {{ rangoHorario(ponencia.horaInicio, ponencia.horaFin) }}</strong> — {{ ponencia.tema }} ({{ ponencia.ambiente }})</span>
+                  <button type="button" class="shrink-0 text-xs font-semibold text-primary-300 underline-offset-2 hover:underline" @click="alternar(ponencia)">Quitar</button>
+                </li>
+              </ul>
+              <p v-if="errores.ponencias" class="campo-error mt-2" role="alert">{{ errores.ponencias }}</p>
+            </div>
+
+            <div class="mt-6 grid gap-5 sm:grid-cols-[12rem_1fr]">
+              <div>
+                <label for="tipo-documento" class="campo-label">Documento</label>
+                <select id="tipo-documento" v-model="form.tipoDocumento" class="campo">
+                  <option v-for="tipo in documentTypes" :key="tipo.value" :value="tipo.value">{{ tipo.label }}</option>
+                </select>
+              </div>
+              <div>
+                <label for="numero-documento" class="campo-label">Número de documento <span aria-hidden="true">*</span></label>
+                <input
+                  id="numero-documento"
+                  v-model="form.numeroDocumento"
+                  class="campo font-mono tracking-wider"
+                  :inputmode="form.tipoDocumento === 'DNI' ? 'numeric' : 'text'"
+                  :placeholder="form.tipoDocumento === 'DNI' ? '8 dígitos' : '9 a 12 letras o dígitos'"
+                  autocomplete="off"
+                  :aria-invalid="errores.numeroDocumento ? true : undefined"
+                  :aria-describedby="consulta.mensaje ? 'consulta-dni' : undefined"
+                >
+                <p v-if="errores.numeroDocumento" class="campo-error" role="alert">{{ errores.numeroDocumento }}</p>
+                <p id="consulta-dni" class="mt-1 min-h-5 text-xs" :class="consulta.estado === 'ENCONTRADO' ? 'text-emerald-300' : consulta.estado === 'FALLO' ? 'text-amber-300' : 'text-slate-400'" role="status">{{ consulta.mensaje }}</p>
+              </div>
+              <div>
+                <label for="nombres" class="campo-label">Nombres <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
+                <input id="nombres" v-model="form.nombres" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="given-name" :aria-invalid="errores.nombres ? true : undefined">
+                <p v-if="errores.nombres" class="campo-error" role="alert">{{ errores.nombres }}</p>
+              </div>
+              <div>
+                <label for="apellidos" class="campo-label">Apellidos <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
+                <input id="apellidos" v-model="form.apellidos" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="family-name" :aria-invalid="errores.apellidos ? true : undefined">
+                <p v-if="errores.apellidos" class="campo-error" role="alert">{{ errores.apellidos }}</p>
+              </div>
+              <div>
+                <label for="correo" class="campo-label">Correo <span class="font-normal text-slate-400">(opcional)</span></label>
+                <input id="correo" v-model="form.correo" type="email" class="campo" maxlength="191" autocomplete="email" :aria-invalid="errores.correo ? true : undefined">
+                <p v-if="errores.correo" class="campo-error" role="alert">{{ errores.correo }}</p>
+              </div>
+              <div>
+                <label for="celular" class="campo-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
+                <input id="celular" v-model="form.celular" type="tel" inputmode="tel" class="campo" maxlength="20" placeholder="987654321" autocomplete="tel" :aria-invalid="errores.celular ? true : undefined">
+                <p v-if="errores.celular" class="campo-error" role="alert">{{ errores.celular }}</p>
+              </div>
+            </div>
+
+            <fieldset class="mt-6">
+              <legend class="campo-label">¿Perteneces a la UNDC? <span class="font-normal text-slate-400">(opcional)</span></legend>
+              <div class="mt-2 flex flex-wrap gap-3">
+                <label v-for="opcion in PROCEDENCIAS" :key="opcion.valor" class="radio-chip" :class="{ activo: form.procedencia === opcion.valor }">
+                  <input v-model="form.procedencia" type="radio" name="procedencia" :value="opcion.valor" class="sr-only">
+                  {{ opcion.etiqueta }}
+                </label>
+                <button v-if="form.procedencia" type="button" class="text-xs font-semibold text-primary-300 underline-offset-2 hover:underline" @click="form.procedencia = ''">Quitar</button>
+              </div>
+            </fieldset>
+
+            <div v-if="errorEnvio" class="mt-6 flex items-start gap-3 rounded-2xl border border-red-300/30 bg-red-400/10 p-4 text-sm leading-relaxed text-red-100" role="alert">
+              <Icon name="heroicons:exclamation-circle" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>{{ errorEnvio }}</span>
+            </div>
+
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              <button type="submit" class="btn btn-primary" :disabled="enviando">
+                <Icon v-if="enviando" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" aria-hidden="true" />
+                {{ enviando ? 'Inscribiendo…' : `Inscribirme${elegidas.length ? ` (${elegidas.length})` : ''}` }}
+              </button>
+              <p class="text-xs text-slate-400">
+                Usamos tus datos solo para controlar el ingreso a las ponencias. Más en la
+                <NuxtLink to="/privacidad" class="underline underline-offset-2 hover:text-white">política de privacidad</NuxtLink>.
+              </p>
+            </div>
+          </form>
+        </section>
+      </template>
+    </template>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ApiExito } from '~/types/evento'
+import type { InscripcionPonenciasRespuesta, PonenciaEspecializadaPublica } from '~/types/ponencias-especializadas'
+import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
+import {
+  alternarSeleccion,
+  cuerpoInscripcion,
+  depurarSeleccion,
+  formularioVacio,
+  mensajeErrorInscripcionPonencias,
+  motivoNoDisponible,
+  nivelDeCupos,
+  normalizarDocumento,
+  pideNombres,
+  ponenciaEnConflicto,
+  programaNoDisponible,
+  TEXTO_NO_DISPONIBLE,
+  textoCupos,
+  validarFormulario,
+  type ErroresFormulario,
+} from '~/utils/inscripcion-ponencias'
+import { duracionTexto, etiquetaDia, rangoHorario } from '~/utils/ponencias-especializadas'
+import { rutasSitio } from '~/utils/rutas-sitio'
+
+useSeoMeta({
+  title: 'Inscripción a ponencias especializadas | VIII CIISIC 2026',
+  description: 'Inscríbete gratis a las ponencias especializadas del VIII CIISIC 2026 (27 y 28 de octubre): elige tus ponencias, deja tu DNI y lleva tu documento.',
+  ogTitle: 'Inscripción a ponencias especializadas | VIII CIISIC 2026',
+  ogDescription: 'Elige tus ponencias especializadas y regístrate con tu DNI.',
+})
+
+const PROCEDENCIAS = [
+  { valor: 'INTERNO', etiqueta: 'Soy de la UNDC' },
+  { valor: 'EXTERNO', etiqueta: 'Soy externo' },
+] as const
+
+const { request } = useApi()
+const { ponencias, dias, error, cargando, recargar } = usePonenciasEspecializadas()
+const { documentTypes, consultDni } = useConsultation()
+
+const form = reactive(formularioVacio())
+const seleccion = ref<number[]>([])
+const errores = ref<ErroresFormulario>({})
+const errorEnvio = ref('')
+const enviando = ref(false)
+const resultado = ref<InscripcionPonenciasRespuesta | null>(null)
+const bloqueResultado = ref<HTMLElement | null>(null)
+/** `NAMES_REQUIRED`: el documento no trajo nombres y hay que escribirlos. */
+const nombresManuales = ref(false)
+
+const consulta = ref<{ estado: 'INICIAL' | 'CONSULTANDO' | 'ENCONTRADO' | 'FALLO', numero: string, mensaje: string }>({ estado: 'INICIAL', numero: '', mensaje: '' })
+let turnoConsulta = 0
+
+const noDisponible = computed(() => programaNoDisponible(error.value))
+const elegidas = computed(() => ponencias.value.filter(p => seleccion.value.includes(p.id)))
+const nombresConsultados = computed(() => form.tipoDocumento === 'DNI' && consulta.value.estado === 'ENCONTRADO' && consulta.value.numero === form.numeroDocumento)
+const nombresObligatorios = computed(() =>
+  form.tipoDocumento === 'CE' || nombresManuales.value || (form.tipoDocumento === 'DNI' && consulta.value.estado === 'FALLO' && consulta.value.numero === form.numeroDocumento))
+const primerNombre = computed(() => resultado.value?.asistente.nombres.split(' ')[0] ?? '')
+
+const estaElegida = (ponencia: PonenciaEspecializadaPublica) => seleccion.value.includes(ponencia.id)
+const reemplazaA = (ponencia: PonenciaEspecializadaPublica) => (estaElegida(ponencia) ? null : ponenciaEnConflicto(ponencia, seleccion.value, ponencias.value))
+const alternar = (ponencia: PonenciaEspecializadaPublica) => {
+  seleccion.value = alternarSeleccion(seleccion.value, ponencia, ponencias.value)
+  errores.value = { ...errores.value, ponencias: undefined }
+}
+const iniciales = (nombre: string) => nombre.replace(/^(dr|dra|mg|m\.sc|ph\.d)\.?\s+/i, '').split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('')
+
+// Los cupos del HTML pueden tener hasta unos segundos de antigüedad: se renuevan al abrir la página
+onMounted(async () => {
+  await recargar()
+  seleccion.value = depurarSeleccion(seleccion.value, ponencias.value)
+})
+
+// Número de documento: solo los caracteres válidos; con un DNI completo se consultan los nombres
+watch(() => [form.tipoDocumento, form.numeroDocumento] as const, ([tipo, numero]) => {
+  const limpio = normalizarDocumento(tipo, numero)
+  if (limpio !== numero) {
+    form.numeroDocumento = limpio
+    return
+  }
+  errores.value = { ...errores.value, numeroDocumento: undefined }
+  if (consulta.value.estado !== 'INICIAL' && (tipo !== 'DNI' || consulta.value.numero !== limpio)) {
+    turnoConsulta++
+    if (consulta.value.estado === 'ENCONTRADO') Object.assign(form, { nombres: '', apellidos: '' })
+    consulta.value = { estado: 'INICIAL', numero: '', mensaje: '' }
+    nombresManuales.value = false
+  }
+  if (tipo === 'DNI' && /^\d{8}$/.test(limpio)) buscarNombres(limpio)
+})
+
+async function buscarNombres(numero: string) {
+  const turno = ++turnoConsulta
+  consulta.value = { estado: 'CONSULTANDO', numero, mensaje: 'Buscando tus datos…' }
+  try {
+    const persona = await consultDni(numero)
+    if (turno !== turnoConsulta) return
+    if (!persona) {
+      consulta.value = { estado: 'FALLO', numero, mensaje: mensajeFallaConsultaDni({ statusCode: 404, code: 'DOCUMENT_NOT_FOUND' }, numero) }
+      return
+    }
+    Object.assign(form, persona)
+    errores.value = { ...errores.value, nombres: undefined, apellidos: undefined }
+    consulta.value = { estado: 'ENCONTRADO', numero, mensaje: 'Encontramos tus datos.' }
+  } catch (e) {
+    if (turno === turnoConsulta) consulta.value = { estado: 'FALLO', numero, mensaje: mensajeFallaConsultaDni(normalizeApiError(e), numero) }
+  }
+}
+
+function enfocarPrimerError() {
+  const orden: Array<[keyof ErroresFormulario, string]> = [['ponencias', 'titulo-eleccion'], ['numeroDocumento', 'numero-documento'], ['nombres', 'nombres'], ['apellidos', 'apellidos'], ['correo', 'correo'], ['celular', 'celular']]
+  const primero = orden.find(([campo]) => errores.value[campo])
+  if (primero) nextTick(() => document.getElementById(primero[1])?.focus({ preventScroll: false }))
+}
+
+async function enviar() {
+  if (enviando.value) return
+  errorEnvio.value = ''
+  errores.value = validarFormulario(form, seleccion.value, { nombresObligatorios: nombresObligatorios.value })
+  if (Object.keys(errores.value).length) return enfocarPrimerError()
+  enviando.value = true
+  try {
+    const respuesta = await request<ApiExito<InscripcionPonenciasRespuesta>>(rutasSitio.inscripcionPonenciasEspecializadas, {
+      method: 'POST',
+      body: cuerpoInscripcion(form, seleccion.value),
+      timeout: 20000,
+    })
+    resultado.value = respuesta.data
+    recargar()
+    await nextTick()
+    bloqueResultado.value?.focus()
+  } catch (e) {
+    const falla = normalizeApiError(e)
+    errorEnvio.value = mensajeErrorInscripcionPonencias(falla)
+    if (pideNombres(falla)) {
+      nombresManuales.value = true
+      nextTick(() => document.getElementById('nombres')?.focus())
+    }
+    // Un cupo, un cruce o una ponencia que cambió: se vuelve a leer el programa y se depura la elección
+    if (['TALK_FULL', 'TALK_NOT_FOUND', 'TALK_ENDED', 'SCHEDULE_CONFLICT', 'PAID_TALK_UNAVAILABLE'].includes(falla.code)) {
+      await recargar()
+      seleccion.value = depurarSeleccion(seleccion.value, ponencias.value)
+    }
+  } finally {
+    enviando.value = false
+  }
+}
+
+function nuevaInscripcion() {
+  resultado.value = null
+  seleccion.value = []
+  errorEnvio.value = ''
+  errores.value = {}
+  nombresManuales.value = false
+  turnoConsulta++
+  consulta.value = { estado: 'INICIAL', numero: '', mensaje: '' }
+  Object.assign(form, formularioVacio())
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+</script>
+
+<style scoped>
+.ins-hero { background: radial-gradient(circle at 50% 0%, #087dd83d, transparent 48%), #041d39; }
+.ins-grid { opacity: .25; background-image: linear-gradient(#1d7fb43d 1px, transparent 1px), linear-gradient(90deg, #1d7fb43d 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, black, transparent); }
+.summary-chip { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid #ffffff1a; border-radius: 9999px; background: #ffffff08; padding: .55rem .9rem; color: #cbd5e1; transition: border-color .2s ease, color .2s ease; }
+.listo-card { background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; }
+.listo-card:focus { outline: none; }
+
+.opcion { cursor: pointer; border-color: #ffffff1a; background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.opcion:hover { transform: translateY(-3px); border-color: #22d3ee59; }
+.opcion:has(input:focus-visible) { outline: 2px solid #22d3ee; outline-offset: 3px; }
+.opcion.is-selected { border-color: #22d3ee; box-shadow: 0 0 0 1px #22d3ee, 0 20px 55px #020f2052; }
+.opcion.is-disabled:not(.is-selected) { cursor: not-allowed; opacity: .6; }
+.opcion.is-disabled:not(.is-selected):hover { transform: none; border-color: #ffffff1a; }
+.check { display: inline-flex; height: 1.5rem; width: 1.5rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: .5rem; border: 2px solid #ffffff40; color: #041d39; transition: background-color .2s ease, border-color .2s ease; }
+.is-selected .check { background: #22d3ee; border-color: #22d3ee; }
+.nivel { border-radius: 9999px; padding: .2rem .7rem; font-size: .72rem; font-weight: 700; letter-spacing: .02em; }
+.nivel-libre, .nivel-ok { background: #34d39926; color: #6ee7b7; }
+.nivel-poco { background: #fbbf2426; color: #fcd34d; }
+.nivel-agotada { background: #f8717126; color: #fca5a5; }
+
+.campo-label { display: block; margin-bottom: .4rem; font-size: .875rem; font-weight: 600; color: #e2e8f0; }
+.campo { width: 100%; border-radius: .75rem; border: 1px solid #ffffff26; background: #ffffff0d; padding: .7rem .9rem; color: #fff; transition: border-color .2s ease, background-color .2s ease; }
+.campo::placeholder { color: #94a3b8; }
+.campo:focus { outline: none; border-color: #22d3ee; background: #ffffff14; }
+.campo[aria-invalid='true'] { border-color: #f87171; }
+.campo-bloqueado { opacity: .75; cursor: default; }
+.campo-error { margin-top: .35rem; font-size: .8rem; color: #fca5a5; }
+select.campo option { color: #0f172a; }
+.radio-chip { cursor: pointer; border: 1px solid #ffffff26; border-radius: 9999px; padding: .5rem 1rem; font-size: .9rem; color: #cbd5e1; transition: border-color .2s ease, background-color .2s ease; }
+.radio-chip:hover { border-color: #22d3ee80; }
+.radio-chip.activo { border-color: #22d3ee; background: #22d3ee1f; color: #fff; }
+.radio-chip:has(input:focus-visible) { outline: 2px solid #22d3ee; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .opcion, .check, .campo, .radio-chip, .summary-chip { transition: none; } .opcion:hover { transform: none; } }
+</style>

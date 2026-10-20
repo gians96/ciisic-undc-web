@@ -201,7 +201,8 @@ const mainNavigation = ref<MobileNavItem[]>([
     isActive: false,
     children: [
       { id: 'ponencias-congreso', label: 'Congreso', href: '/ponentes', icon: 'heroicons:user-group' },
-      { id: 'ponencias-especializadas', label: 'Ponencias especializadas', href: '/ponencias-especializadas', icon: 'heroicons:presentation-chart-bar' }
+      { id: 'ponencias-especializadas', label: 'Ponencias especializadas', href: '/ponencias-especializadas', icon: 'heroicons:presentation-chart-bar' },
+      { id: 'inscripcion-ponencias', label: 'Inscripción a ponencias', href: '/inscripcion-ponencias', icon: 'heroicons:ticket' }
     ]
   },
   {

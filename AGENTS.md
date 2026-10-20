@@ -32,9 +32,12 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 
 - `app/pages/`: `index` (landing del evento), `planes`, `estudiantes`, `general`, `fi-undc`, `confirmation`,
   `papers/*`, `semana-sistemica/*` (Comparsa, Reinado y Deportes, con el contenido estático de
-  `app/data/semana-sistemica.ts`), `contacto`, `login` (redirige al panel), páginas informativas.
+  `app/data/semana-sistemica.ts`), `ponencias-especializadas` (ponentes y temas, datos estáticos de
+  `app/data/ponencias-especializadas.ts`), `inscripcion-ponencias` (inscripción a ponencias
+  especializadas con las ponencias y cupos del backend), `contacto`, `login` (redirige al panel),
+  páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
-  `usePlanes`, `useCatalogos`, `useConsultation` (DNI), `useVerificacionEstudiante`,
+  `usePlanes`, `useCatalogos`, `usePonenciasEspecializadas`, `useConsultation` (DNI), `useVerificacionEstudiante`,
   `useCorreoGoogle` + `useGoogleIdentity` (Google opcional), `useConfiguracionSitio`.
 - `app/utils/`: lógica pura y probada (rutas del sitio, inscripción, verificación, Google, errores).
 - `server/api/publico/*`: BFF hacia `/api/v1/site/*` (ver [`docs/arquitectura.md`](docs/arquitectura.md)).
@@ -62,6 +65,12 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Terminología: la «modalidad» de asistencia **no es** `ModalidadPago` (`banco` | `billetera`, en el pago) ni
   las tarjetas «Modalidad 0N» de `/planes` (categorías), ni el «fotocheck virtual» del portal. Ver
   `specs/005-modalidad-virtual/`.
+- **Ponencias especializadas** (spec 006; contrato en la spec 019 del backend): la página
+  `/inscripcion-ponencias` es **plana** (una carpeta `pages/ponencias-especializadas/` convertiría en ruta padre
+  a la página estática `ponencias-especializadas.vue` y la rompería). Solo ofrece las gratuitas con cupo; en cada
+  horario se elige una (elegir otra del mismo horario reemplaza a la anterior); el servidor decide cupos,
+  cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. Solo el
+  documento es obligatorio. Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales
@@ -108,7 +117,8 @@ Puertos locales: landing 3000 · panel 3001 · backend-ciisic 3010 · API_UNDC 3
 Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Specs:
 `specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
 `specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
-(tab «Semana Sistémica») y `specs/005-modalidad-virtual/` (modalidad de asistencia virtual).
+(tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual) y
+`specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

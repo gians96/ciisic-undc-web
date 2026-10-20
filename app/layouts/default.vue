@@ -124,11 +124,12 @@ watch(
 // MENÚS DESPLEGABLES (ESCRITORIO)
 // ============================================================================
 
-const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas"];
+const RUTAS_PONENCIAS = ["/ponentes", "/ponencias-especializadas", "/inscripcion-ponencias"];
 
 const MENU_PONENCIAS = [
   { label: "Congreso", href: "/ponentes", icon: "heroicons:user-group" },
   { label: "Ponencias especializadas", href: "/ponencias-especializadas", icon: "heroicons:presentation-chart-bar" },
+  { label: "Inscripción a ponencias", href: "/inscripcion-ponencias", icon: "heroicons:ticket" },
 ];
 
 const ponenciasActivo = computed(() => rutaEnGrupo(route.path, RUTAS_PONENCIAS));
