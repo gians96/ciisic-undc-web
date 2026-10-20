@@ -1,7 +1,8 @@
 // ============================================================================
 // DELEGACIONES: registro público de una delegación con representante y pago conjunto
 // backend-ciisic `POST /api/v1/site/delegations` — contrato en
-// backend-ciisic/specs/018-delegaciones/contracts/api-delegaciones.md
+// backend-ciisic/specs/018-delegaciones/contracts/api-delegaciones.md y
+// specs/019-tipos-delegacion/contracts/api-tipos-delegacion.md
 // ============================================================================
 
 export type TipoDocumentoDelegacion = 'dni' | 'ce'
@@ -53,10 +54,20 @@ export interface PagoDelegacion {
 export interface RegistroDelegacion {
   /** Link de una delegación ya creada por el staff: el registro se suma a ese grupo. */
   codigoLink?: string | null
+  /** Tipo elegido en la tarjeta (spec 019): lo guarda el backend en la delegación y en el grupo. */
+  tipoInscripcionId?: number | null
   delegacion: DatosDelegacion
   representante: RepresentanteDelegacion
   participantes: FilaParticipante[]
   pago: PagoDelegacion
+}
+
+/** Tipo de delegación elegido en la tarjeta (Delegación General / Promocional; spec 019). */
+export interface TipoDelegacionResumido {
+  id: number
+  codigo: string
+  nombre: string
+  etiqueta: string | null
 }
 
 /** Tarifa por defecto de las delegaciones del evento (la muestra el formulario). */
@@ -78,6 +89,8 @@ export interface DelegacionPorLink {
   precioPromocional: number
   precioUnitario: number
   totalIntegrantes: number
+  /** Tipo ya elegido al crearla (spec 019): precarga la tarjeta correspondiente. */
+  tipoInscripcion: TipoDelegacionResumido | null
 }
 
 /** Respuesta del registro (`201`): el monto total lo calcula el backend. */

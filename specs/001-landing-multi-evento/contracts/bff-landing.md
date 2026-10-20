@@ -80,7 +80,9 @@ Reglas comunes:
 - `/api/publico/delegaciones` registra una delegación completa (delegación + lista de
   participantes + un solo pago con voucher). El endpoint del backend sigue el contrato propuesto
   de `docs/DELEGACIONES.md`; si aún no existe, el backend responde `404` y la landing informa
-  que el registro estará disponible próximamente.
+  que el registro estará disponible próximamente. El cuerpo incluye `tipoInscripcionId` (tipo de
+  la categoría `DELEGACIONES` elegido en la tarjeta, spec 019 de backend-ciisic: `delegacion_general`
+  o `delegacion_grupal`); el BFF solo lo reenvía, sin interpretarlo.
 
 Errores que genera el propio BFF (misma forma `{ success: false, code, message }`):
 

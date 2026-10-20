@@ -13,6 +13,8 @@ import type {
   RepresentanteDelegacion,
   TarifaDelegaciones,
 } from '../types/delegaciones'
+import type { CaracteristicaPlan } from '../types/evento'
+import type { PlanInscripcion } from './planes'
 import { CAMPO_VOUCHER, fechaHoyLima, normalizarFechaPago, validarArchivoVoucher } from './inscripcion'
 import { esCorreoValido } from './verificacion'
 
@@ -145,6 +147,66 @@ export function estimadoTotal(tarifa: TarifaDelegaciones, cantidad: number): num
   return Math.round(unitario * cantidad * 100) / 100
 }
 
+// ─── Tarjetas de tipo de delegación (spec 019) ─────────────────────────────
+
+/** Códigos de contrato de la categoría `DELEGACIONES` (spec 019 de backend-ciisic). */
+export const CODIGOS_TIPO_DELEGACION = {
+  general: 'delegacion_general',
+  promocional: 'delegacion_grupal',
+} as const
+
+/** Tarjeta que ofrece el formulario para elegir el tipo de delegación. */
+export interface TarjetaTipoDelegacion {
+  id: number
+  codigo: string
+  titulo: string
+  badge: string
+  precio: number
+  descripcion: string
+  caracteristicas: CaracteristicaPlan[]
+}
+
+type PlanTipoDelegacion = Pick<PlanInscripcion, 'id' | 'codigo' | 'title' | 'badge' | 'basePrice' | 'description' | 'features'>
+
+/**
+ * Las dos tarjetas del contrato, en su orden (General → Promocional), tomadas de los planes de
+ * la categoría `DELEGACIONES`. Si falta alguna, no aparece: la vista avisa por separado.
+ */
+export function tarjetasDelegacion(planes: readonly PlanTipoDelegacion[]): TarjetaTipoDelegacion[] {
+  const porCodigo = new Map(planes.map(plan => [plan.codigo, plan]))
+  return [CODIGOS_TIPO_DELEGACION.general, CODIGOS_TIPO_DELEGACION.promocional]
+    .flatMap((codigo) => {
+      const plan = porCodigo.get(codigo)
+      return plan ? [{
+        id: plan.id,
+        codigo: plan.codigo,
+        titulo: plan.title,
+        badge: plan.badge,
+        precio: plan.basePrice,
+        descripcion: plan.description,
+        caracteristicas: plan.features,
+      }] : []
+    })
+}
+
+/** El evento ofrece las dos tarjetas obligatorias (spec 019). */
+export function tiposDelegacionCompletos(tarjetas: readonly TarjetaTipoDelegacion[]): boolean {
+  return tarjetas.length === 2
+}
+
+/** Qué falta configurar, con los códigos que el staff debe activar en el panel. */
+export function mensajeTiposDelegacionFaltantes(tarjetas: readonly TarjetaTipoDelegacion[]): string {
+  const faltantes = [CODIGOS_TIPO_DELEGACION.general, CODIGOS_TIPO_DELEGACION.promocional]
+    .filter(codigo => !tarjetas.some(tarjeta => tarjeta.codigo === codigo))
+  return `Los tipos de delegación aún no están disponibles en el sistema (${faltantes.join(' y ')}, categoría DELEGACIONES). Pídeselo a la organización antes de registrar el grupo.`
+}
+
+/** El tipo elegido tiene que ser una de las tarjetas ofrecidas; `null` si aún no se elige. */
+export function validarTipoDelegacion(tarjetas: readonly TarjetaTipoDelegacion[], elegido: number | null): string | null {
+  if (elegido === null) return 'Elige el tipo de delegación.'
+  return tarjetas.some(tarjeta => tarjeta.id === elegido) ? null : 'Elige un tipo de delegación válido.'
+}
+
 const espacios = (texto: string) => String(texto ?? '').replace(/\s+/g, ' ').trim()
 
 // ─── Carga masiva por texto ────────────────────────────────────────────────
@@ -265,6 +327,11 @@ export function aRegistroDelegacion(datos: RegistroDelegacion): FormData {
   // Con link, el registro se suma a la delegación que el staff ya creó (su tarifa y su mínimo).
   const codigoLink = String(datos.codigoLink ?? '').trim()
   if (codigoLink) cuerpo.append('codigoLink', codigoLink)
+  // Tipo elegido en la tarjeta (spec 019): lo guarda el backend en la delegación y en el grupo.
+  const tipoInscripcionId = Number(datos.tipoInscripcionId)
+  if (Number.isInteger(tipoInscripcionId) && tipoInscripcionId > 0) {
+    cuerpo.append('tipoInscripcionId', String(tipoInscripcionId))
+  }
   cuerpo.append('delegacion', JSON.stringify({
     nombre: espacios(nombre),
     institucion: espacios(institucion) || null,

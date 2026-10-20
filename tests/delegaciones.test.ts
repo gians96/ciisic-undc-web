@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { FilaParticipante, RepresentanteDelegacion } from '../app/types/delegaciones'
+import type { PlanInscripcion } from '../app/utils/planes'
 import {
   MAXIMO_PARTICIPANTES_DELEGACION,
   aRegistroDelegacion,
@@ -7,14 +8,18 @@ import {
   erroresParticipante,
   erroresRepresentante,
   estimadoTotal,
+  mensajeTiposDelegacionFaltantes,
   normalizarParticipantes,
   normalizarRepresentante,
   parsearParticipantesDelegacion,
   precioUnitarioDelegacion,
+  tarjetasDelegacion,
+  tiposDelegacionCompletos,
   validarDatosDelegacion,
   validarFilasParticipantes,
   validarPagoDelegacion,
   validarRepresentante,
+  validarTipoDelegacion,
 } from '../app/utils/delegaciones'
 
 // Forma de una fila completa y válida (mismas reglas que el backend)
@@ -296,8 +301,14 @@ describe('aRegistroDelegacion', () => {
     expect(archivoVoucher.name).toBe('voucher.pdf')
   })
 
-  it('no manda el tipo de inscripción: la tarifa la pone la delegación', () => {
+  it('sin el tipo elegido no manda tipoInscripcionId (cliente antiguo sigue funcionando)', () => {
     expect(aRegistroDelegacion(registro()).get('tipoInscripcionId')).toBeNull()
+  })
+
+  it('con el tipo elegido manda tipoInscripcionId (spec 019)', () => {
+    expect(aRegistroDelegacion({ ...registro(), tipoInscripcionId: 31 }).get('tipoInscripcionId')).toBe('31')
+    // Un id absurdo no se manda: el backend validaría y respondería 422
+    expect(aRegistroDelegacion({ ...registro(), tipoInscripcionId: 0 }).get('tipoInscripcionId')).toBeNull()
   })
 
   it('con link manda el código para que el registro se sume a esa delegación', () => {
@@ -318,5 +329,69 @@ describe('aRegistroDelegacion', () => {
     expect(cuerpo.get('billeteraDigital')).toBe('yape')
     expect(cuerpo.get('banco')).toBeNull()
     expect(cuerpo.get('tipoOperacion')).toBeNull()
+  })
+})
+
+// ─── Tarjetas de tipo de delegación (spec 019) ──────────────────────────────
+
+const planTipo = (cambios: Partial<PlanInscripcion> = {}): PlanInscripcion => ({
+  id: 31,
+  codigo: 'delegacion_general',
+  title: 'Delegación General',
+  badge: '',
+  basePrice: 60,
+  institutionalPrice: 60,
+  description: 'Precio estándar por debajo del mínimo de integrantes.',
+  features: [],
+  categoria: 'DELEGACIONES',
+  esEstudiantil: false,
+  disponiblePara: 'TODOS',
+  ...cambios,
+})
+
+describe('tarjetasDelegacion', () => {
+  it('arma las dos tarjetas del contrato en su orden (General → Promocional)', () => {
+    const tarjetas = tarjetasDelegacion([
+      planTipo({ id: 32, codigo: 'delegacion_grupal', title: 'Delegación Promocional', basePrice: 50 }),
+      planTipo(),
+    ])
+    expect(tarjetas.map(tarjeta => tarjeta.codigo)).toEqual(['delegacion_general', 'delegacion_grupal'])
+    expect(tarjetas[0]).toMatchObject({ id: 31, titulo: 'Delegación General', precio: 60 })
+    expect(tarjetas[1]).toMatchObject({ id: 32, titulo: 'Delegación Promocional', precio: 50 })
+    expect(tiposDelegacionCompletos(tarjetas)).toBe(true)
+  })
+
+  it('copia el badge y las características para la tarjeta', () => {
+    const [tarjeta] = tarjetasDelegacion([planTipo({ badge: 'GENERAL', features: [{ icon: 'heroicons:users', text: 'Hasta 9 personas al precio estándar' }] })])
+    expect(tarjeta).toMatchObject({ badge: 'GENERAL', caracteristicas: [{ icon: 'heroicons:users', text: 'Hasta 9 personas al precio estándar' }] })
+  })
+
+  it('omite las tarjetas que falten y avisa con los códigos del contrato', () => {
+    const tarjetas = tarjetasDelegacion([planTipo()])
+    expect(tarjetas).toHaveLength(1)
+    expect(tiposDelegacionCompletos(tarjetas)).toBe(false)
+    const mensaje = mensajeTiposDelegacionFaltantes(tarjetas)
+    expect(mensaje).toContain('delegacion_grupal')
+    expect(mensaje).not.toContain('delegacion_general')
+  })
+
+  it('ignora los planes de otras categorías', () => {
+    expect(tarjetasDelegacion([planTipo({ codigo: 'general_sin_kit' })])).toEqual([])
+    expect(tiposDelegacionCompletos([])).toBe(false)
+    expect(mensajeTiposDelegacionFaltantes([])).toContain('delegacion_general y delegacion_grupal')
+  })
+})
+
+describe('validarTipoDelegacion', () => {
+  const tarjetas = tarjetasDelegacion([
+    planTipo(),
+    planTipo({ id: 32, codigo: 'delegacion_grupal', title: 'Delegación Promocional', basePrice: 50 }),
+  ])
+
+  it('pide elegir el tipo y valida que el id sea de las tarjetas ofrecidas', () => {
+    expect(validarTipoDelegacion(tarjetas, null)).toBe('Elige el tipo de delegación.')
+    expect(validarTipoDelegacion(tarjetas, 31)).toBeNull()
+    expect(validarTipoDelegacion(tarjetas, 32)).toBeNull()
+    expect(validarTipoDelegacion(tarjetas, 999)).toBe('Elige un tipo de delegación válido.')
   })
 })

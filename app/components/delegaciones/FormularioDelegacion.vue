@@ -95,9 +95,34 @@
         </div>
       </section>
 
-      <!-- 3. Integrantes -->
+      <!-- 3. Tipo de delegación (spec 019 de backend-ciisic) -->
       <section class="support-card rounded-2xl p-6 sm:p-8">
-        <h2 class="text-xl font-bold text-white">3. Integrantes de la delegación</h2>
+        <h2 class="text-xl font-bold text-white">3. Tipo de delegación</h2>
+        <p class="mt-1 leading-relaxed text-slate-300">Elige cómo se registra tu grupo. El tipo queda guardado en la delegación y en cada inscripción; el precio por persona sigue la misma regla de siempre.</p>
+
+        <p v-if="cargandoTipos" class="mt-4 rounded-xl border border-white/10 p-4 text-sm text-slate-300" aria-live="polite">Cargando los tipos de delegación…</p>
+
+        <div v-else-if="!tiposListos" class="mt-4 rounded-xl border border-rose-400/40 bg-rose-400/10 p-4 text-sm text-rose-200" role="alert">
+          {{ mensajeTiposFaltantes }}
+        </div>
+
+        <template v-else>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2" role="radiogroup" aria-label="Tipo de delegación" aria-required="true">
+            <DelegacionesTarjetaTipoDelegacion
+              v-for="tarjeta in tarjetas"
+              :key="tarjeta.id"
+              :tipo="tarjeta"
+              :activa="tipoElegido === tarjeta.id"
+              @actualizar="elegirTipo"
+            />
+          </div>
+          <p v-if="erroresVisibles && tipoElegido === null" class="mensaje-error">Elige el tipo de delegación.</p>
+        </template>
+      </section>
+
+      <!-- 4. Integrantes -->
+      <section class="support-card rounded-2xl p-6 sm:p-8">
+        <h2 class="text-xl font-bold text-white">4. Integrantes de la delegación</h2>
         <p class="mt-1 leading-relaxed text-slate-300">
           Agrega a todas las personas que integran tu grupo (hasta {{ MAXIMO_PARTICIPANTES_DELEGACION }} por registro).
         </p>
@@ -178,9 +203,9 @@
         </button>
       </section>
 
-      <!-- 4. Pago -->
+      <!-- 5. Pago -->
       <section class="support-card rounded-2xl p-6 sm:p-8">
-        <h2 class="text-xl font-bold text-white">4. Pago del total</h2>
+        <h2 class="text-xl font-bold text-white">5. Pago del total</h2>
         <p class="mt-1 leading-relaxed text-slate-300">Un solo pago cubre a todos los integrantes. El monto exacto lo confirma el sistema al registrar.</p>
 
         <div v-if="!hayMediosDePago" class="mt-4 rounded-xl border border-white/10 p-4 text-sm text-slate-300">
@@ -258,7 +283,7 @@
         </template>
       </section>
 
-      <!-- 5. Resumen y envío -->
+      <!-- 6. Resumen y envío -->
       <section class="support-card rounded-2xl p-6 sm:p-8">
         <h2 class="text-xl font-bold text-white">Resumen</h2>
         <dl class="mt-4 grid gap-4 sm:grid-cols-3">
@@ -266,6 +291,7 @@
           <div><dt class="text-xs font-bold uppercase tracking-wider text-slate-400">Precio por persona</dt><dd class="mt-1 text-white">{{ formatearSoles(precioUnitarioVigente) }}</dd></div>
           <div><dt class="text-xs font-bold uppercase tracking-wider text-slate-400">Estimado total</dt><dd class="mt-1 text-white">{{ formatearSoles(estimado) }}</dd></div>
         </dl>
+        <p v-if="tipoElegido !== null" class="mt-2 text-sm text-slate-300">Tipo de delegación: {{ nombreTipoElegido }}.</p>
         <p class="mt-2 text-sm text-slate-300">Estimado: {{ formatearSoles(precioUnitarioVigente) }} × {{ totalIntegrantes }} integrantes. El monto definitivo lo calcula y confirma el sistema al registrar.</p>
 
         <p v-if="mensajeError" class="mt-4 rounded-xl border border-rose-400/40 bg-rose-400/10 p-3 text-sm text-rose-200" role="alert">{{ mensajeError }}</p>
@@ -293,12 +319,16 @@ import {
   erroresParticipante,
   erroresRepresentante,
   estimadoTotal,
+  mensajeTiposDelegacionFaltantes,
   parsearParticipantesDelegacion,
   precioUnitarioDelegacion,
+  tarjetasDelegacion,
+  tiposDelegacionCompletos,
   validarDatosDelegacion,
   validarFilasParticipantes,
   validarPagoDelegacion,
   validarRepresentante,
+  validarTipoDelegacion,
 } from '~/utils/delegaciones'
 import { VOUCHER_ACCEPT, fechaHoyLima, validarArchivoVoucher } from '~/utils/inscripcion'
 import { formatearSoles, nombreBilletera, titularBilletera, urlQrBilletera } from '~/utils/formato'
@@ -312,6 +342,8 @@ const props = defineProps<{ codigoLink?: string }>()
 const { evento } = useEvento()
 const { tarifa } = useTarifaDelegaciones()
 const { delegacion } = useDelegacionPorLink(() => props.codigoLink)
+// Tarjetas de tipo de delegación (spec 019): la categoría DELEGACIONES del evento.
+const { planes: planesTipoDelegacion, cargando: cargandoTipos } = usePlanes('DELEGACIONES')
 
 const datos = ref<DatosDelegacion>({ nombre: '', institucion: '' })
 const representante = ref<RepresentanteDelegacion>({
@@ -387,6 +419,17 @@ const estimado = computed(() => {
 const errores = computed(() => filas.value.map(fila => erroresParticipante(fila)))
 const erroresDelegacion = computed(() => erroresDatosDelegacion(datos.value))
 const erroresDelRepresentante = computed(() => erroresRepresentante(representante.value))
+
+/** Tipo de delegación elegido en la tarjeta (id del tipo de inscripción, spec 019). */
+const tipoElegido = ref<number | null>(null)
+const tarjetas = computed(() => tarjetasDelegacion(planesTipoDelegacion.value))
+const tiposListos = computed(() => tiposDelegacionCompletos(tarjetas.value))
+const mensajeTiposFaltantes = computed(() => mensajeTiposDelegacionFaltantes(tarjetas.value))
+const nombreTipoElegido = computed(() => tarjetas.value.find(tarjeta => tarjeta.id === tipoElegido.value)?.titulo ?? '')
+
+function elegirTipo(id: number) {
+  tipoElegido.value = id
+}
 
 const avisoCantidad = computed(() => {
   const t = tarifaVigente.value
@@ -481,6 +524,11 @@ async function enviar() {
 
   const errorRepresentanteDatos = validarRepresentante(representante.value)
   const errorDelegacion = validarDatosDelegacion(datos.value)
+  const errorTipo = cargandoTipos.value
+    ? 'Espera a que carguen los tipos de delegación.'
+    : !tiposListos.value
+      ? mensajeTiposFaltantes.value
+      : validarTipoDelegacion(tarjetas.value, tipoElegido.value)
   const errorLista = validarFilasParticipantes(filas.value)
   const errorPago = validarPagoDelegacion({
     modalidadPago: medio.value.modalidad ?? 'banco',
@@ -491,7 +539,7 @@ async function enviar() {
     fechaPago: fechaPago.value,
     voucher: archivoVoucher.value,
   })
-  const error = errorRepresentanteDatos ?? errorDelegacion ?? errorLista ?? errorPago
+  const error = errorRepresentanteDatos ?? errorDelegacion ?? errorTipo ?? errorLista ?? errorPago
   if (error) {
     mensajeError.value = error
     return
@@ -501,6 +549,7 @@ async function enviar() {
   try {
     const cuerpo = aRegistroDelegacion({
       codigoLink: props.codigoLink ?? null,
+      tipoInscripcionId: tipoElegido.value,
       delegacion: datos.value,
       representante: representante.value,
       participantes: filas.value,
@@ -534,6 +583,14 @@ watch(delegacion, (valor) => {
     representante.value.apellidos = partes.at(-1) ?? ''
   }
 }, { immediate: true })
+
+// Si la delegación del link ya eligió tipo, precarga esa tarjeta (puede llegar después que los tipos).
+watch([tarjetas, delegacion], () => {
+  const codigo = delegacion.value?.tipoInscripcion?.codigo
+  if (!codigo || tipoElegido.value !== null) return
+  const coincidencia = tarjetas.value.find(tarjeta => tarjeta.codigo === codigo)
+  if (coincidencia) tipoElegido.value = coincidencia.id
+})
 </script>
 
 <style scoped>
