@@ -32,6 +32,8 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 | `POST /api/publico/inscripciones` (multipart) | `POST /site/inscriptions` | no |
 | `POST /api/publico/ponencias` (multipart) | `POST /site/papers` | no |
 | `POST /api/publico/contacto` | `POST /site/contact` | no |
+| `GET /api/publico/ponencias-especializadas` | `GET /site/specialized-talks` (ponencias publicadas con `cuposDisponibles`) | 15 s |
+| `POST /api/publico/ponencias-especializadas/inscripciones` | `POST /site/specialized-talk-registrations` (JSON `{ asistente, ponenciaIds }`, todo o nada) | no |
 
 Los errores nunca se guardan en caché. Sin token o sin URL del backend: `503 SITE_NOT_CONFIGURED`.
 

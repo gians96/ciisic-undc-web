@@ -34,6 +34,7 @@
             ><NuxtLink to="/cronograma">Cronograma</NuxtLink
             ><NuxtLink to="/ponentes">Ponencias · Congreso</NuxtLink
             ><NuxtLink to="/ponencias-especializadas">Ponencias especializadas</NuxtLink
+            ><NuxtLink to="/inscripcion-ponencias">Inscripción a ponencias</NuxtLink
             ><NuxtLink to="/sede">Sede</NuxtLink
             ><NuxtLink v-for="item in SEMANA_SISTEMICA_MENU" :key="item.id" :to="item.href"
               >Semana Sistémica · {{ item.label }}</NuxtLink

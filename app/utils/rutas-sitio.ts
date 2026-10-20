@@ -17,4 +17,8 @@ export const rutasSitio = {
   inscripciones: '/api/publico/inscripciones',
   ponencias: '/api/publico/ponencias',
   contacto: '/api/publico/contacto',
+  /** Ponencias especializadas publicadas, con sus cupos (backend `GET /specialized-talks`). */
+  ponenciasEspecializadas: '/api/publico/ponencias-especializadas',
+  /** Inscripción a 1–4 ponencias, todo o nada (backend `POST /specialized-talk-registrations`). */
+  inscripcionPonenciasEspecializadas: '/api/publico/ponencias-especializadas/inscripciones',
 } as const
