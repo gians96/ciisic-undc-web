@@ -35,6 +35,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Cyber Clash, Encuentro de Egresados y Deportes, con el contenido estático de `app/data/semana-sistemica.ts`), 
   `ponencias-especializadas` (ponentes y temas, datos estáticos de `app/data/ponencias-especializadas.ts`), 
   `inscripcion-ponencias` (inscripción a ponencias especializadas con las ponencias y cupos del backend), 
+  `delegaciones` (inscripción de delegaciones con vouchers múltiples; **oculta**, sin enlaces), 
   `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `usePonenciasEspecializadas`, `useConsultation` (DNI), `useVerificacionEstudiante`,
@@ -80,6 +81,14 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
   obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
   Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
+- **Delegaciones** (spec 008; contrato en la spec 023 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin
+  enlaces en el menú ni en el pie; el delegado recibe el link por correo). Registro nuevo en `/delegaciones`; con
+  `/delegaciones?delegacion=<código>` el delegado ve su grupo y **solo agrega** integrantes y vouchers (sin borrar ni
+  editar). **El backend decide el tipo y el precio**: la landing solo envía la `modalidad` (Presencial: S/ 60 con menos de
+  10 integrantes y S/ 50 desde 10; Virtual: S/ 30 sin escalas, y solo se ofrece si `tarifa.virtual` no es `null`) y el monto
+  que dice cada voucher; el total en pantalla es un estimado (`estimarGrupo`). Hasta 6 vouchers por envío, un archivo por
+  voucher en el mismo orden que sus datos (multipart `pagos` + `vouchers`; el BFF admite 6 × 5 MB). Un DNI de 7 dígitos
+  (Excel pierde el cero) se completa a 8 (`normalizarDni`). El BFF valida el código del link (`codigoLinkValido`).
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales
@@ -127,8 +136,9 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 `specs/001-landing-multi-evento/` (landing multi-evento + BFF), `specs/002-google-en-inscripcion/`,
 `specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
 (tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual),
-`specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas) y
-`specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC).
+`specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas),
+`specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC) y
+`specs/008-delegaciones/` (inscripción de delegaciones, página oculta).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

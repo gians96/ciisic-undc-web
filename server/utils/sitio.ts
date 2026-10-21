@@ -8,6 +8,7 @@ import {
   CuerpoDemasiadoGrande,
   LIMITE_JSON_BYTES,
   LIMITE_MULTIPART_BYTES,
+  codigoLinkValido,
   configuracionFaltante,
   errorSitio,
   excedeLongitudDeclarada,
@@ -142,4 +143,9 @@ export async function reenviarCuerpoSitio(event: H3Event, ruta: string, opciones
   }
 
   return responderSitio(event, peticion)
+}
+
+/** El `:codigo` de la ruta si es un código de link válido; `null` si no (la ruta responde 404). */
+export function codigoDelegacion(event: H3Event): string | null {
+  return codigoLinkValido(getRouterParam(event, 'codigo'))
 }

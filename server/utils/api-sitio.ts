@@ -259,3 +259,12 @@ export async function leerCuerpoLimitado(flujo: AsyncIterable<Uint8Array | strin
   }
   return Buffer.concat(partes, total)
 }
+
+/** Hasta 6 vouchers de 5 MB en una sola petición de delegación, más los campos de texto. */
+export const LIMITE_DELEGACION_BYTES = 6 * 5 * 1024 * 1024 + 512 * 1024
+
+/** Código del link de una delegación (el backend los genera de 16 hexadecimales): sin otros caracteres en la ruta. */
+export function codigoLinkValido(valor: unknown): string | null {
+  const codigo = String(valor ?? '').trim()
+  return /^[A-Za-z0-9_-]{6,100}$/.test(codigo) ? codigo : null
+}
