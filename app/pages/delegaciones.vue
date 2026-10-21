@@ -118,7 +118,7 @@
 
         <form class="space-y-5" novalidate @submit.prevent="enviarIntegrantes">
           <h3 class="text-xl font-bold">Agregar integrantes</h3>
-          <IntegrantesEditor v-model="filas" :errores="erroresFilas" />
+          <DelegacionesIntegrantesEditor v-model="filas" :errores="erroresFilas" />
           <p class="text-sm text-slate-300">
             <strong class="text-white">{{ integrantesNuevos }}</strong> por agregar → {{ vista.totalIntegrantes + integrantesNuevos }} en total ×
             <strong class="text-white">{{ formatearSoles(estimadoLink.precioUnitario) }}</strong> = <strong class="text-white">{{ formatearSoles(estimadoLink.total) }}</strong>
@@ -132,7 +132,7 @@
 
         <form class="space-y-5" novalidate @submit.prevent="enviarPagos">
           <h3 class="text-xl font-bold">Agregar vouchers</h3>
-          <PagosEditor v-model="pagos" :datos-pago="datosPago" :errores="erroresPagos" />
+          <DelegacionesPagosEditor v-model="pagos" :datos-pago="datosPago" :errores="erroresPagos" />
           <button type="submit" class="btn btn-primary" :disabled="enviandoPagos">
             <Icon v-if="enviandoPagos" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" aria-hidden="true" />
             {{ enviandoPagos ? 'Enviando…' : 'Enviar vouchers' }}
@@ -232,7 +232,7 @@
             Cada uno recibirá su credencial en su correo.
           </p>
         </div>
-        <IntegrantesEditor v-model="filas" :errores="erroresFilas" />
+        <DelegacionesIntegrantesEditor v-model="filas" :errores="erroresFilas" />
         <p v-if="errores.integrantes" class="del-error" role="alert">{{ errores.integrantes }}</p>
       </section>
 
@@ -258,7 +258,7 @@
           <h2 id="titulo-pago" class="mt-2 text-3xl font-bold tracking-tight">Tus vouchers de pago</h2>
           <p class="mt-2 text-slate-300">Paga el total de tu delegación y sube el voucher. Si pagas en partes, sube uno por cada pago.</p>
         </div>
-        <PagosEditor v-model="pagos" :datos-pago="datosPago" :errores="erroresPagos" />
+        <DelegacionesPagosEditor v-model="pagos" :datos-pago="datosPago" :errores="erroresPagos" />
         <p v-if="tarifa && cantidad" class="text-sm" :class="saldoNuevo > 0.005 ? 'text-amber-200' : 'text-emerald-200'">
           Total {{ formatearSoles(estimado.total) }} · declarado en vouchers {{ formatearSoles(declarado) }} · {{ textoSaldo(saldoNuevo) }}
         </p>
@@ -331,8 +331,10 @@ const erroresDelegado = ref<ErroresFormulario>({})
 const erroresFilas = ref<Record<number, ErroresFormulario>>({})
 const erroresPagos = ref<Record<number, ErroresFormulario>>({})
 
-const filas = ref<FilaIntegrante[]>([filaVacia()])
-const pagos = ref<PagoFormulario[]>([pagoVacio()])
+// Las filas y los vouchers nacen vacíos y la primera fila se agrega al montar: sus claves vienen de un contador y
+// el servidor y el navegador no coincidirían al hidratar (los `for`/`id` de los campos llevan la clave)
+const filas = ref<FilaIntegrante[]>([])
+const pagos = ref<PagoFormulario[]>([])
 
 // ─── Link de una delegación existente ───
 const vista = ref<DelegacionVisible | null>(null)
@@ -550,6 +552,8 @@ async function copiarEnlace(codigoLink: string) {
 }
 
 onMounted(async () => {
+  if (!filas.value.length) filas.value = [filaVacia()]
+  if (!pagos.value.length) pagos.value = [pagoVacio()]
   await Promise.all([cargarTarifa(), cargarLink()])
   if (!datosPago.value) void recargarEvento()
 })
