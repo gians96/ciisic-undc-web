@@ -63,6 +63,18 @@ export function erroresRepresentante(representante: RepresentanteDelegacion): Er
 const documento = (fila: FilaParticipante) => `${fila.tipoDocumento}:${String(fila.numeroDocumento ?? '').trim()}`
 
 /**
+ * La fila está completamente vacía (la que trae el formulario al abrir o una a medio borrar):
+ * ningún dato escrito cuenta, el tipo de documento por defecto no.
+ */
+export function esFilaVacia(fila: FilaParticipante): boolean {
+  return !String(fila.numeroDocumento ?? '').trim()
+    && !String(fila.nombres ?? '').trim()
+    && !String(fila.apellidos ?? '').trim()
+    && !String(fila.correo ?? '').trim()
+    && !String(fila.celular ?? '').trim()
+}
+
+/**
  * Validación de la lista completa: al menos un integrante, sin superar el máximo, sin documentos
  * ni correos repetidos y con todos los campos válidos. Devuelve el primer problema en español.
  */

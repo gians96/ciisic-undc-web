@@ -8,6 +8,7 @@ import {
   erroresParticipante,
   erroresRepresentante,
   estimadoTotal,
+  esFilaVacia,
   mensajeTiposDelegacionFaltantes,
   normalizarParticipantes,
   normalizarRepresentante,
@@ -97,6 +98,17 @@ describe('representante', () => {
     expect(erroresRepresentante(representante({ correo: 'no-correo' })).correo).toBe('Ingresa un correo válido')
     expect(erroresRepresentante(representante({ celular: '' })).celular).toBeUndefined()
     expect(validarRepresentante(representante({ nombres: '' }))).toContain('Datos del representante')
+  })
+})
+
+describe('esFilaVacia', () => {
+  it('la fila con la que abre el formulario está vacía (no cuenta el tipo de documento)', () => {
+    expect(esFilaVacia({ tipoDocumento: 'dni', numeroDocumento: '', nombres: '', apellidos: '', correo: '', celular: '' })).toBe(true)
+    expect(esFilaVacia(fila())).toBe(false)
+    // Con todo en blanco (aunque haya espacios) la fila se descarta
+    expect(esFilaVacia({ tipoDocumento: 'ce', numeroDocumento: '  ', nombres: '  ', apellidos: ' ', correo: '', celular: '\t' })).toBe(true)
+    // Con cualquier dato escrito la fila se conserva al pegar la lista
+    expect(esFilaVacia(fila({ celular: '999888777', numeroDocumento: '', nombres: '', apellidos: '', correo: '' }))).toBe(false)
   })
 })
 

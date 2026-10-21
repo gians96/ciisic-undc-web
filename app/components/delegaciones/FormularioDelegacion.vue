@@ -319,6 +319,7 @@ import {
   erroresParticipante,
   erroresRepresentante,
   estimadoTotal,
+  esFilaVacia,
   mensajeTiposDelegacionFaltantes,
   parsearParticipantesDelegacion,
   precioUnitarioDelegacion,
@@ -487,6 +488,14 @@ function cargarLista() {
     erroresCarga.value = errores
     return
   }
+  // La fila vacía con la que abre el formulario (o cualquier fila sin datos) se descarta:
+  // si no, quedaría un hueco numerado entre los integrantes pegados.
+  const conContenido = filas.value
+    .map((fila, indice) => ({ fila, tocada: tocadas.value[indice] ?? false }))
+    .filter(({ fila }) => !esFilaVacia(fila))
+  filas.value = conContenido.map(({ fila }) => fila)
+  tocadas.value = conContenido.map(({ tocada }) => tocada)
+
   const existentes = new Set(filas.value.map(fila => `${fila.tipoDocumento}:${fila.numeroDocumento}`))
   let agregadas = 0
   for (const fila of nuevas) {
