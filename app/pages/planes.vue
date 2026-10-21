@@ -24,22 +24,23 @@
           <p class="mt-4 flex-1 leading-relaxed text-slate-300">Para egresados, profesionales, investigadores y toda persona interesada en el congreso.</p>
           <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
         </NuxtLink>
-        <!-- Categoría FI_UNDC del panel (planes «Solo UNDC»): franja compacta a todo el ancho -->
-        <NuxtLink to="/fi-undc" class="plan-card group flex flex-col gap-5 rounded-[1.75rem] p-6 sm:flex-row sm:items-center sm:gap-6 sm:px-9 sm:py-7 md:col-span-2 lg:col-span-3">
-          <span class="icon-tile inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"><Icon name="heroicons:building-library" class="h-6 w-6" /></span>
+        <!-- Categoría FI_UNDC del panel (planes «Solo UNDC») -->
+        <NuxtLink to="/fi-undc" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9">
+          <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:building-library" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
+          <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 03</p>
+          <h2 class="mt-2 text-3xl font-bold text-white">Docentes, egresados y administrativos</h2>
+          <p class="mt-4 flex-1 leading-relaxed text-slate-300">Facultad de Ingeniería de la UNDC. Inscríbete con tu correo @{{ dominioInstitucional }}.</p>
+          <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
+        </NuxtLink>
+        <!-- Delegaciones: franja compacta a todo el ancho -->
+        <NuxtLink to="/delegaciones" class="plan-card group flex flex-col gap-5 rounded-[1.75rem] p-6 sm:flex-row sm:items-center sm:gap-6 sm:px-9 sm:py-7 md:col-span-2 lg:col-span-3">
+          <span class="icon-tile inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"><Icon name="heroicons:user-group" class="h-6 w-6" /></span>
           <div class="min-w-0 flex-1">
-            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 03</p>
-            <h2 class="mt-1 text-2xl font-bold text-white">Docentes, egresados y administrativos</h2>
-            <p class="mt-1 text-sm leading-relaxed text-slate-300">Facultad de Ingeniería de la UNDC. Inscríbete con tu correo @{{ dominioInstitucional }}.</p>
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 04</p>
+            <h2 class="mt-1 text-2xl font-bold text-white">Delegaciones</h2>
+            <p class="mt-1 text-sm leading-relaxed text-slate-300">Inscripción para delegaciones universitarias e institucionales: el representante registra a todo su grupo y paga el total en un solo voucher.</p>
           </div>
           <span class="inline-flex shrink-0 items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5 transition group-hover:translate-x-1" /></span>
-        </NuxtLink>
-        <NuxtLink to="/delegaciones" class="plan-card group flex flex-col rounded-[1.75rem] p-7 sm:p-9 md:col-span-2 lg:col-span-1">
-          <div class="flex items-start justify-between"><span class="icon-tile inline-flex h-14 w-14 items-center justify-center rounded-2xl"><Icon name="heroicons:user-group" class="h-7 w-7" /></span><Icon name="heroicons:arrow-up-right" class="h-6 w-6 text-slate-400 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary-300" /></div>
-          <p class="mt-9 text-xs font-bold uppercase tracking-[.2em] text-primary-300">Modalidad 04</p>
-          <h2 class="mt-2 text-3xl font-bold text-white">Delegaciones</h2>
-          <p class="mt-4 flex-1 leading-relaxed text-slate-300">Inscripción para delegaciones universitarias e institucionales: el representante registra a todo su grupo y paga el total en un solo voucher.</p>
-          <span class="mt-9 inline-flex items-center gap-2 font-bold text-primary-300">Continuar inscripción <Icon name="heroicons:arrow-right" class="h-5 w-5" /></span>
         </NuxtLink>
       </div>
 
