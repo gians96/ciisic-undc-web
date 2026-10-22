@@ -1,16 +1,34 @@
 // ============================================================================
 // DELEGACIONES — BFF /api/publico/delegaciones/* → backend /api/v1/site/delegations/*
-// Contrato: backend-ciisic/specs/023-delegaciones-convenio/contracts/api-delegaciones-convenio.md
+// Contrato: backend-ciisic/specs/029-delegaciones-planes/contracts/api-delegaciones-planes.md
 // ============================================================================
 import type { ModalidadAsistencia } from './evento'
 import type { ModalidadPago, TipoDocumentoApi, TipoOperacion } from './inscription'
 
-/** `GET /delegations/tarifa`: la tarifa virtual es `null` mientras el evento no tenga su tipo. */
-export interface TarifaDelegaciones {
-  minIntegrantes: number
-  precioEstandar: number
-  precioPromocional: number
-  virtual: { precio: number } | null
+/** Planes de una delegación (spec 029): cada integrante elige uno. */
+export type CodigoPlan = 'CON_KIT' | 'SIN_KIT' | 'VIRTUAL'
+
+/** Un plan en la vista del delegado (con su estado y cuántos integrantes lo tienen). */
+export interface PlanVisible {
+  codigo: CodigoPlan
+  etiqueta: string | null
+  modalidad: ModalidadAsistencia
+  activo: boolean
+  precio: number
+  /** `null` = sin escala. Desde `minIntegrantes` el plan cobra este precio. */
+  precioPromocional: number | null
+  /** Lo que paga hoy cada integrante de este plan. */
+  precioUnitario: number
+  integrantes: number
+}
+
+/** Un plan activo en la vista del link individual. */
+export interface PlanPublico {
+  codigo: CodigoPlan
+  etiqueta: string | null
+  modalidad: ModalidadAsistencia
+  precio: number
+  precioPromocional: number | null
 }
 
 export type EstadoPagoDelegacion = 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO'
@@ -30,6 +48,7 @@ export interface IntegranteVisible {
   /** Enmascarado: solo se ven los últimos dígitos. */
   documento: string
   estado: string
+  plan: CodigoPlan | null
 }
 
 export interface PagoVisible {
@@ -43,32 +62,59 @@ export interface PagoVisible {
   creadoEn: string
 }
 
+export interface EventoDelegacion {
+  id: number
+  codigo: string
+  nombre: string
+  nombreCorto?: string
+  inscripcionesAbiertas: boolean
+  estado: string
+}
+
 /** Lo que ve el delegado con su link (sin el correo ni el teléfono del delegado). */
 export interface DelegacionVisible {
   id: number
   nombre: string
   codigoLink: string
+  /** Link individual para compartirlo con el grupo; `null` si está apagado. */
+  codigoInscripcion: string | null
   institucion: string | null
-  modalidad: ModalidadAsistencia
   representanteNombre: string | null
-  evento: { id: number, codigo: string, nombre: string, nombreCorto?: string, inscripcionesAbiertas: boolean, estado: string }
+  evento: EventoDelegacion
+  /** Dominio de los correos (`unac.edu.pe`); `null` = cualquiera. */
+  dominioCorreo: string | null
   minIntegrantes: number
-  precioEstandar: number
-  precioPromocional: number
-  precioUnitario: number
+  planes: PlanVisible[]
   totalIntegrantes: number
   montoTotal: number
   faltanParaPromocional: number | null
-  tipoInscripcion: { id: number, codigo: string, nombre: string, etiqueta: string | null } | null
   pago: ResumenPagoDelegacion
   integrantes: IntegranteVisible[]
   pagos: PagoVisible[]
-  /** Solo en la respuesta de un registro o de una carga de integrantes. */
+  /** Solo en la respuesta de una carga de integrantes. */
   registrados?: number
   omitidos?: number
 }
 
-/** Un integrante del formulario. */
+/** Lo que ve quien abre el link individual: el grupo, el dominio y los planes activos. */
+export interface DelegacionPublica {
+  nombre: string
+  institucion: string | null
+  evento: EventoDelegacion & { fechaInicio?: string, fechaFin?: string }
+  dominioCorreo: string | null
+  minIntegrantes: number
+  planes: PlanPublico[]
+}
+
+/** Respuesta de la inscripción individual. */
+export interface InscripcionIndividualRespuesta {
+  delegacion: { nombre: string }
+  plan: { codigo: CodigoPlan, etiqueta: string | null, modalidad: ModalidadAsistencia }
+  registrados: number
+  omitidos: number
+}
+
+/** Un integrante del formulario del delegado. */
 export interface FilaIntegrante {
   /** Clave estable para `v-for`. */
   clave: number
@@ -78,6 +124,8 @@ export interface FilaIntegrante {
   apellidos: string
   correo: string
   celular: string
+  /** Plan elegido; `''` mientras no se elige (el servidor asume el único plan activo). */
+  plan: CodigoPlan | ''
   /** Mensaje de la última consulta DNI (vacío si se completó). */
   aviso: string
   buscando: boolean
@@ -96,15 +144,16 @@ export interface PagoFormulario {
   archivo: File | null
 }
 
-/** El delegado del formulario. */
-export interface FormularioDelegado {
+/** El integrante que se inscribe solo con el link individual. */
+export interface FormularioInscripcionIndividual {
   tipoDocumento: TipoDocumentoApi
   numeroDocumento: string
   nombres: string
   apellidos: string
+  /** Con dominio: solo lo que va antes de la `@`. Sin dominio: el correo completo. */
   correo: string
   celular: string
-  esIntegrante: boolean
+  plan: CodigoPlan | ''
 }
 
 export type ErroresFormulario = Record<string, string>

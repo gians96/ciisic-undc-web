@@ -35,7 +35,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Cyber Clash, Encuentro de Egresados y Deportes, con el contenido estático de `app/data/semana-sistemica.ts`), 
   `ponencias-especializadas` (ponentes y temas, datos estáticos de `app/data/ponencias-especializadas.ts`), 
   `inscripcion-ponencias` (inscripción a ponencias especializadas con las ponencias y cupos del backend), 
-  `delegaciones` (inscripción de delegaciones con vouchers múltiples; **oculta**, sin enlaces), 
+  `delegaciones` (delegaciones con planes propios: vista del delegado, link individual de cada integrante y vouchers múltiples; **oculta**, sin enlaces), 
   `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `usePonenciasEspecializadas`, `useConsultation` (DNI), `useVerificacionEstudiante`,
@@ -81,14 +81,15 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
   obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
   Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
-- **Delegaciones** (spec 008; contrato en la spec 023 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin
-  enlaces en el menú ni en el pie; el delegado recibe el link por correo). Registro nuevo en `/delegaciones`; con
-  `/delegaciones?delegacion=<código>` el delegado ve su grupo y **solo agrega** integrantes y vouchers (sin borrar ni
-  editar). **El backend decide el tipo y el precio**: la landing solo envía la `modalidad` (Presencial: S/ 60 con menos de
-  10 integrantes y S/ 50 desde 10; Virtual: S/ 30 sin escalas, y solo se ofrece si `tarifa.virtual` no es `null`) y el monto
-  que dice cada voucher; el total en pantalla es un estimado (`estimarGrupo`). Hasta 6 vouchers por envío, un archivo por
-  voucher en el mismo orden que sus datos (multipart `pagos` + `vouchers`; el BFF admite 6 × 5 MB). Un DNI de 7 dígitos
-  (Excel pierde el cero) se completa a 8 (`normalizarDni`). El BFF valida el código del link (`codigoLinkValido`).
+- **Delegaciones** (specs 008 y 010; contrato en la spec 029 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin enlaces en el menú ni en el pie; el delegado
+  recibe el link por correo) y **ya no crea delegaciones**: las crea el staff con sus **planes y precios propios** (Con kit, Sin kit y Virtual). Tiene tres estados según el parámetro:
+  `?delegacion=<código>` (el delegado ve su grupo, sus planes y **solo agrega** integrantes —cada uno con su plan— y vouchers; sin borrar ni editar; ve el link individual para compartirlo),
+  `?unirme=<código>` (**link individual**: cada integrante se inscribe solo, elige su plan y, si la delegación tiene `dominioCorreo`, escribe **solo el prefijo** del correo con el dominio a la vista;
+  **sin Google**; el pago es del grupo) y sin parámetro (aviso para pedir el link). **El backend decide el tipo y el precio**: la landing solo envía el `plan` (`CON_KIT`, `SIN_KIT` o `VIRTUAL`) y,
+  en el link individual, `correoPrefijo` (con dominio) o `correo`; el total en pantalla es un estimado por plan (`estimarGrupo`, con el precio promocional solo en los planes que lo tienen). Con varios
+  planes activos cada integrante elige el suyo; con uno solo ya viene elegido. En el link del delegado el correo se completa con el dominio y debe terminar en él (`EMAIL_DOMAIN_NOT_ALLOWED`).
+  Hasta 6 vouchers por envío, un archivo por voucher en el mismo orden que sus datos (multipart `pagos` + `vouchers`; el BFF admite 6 × 5 MB). Un DNI de 7 dígitos (Excel pierde el cero) se completa a 8
+  (`normalizarDni`). El BFF valida el código del link (`codigoLinkValido`); el individual va por `/api/publico/delegaciones/unirse/:codigo`. **Backend 029 primero.**
 - Google es **opcional**: prueba el correo y autocompleta; no cambia precios ni bloquea la
   inscripción si falla.
 - La consulta DNI, si falla, permite escribir los nombres; el backend usa los nombres oficiales
@@ -138,7 +139,8 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 (tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual),
 `specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas),
 `specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC) y
-`specs/008-delegaciones/` (inscripción de delegaciones, página oculta).
+`specs/008-delegaciones/` (inscripción de delegaciones, página oculta) y
+`specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

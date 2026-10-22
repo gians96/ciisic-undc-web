@@ -21,14 +21,14 @@ export const rutasSitio = {
   ponenciasEspecializadas: '/api/publico/ponencias-especializadas',
   /** Inscripción a 1–4 ponencias, todo o nada (backend `POST /specialized-talk-registrations`). */
   inscripcionPonenciasEspecializadas: '/api/publico/ponencias-especializadas/inscripciones',
-  /** Tarifa de las delegaciones por modalidad (backend `GET /delegations/tarifa`). */
-  delegacionesTarifa: '/api/publico/delegaciones/tarifa',
-  /** Registro de una delegación con sus integrantes y vouchers (backend `POST /delegations`). */
-  delegaciones: '/api/publico/delegaciones',
   /** La delegación de un link (backend `GET /delegations/link/:codigo`). */
   delegacion: (codigo: string) => `/api/publico/delegaciones/${encodeURIComponent(codigo)}`,
   /** El delegado suma integrantes con su link (backend `POST …/link/:codigo/participants`). */
   delegacionIntegrantes: (codigo: string) => `/api/publico/delegaciones/${encodeURIComponent(codigo)}/integrantes`,
   /** El delegado suma vouchers con su link (backend `POST …/link/:codigo/payments`). */
   delegacionPagos: (codigo: string) => `/api/publico/delegaciones/${encodeURIComponent(codigo)}/pagos`,
+  /** El link individual: el grupo, el dominio y los planes activos (backend `GET …/join/:codigo`). */
+  delegacionUnirse: (codigo: string) => `/api/publico/delegaciones/unirse/${encodeURIComponent(codigo)}`,
+  /** El link individual: un integrante se inscribe solo (backend `POST …/join/:codigo/participants`). */
+  delegacionInscribirme: (codigo: string) => `/api/publico/delegaciones/unirse/${encodeURIComponent(codigo)}/participante`,
 } as const

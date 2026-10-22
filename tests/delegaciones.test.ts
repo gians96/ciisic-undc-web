@@ -1,47 +1,68 @@
 import { describe, expect, it } from 'vitest'
-import type { FormularioDelegado, PagoFormulario, TarifaDelegaciones } from '../app/types/delegaciones'
+import type { FormularioInscripcionIndividual, PagoFormulario, PlanVisible } from '../app/types/delegaciones'
 import {
-  CAMPO_VOUCHERS, construirFormDataPagos, construirFormDataRegistro, delegadoVacio, documentoLimpio, erroresPorIntegrante, estimarGrupo,
-  filaEnBlanco, filaVacia, integrantesParaEnviar, mensajeErrorDelegacion, normalizarDni, pagosParaEnviar, pagoVacio, tarifaDeVista, textoSaldo,
-  validarDelegado, validarIntegrantes, validarPago,
+  CAMPO_VOUCHERS, cantidadesPorPlan, construirFormDataPagos, correoCompleto, documentoLimpio, erroresInscripcionIndividual, erroresPorIntegrante, estimarGrupo,
+  filaEnBlanco, filaVacia, inscripcionIndividualParaEnviar, inscripcionIndividualVacia, integrantesParaEnviar, mensajeErrorDelegacion, normalizarDni, pagosParaEnviar,
+  pagoVacio, planesActivos, planPorDefecto, precioUnitarioPlan, prefijoDeCorreo, textoPrecioPlan, textoSaldo, validarInscripcionIndividual, validarIntegrantes, validarPago,
 } from '../app/utils/delegaciones'
 import { parsearListaIntegrantes } from '../app/utils/lista-integrantes'
 import { codigoLinkValido, LIMITE_DELEGACION_BYTES, LIMITE_MULTIPART_BYTES } from '../server/utils/api-sitio'
 
-const TARIFA: TarifaDelegaciones = { minIntegrantes: 10, precioEstandar: 60, precioPromocional: 50, virtual: { precio: 30 } }
-
 const archivo = (nombre = 'voucher.pdf', tamano = 1024) => new File([new Uint8Array(tamano)], nombre, { type: 'application/pdf' })
-
-const delegado = (extra: Partial<FormularioDelegado> = {}): FormularioDelegado => ({
-  tipoDocumento: 'dni', numeroDocumento: '23715269', nombres: 'Ángel', apellidos: 'Almidón Elescano', correo: 'Angel.Almidon@unh.edu.pe', celular: '990866060', esIntegrante: true, ...extra,
-})
 
 const pago = (extra: Partial<PagoFormulario> = {}): PagoFormulario => ({
   ...pagoVacio(), billeteraDigital: 'yape', numeroOperacion: 'OP-123', fechaPago: '2026-10-15', monto: 250, archivo: archivo(), ...extra,
 })
 
-describe('estimado en vivo', () => {
-  it.each([
-    [0, 60, 0, 10, false], [1, 60, 60, 9, false], [9, 60, 540, 1, false], [10, 50, 500, null, true], [24, 50, 1200, null, true],
-  ])('presencial con %i integrantes: S/ %i c/u, total %i', (cantidad, unitario, total, faltan, promocional) => {
-    expect(estimarGrupo('PRESENCIAL', cantidad, TARIFA)).toEqual({ precioUnitario: unitario, total, faltan, promocional })
+const plan = (codigo: PlanVisible['codigo'], precio: number, extra: Partial<PlanVisible> = {}): PlanVisible => ({
+  codigo, etiqueta: codigo, modalidad: codigo === 'VIRTUAL' ? 'VIRTUAL' : 'PRESENCIAL', activo: true, precio, precioPromocional: null, precioUnitario: precio, integrantes: 0, ...extra,
+})
+const CON_KIT = plan('CON_KIT', 80)
+const SIN_KIT = plan('SIN_KIT', 60, { precioPromocional: 50 })
+const VIRTUAL = plan('VIRTUAL', 30)
+
+describe('precio y estimado por plan', () => {
+  it.each([[0, 60], [9, 60], [10, 50], [24, 50]])('con %i integrantes un plan con promocional cobra %i', (total, esperado) => {
+    expect(precioUnitarioPlan(60, 50, 10, total)).toBe(esperado)
   })
 
-  it('virtual paga la tarifa única sin escalas', () => {
-    expect(estimarGrupo('VIRTUAL', 3, TARIFA)).toEqual({ precioUnitario: 30, total: 90, faltan: null, promocional: false })
-    expect(estimarGrupo('VIRTUAL', 24, TARIFA)).toEqual({ precioUnitario: 30, total: 720, faltan: null, promocional: false })
+  it('sin promocional, o con uno que no rebaja, cobra siempre el precio', () => {
+    expect(precioUnitarioPlan(80, null, 10, 40)).toBe(80)
+    expect(precioUnitarioPlan(60, 60, 10, 40)).toBe(60)
   })
 
-  it('una cantidad inválida cuenta como cero', () => {
-    expect(estimarGrupo('PRESENCIAL', Number.NaN, TARIFA).total).toBe(0)
-    expect(estimarGrupo('PRESENCIAL', -2, TARIFA).total).toBe(0)
+  it('un grupo mixto cobra a cada integrante el precio de su plan', () => {
+    const planes = [CON_KIT, SIN_KIT, VIRTUAL]
+    expect(estimarGrupo(planes, { CON_KIT: 2, SIN_KIT: 3, VIRTUAL: 1 }, 10)).toMatchObject({ integrantes: 6, total: 2 * 80 + 3 * 60 + 30, faltan: 4 })
+    const alto = estimarGrupo(planes, { CON_KIT: 2, SIN_KIT: 8, VIRTUAL: 0 }, 10)
+    // Al llegar al mínimo solo el plan con promocional baja
+    expect(alto).toMatchObject({ integrantes: 10, total: 2 * 80 + 8 * 50, faltan: null })
+    expect(alto.unitarios).toEqual({ CON_KIT: 80, SIN_KIT: 50, VIRTUAL: 30 })
   })
 
-  it('una delegación ya registrada estima con su propia tarifa', () => {
-    const tarifa = tarifaDeVista({ modalidad: 'VIRTUAL', minIntegrantes: 10, precioEstandar: 30, precioPromocional: 30 })
-    expect(tarifa.virtual).toEqual({ precio: 30 })
-    expect(estimarGrupo('VIRTUAL', 5, tarifa).total).toBe(150)
-    expect(tarifaDeVista({ modalidad: 'PRESENCIAL', minIntegrantes: 10, precioEstandar: 60, precioPromocional: 50 }).virtual).toBeNull()
+  it('sin escala no avisa cuántos faltan; una cantidad inválida cuenta como cero', () => {
+    expect(estimarGrupo([CON_KIT, VIRTUAL], { CON_KIT: 1 }, 10).faltan).toBeNull()
+    expect(estimarGrupo([CON_KIT], { CON_KIT: -3 }, 10)).toMatchObject({ integrantes: 0, total: 0 })
+    expect(estimarGrupo([CON_KIT], { CON_KIT: 2.9 }, 10)).toMatchObject({ integrantes: 2, total: 160 })
+  })
+
+  it('lista los planes activos y precarga el único; con varios hay que elegir', () => {
+    expect(planesActivos([CON_KIT, { ...SIN_KIT, activo: false }]).map(p => p.codigo)).toEqual(['CON_KIT'])
+    expect(planPorDefecto([CON_KIT, { ...SIN_KIT, activo: false }, { ...VIRTUAL, activo: false }])).toBe('CON_KIT')
+    expect(planPorDefecto([CON_KIT, SIN_KIT])).toBe('')
+    expect(planPorDefecto([])).toBe('')
+  })
+
+  it('cuenta los integrantes por plan; sin plan elegido toman el único activo', () => {
+    const filas = [{ ...filaVacia('CON_KIT'), numeroDocumento: '70000001' }, { ...filaVacia(), numeroDocumento: '70000002' }, filaVacia('SIN_KIT')]
+    expect(cantidadesPorPlan(filas, 'SIN_KIT')).toEqual({ CON_KIT: 1, SIN_KIT: 1 })
+    expect(cantidadesPorPlan(filas, '')).toEqual({ CON_KIT: 1 })
+  })
+
+  it('describe el precio de un plan con su escala', () => {
+    expect(textoPrecioPlan({ precio: 80, precioPromocional: null }, 10)).toBe('S/ 80.00')
+    expect(textoPrecioPlan({ precio: 60, precioPromocional: 50 }, 10)).toBe('S/ 60.00 · S/ 50.00 desde 10 integrantes')
+    expect(textoPrecioPlan({ precio: 60, precioPromocional: 60 }, 10)).toBe('S/ 60.00')
   })
 
   it('el saldo se describe como falta, sobra o al día', () => {
@@ -65,32 +86,29 @@ describe('documentos', () => {
   })
 })
 
-describe('validación del delegado', () => {
-  it('un delegado completo no tiene errores', () => {
-    expect(validarDelegado(delegado())).toEqual({})
+describe('correo con dominio', () => {
+  it('con dominio, un texto sin @ se completa; con @ se respeta; siempre en minúsculas', () => {
+    expect(correoCompleto(' AQuispe ', 'unac.edu.pe')).toBe('aquispe@unac.edu.pe')
+    expect(correoCompleto('ana@gmail.com', 'unac.edu.pe')).toBe('ana@gmail.com')
+    expect(correoCompleto('Ana@Example.com', null)).toBe('ana@example.com')
+    expect(correoCompleto('ana', null)).toBe('ana')
+    expect(correoCompleto('  ', 'unac.edu.pe')).toBe('')
   })
 
-  it('el DNI de 7 dígitos se acepta (se completa a 8)', () => {
-    expect(validarDelegado(delegado({ numeroDocumento: '7969419' }))).toEqual({})
-  })
-
-  it('exige documento, nombres, apellidos, correo y celular', () => {
-    const errores = validarDelegado(delegadoVacio())
-    expect(Object.keys(errores).sort()).toEqual(['apellidos', 'celular', 'correo', 'nombres', 'numeroDocumento'])
-  })
-
-  it('el celular peruano tiene 9 dígitos y empieza con 9', () => {
-    expect(validarDelegado(delegado({ celular: '812345678' })).celular).toBeTruthy()
-    expect(validarDelegado(delegado({ celular: '990 866 060' })).celular).toBeUndefined()
+  it('el prefijo se queda con lo de antes de la @ solo si el correo es del dominio', () => {
+    expect(prefijoDeCorreo('AQuispe@UNAC.edu.pe', 'unac.edu.pe')).toBe('aquispe')
+    expect(prefijoDeCorreo('ana@gmail.com', 'unac.edu.pe')).toBe('ana@gmail.com')
+    expect(prefijoDeCorreo('ana', 'unac.edu.pe')).toBe('ana')
+    expect(prefijoDeCorreo('ana@unac.edu.pe', null)).toBe('ana@unac.edu.pe')
   })
 })
 
 describe('validación de integrantes', () => {
   const fila = (extra: Record<string, string> = {}) => ({ ...filaVacia(), numeroDocumento: '70000001', nombres: 'Ana', apellidos: 'Ríos', correo: 'ana@example.com', ...extra })
 
-  it('ignora las filas en blanco', () => {
-    expect(filaEnBlanco(filaVacia())).toBe(true)
-    expect(validarIntegrantes([filaVacia(), filaVacia()])).toEqual({})
+  it('ignora las filas en blanco, aunque traigan el plan precargado', () => {
+    expect(filaEnBlanco(filaVacia('CON_KIT'))).toBe(true)
+    expect(validarIntegrantes([filaVacia(), filaVacia('SIN_KIT')], { pedirPlan: true })).toEqual({})
   })
 
   it('señala los campos que faltan en una fila con datos', () => {
@@ -98,32 +116,94 @@ describe('validación de integrantes', () => {
     expect(Object.keys(validarIntegrantes([incompleta])[incompleta.clave] ?? {}).sort()).toEqual(['apellidos', 'correo', 'nombres', 'numeroDocumento'])
   })
 
-  it('detecta documentos y correos repetidos, también contra el delegado', () => {
+  it('detecta documentos y correos repetidos', () => {
     const a = fila()
     const b = fila({ nombres: 'Luis' })
     const errores = validarIntegrantes([a, b])
     expect(errores[b.clave]?.numeroDocumento).toMatch(/repetido/)
     expect(errores[b.clave]?.correo).toMatch(/repetido/)
     expect(errores[a.clave]).toBeUndefined()
-
-    const contraDelegado = validarIntegrantes([fila({ numeroDocumento: '23715269', correo: 'otro@example.com' })], delegado())
-    expect(Object.values(contraDelegado)[0]?.numeroDocumento).toMatch(/repetido/)
-    const correoDelegado = validarIntegrantes([fila({ correo: 'angel.almidon@unh.edu.pe' })], delegado())
-    expect(Object.values(correoDelegado)[0]?.correo).toMatch(/repetido/)
   })
 
-  it('limpia las filas para enviar: DNI de 7 dígitos, correo en minúsculas y celular solo con dígitos', () => {
-    const con = { ...filaVacia(), numeroDocumento: ' 7969419 ', nombres: ' Janeth  Bertha ', apellidos: 'Mariño', correo: ' JANETH@unat.edu.pe ', celular: '954 825 216' }
-    expect(integrantesParaEnviar([filaVacia(), con])).toEqual([{
-      tipoDocumento: 'dni', numeroDocumento: '07969419', nombres: 'Janeth Bertha', apellidos: 'Mariño', correo: 'janeth@unat.edu.pe', celular: '954825216',
+  it('con varios planes activos cada integrante debe elegir el suyo', () => {
+    const sinPlan = fila()
+    expect(validarIntegrantes([sinPlan], { pedirPlan: true })[sinPlan.clave]?.plan).toMatch(/plan/i)
+    expect(validarIntegrantes([{ ...sinPlan, plan: 'CON_KIT' }], { pedirPlan: true })).toEqual({})
+    // Con un solo plan activo no se pide
+    expect(validarIntegrantes([sinPlan], { pedirPlan: false })).toEqual({})
+  })
+
+  it('con dominio el correo se completa con él y debe terminar en el dominio', () => {
+    const prefijo = fila({ correo: 'aquispe' })
+    expect(validarIntegrantes([prefijo], { dominio: 'unac.edu.pe' })).toEqual({})
+    const otro = fila({ correo: 'ana@gmail.com' })
+    expect(validarIntegrantes([otro], { dominio: 'unac.edu.pe' })[otro.clave]?.correo).toMatch(/@unac\.edu\.pe/)
+  })
+
+  it('limpia las filas para enviar: DNI de 7 dígitos, correo completo en minúsculas, celular solo con dígitos y el plan', () => {
+    const con = { ...filaVacia('SIN_KIT'), numeroDocumento: ' 7969419 ', nombres: ' Janeth  Bertha ', apellidos: 'Mariño', correo: ' JANETH ', celular: '954 825 216' }
+    expect(integrantesParaEnviar([filaVacia(), con], 'unat.edu.pe')).toEqual([{
+      tipoDocumento: 'dni', numeroDocumento: '07969419', nombres: 'Janeth Bertha', apellidos: 'Mariño', correo: 'janeth@unat.edu.pe', celular: '954825216', plan: 'SIN_KIT',
     }])
+    // Sin plan elegido no se envía la clave (el servidor asume el único plan activo)
+    expect(integrantesParaEnviar([{ ...con, plan: '' }], 'unat.edu.pe')[0]).not.toHaveProperty('plan')
   })
 
   it('traduce los errores del backend por posición a la fila correspondiente', () => {
     const errores = erroresPorIntegrante({ 'participantes[1].correo': 'Correo de otra persona', 'participantes[0].numeroDocumento': 'Ya inscrito', 'representante.correo': 'x' }, 1)
-    // Con el delegado como integrante 1, la posición 1 del backend es la fila 0 del formulario y la posición 0 es el delegado
     expect(errores).toEqual({ 0: { correo: 'Correo de otra persona' } })
     expect(erroresPorIntegrante({ 'participantes[2].correo': 'x' })).toEqual({ 2: { correo: 'x' } })
+    expect(erroresPorIntegrante({ 'participantes[3].plan': 'Elige un plan' })).toEqual({ 3: { plan: 'Elige un plan' } })
+  })
+})
+
+describe('inscripción con el link individual', () => {
+  const planes = [{ codigo: 'CON_KIT' as const }, { codigo: 'SIN_KIT' as const }]
+  const form = (extra: Partial<FormularioInscripcionIndividual> = {}): FormularioInscripcionIndividual => ({
+    ...inscripcionIndividualVacia(), tipoDocumento: 'dni', numeroDocumento: '70000001', nombres: 'Ana', apellidos: 'Quispe', correo: 'aquispe', celular: '', plan: 'SIN_KIT', ...extra,
+  })
+
+  it('un formulario completo con dominio no tiene errores: basta el prefijo', () => {
+    expect(validarInscripcionIndividual(form(), { dominio: 'unac.edu.pe', planes })).toEqual({})
+    // Pegar el correo completo del dominio también se acepta
+    expect(validarInscripcionIndividual(form({ correo: 'aquispe@unac.edu.pe' }), { dominio: 'unac.edu.pe', planes })).toEqual({})
+  })
+
+  it('con dominio rechaza un correo de otro dominio y un prefijo inválido', () => {
+    expect(validarInscripcionIndividual(form({ correo: 'ana@gmail.com' }), { dominio: 'unac.edu.pe', planes }).correo).toMatch(/@unac\.edu\.pe/)
+    expect(validarInscripcionIndividual(form({ correo: 'a b' }), { dominio: 'unac.edu.pe', planes }).correo).toBeTruthy()
+    expect(validarInscripcionIndividual(form({ correo: '' }), { dominio: 'unac.edu.pe', planes }).correo).toBeTruthy()
+  })
+
+  it('sin dominio exige el correo completo', () => {
+    expect(validarInscripcionIndividual(form({ correo: 'ana@example.com' }), { dominio: null, planes })).toEqual({})
+    expect(validarInscripcionIndividual(form({ correo: 'ana' }), { dominio: null, planes }).correo).toBeTruthy()
+  })
+
+  it('exige los datos y el plan cuando hay varios; el celular es opcional pero válido', () => {
+    expect(Object.keys(validarInscripcionIndividual(inscripcionIndividualVacia(), { dominio: 'unac.edu.pe', planes })).sort()).toEqual(['apellidos', 'correo', 'nombres', 'numeroDocumento', 'plan'])
+    expect(validarInscripcionIndividual(form({ plan: '' }), { dominio: 'unac.edu.pe', planes: [planes[0]!] }).plan).toBeUndefined()
+    expect(validarInscripcionIndividual(form({ celular: '812345678' }), { dominio: 'unac.edu.pe', planes }).celular).toBeTruthy()
+    expect(validarInscripcionIndividual(form({ celular: '990 866 060' }), { dominio: 'unac.edu.pe', planes }).celular).toBeUndefined()
+  })
+
+  it('el cuerpo con dominio lleva el prefijo y nunca el correo completo, precios ni tipos', () => {
+    const cuerpo = inscripcionIndividualParaEnviar(form({ numeroDocumento: ' 7969419 ', correo: 'AQuispe@UNAC.edu.pe', nombres: ' Ana  María ', celular: '990 866 060' }), 'unac.edu.pe')
+    expect(cuerpo).toEqual({ tipoDocumento: 'dni', numeroDocumento: '07969419', nombres: 'Ana María', apellidos: 'Quispe', celular: '990866060', correoPrefijo: 'aquispe', plan: 'SIN_KIT' })
+    expect(JSON.stringify(cuerpo)).not.toMatch(/precio|monto|tipoInscripcion|@/)
+  })
+
+  it('el cuerpo sin dominio lleva el correo completo y, sin plan elegido, no lleva plan', () => {
+    const cuerpo = inscripcionIndividualParaEnviar(form({ correo: ' Ana@Example.com ', plan: '' }), null)
+    expect(cuerpo).toMatchObject({ correo: 'ana@example.com' })
+    expect(cuerpo).not.toHaveProperty('plan')
+    expect(cuerpo).not.toHaveProperty('correoPrefijo')
+  })
+
+  it('traduce los errores del backend de la persona a su campo', () => {
+    expect(erroresInscripcionIndividual({ 'participantes[0].correo': 'Debe terminar en @unac.edu.pe', 'participantes[0].plan': 'Plan no disponible', correo: 'Escribe tu correo completo' }))
+      .toEqual({ correo: 'Escribe tu correo completo', plan: 'Plan no disponible' })
+    expect(erroresInscripcionIndividual(undefined)).toEqual({})
   })
 })
 
@@ -169,49 +249,15 @@ describe('validación de vouchers', () => {
   })
 })
 
-describe('multipart', () => {
-  const datos = () => ({
-    modalidad: 'VIRTUAL' as const,
-    delegacion: { nombre: ' Ing.   de Sistemas ', institucion: 'UNAT' },
-    delegado: delegado(),
-    integrantes: [{ ...filaVacia(), numeroDocumento: '70000001', nombres: 'Ana', apellidos: 'Ríos', correo: 'ana@example.com', celular: '' }, filaVacia()],
-    pagos: [pago(), pago({ modalidadPago: 'banco', banco: 'bcp', tipoOperacion: 'interbancario', numeroOperacion: 'BCP-9', monto: 100, archivo: archivo('dos.pdf') })],
-  })
-
-  it('el registro lleva los campos del contrato y nunca precios ni tipos', () => {
-    const cuerpo = construirFormDataRegistro(datos())
-    expect([...cuerpo.keys()].filter(clave => clave !== CAMPO_VOUCHERS).sort()).toEqual(['delegacion', 'modalidad', 'pagos', 'participantes', 'representante'])
-    expect(cuerpo.get('modalidad')).toBe('VIRTUAL')
-    expect(JSON.parse(String(cuerpo.get('delegacion')))).toEqual({ nombre: 'Ing. de Sistemas', institucion: 'UNAT' })
-    expect(JSON.parse(String(cuerpo.get('representante')))).toEqual({
-      nombres: 'Ángel', apellidos: 'Almidón Elescano', tipoDocumento: 'dni', numeroDocumento: '23715269', correo: 'angel.almidon@unh.edu.pe', celular: '990866060', esIntegrante: true,
-    })
-    // La fila en blanco no se envía
-    expect(JSON.parse(String(cuerpo.get('participantes')))).toHaveLength(1)
-    const texto = JSON.stringify([...cuerpo.entries()].filter(([clave]) => clave !== CAMPO_VOUCHERS))
-    // El monto de cada voucher es lo que dice el voucher; el precio, el total y el tipo los decide el servidor
-    expect(texto).not.toMatch(/precio|tipoInscripcion|montoTotal/i)
-  })
-
-  it('lleva un archivo por pago, en el mismo orden', () => {
-    const cuerpo = construirFormDataRegistro(datos())
-    const pagos = JSON.parse(String(cuerpo.get('pagos'))) as Array<Record<string, unknown>>
-    expect(pagos).toEqual([
+describe('multipart de vouchers', () => {
+  it('lleva un archivo por pago, en el mismo orden, y solo pagos y archivos', () => {
+    const cuerpo = construirFormDataPagos([pago(), pago({ modalidadPago: 'banco', banco: 'bcp', tipoOperacion: 'interbancario', numeroOperacion: 'BCP-9', monto: 100, archivo: archivo('dos.pdf') })])
+    expect([...cuerpo.keys()].sort()).toEqual(['pagos', CAMPO_VOUCHERS, CAMPO_VOUCHERS].sort())
+    expect(JSON.parse(String(cuerpo.get('pagos')))).toEqual([
       { modalidadPago: 'billetera', billeteraDigital: 'yape', numeroOperacion: 'OP-123', fechaPago: '2026-10-15', monto: 250 },
       { modalidadPago: 'banco', banco: 'bcp', tipoOperacion: 'interbancario', numeroOperacion: 'BCP-9', fechaPago: '2026-10-15', monto: 100 },
     ])
-    const archivos = cuerpo.getAll(CAMPO_VOUCHERS) as File[]
-    expect(archivos.map(a => a.name)).toEqual(['voucher.pdf', 'dos.pdf'])
-  })
-
-  it('con el link va el código; sin él, no', () => {
-    expect(construirFormDataRegistro({ ...datos(), codigoLink: 'abc123def456' }).get('codigoLink')).toBe('abc123def456')
-    expect(construirFormDataRegistro(datos()).has('codigoLink')).toBe(false)
-  })
-
-  it('los vouchers de un link llevan solo pagos y archivos', () => {
-    const cuerpo = construirFormDataPagos([pago()])
-    expect([...cuerpo.keys()].sort()).toEqual(['pagos', CAMPO_VOUCHERS].sort())
+    expect((cuerpo.getAll(CAMPO_VOUCHERS) as File[]).map(a => a.name)).toEqual(['voucher.pdf', 'dos.pdf'])
     expect(pagosParaEnviar([pago({ monto: '' })])[0]?.monto).toBe(0)
   })
 })
@@ -221,10 +267,13 @@ describe('errores de la API', () => {
     ['DELEGATION_NOT_FOUND', /link/],
     ['OPERATION_ALREADY_REGISTERED', /operación/],
     ['REGISTRATION_CLOSED', /cerradas/],
-    ['DELEGATION_MODALITY_NOT_AVAILABLE', /virtual/],
     ['EMAIL_IN_USE', /correo/],
+    ['EMAIL_DOMAIN_NOT_ALLOWED', /dominio/],
+    ['PLAN_REQUIRED', /plan/i],
+    ['DELEGATION_PLAN_NOT_AVAILABLE', /plan/i],
+    ['DELEGATION_WITHOUT_PLANS', /planes/],
   ])('%s tiene su mensaje', (code, patron) => {
-    expect(mensajeErrorDelegacion({ statusCode: 409, code })).toMatch(patron)
+    expect(mensajeErrorDelegacion({ statusCode: 422, code })).toMatch(patron)
   })
 
   it('un código desconocido cae en el mensaje general y la red caída en el de conexión', () => {

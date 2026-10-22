@@ -34,9 +34,9 @@ Navegador ──► landing (Nuxt SSR + Nitro) ──X-Api-Key (token del evento
 | `POST /api/publico/contacto` | `POST /site/contact` | no |
 | `GET /api/publico/ponencias-especializadas` | `GET /site/specialized-talks` (ponencias publicadas con `cuposDisponibles`) | 15 s |
 | `POST /api/publico/ponencias-especializadas/inscripciones` | `POST /site/specialized-talk-registrations` (JSON `{ asistente, ponenciaIds }`, todo o nada) | no |
-| `GET /api/publico/delegaciones/tarifa` | `GET /site/delegations/tarifa` (presencial y virtual) | 60 s |
-| `GET /api/publico/delegaciones/:codigo` | `GET /site/delegations/link/:codigo` (grupo, integrantes y vouchers enmascarados) | no |
-| `POST /api/publico/delegaciones` | `POST /site/delegations` (multipart: `delegacion`, `representante`, `participantes`, `modalidad`, `pagos` y `vouchers`; hasta 6 × 5 MB) | no |
+| `GET /api/publico/delegaciones/:codigo` | `GET /site/delegations/link/:codigo` (grupo, planes, integrantes con su plan y vouchers enmascarados) | no |
+| `GET /api/publico/delegaciones/unirse/:codigo` | `GET /site/delegations/join/:codigo` (el link individual: grupo, dominio del correo y planes activos) | no |
+| `POST /api/publico/delegaciones/unirse/:codigo/participante` | `POST /site/delegations/join/:codigo/participants` (JSON, una persona: `correoPrefijo` o `correo`, y `plan`; sin Google) | no |
 | `POST /api/publico/delegaciones/:codigo/integrantes` | `POST /site/delegations/link/:codigo/participants` (JSON `{ participantes }`) | no |
 | `POST /api/publico/delegaciones/:codigo/pagos` | `POST /site/delegations/link/:codigo/payments` (multipart `pagos` y `vouchers`) | no |
 
