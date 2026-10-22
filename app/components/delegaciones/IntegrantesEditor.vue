@@ -1,90 +1,114 @@
 <template>
-  <div class="space-y-4">
+  <div ref="raiz" class="space-y-4">
     <ul class="space-y-4">
-      <li v-for="(fila, indice) in filas" :key="fila.clave" class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
+      <li v-for="(fila, indice) in filas" :key="fila.clave" class="del-fila">
         <div class="flex items-center justify-between gap-2">
-          <p class="text-xs font-bold uppercase tracking-[.18em] text-primary-300">Integrante {{ indice + 1 }}</p>
+          <div class="flex flex-wrap items-center gap-2">
+            <p class="text-xs font-bold uppercase tracking-[.18em] text-primary-300">Integrante {{ indice + 1 }}</p>
+            <span v-if="planUnico" class="del-chip">{{ ETIQUETA_PLAN[planUnico] }}</span>
+          </div>
           <button
+            v-if="filas.length > 1 || !filaEnBlanco(fila)"
             type="button"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-300 hover:bg-white/10 hover:text-white"
+            class="del-quitar"
             :aria-label="`Quitar al integrante ${indice + 1}`"
             @click="quitar(fila.clave)"
           >
-            <Icon name="heroicons:x-mark" class="h-5 w-5" aria-hidden="true" />
+            <Icon name="heroicons:trash" class="h-4 w-4" aria-hidden="true" />
+            <span class="hidden sm:inline">Quitar</span>
           </button>
         </div>
-        <div class="mt-3 grid gap-4 md:grid-cols-2" :class="pedirPlan ? 'xl:grid-cols-6' : 'xl:grid-cols-5'">
-          <div>
+
+        <div class="mt-3 grid gap-x-4 gap-y-4 md:grid-cols-12">
+          <div class="md:col-span-4">
             <label :for="`int-doc-${fila.clave}`" class="del-label">Documento</label>
-            <div class="flex gap-2">
-              <select v-model="fila.tipoDocumento" class="del-campo w-24" aria-label="Tipo de documento">
+            <div class="del-grupo">
+              <select v-model="fila.tipoDocumento" class="del-campo del-tipo" aria-label="Tipo de documento" @change="fila.aviso = ''">
                 <option value="dni">DNI</option>
                 <option value="ce">CE</option>
               </select>
               <input
                 :id="`int-doc-${fila.clave}`"
                 v-model="fila.numeroDocumento"
-                class="del-campo min-w-0"
+                class="del-campo"
                 maxlength="12"
-                inputmode="numeric"
+                :inputmode="fila.tipoDocumento === 'dni' ? 'numeric' : 'text'"
+                :placeholder="fila.tipoDocumento === 'dni' ? '8 dígitos' : 'Número de CE'"
                 autocomplete="off"
                 :aria-invalid="Boolean(errores[fila.clave]?.numeroDocumento)"
                 @input="alEscribir(fila)"
                 @blur="alSalir(fila)"
+                @keydown.enter.prevent="alPulsarEnter(fila)"
               >
             </div>
             <p v-if="errores[fila.clave]?.numeroDocumento" class="del-error" role="alert">{{ errores[fila.clave]?.numeroDocumento }}</p>
-            <p v-else-if="fila.buscando" class="mt-1 text-xs text-slate-400" role="status">Consultando el DNI…</p>
-            <p v-else-if="fila.aviso" class="mt-1 text-xs text-amber-200" role="status">{{ fila.aviso }}</p>
+            <p v-else-if="fila.buscando" class="mt-1.5 flex items-center gap-1.5 text-xs text-slate-300" role="status">
+              <Icon name="heroicons:arrow-path" class="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Consultando el DNI…
+            </p>
+            <p v-else-if="fila.aviso" class="mt-1.5 text-xs text-amber-200" role="status">{{ fila.aviso }}</p>
           </div>
-          <div>
+
+          <div class="md:col-span-4">
             <label :for="`int-nom-${fila.clave}`" class="del-label">Nombres</label>
             <input :id="`int-nom-${fila.clave}`" v-model="fila.nombres" class="del-campo" maxlength="120" autocomplete="off" :aria-invalid="Boolean(errores[fila.clave]?.nombres)">
             <p v-if="errores[fila.clave]?.nombres" class="del-error" role="alert">{{ errores[fila.clave]?.nombres }}</p>
           </div>
-          <div>
+
+          <div class="md:col-span-4">
             <label :for="`int-ape-${fila.clave}`" class="del-label">Apellidos</label>
             <input :id="`int-ape-${fila.clave}`" v-model="fila.apellidos" class="del-campo" maxlength="120" autocomplete="off" :aria-invalid="Boolean(errores[fila.clave]?.apellidos)">
             <p v-if="errores[fila.clave]?.apellidos" class="del-error" role="alert">{{ errores[fila.clave]?.apellidos }}</p>
           </div>
-          <div>
-            <label :for="`int-cor-${fila.clave}`" class="del-label">Correo</label>
-            <div class="flex items-center gap-2">
+
+          <div class="md:col-span-8">
+            <label :for="`int-cor-${fila.clave}`" class="del-label">
+              Correo<span v-if="dominio" class="font-normal text-slate-400"> institucional</span>
+            </label>
+            <div :class="dominio ? 'del-grupo' : undefined">
               <input
                 :id="`int-cor-${fila.clave}`"
                 v-model="fila.correo"
                 :type="dominio ? 'text' : 'email'"
-                class="del-campo min-w-0"
+                class="del-campo"
                 maxlength="191"
+                inputmode="email"
                 autocomplete="off"
-                :placeholder="dominio ? 'usuario' : undefined"
+                autocapitalize="none"
+                spellcheck="false"
+                :placeholder="dominio ? 'usuario' : 'correo@ejemplo.com'"
                 :aria-invalid="Boolean(errores[fila.clave]?.correo)"
                 @blur="alSalirDelCorreo(fila)"
               >
-              <span v-if="dominio" class="shrink-0 text-sm text-slate-300">@{{ dominio }}</span>
+              <span v-if="dominio" class="del-sufijo">@{{ dominio }}</span>
             </div>
             <p v-if="errores[fila.clave]?.correo" class="del-error" role="alert">{{ errores[fila.clave]?.correo }}</p>
+            <p v-else-if="dominio" class="mt-1.5 text-xs text-slate-400">Escribe solo lo que va antes de la @.</p>
           </div>
-          <div>
+
+          <div class="md:col-span-4">
             <label :for="`int-cel-${fila.clave}`" class="del-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
-            <input :id="`int-cel-${fila.clave}`" v-model="fila.celular" class="del-campo" maxlength="15" inputmode="tel" autocomplete="off" :aria-invalid="Boolean(errores[fila.clave]?.celular)">
+            <input :id="`int-cel-${fila.clave}`" v-model="fila.celular" class="del-campo" maxlength="15" inputmode="tel" autocomplete="off" placeholder="987654321" :aria-invalid="Boolean(errores[fila.clave]?.celular)">
             <p v-if="errores[fila.clave]?.celular" class="del-error" role="alert">{{ errores[fila.clave]?.celular }}</p>
           </div>
-          <div v-if="pedirPlan">
-            <label :for="`int-plan-${fila.clave}`" class="del-label">Plan</label>
-            <select :id="`int-plan-${fila.clave}`" v-model="fila.plan" class="del-campo" :aria-invalid="Boolean(errores[fila.clave]?.plan)">
-              <option value="" disabled>Elige…</option>
-              <option v-for="plan in planes" :key="plan.codigo" :value="plan.codigo">{{ ETIQUETA_PLAN[plan.codigo] }}</option>
-            </select>
+
+          <fieldset v-if="pedirPlan" class="md:col-span-12">
+            <legend class="del-label">Plan</legend>
+            <div class="flex flex-wrap gap-2">
+              <label v-for="plan in planes" :key="plan.codigo" class="del-plan" :class="{ activo: fila.plan === plan.codigo }">
+                <input v-model="fila.plan" type="radio" :name="`int-plan-${fila.clave}`" :value="plan.codigo" class="sr-only">
+                <span class="font-semibold">{{ ETIQUETA_PLAN[plan.codigo] }}</span>
+                <span v-if="plan.precio !== undefined" class="text-sm text-primary-200">{{ formatearSoles(plan.precio) }}</span>
+              </label>
+            </div>
             <p v-if="errores[fila.clave]?.plan" class="del-error" role="alert">{{ errores[fila.clave]?.plan }}</p>
-          </div>
+          </fieldset>
         </div>
       </li>
     </ul>
 
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
       <button type="button" class="btn btn-outline" :disabled="filas.length >= MAX_INTEGRANTES" @click="agregar">
-        <Icon name="heroicons:user-plus" class="h-5 w-5" aria-hidden="true" /> Agregar integrante
+        <Icon name="heroicons:user-plus" class="h-5 w-5" aria-hidden="true" /> Agregar otro integrante
       </button>
       <p class="text-sm text-slate-400">Con el DNI se completan los nombres automáticamente.</p>
     </div>
@@ -95,15 +119,18 @@
         Una persona por línea: <span class="font-mono">DNI, Nombres, Apellidos, Correo, Celular</span> (también acepta tabulador o punto y coma).
         <template v-if="dominio"> Los correos deben ser <span class="font-mono">@{{ dominio }}</span>.</template>
       </p>
-      <div v-if="pedirPlan" class="mt-2 max-w-xs">
-        <label for="lista-plan" class="del-label">Plan de estas personas</label>
-        <select id="lista-plan" v-model="planLista" class="del-campo">
-          <option value="" disabled>Elige…</option>
-          <option v-for="plan in planes" :key="plan.codigo" :value="plan.codigo">{{ ETIQUETA_PLAN[plan.codigo] }}</option>
-        </select>
-        <p class="mt-1 text-xs text-slate-400">Se aplica a todas las filas pegadas; luego puedes cambiarlo en cada una.</p>
-      </div>
-      <textarea v-model="textoLista" rows="5" class="del-campo mt-2 font-mono text-xs" placeholder="70123456, Ana, Pérez, ana@example.com, 987654321" aria-label="Lista de integrantes" />
+      <fieldset v-if="pedirPlan" class="mt-3">
+        <legend class="del-label">Plan de estas personas</legend>
+        <div class="flex flex-wrap gap-2">
+          <label v-for="plan in planes" :key="plan.codigo" class="del-plan" :class="{ activo: planLista === plan.codigo }">
+            <input v-model="planLista" type="radio" name="lista-plan" :value="plan.codigo" class="sr-only">
+            <span class="font-semibold">{{ ETIQUETA_PLAN[plan.codigo] }}</span>
+            <span v-if="plan.precio !== undefined" class="text-sm text-primary-200">{{ formatearSoles(plan.precio) }}</span>
+          </label>
+        </div>
+        <p class="mt-1.5 text-xs text-slate-400">Se aplica a todas las filas pegadas; luego puedes cambiarlo en cada una.</p>
+      </fieldset>
+      <textarea v-model="textoLista" rows="5" class="del-campo mt-3 font-mono text-xs" placeholder="70123456, Ana, Pérez, ana@example.com, 987654321" aria-label="Lista de integrantes" />
       <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
         <p class="text-xs text-slate-400">{{ vistaPrevia.filas.length }} fila(s) válida(s)</p>
         <button type="button" class="btn btn-outline" :disabled="pedirPlan && !planLista" @click="agregarLista">Agregar a la lista</button>
@@ -118,7 +145,8 @@
 <script setup lang="ts">
 import type { CodigoPlan, ErroresFormulario, FilaIntegrante, PlanVisible } from '~/types/delegaciones'
 import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
-import { ETIQUETA_PLAN, MAX_INTEGRANTES, filaVacia, normalizarDni, prefijoDeCorreo } from '~/utils/delegaciones'
+import { ETIQUETA_PLAN, MAX_INTEGRANTES, filaEnBlanco, filaVacia, normalizarDni, prefijoDeCorreo } from '~/utils/delegaciones'
+import { formatearSoles } from '~/utils/formato'
 import { parsearListaIntegrantes } from '~/utils/lista-integrantes'
 import { normalizeApiError } from '~/composables/useApi'
 
@@ -126,13 +154,14 @@ const filas = defineModel<FilaIntegrante[]>({ required: true })
 const props = withDefaults(defineProps<{
   /** Errores por clave de fila (`erroresDeFila[clave].campo`). */
   errores?: Record<number, ErroresFormulario>
-  /** Planes que admiten integrantes (los activos). Con uno solo no se pide elegir. */
-  planes: ReadonlyArray<Pick<PlanVisible, 'codigo'>>
+  /** Planes que admiten integrantes (los activos). Con uno solo no se pide elegir. El precio es opcional: si viene, se muestra. */
+  planes: ReadonlyArray<Pick<PlanVisible, 'codigo'> & Partial<Pick<PlanVisible, 'precio'>>>
   /** Dominio de la delegación: el correo se escribe sin la `@` y se completa con él. */
   dominio?: string | null
 }>(), { errores: () => ({}), dominio: null })
 
 const { consultDni } = useConsultation()
+const raiz = ref<HTMLElement | null>(null)
 
 const planUnico = computed<CodigoPlan | ''>(() => (props.planes.length === 1 ? (props.planes[0]?.codigo ?? '') : ''))
 const pedirPlan = computed(() => props.planes.length > 1)
@@ -146,8 +175,19 @@ watch(() => props.planes.map(plan => plan.codigo).join(','), () => {
   }
 }, { immediate: true })
 
-function agregar() {
-  if (filas.value.length < MAX_INTEGRANTES) filas.value = [...filas.value, filaVacia(planUnico.value)]
+/** Enfoca un campo de una fila (el documento al agregarla, los nombres tras consultar el DNI). */
+function enfocar(prefijo: 'doc' | 'nom', clave: number, desplazar = false) {
+  const campo = raiz.value?.querySelector<HTMLElement>(`#int-${prefijo}-${clave}`)
+  campo?.focus({ preventScroll: true })
+  if (desplazar) campo?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+}
+
+async function agregar() {
+  if (filas.value.length >= MAX_INTEGRANTES) return
+  const nueva = filaVacia(planUnico.value)
+  filas.value = [...filas.value, nueva]
+  await nextTick()
+  enfocar('doc', nueva.clave, true)
 }
 
 function quitar(clave: number) {
@@ -185,6 +225,12 @@ async function alEscribir(fila: FilaIntegrante) {
 function alSalir(fila: FilaIntegrante) {
   if (fila.tipoDocumento === 'dni') fila.numeroDocumento = normalizarDni(fila.numeroDocumento)
   void alEscribir(fila)
+}
+
+/** Enter en el documento no envía el formulario: consulta el DNI y pasa a los nombres. */
+function alPulsarEnter(fila: FilaIntegrante) {
+  alSalir(fila)
+  enfocar('nom', fila.clave)
 }
 
 const textoLista = ref('')

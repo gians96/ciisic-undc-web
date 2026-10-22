@@ -77,53 +77,70 @@
 
         <section class="space-y-5">
           <h3 class="text-xl font-bold">Tus datos</h3>
-          <div class="grid gap-5 md:grid-cols-2">
-            <div>
+          <div class="grid gap-x-4 gap-y-5 md:grid-cols-12">
+            <div class="md:col-span-4">
               <label for="ind-doc" class="del-label">Documento</label>
-              <div class="flex gap-2">
-                <select v-model="formulario.tipoDocumento" class="del-campo w-24" aria-label="Tipo de documento">
+              <div class="del-grupo">
+                <select v-model="formulario.tipoDocumento" class="del-campo del-tipo" aria-label="Tipo de documento" @change="avisoDni = ''">
                   <option value="dni">DNI</option>
                   <option value="ce">CE</option>
                 </select>
-                <input id="ind-doc" v-model="formulario.numeroDocumento" class="del-campo min-w-0" maxlength="12" inputmode="numeric" autocomplete="off" :aria-invalid="Boolean(erroresIndividual.numeroDocumento)" @input="alEscribirDocumento" @blur="alSalirDelDocumento">
+                <input
+                  id="ind-doc"
+                  v-model="formulario.numeroDocumento"
+                  class="del-campo"
+                  maxlength="12"
+                  :inputmode="formulario.tipoDocumento === 'dni' ? 'numeric' : 'text'"
+                  :placeholder="formulario.tipoDocumento === 'dni' ? '8 dígitos' : 'Número de CE'"
+                  autocomplete="off"
+                  :aria-invalid="Boolean(erroresIndividual.numeroDocumento)"
+                  @input="alEscribirDocumento"
+                  @blur="alSalirDelDocumento"
+                  @keydown.enter.prevent="alPulsarEnterDocumento"
+                >
               </div>
               <p v-if="erroresIndividual.numeroDocumento" class="del-error" role="alert">{{ erroresIndividual.numeroDocumento }}</p>
-              <p v-else-if="buscandoDni" class="mt-1 text-xs text-slate-400" role="status">Consultando el DNI…</p>
-              <p v-else-if="avisoDni" class="mt-1 text-xs text-amber-200" role="status">{{ avisoDni }}</p>
+              <p v-else-if="buscandoDni" class="mt-1.5 flex items-center gap-1.5 text-xs text-slate-300" role="status">
+                <Icon name="heroicons:arrow-path" class="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Consultando el DNI…
+              </p>
+              <p v-else-if="avisoDni" class="mt-1.5 text-xs text-amber-200" role="status">{{ avisoDni }}</p>
             </div>
-            <div>
-              <label for="ind-celular" class="del-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
-              <input id="ind-celular" v-model="formulario.celular" class="del-campo" maxlength="15" inputmode="tel" autocomplete="tel" :aria-invalid="Boolean(erroresIndividual.celular)">
-              <p v-if="erroresIndividual.celular" class="del-error" role="alert">{{ erroresIndividual.celular }}</p>
-            </div>
-            <div>
+            <div class="md:col-span-4">
               <label for="ind-nombres" class="del-label">Nombres</label>
               <input id="ind-nombres" v-model="formulario.nombres" class="del-campo" maxlength="120" autocomplete="given-name" :aria-invalid="Boolean(erroresIndividual.nombres)">
               <p v-if="erroresIndividual.nombres" class="del-error" role="alert">{{ erroresIndividual.nombres }}</p>
             </div>
-            <div>
+            <div class="md:col-span-4">
               <label for="ind-apellidos" class="del-label">Apellidos</label>
               <input id="ind-apellidos" v-model="formulario.apellidos" class="del-campo" maxlength="120" autocomplete="family-name" :aria-invalid="Boolean(erroresIndividual.apellidos)">
               <p v-if="erroresIndividual.apellidos" class="del-error" role="alert">{{ erroresIndividual.apellidos }}</p>
             </div>
-            <div class="md:col-span-2">
+            <div class="md:col-span-8">
               <label for="ind-correo" class="del-label">{{ publica.dominioCorreo ? 'Tu correo institucional' : 'Correo' }}</label>
-              <div class="flex items-center gap-2">
+              <div :class="publica.dominioCorreo ? 'del-grupo' : undefined">
                 <input
                   id="ind-correo"
                   v-model="formulario.correo"
                   :type="publica.dominioCorreo ? 'text' : 'email'"
-                  class="del-campo min-w-0"
+                  class="del-campo"
                   maxlength="191"
+                  inputmode="email"
                   autocomplete="off"
-                  :placeholder="publica.dominioCorreo ? 'usuario' : undefined"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  :placeholder="publica.dominioCorreo ? 'usuario' : 'correo@ejemplo.com'"
                   :aria-invalid="Boolean(erroresIndividual.correo)"
                   @blur="alSalirDelCorreo"
                 >
-                <span v-if="publica.dominioCorreo" class="shrink-0 text-slate-200">@{{ publica.dominioCorreo }}</span>
+                <span v-if="publica.dominioCorreo" class="del-sufijo">@{{ publica.dominioCorreo }}</span>
               </div>
               <p v-if="erroresIndividual.correo" class="del-error" role="alert">{{ erroresIndividual.correo }}</p>
-              <p v-else-if="publica.dominioCorreo" class="mt-1 text-xs text-slate-400">Escribe solo lo que va antes de la @. No necesitas iniciar sesión con Google.</p>
+              <p v-else-if="publica.dominioCorreo" class="mt-1.5 text-xs text-slate-400">Escribe solo lo que va antes de la @. No necesitas iniciar sesión con Google.</p>
+            </div>
+            <div class="md:col-span-4">
+              <label for="ind-celular" class="del-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
+              <input id="ind-celular" v-model="formulario.celular" class="del-campo" maxlength="15" inputmode="tel" autocomplete="tel" placeholder="987654321" :aria-invalid="Boolean(erroresIndividual.celular)">
+              <p v-if="erroresIndividual.celular" class="del-error" role="alert">{{ erroresIndividual.celular }}</p>
             </div>
           </div>
         </section>
@@ -228,7 +245,7 @@
           </div>
         </div>
 
-        <p v-if="aviso" class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-emerald-100" role="status">{{ aviso }}</p>
+        <p v-if="aviso" ref="bloqueAviso" tabindex="-1" class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-emerald-100 outline-none" role="status">{{ aviso }}</p>
         <p v-if="errorEnvio" ref="bloqueError" tabindex="-1" class="rounded-2xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-red-100" role="alert">{{ errorEnvio }}</p>
 
         <form class="space-y-5" novalidate @submit.prevent="enviarIntegrantes">
@@ -236,15 +253,20 @@
           <p v-if="!planesVista.length" class="text-sm text-slate-300">Podrás agregar integrantes cuando la organización active los planes de tu delegación.</p>
           <template v-else>
             <DelegacionesIntegrantesEditor v-model="filas" :errores="erroresFilas" :planes="planesVista" :dominio="vista.dominioCorreo" />
-            <p class="text-sm text-slate-300">
-              <strong class="text-white">{{ integrantesNuevos }}</strong> por agregar → {{ vista.totalIntegrantes + integrantesNuevos }} en total ·
-              <strong class="text-white">{{ formatearSoles(estimadoLink.total) }}</strong>
-              <span class="text-slate-400"> (estimado, con el plan de cada uno)</span>
-            </p>
-            <button type="submit" class="btn btn-primary" :disabled="enviando || !integrantesNuevos">
-              <Icon v-if="enviando" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" aria-hidden="true" />
-              {{ enviando ? 'Enviando…' : 'Registrar integrantes' }}
-            </button>
+            <div class="del-accion">
+              <p class="text-sm text-slate-300" aria-live="polite">
+                <strong class="text-white">{{ integrantesNuevos }}</strong> por agregar · {{ vista.totalIntegrantes + integrantesNuevos }} en el grupo
+                <span class="block text-slate-400">
+                  <span class="hidden sm:inline">Total estimado: </span><strong class="text-white">{{ formatearSoles(estimadoLink.total) }}</strong>
+                  <span class="sm:hidden"> estimado</span><span class="hidden sm:inline"> (con el plan de cada uno)</span>
+                </span>
+              </p>
+              <button type="submit" class="btn btn-primary w-full sm:w-auto" :disabled="enviando || !integrantesNuevos">
+                <Icon v-if="enviando" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" aria-hidden="true" />
+                <Icon v-else name="heroicons:check" class="h-5 w-5" aria-hidden="true" />
+                {{ enviando ? 'Enviando…' : integrantesNuevos ? `Registrar ${integrantesNuevos} integrante${integrantesNuevos === 1 ? '' : 's'}` : 'Registrar integrantes' }}
+              </button>
+            </div>
           </template>
         </form>
 
@@ -311,6 +333,7 @@ const enviando = ref(false)
 const errorEnvio = ref('')
 const bloqueError = ref<HTMLElement | null>(null)
 const bloqueListo = ref<HTMLElement | null>(null)
+const bloqueAviso = ref<HTMLElement | null>(null)
 
 function irAlPrimerError() {
   void nextTick(() => {
@@ -323,6 +346,11 @@ function irAlPrimerError() {
     bloqueError.value?.scrollIntoView({ block: 'center', behavior: 'smooth' })
     bloqueError.value?.focus({ preventScroll: true })
   })
+}
+
+/** Tras registrar integrantes o vouchers el aviso queda arriba: se lleva a la vista para que se note que salió bien. */
+function irAlAviso() {
+  void nextTick(() => bloqueAviso.value?.scrollIntoView({ block: 'center', behavior: 'smooth' }))
 }
 
 // ═══ Link individual ═══
@@ -381,6 +409,12 @@ async function alEscribirDocumento() {
 function alSalirDelDocumento() {
   if (formulario.tipoDocumento === 'dni') formulario.numeroDocumento = normalizarDni(formulario.numeroDocumento)
   void alEscribirDocumento()
+}
+
+/** Enter en el documento no envía el formulario: consulta el DNI y pasa a los nombres. */
+function alPulsarEnterDocumento() {
+  alSalirDelDocumento()
+  document.getElementById('ind-nombres')?.focus()
 }
 
 /** Con dominio, si pegan el correo completo se deja solo el prefijo (el sufijo ya está a la vista). */
@@ -500,6 +534,7 @@ async function enviarIntegrantes() {
     vista.value = respuesta
     filas.value = [filaVacia(planPorDefecto(respuesta.planes))]
     aviso.value = `Listo: ${respuesta.registrados ?? 0} integrante(s) registrados${respuesta.omitidos ? ` y ${respuesta.omitidos} ya estaban` : ''}.`
+    irAlAviso()
   } catch (error) {
     const normalizado = normalizeApiError(error)
     errorEnvio.value = mensajeErrorDelegacion(normalizado)
@@ -525,6 +560,7 @@ async function enviarPagos() {
     pagos.value = [pagoVacio()]
     erroresPagos.value = {}
     aviso.value = 'Listo: recibimos tus vouchers. La organización los revisará.'
+    irAlAviso()
   } catch (error) {
     errorEnvio.value = mensajeErrorDelegacion(normalizeApiError(error))
     irAlPrimerError()
@@ -585,6 +621,28 @@ watch([codigo, codigoIndividual], () => {
 .del-campo[aria-invalid='true'] { border-color: #f87171; }
 select.del-campo option { color: #0f172a; }
 .del-error { margin-top: .35rem; font-size: .8rem; color: #fca5a5; }
+.del-fila { border: 1px solid #ffffff1a; border-radius: 1rem; background: #ffffff0a; padding: 1rem 1.1rem 1.25rem; transition: border-color .2s ease; }
+.del-fila:focus-within { border-color: #22d3ee59; }
+.del-quitar { display: inline-flex; align-items: center; gap: .35rem; border-radius: 9999px; padding: .4rem .7rem; font-size: .8rem; font-weight: 600; color: #cbd5e1; transition: background-color .2s ease, color .2s ease; }
+.del-quitar:hover { background: #f871711f; color: #fecaca; }
+/* Control compuesto (tipo + número, usuario + @dominio): un solo borde y un solo foco */
+.del-grupo { display: flex; align-items: stretch; border-radius: .75rem; border: 1px solid #ffffff26; background: #ffffff0d; transition: border-color .2s ease, background-color .2s ease; }
+.del-grupo:focus-within { border-color: #22d3ee; background: #ffffff14; }
+.del-grupo:has([aria-invalid='true']) { border-color: #f87171; }
+.del-grupo > .del-campo { min-width: 0; flex: 1 1 0%; border: 0; border-radius: 0; background: transparent; }
+.del-grupo > .del-campo:focus { background: transparent; }
+.del-grupo > .del-campo:first-child { border-radius: .75rem 0 0 .75rem; }
+.del-grupo > .del-campo:last-child { border-radius: 0 .75rem .75rem 0; }
+.del-grupo > .del-tipo { flex: 0 0 auto; width: auto; border-right: 1px solid #ffffff1f; padding-right: .5rem; font-weight: 600; cursor: pointer; }
+.del-sufijo { display: flex; max-width: 60%; flex: 0 0 auto; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-left: 1px solid #ffffff1f; border-radius: 0 .75rem .75rem 0; background: #ffffff0a; padding: 0 .9rem; font-size: .9rem; color: #cbd5e1; }
+.del-plan { display: inline-flex; cursor: pointer; align-items: baseline; gap: .5rem; border: 1px solid #ffffff26; border-radius: .75rem; padding: .55rem .9rem; transition: border-color .2s ease, background-color .2s ease; }
+.del-plan:hover { border-color: #22d3ee80; }
+.del-plan.activo { border-color: #22d3ee; background: #22d3ee1f; }
+.del-plan:has(input:focus-visible) { outline: 2px solid #22d3ee; outline-offset: 2px; }
+/* Resumen y botón de envío siempre a la vista mientras el formulario está en pantalla */
+.del-page .btn:disabled { cursor: not-allowed; opacity: .5; box-shadow: none; transform: none; }
+.del-accion { position: sticky; bottom: .75rem; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; border: 1px solid #ffffff26; border-radius: 1rem; background: #062541f2; padding: .75rem 1rem; box-shadow: 0 14px 40px #020f2080; backdrop-filter: blur(8px); }
+@media (min-width: 640px) { .del-accion { bottom: 1rem; padding: .85rem 1.1rem; } }
 .del-opcion { display: flex; min-width: 14rem; flex: 1; cursor: pointer; flex-direction: column; gap: .25rem; border: 1px solid #ffffff26; border-radius: 1rem; padding: 1rem 1.25rem; transition: border-color .2s ease, background-color .2s ease; }
 .del-opcion:hover { border-color: #22d3ee80; }
 .del-opcion.activo { border-color: #22d3ee; background: #22d3ee1f; }
@@ -593,5 +651,5 @@ select.del-campo option { color: #0f172a; }
 .del-estado-pendiente { background: #fbbf2426; color: #fcd34d; }
 .del-estado-verificado { background: #34d39926; color: #6ee7b7; }
 .del-estado-rechazado { background: #f8717126; color: #fca5a5; }
-@media (prefers-reduced-motion: reduce) { .del-campo, .del-opcion { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .del-campo, .del-opcion, .del-fila, .del-grupo, .del-plan, .del-quitar { transition: none; } }
 </style>
