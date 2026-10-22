@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { PonenciaEspecializadaPublica } from '../app/types/ponencias-especializadas'
 import {
+  accesoLibreDe,
   alternarSeleccion,
   cuerpoInscripcion,
+  cuerpoVerificacion,
   depurarSeleccion,
   destinoTrasElegir,
+  esErrorDeCongreso,
+  etiquetaModoAsistencia,
   filtrarPonencias,
   formularioVacio,
   mensajeErrorInscripcionPonencias,
@@ -19,6 +23,7 @@ import {
   seCruzan,
   textoCupos,
   validarFormulario,
+  validarVerificacion,
 } from '../app/utils/inscripcion-ponencias'
 
 const ponencia = (datos: Partial<PonenciaEspecializadaPublica> = {}): PonenciaEspecializadaPublica => ({
@@ -172,44 +177,129 @@ describe('vista de la elección', () => {
   })
 })
 
+describe('modo de asistencia (el cupo es el aforo presencial)', () => {
+  const llena = ponencia({ id: 5, horaInicio: '17:00', horaFin: '17:45', llena: true, cuposDisponibles: 0 })
+
+  it('un congresista virtual puede elegir una ponencia llena; el presencial no', () => {
+    expect(motivoNoDisponible(llena)).toBe('AGOTADA')
+    expect(motivoNoDisponible(llena, 'PRESENCIAL')).toBe('AGOTADA')
+    expect(motivoNoDisponible(llena, 'VIRTUAL')).toBeNull()
+    // Las de pago no se ofrecen a nadie
+    expect(motivoNoDisponible(ponencia({ esGratuita: false, precio: 10, llena: true }), 'VIRTUAL')).toBe('DE_PAGO')
+  })
+
+  it('para el virtual el cupo se muestra sin límite', () => {
+    expect(textoCupos(ponencia({ cuposDisponibles: 3 }), 'VIRTUAL')).toBe('Virtual · sin límite')
+    expect(textoCupos(llena, 'VIRTUAL')).toBe('Virtual · sin límite')
+    expect(nivelDeCupos(llena, 'VIRTUAL')).toBe('libre')
+    expect(textoCupos(llena, 'PRESENCIAL')).toBe('Sin cupos')
+    expect(nivelDeCupos(llena, 'PRESENCIAL')).toBe('agotada')
+  })
+
+  it('la selección respeta el modo: el virtual agrega y conserva las llenas, el presencial las descarta', () => {
+    expect(alternarSeleccion([1], llena, [...TODAS, llena], 'VIRTUAL')).toEqual([1, 5])
+    expect(alternarSeleccion([1], llena, [...TODAS, llena], 'PRESENCIAL')).toEqual([1])
+    const recargadas = [MARTES_1, ponencia({ id: 2, llena: true, cuposDisponibles: 0 }), MARTES_TARDE]
+    expect(depurarSeleccion([1, 2, 3], recargadas, 'VIRTUAL')).toEqual([1, 2, 3])
+    expect(depurarSeleccion([1, 2, 3], recargadas, 'PRESENCIAL')).toEqual([1, 3])
+  })
+
+  it('tras elegir va al siguiente día con algo disponible según el modo', () => {
+    const miercolesLleno = ponencia({ id: 8, fecha: '2026-10-28', llena: true, cuposDisponibles: 0 })
+    const dias = ponenciasPorDia([MARTES_1, miercolesLleno])
+    expect(destinoTrasElegir(dias, [1], '2026-10-27', 'PRESENCIAL')).toBe('titulo-datos')
+    expect(destinoTrasElegir(dias, [1], '2026-10-27', 'VIRTUAL')).toBe('dia-2026-10-28')
+  })
+
+  it('el nombre del modo', () => {
+    expect(etiquetaModoAsistencia('VIRTUAL')).toBe('Virtual')
+    expect(etiquetaModoAsistencia('PRESENCIAL')).toBe('Presencial')
+  })
+
+  it('un backend anterior no envía el interruptor: se trata como acceso libre', () => {
+    expect(accesoLibreDe({})).toBe(true)
+    expect(accesoLibreDe({ meta: {} })).toBe(true)
+    expect(accesoLibreDe({ meta: { accesoLibre: false } })).toBe(false)
+    expect(accesoLibreDe({ meta: { accesoLibre: true } })).toBe(true)
+  })
+})
+
+describe('verificación del congreso', () => {
+  it('el documento y el correo son obligatorios y el correo debe ser válido', () => {
+    expect(validarVerificacion({ ...formularioVacio(), numeroDocumento: '12345678', correo: 'ana@gmail.com' })).toEqual({})
+    expect(validarVerificacion(formularioVacio())).toEqual({
+      numeroDocumento: 'Ingresa tu número de documento.',
+      correo: 'Ingresa el correo con el que te inscribiste al congreso.',
+    })
+    expect(validarVerificacion({ ...formularioVacio(), numeroDocumento: '1234', correo: 'no-es-correo' })).toEqual({
+      numeroDocumento: 'El DNI debe tener 8 dígitos.',
+      correo: 'Ingresa un correo válido.',
+    })
+    expect(validarVerificacion({ ...formularioVacio(), tipoDocumento: 'CE', numeroDocumento: 'AB1234567', correo: 'ana@gmail.com' })).toEqual({})
+  })
+
+  it('el cuerpo usa el tipo en minúsculas y el correo normalizado, sin nada más', () => {
+    expect(cuerpoVerificacion({ tipoDocumento: 'DNI', numeroDocumento: ' 12345678 ', correo: ' Ana@Gmail.COM ' }))
+      .toEqual({ tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com' })
+    expect(cuerpoVerificacion({ tipoDocumento: 'CE', numeroDocumento: 'AB1234567', correo: 'a@b.pe' }).tipoDocumento).toBe('ce')
+  })
+})
+
 describe('formulario', () => {
   const valido = () => ({ ...formularioVacio(), numeroDocumento: '12345678', correo: 'ana@gmail.com', celular: '987654321' })
+  const libre = { nombresObligatorios: false, accesoLibre: true }
+  const congreso = { nombresObligatorios: false, accesoLibre: false }
 
   it('el documento se limpia según el tipo', () => {
     expect(normalizarDocumento('DNI', '12 345-678 99')).toBe('12345678')
     expect(normalizarDocumento('CE', 'ab-12 3456789012')).toBe('ab1234567890')
   })
 
-  it('el documento, el correo, el celular y al menos una ponencia son obligatorios', () => {
-    expect(validarFormulario(valido(), [1], { nombresObligatorios: false })).toEqual({})
-    expect(validarFormulario(formularioVacio(), [], { nombresObligatorios: false })).toEqual({
+  it('con el acceso apagado el documento, el correo y al menos una ponencia son obligatorios; el celular no', () => {
+    expect(validarFormulario(valido(), [1], congreso)).toEqual({})
+    expect(validarFormulario({ ...formularioVacio(), numeroDocumento: '12345678', correo: 'ana@gmail.com' }, [1], congreso)).toEqual({})
+    expect(validarFormulario(formularioVacio(), [], congreso)).toEqual({
       numeroDocumento: 'Ingresa tu número de documento.',
-      correo: 'Ingresa tu correo.',
-      celular: 'Ingresa tu celular.',
+      correo: 'Ingresa el correo con el que te inscribiste al congreso.',
       ponencias: 'Elige al menos una ponencia.',
     })
-    expect(validarFormulario({ ...valido(), correo: '   ' }, [1], { nombresObligatorios: false })).toEqual({ correo: 'Ingresa tu correo.' })
-    expect(validarFormulario({ ...valido(), celular: ' - ' }, [1], { nombresObligatorios: false })).toEqual({ celular: 'Ingresa tu celular.' })
-    expect(validarFormulario({ ...valido(), numeroDocumento: '1234' }, [1], { nombresObligatorios: false }).numeroDocumento).toContain('8 dígitos')
-    expect(validarFormulario({ ...valido(), tipoDocumento: 'CE', numeroDocumento: 'AB123' }, [1], { nombresObligatorios: true }).numeroDocumento).toContain('carné')
-    expect(validarFormulario(valido(), [1, 2, 3, 4, 5], { nombresObligatorios: false }).ponencias).toContain('hasta 4')
+    expect(validarFormulario({ ...valido(), correo: '   ' }, [1], congreso)).toEqual({ correo: 'Ingresa el correo con el que te inscribiste al congreso.' })
+    expect(validarFormulario({ ...valido(), numeroDocumento: '1234' }, [1], congreso).numeroDocumento).toContain('8 dígitos')
+    expect(validarFormulario({ ...valido(), tipoDocumento: 'CE', numeroDocumento: 'AB123' }, [1], { nombresObligatorios: true, accesoLibre: false }).numeroDocumento).toContain('carné')
+    expect(validarFormulario(valido(), [1, 2, 3, 4, 5], congreso).ponencias).toContain('hasta 4')
+    // Los nombres y el celular salen del congreso: no se piden
+    expect(validarFormulario(valido(), [1], { nombresObligatorios: true, accesoLibre: false })).toEqual({})
   })
 
-  it('exige nombres solo cuando el documento no los trae', () => {
-    expect(validarFormulario(valido(), [1], { nombresObligatorios: true })).toMatchObject({ nombres: 'Ingresa tus nombres.', apellidos: 'Ingresa tus apellidos.' })
-    expect(validarFormulario({ ...valido(), nombres: 'A' }, [1], { nombresObligatorios: false }).nombres).toBeDefined()
-    expect(validarFormulario({ ...valido(), nombres: 'Ana', apellidos: 'Pérez' }, [1], { nombresObligatorios: true })).toEqual({})
+  it('con el acceso libre basta el documento y una ponencia', () => {
+    expect(validarFormulario({ ...formularioVacio(), numeroDocumento: '12345678' }, [1], libre)).toEqual({})
+    expect(validarFormulario(formularioVacio(), [], libre)).toEqual({ numeroDocumento: 'Ingresa tu número de documento.', ponencias: 'Elige al menos una ponencia.' })
+    expect(validarFormulario({ ...valido(), numeroDocumento: '1234' }, [1], libre).numeroDocumento).toContain('8 dígitos')
   })
 
-  it('el correo y el celular escritos deben ser válidos', () => {
-    expect(validarFormulario({ ...valido(), correo: 'no-es-correo' }, [1], { nombresObligatorios: false }).correo).toBe('Ingresa un correo válido.')
-    expect(validarFormulario({ ...valido(), celular: '123' }, [1], { nombresObligatorios: false }).celular).toContain('9 y 15 dígitos')
-    expect(validarFormulario({ ...valido(), correo: 'ana@gmail.com', celular: '987 654 321' }, [1], { nombresObligatorios: false })).toEqual({})
+  it('con el acceso libre exige nombres solo cuando el documento no los trae', () => {
+    expect(validarFormulario(valido(), [1], { nombresObligatorios: true, accesoLibre: true })).toMatchObject({ nombres: 'Ingresa tus nombres.', apellidos: 'Ingresa tus apellidos.' })
+    expect(validarFormulario({ ...valido(), nombres: 'A' }, [1], libre).nombres).toBeDefined()
+    expect(validarFormulario({ ...valido(), nombres: 'Ana', apellidos: 'Pérez' }, [1], { nombresObligatorios: true, accesoLibre: true })).toEqual({})
   })
 
-  it('el cuerpo usa el tipo en minúsculas, omite los vacíos y normaliza correo y celular', () => {
-    expect(cuerpoInscripcion(valido(), [2, 1])).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com', celular: '987654321' }, ponenciaIds: [2, 1] })
-    expect(cuerpoInscripcion({ tipoDocumento: 'CE', numeroDocumento: 'AB1234567', nombres: ' Ana ', apellidos: 'Pérez', correo: ' Ana@Gmail.com ', celular: '987 654-321', procedencia: 'EXTERNO' }, [3]))
+  it('con el acceso libre el correo y el celular son opcionales pero, si se escriben, válidos', () => {
+    expect(validarFormulario({ ...valido(), correo: 'no-es-correo' }, [1], libre).correo).toBe('Ingresa un correo válido.')
+    expect(validarFormulario({ ...valido(), celular: '123' }, [1], libre).celular).toContain('9 y 15 dígitos')
+    expect(validarFormulario({ ...valido(), celular: ' - ' }, [1], libre)).toEqual({})
+    expect(validarFormulario({ ...valido(), correo: 'ana@gmail.com', celular: '987 654 321' }, [1], libre)).toEqual({})
+  })
+
+  it('sin acceso libre el cuerpo solo lleva el documento y el correo: lo demás sale del congreso', () => {
+    const completo = { ...valido(), nombres: 'Otro', apellidos: 'Nombre', procedencia: 'EXTERNO' as const }
+    expect(cuerpoInscripcion({ ...completo, correo: ' Ana@Gmail.com ' }, [2, 1])).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com' }, ponenciaIds: [2, 1] })
+    expect(cuerpoInscripcion(completo, [2, 1], { accesoLibre: false })).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com' }, ponenciaIds: [2, 1] })
+  })
+
+  it('con el acceso libre el cuerpo usa el tipo en minúsculas, omite los vacíos y normaliza correo y celular', () => {
+    expect(cuerpoInscripcion(valido(), [2, 1], { accesoLibre: true })).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678', correo: 'ana@gmail.com', celular: '987654321' }, ponenciaIds: [2, 1] })
+    expect(cuerpoInscripcion({ ...formularioVacio(), numeroDocumento: '12345678' }, [1], { accesoLibre: true })).toEqual({ asistente: { tipoDocumento: 'dni', numeroDocumento: '12345678' }, ponenciaIds: [1] })
+    expect(cuerpoInscripcion({ tipoDocumento: 'CE', numeroDocumento: 'AB1234567', nombres: ' Ana ', apellidos: 'Pérez', correo: ' Ana@Gmail.com ', celular: '987 654-321', procedencia: 'EXTERNO' }, [3], { accesoLibre: true }))
       .toEqual({ asistente: { tipoDocumento: 'ce', numeroDocumento: 'AB1234567', nombres: 'Ana', apellidos: 'Pérez', correo: 'ana@gmail.com', celular: '987654321', procedencia: 'EXTERNO' }, ponenciaIds: [3] })
   })
 })
@@ -229,6 +319,17 @@ describe('errores', () => {
     expect(mensajeErrorInscripcionPonencias({ statusCode: 0, code: 'NETWORK_ERROR' })).toContain('conectar')
     expect(mensajeErrorInscripcionPonencias({ statusCode: 500, code: 'X' })).toContain('servidor')
     expect(mensajeErrorInscripcionPonencias({ statusCode: 418, code: 'RARO' })).toContain('no se guardó nada')
+  })
+
+  it('los errores del congreso muestran el detalle del servidor y piden verificar de nuevo', () => {
+    expect(mensajeErrorInscripcionPonencias({ statusCode: 422, code: 'CONGRESS_PAYMENT_PENDING', message: 'La inscripción al congreso aún no tiene el pago aprobado.' })).toBe('La inscripción al congreso aún no tiene el pago aprobado.')
+    expect(mensajeErrorInscripcionPonencias({ statusCode: 422, code: 'CONGRESS_REGISTRATION_NOT_FOUND' })).toContain('mismos datos con los que te inscribiste')
+    expect(mensajeErrorInscripcionPonencias({ statusCode: 422, code: 'CONGRESS_PAYMENT_PENDING' })).toContain('pago aprobado')
+    expect(mensajeErrorInscripcionPonencias({ statusCode: 422, code: 'CONGRESS_REGISTRATION_REJECTED' })).toContain('rechazada o cancelada')
+    expect(mensajeErrorInscripcionPonencias({ statusCode: 409, code: 'FREE_ACCESS_ENABLED' })).toContain('acceso libre')
+    expect(esErrorDeCongreso({ code: 'CONGRESS_REGISTRATION_NOT_FOUND' })).toBe(true)
+    expect(esErrorDeCongreso({ code: 'CONGRESS_PAYMENT_PENDING' })).toBe(true)
+    expect(esErrorDeCongreso({ code: 'TALK_FULL' })).toBe(false)
   })
 
   it('detecta cuándo pedir los nombres y cuándo el programa no está disponible', () => {

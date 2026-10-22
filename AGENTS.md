@@ -81,6 +81,16 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
   obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
   Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
+- **Ponencias solo para congresistas** (spec 009; contrato en la spec 030 del backend): `meta.accesoLibre` de la lista decide el
+  formulario (`accesoLibreDe`; ausente = libre). **Acceso libre apagado** (por defecto en el backend): Paso 1 «Verifica tu
+  inscripción» (documento + el correo con el que se inscribió al congreso → `POST …/elegibilidad`, que responde su modo), Paso 2 elegir
+  y Paso 3 confirmar; cambiar el documento o el correo obliga a verificar de nuevo. Se quitan nombres, celular, procedencia y la consulta
+  DNI: salen del congreso. El **cupo es el aforo presencial**: un congresista **virtual** (`modo`) no tiene límite y puede elegir una
+  ponencia «llena» (`motivoNoDisponible(ponencia, modo)`, «Virtual · sin límite»); el presencial mantiene cupos y «Agotada». Los errores
+  `CONGRESS_REGISTRATION_NOT_FOUND` (el mismo mensaje para documento o correo incorrectos: no se revela quién está inscrito),
+  `CONGRESS_PAYMENT_PENDING` y `CONGRESS_REGISTRATION_REJECTED` se muestran con el texto del servidor y piden verificar de nuevo. **Acceso
+  libre encendido**: solo el documento (nombres por la consulta DNI como antes; correo y celular opcionales) y el cupo normal. El backend
+  decide siempre; el documento y el correo viajan en el cuerpo, nunca en la URL. **Backend 030 primero.**
 - **Delegaciones** (specs 008 y 010; contrato en la spec 029 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin enlaces en el menú ni en el pie; el delegado
   recibe el link por correo) y **ya no crea delegaciones**: las crea el staff con sus **planes y precios propios** (Con kit, Sin kit y Virtual). Tiene tres estados según el parámetro:
   `?delegacion=<código>` (el delegado ve su grupo, sus planes y **solo agrega** integrantes —cada uno con su plan— y vouchers; sin borrar ni editar; ve el link individual para compartirlo),
@@ -138,8 +148,9 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 `specs/003-disponibilidad-planes/` (planes solo UNDC o solo externos), `specs/004-semana-sistemica/`
 (tab «Semana Sistémica»), `specs/005-modalidad-virtual/` (modalidad de asistencia virtual),
 `specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas),
-`specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC) y
-`specs/008-delegaciones/` (inscripción de delegaciones, página oculta) y
+`specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC),
+`specs/008-delegaciones/` (inscripción de delegaciones, página oculta),
+`specs/009-ponencias-validacion-congreso/` (ponencias solo para congresistas con pago aprobado) y
 `specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 

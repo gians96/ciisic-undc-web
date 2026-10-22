@@ -28,10 +28,41 @@ export interface PonenciaEspecializadaPublica {
   orden: number
 }
 
+/**
+ * Cómo se asiste al congreso (backend spec 030): sale del tipo de inscripción. Solo el modo presencial ocupa el
+ * aforo de las ponencias; el virtual no tiene límite de cupo.
+ */
+export type ModoAsistencia = 'PRESENCIAL' | 'VIRTUAL'
+
+/** `GET /site/specialized-talks`: las ponencias y, en `meta`, si el evento está en acceso libre (solo el documento). */
+export interface ListaPonenciasRespuesta {
+  success: true
+  data: PonenciaEspecializadaPublica[]
+  /** Ausente en un backend anterior: equivale a acceso libre, como era antes de la spec 030. */
+  meta?: { accesoLibre?: boolean }
+}
+
+/** Respuesta de `POST /site/specialized-talk-eligibility`: la inscripción al congreso con el pago aprobado. */
+export interface VerificacionCongresista {
+  nombres: string
+  modoAsistencia: ModoAsistencia
+  tipo: string | null
+  categoria: string | null
+}
+
 /** Respuesta de `POST /site/specialized-talk-registrations`. */
 export interface InscripcionPonenciasRespuesta {
   asistente: { tipoDocumento: string, numeroDocumento: string, nombres: string, apellidos: string }
+  /** `null` con el acceso libre (no se comprobó el congreso); ausente en un backend anterior. */
+  modoAsistencia?: ModoAsistencia | null
   inscripciones: Array<{ id: number, yaInscrito: boolean, ponencia: PonenciaEspecializadaPublica }>
+}
+
+/** Cuerpo de `POST /site/specialized-talk-eligibility`. */
+export interface VerificacionCuerpo {
+  tipoDocumento: 'dni' | 'ce'
+  numeroDocumento: string
+  correo: string
 }
 
 /** Cuerpo de `POST /site/specialized-talk-registrations`. */

@@ -32,8 +32,9 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `GET /payment-qr/:archivo` | Imagen del QR de una billetera (`qrArchivo`), solo del evento del token (spec 012 del backend) |
 | `POST /papers` | multipart: `data` JSON + `file` PDF |
 | `POST /contact` | JSON `{ nombres, apellidos, correo, asunto, mensaje }` |
-| `GET /specialized-talks` | Ponencias especializadas `publicada`s del evento con `cuposDisponibles` y `llena`, sin datos de inscritos (spec 019 del backend) |
-| `POST /specialized-talk-registrations` | JSON `{ asistente: { tipoDocumento: 'dni'\|'ce', numeroDocumento, nombres?, apellidos?, correo?, celular?, procedencia?: 'INTERNO'\|'EXTERNO' }, ponenciaIds: [1–4] }`; todo o nada. Errores: `409 TALK_FULL`, `409 SCHEDULE_CONFLICT`, `409 TALK_ENDED`, `404 TALK_NOT_FOUND`, `422 PAID_TALK_UNAVAILABLE`, `422 NAMES_REQUIRED`, `422 VALIDATION_ERROR` |
+| `GET /specialized-talks` | Ponencias especializadas `publicada`s del evento con `cuposDisponibles` y `llena` (aforo **presencial**), sin datos de inscritos (spec 019 del backend); `meta.accesoLibre` dice si el evento se inscribe solo con el documento (spec 030; ausente = libre) |
+| `POST /specialized-talk-eligibility` | JSON `{ tipoDocumento: 'dni'\|'ce', numeroDocumento, correo }` → `{ nombres, modoAsistencia: 'PRESENCIAL'\|'VIRTUAL', tipo, categoria }` si es un congresista con el pago aprobado. Errores: `422 CONGRESS_REGISTRATION_NOT_FOUND` (documento o correo no coinciden; mismo mensaje), `422 CONGRESS_PAYMENT_PENDING`, `422 CONGRESS_REGISTRATION_REJECTED`, `409 FREE_ACCESS_ENABLED` (spec 030 del backend) |
+| `POST /specialized-talk-registrations` | JSON `{ asistente: { tipoDocumento: 'dni'\|'ce', numeroDocumento, nombres?, apellidos?, correo?, celular?, procedencia?: 'INTERNO'\|'EXTERNO' }, ponenciaIds: [1–4] }`; todo o nada. Sin acceso libre solo viajan `tipoDocumento`, `numeroDocumento` y `correo` (obligatorio); nombres, celular y procedencia salen del congreso y la respuesta trae `modoAsistencia`. Errores: `409 TALK_FULL` (solo presencial), `409 SCHEDULE_CONFLICT`, `409 TALK_ENDED`, `404 TALK_NOT_FOUND`, `422 PAID_TALK_UNAVAILABLE`, `422 NAMES_REQUIRED`, `422 VALIDATION_ERROR`, `422 CONGRESS_*` |
 
 ### Verificación del correo con Google (lo que usa la landing)
 
@@ -64,6 +65,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `POST /api/publico/contacto` | `POST /contact` | no | JSON, 100 KB |
 | `GET /api/publico/ponencias-especializadas` | `GET /specialized-talks` | 15 s, clave constante | — |
 | `POST /api/publico/ponencias-especializadas/inscripciones` | `POST /specialized-talk-registrations` | no | JSON, 100 KB |
+| `POST /api/publico/ponencias-especializadas/elegibilidad` | `POST /specialized-talk-eligibility` | no (el documento y el correo van en el cuerpo, nunca en la URL) | JSON, 100 KB |
 
 Reglas comunes:
 

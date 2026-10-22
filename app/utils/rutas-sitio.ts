@@ -21,6 +21,8 @@ export const rutasSitio = {
   ponenciasEspecializadas: '/api/publico/ponencias-especializadas',
   /** Inscripción a 1–4 ponencias, todo o nada (backend `POST /specialized-talk-registrations`). */
   inscripcionPonenciasEspecializadas: '/api/publico/ponencias-especializadas/inscripciones',
+  /** Verifica el documento y el correo de un congresista con el pago aprobado y dice su modo (backend `POST /specialized-talk-eligibility`). */
+  verificacionPonenciasEspecializadas: '/api/publico/ponencias-especializadas/elegibilidad',
   /** La delegación de un link (backend `GET /delegations/link/:codigo`). */
   delegacion: (codigo: string) => `/api/publico/delegaciones/${encodeURIComponent(codigo)}`,
   /** El delegado suma integrantes con su link (backend `POST …/link/:codigo/participants`). */

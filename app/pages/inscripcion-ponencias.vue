@@ -6,10 +6,16 @@
         <p class="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-primary-300">VIII CIISIC UNDC · 2026</p>
         <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">Inscripción a ponencias especializadas</h1>
         <p class="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-300">
-          Elige las ponencias a las que asistirás y deja tus datos. Son gratuitas, con cupos limitados, y la asistencia se registra con tu DNI en la puerta.
+          <template v-if="accesoLibre">
+            Elige las ponencias a las que asistirás y deja tu DNI. Son gratuitas, con cupos limitados, y la asistencia se registra con tu DNI en la puerta.
+          </template>
+          <template v-else>
+            Las ponencias son para los inscritos al congreso con el pago aprobado. Verifica tu inscripción con tu DNI y tu correo, elige tus ponencias y registra tu asistencia con tu DNI en la puerta.
+          </template>
         </p>
         <div class="mt-7 flex flex-wrap justify-center gap-3 text-sm">
           <span class="summary-chip"><Icon name="heroicons:ticket" class="h-5 w-5 text-primary-400" aria-hidden="true" />Gratuitas</span>
+          <span v-if="!accesoLibre" class="summary-chip"><Icon name="heroicons:check-badge" class="h-5 w-5 text-primary-400" aria-hidden="true" />Para inscritos con pago aprobado</span>
           <span class="summary-chip"><Icon name="heroicons:identification" class="h-5 w-5 text-primary-400" aria-hidden="true" />Lleva tu DNI</span>
           <NuxtLink to="/ponencias-especializadas" class="summary-chip hover:border-primary-400/50 hover:text-white">
             <Icon name="heroicons:user-group" class="h-5 w-5 text-primary-400" aria-hidden="true" />Conoce a los ponentes
@@ -29,6 +35,10 @@
           Quedaste inscrito con tu {{ resultado.asistente.tipoDocumento.toUpperCase() }} {{ resultado.asistente.numeroDocumento }}.
           Lleva tu documento: con él se registra tu asistencia.
         </p>
+        <p v-if="resultado.modoAsistencia" class="mt-3 inline-flex items-center gap-2 rounded-full border border-primary-400/30 bg-primary-400/10 px-4 py-1.5 text-sm font-semibold text-primary-200">
+          <Icon :name="resultado.modoAsistencia === 'VIRTUAL' ? 'heroicons:video-camera' : 'heroicons:map-pin'" class="h-4 w-4" aria-hidden="true" />
+          Asistes de forma {{ etiquetaModoAsistencia(resultado.modoAsistencia).toLowerCase() }}
+        </p>
         <ul class="mt-6 space-y-3">
           <li v-for="item in resultado.inscripciones" :key="item.id" class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
             <p class="font-semibold leading-snug text-white">{{ item.ponencia.tema }}</p>
@@ -41,7 +51,8 @@
           </li>
         </ul>
         <p class="mt-6 text-sm text-slate-400">
-          Si no puedes asistir, puedes cambiar de ponencia en la puerta con tu DNI mientras haya cupo.
+          <template v-if="resultado.modoAsistencia === 'VIRTUAL'">Como asistente virtual no ocupas aforo presencial. La organización compartirá las indicaciones para seguir las ponencias.</template>
+          <template v-else>Si no puedes asistir, puedes cambiar de ponencia en la puerta con tu DNI mientras haya cupo.</template>
         </p>
         <div class="mt-7 flex flex-wrap gap-3">
           <button type="button" class="btn btn-primary" @click="nuevaInscripcion">Inscribir a otra persona</button>
@@ -69,10 +80,83 @@
       </section>
 
       <template v-else>
-        <!-- Elección -->
-        <section class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16 2xl:max-w-[1600px]" aria-labelledby="titulo-eleccion">
-          <div class="mb-9 max-w-3xl">
+        <!-- Verificación (solo sin acceso libre): el documento y el correo del congreso -->
+        <section v-if="!accesoLibre" class="border-b border-white/10 bg-[#03172d] px-6 py-12 lg:px-8 lg:py-16" aria-labelledby="titulo-verificacion">
+          <form class="mx-auto max-w-3xl" novalidate @submit.prevent="verificar">
             <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso 1</p>
+            <h2 id="titulo-verificacion" tabindex="-1" class="mt-2 scroll-mt-40 text-3xl font-bold tracking-tight outline-none">Verifica tu inscripción al congreso</h2>
+            <p class="mt-3 text-slate-300">
+              Escribe tu documento y <strong class="text-white">el correo con el que te inscribiste al congreso</strong>. Solo pueden inscribirse a las ponencias quienes tienen su pago aprobado.
+            </p>
+
+            <div class="mt-6 grid gap-5 sm:grid-cols-[12rem_1fr]">
+              <div>
+                <label for="tipo-documento" class="campo-label">Documento</label>
+                <select id="tipo-documento" v-model="form.tipoDocumento" class="campo">
+                  <option v-for="tipo in documentTypes" :key="tipo.value" :value="tipo.value">{{ tipo.label }}</option>
+                </select>
+              </div>
+              <div>
+                <label for="numero-documento" class="campo-label">Número de documento <span aria-hidden="true">*</span></label>
+                <input
+                  id="numero-documento"
+                  v-model="form.numeroDocumento"
+                  class="campo font-mono tracking-wider"
+                  :inputmode="form.tipoDocumento === 'DNI' ? 'numeric' : 'text'"
+                  :placeholder="form.tipoDocumento === 'DNI' ? '8 dígitos' : '9 a 12 letras o dígitos'"
+                  autocomplete="off"
+                  :aria-invalid="errores.numeroDocumento ? true : undefined"
+                >
+                <p v-if="errores.numeroDocumento" class="campo-error" role="alert">{{ errores.numeroDocumento }}</p>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="correo" class="campo-label">Correo del congreso <span aria-hidden="true">*</span></label>
+                <input id="correo" v-model="form.correo" type="email" class="campo" maxlength="191" autocomplete="email" placeholder="el correo con el que te inscribiste" :aria-invalid="errores.correo ? true : undefined">
+                <p v-if="errores.correo" class="campo-error" role="alert">{{ errores.correo }}</p>
+              </div>
+            </div>
+
+            <div v-if="errorVerificacion" class="mt-6 flex items-start gap-3 rounded-2xl border border-red-300/30 bg-red-400/10 p-4 text-sm leading-relaxed text-red-100" role="alert">
+              <Icon name="heroicons:exclamation-circle" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>{{ errorVerificacion }}</span>
+            </div>
+
+            <div v-if="verificacion" class="mt-6 flex items-start gap-3 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-4" role="status">
+              <Icon name="heroicons:check-circle" class="mt-0.5 h-6 w-6 shrink-0 text-emerald-300" aria-hidden="true" />
+              <div class="text-sm leading-relaxed text-slate-200">
+                <p class="font-semibold text-white">Hola, {{ primerNombreVerificado }}: tu inscripción al congreso está aprobada.</p>
+                <p class="mt-1">
+                  Asistes de forma <strong class="text-white">{{ etiquetaModoAsistencia(verificacion.modoAsistencia).toLowerCase() }}</strong><template v-if="verificacion.tipo"> · {{ verificacion.tipo }}</template>.
+                  <template v-if="modo === 'VIRTUAL'">Como asistente virtual no tienes límite de cupo: puedes elegir cualquier ponencia.</template>
+                  <template v-else>Las ponencias presenciales tienen cupos limitados.</template>
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              <button type="submit" class="btn btn-primary" :disabled="verificando">
+                <Icon v-if="verificando" name="heroicons:arrow-path" class="h-5 w-5 animate-spin" aria-hidden="true" />
+                {{ verificando ? 'Verificando…' : verificacion ? 'Verificar de nuevo' : 'Verificar mi inscripción' }}
+              </button>
+              <p class="text-xs text-slate-400">
+                ¿No recuerdas el correo o tu pago sigue en revisión? Escríbenos desde
+                <NuxtLink to="/contacto" class="underline underline-offset-2 hover:text-white">Contacto</NuxtLink>.
+              </p>
+            </div>
+          </form>
+        </section>
+
+        <!-- Aviso mientras no se verifica -->
+        <section v-if="!accesoLibre && !verificacion" class="mx-auto max-w-3xl px-6 py-14 text-center text-slate-300" role="status">
+          <Icon name="heroicons:lock-closed" class="mx-auto h-9 w-9 text-primary-400" aria-hidden="true" />
+          <p class="mt-3 font-semibold text-white">Verifica tu inscripción para ver y elegir las ponencias.</p>
+          <p class="mt-1 text-sm">Los cupos de las ponencias presenciales dependen de cómo asistes al congreso.</p>
+        </section>
+
+        <!-- Elección -->
+        <section v-if="accesoLibre || verificacion" class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16 2xl:max-w-[1600px]" aria-labelledby="titulo-eleccion">
+          <div class="mb-9 max-w-3xl">
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso {{ accesoLibre ? 1 : 2 }}</p>
             <h2 id="titulo-eleccion" class="mt-2 text-3xl font-bold tracking-tight">Elige tus ponencias</h2>
             <p class="mt-3 flex items-start gap-3 rounded-2xl border border-primary-400/25 bg-primary-400/[.07] p-4 leading-relaxed text-slate-200">
               <Icon name="heroicons:information-circle" class="mt-0.5 h-6 w-6 shrink-0 text-primary-300" aria-hidden="true" />
@@ -121,20 +205,20 @@
                   :key="ponencia.id"
                   :for="`ponencia-${ponencia.id}`"
                   class="opcion flex h-full flex-col rounded-3xl border p-5"
-                  :class="{ 'is-selected': estaElegida(ponencia), 'is-disabled': Boolean(motivoNoDisponible(ponencia)) }"
+                  :class="{ 'is-selected': estaElegida(ponencia), 'is-disabled': Boolean(motivo(ponencia)) }"
                 >
                   <input
                     :id="`ponencia-${ponencia.id}`"
                     type="checkbox"
                     class="sr-only"
                     :checked="estaElegida(ponencia)"
-                    :disabled="Boolean(motivoNoDisponible(ponencia)) && !estaElegida(ponencia)"
+                    :disabled="Boolean(motivo(ponencia)) && !estaElegida(ponencia)"
                     @change="alternarYAvanzar(ponencia)"
                   >
                   <span class="flex items-start justify-between gap-3">
                     <span class="check" aria-hidden="true"><Icon v-if="estaElegida(ponencia)" name="heroicons:check" class="h-4 w-4" /></span>
-                    <span class="nivel" :class="`nivel-${motivoNoDisponible(ponencia) ? 'agotada' : nivelDeCupos(ponencia)}`">
-                      {{ motivoNoDisponible(ponencia) === 'DE_PAGO' ? 'De pago' : textoCupos(ponencia) }}
+                    <span class="nivel" :class="`nivel-${motivo(ponencia) ? 'agotada' : nivel(ponencia)}`">
+                      {{ motivo(ponencia) === 'DE_PAGO' ? 'De pago' : cupos(ponencia) }}
                     </span>
                   </span>
                   <span class="mt-4 flex-1 text-lg font-bold leading-snug text-white">{{ ponencia.tema }}</span>
@@ -151,19 +235,23 @@
                     </span>
                   </span>
                   <span v-if="estaElegida(ponencia)" class="mt-3 text-xs font-semibold text-primary-300">Elegida · púlsala para quitarla y ver las demás.</span>
-                  <span v-else-if="motivoNoDisponible(ponencia)" class="mt-3 text-xs font-semibold text-amber-200">{{ TEXTO_NO_DISPONIBLE[motivoNoDisponible(ponencia)!] }}</span>
+                  <span v-else-if="motivo(ponencia)" class="mt-3 text-xs font-semibold text-amber-200">{{ TEXTO_NO_DISPONIBLE[motivo(ponencia)!] }}</span>
+                  <span v-else-if="modo === 'VIRTUAL' && ponencia.llena" class="mt-3 text-xs font-semibold text-sky-200">El aforo presencial está completo; como asistente virtual puedes inscribirte.</span>
                 </label>
               </div>
             </section>
           </div>
         </section>
 
-        <!-- Datos -->
-        <section class="border-t border-white/10 bg-[#03172d] px-6 py-12 lg:px-8 lg:py-16" aria-labelledby="titulo-datos">
+        <!-- Datos (acceso libre) o confirmación (congresista verificado) -->
+        <section v-if="accesoLibre || verificacion" class="border-t border-white/10 bg-[#03172d] px-6 py-12 lg:px-8 lg:py-16" aria-labelledby="titulo-datos">
           <form class="mx-auto max-w-3xl" novalidate @submit.prevent="enviar">
-            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso 2</p>
-            <h2 id="titulo-datos" tabindex="-1" class="mt-2 scroll-mt-40 text-3xl font-bold tracking-tight outline-none">Tus datos</h2>
-            <p class="mt-3 text-slate-300">Documento, correo y celular son obligatorios. Con tu DNI completamos tus nombres automáticamente.</p>
+            <p class="text-xs font-bold uppercase tracking-[.2em] text-primary-300">Paso {{ accesoLibre ? 2 : 3 }}</p>
+            <h2 id="titulo-datos" tabindex="-1" class="mt-2 scroll-mt-40 text-3xl font-bold tracking-tight outline-none">{{ accesoLibre ? 'Tus datos' : 'Confirma tu inscripción' }}</h2>
+            <p class="mt-3 text-slate-300">
+              <template v-if="accesoLibre">Solo necesitas tu documento. Con tu DNI completamos tus nombres automáticamente; el correo y el celular son opcionales.</template>
+              <template v-else>Te inscribimos con los datos de tu inscripción al congreso, de forma {{ modo ? etiquetaModoAsistencia(modo).toLowerCase() : 'presencial' }}.</template>
+            </p>
 
             <div class="mt-6 rounded-2xl border border-white/10 bg-white/[.03] p-4" aria-live="polite">
               <p class="text-sm font-semibold text-slate-300">Tu elección ({{ elegidas.length }})</p>
@@ -177,60 +265,62 @@
               <p v-if="errores.ponencias" class="campo-error mt-2" role="alert">{{ errores.ponencias }}</p>
             </div>
 
-            <div class="mt-6 grid gap-5 sm:grid-cols-[12rem_1fr]">
-              <div>
-                <label for="tipo-documento" class="campo-label">Documento</label>
-                <select id="tipo-documento" v-model="form.tipoDocumento" class="campo">
-                  <option v-for="tipo in documentTypes" :key="tipo.value" :value="tipo.value">{{ tipo.label }}</option>
-                </select>
+            <template v-if="accesoLibre">
+              <div class="mt-6 grid gap-5 sm:grid-cols-[12rem_1fr]">
+                <div>
+                  <label for="tipo-documento" class="campo-label">Documento</label>
+                  <select id="tipo-documento" v-model="form.tipoDocumento" class="campo">
+                    <option v-for="tipo in documentTypes" :key="tipo.value" :value="tipo.value">{{ tipo.label }}</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="numero-documento" class="campo-label">Número de documento <span aria-hidden="true">*</span></label>
+                  <input
+                    id="numero-documento"
+                    v-model="form.numeroDocumento"
+                    class="campo font-mono tracking-wider"
+                    :inputmode="form.tipoDocumento === 'DNI' ? 'numeric' : 'text'"
+                    :placeholder="form.tipoDocumento === 'DNI' ? '8 dígitos' : '9 a 12 letras o dígitos'"
+                    autocomplete="off"
+                    :aria-invalid="errores.numeroDocumento ? true : undefined"
+                    :aria-describedby="consulta.mensaje ? 'consulta-dni' : undefined"
+                  >
+                  <p v-if="errores.numeroDocumento" class="campo-error" role="alert">{{ errores.numeroDocumento }}</p>
+                  <p id="consulta-dni" class="mt-1 min-h-5 text-xs" :class="consulta.estado === 'ENCONTRADO' ? 'text-emerald-300' : consulta.estado === 'FALLO' ? 'text-amber-300' : 'text-slate-400'" role="status">{{ consulta.mensaje }}</p>
+                </div>
+                <div>
+                  <label for="nombres" class="campo-label">Nombres <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
+                  <input id="nombres" v-model="form.nombres" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="given-name" :aria-invalid="errores.nombres ? true : undefined">
+                  <p v-if="errores.nombres" class="campo-error" role="alert">{{ errores.nombres }}</p>
+                </div>
+                <div>
+                  <label for="apellidos" class="campo-label">Apellidos <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
+                  <input id="apellidos" v-model="form.apellidos" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="family-name" :aria-invalid="errores.apellidos ? true : undefined">
+                  <p v-if="errores.apellidos" class="campo-error" role="alert">{{ errores.apellidos }}</p>
+                </div>
+                <div>
+                  <label for="correo" class="campo-label">Correo <span class="font-normal text-slate-400">(opcional)</span></label>
+                  <input id="correo" v-model="form.correo" type="email" class="campo" maxlength="191" autocomplete="email" :aria-invalid="errores.correo ? true : undefined">
+                  <p v-if="errores.correo" class="campo-error" role="alert">{{ errores.correo }}</p>
+                </div>
+                <div>
+                  <label for="celular" class="campo-label">Celular <span class="font-normal text-slate-400">(opcional)</span></label>
+                  <input id="celular" v-model="form.celular" type="tel" inputmode="tel" class="campo" maxlength="20" placeholder="987654321" autocomplete="tel" :aria-invalid="errores.celular ? true : undefined">
+                  <p v-if="errores.celular" class="campo-error" role="alert">{{ errores.celular }}</p>
+                </div>
               </div>
-              <div>
-                <label for="numero-documento" class="campo-label">Número de documento <span aria-hidden="true">*</span></label>
-                <input
-                  id="numero-documento"
-                  v-model="form.numeroDocumento"
-                  class="campo font-mono tracking-wider"
-                  :inputmode="form.tipoDocumento === 'DNI' ? 'numeric' : 'text'"
-                  :placeholder="form.tipoDocumento === 'DNI' ? '8 dígitos' : '9 a 12 letras o dígitos'"
-                  autocomplete="off"
-                  :aria-invalid="errores.numeroDocumento ? true : undefined"
-                  :aria-describedby="consulta.mensaje ? 'consulta-dni' : undefined"
-                >
-                <p v-if="errores.numeroDocumento" class="campo-error" role="alert">{{ errores.numeroDocumento }}</p>
-                <p id="consulta-dni" class="mt-1 min-h-5 text-xs" :class="consulta.estado === 'ENCONTRADO' ? 'text-emerald-300' : consulta.estado === 'FALLO' ? 'text-amber-300' : 'text-slate-400'" role="status">{{ consulta.mensaje }}</p>
-              </div>
-              <div>
-                <label for="nombres" class="campo-label">Nombres <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
-                <input id="nombres" v-model="form.nombres" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="given-name" :aria-invalid="errores.nombres ? true : undefined">
-                <p v-if="errores.nombres" class="campo-error" role="alert">{{ errores.nombres }}</p>
-              </div>
-              <div>
-                <label for="apellidos" class="campo-label">Apellidos <span v-if="nombresObligatorios" aria-hidden="true">*</span></label>
-                <input id="apellidos" v-model="form.apellidos" class="campo" :class="{ 'campo-bloqueado': nombresConsultados }" :readonly="nombresConsultados" maxlength="120" autocomplete="family-name" :aria-invalid="errores.apellidos ? true : undefined">
-                <p v-if="errores.apellidos" class="campo-error" role="alert">{{ errores.apellidos }}</p>
-              </div>
-              <div>
-                <label for="correo" class="campo-label">Correo <span aria-hidden="true">*</span></label>
-                <input id="correo" v-model="form.correo" type="email" class="campo" maxlength="191" autocomplete="email" :aria-invalid="errores.correo ? true : undefined">
-                <p v-if="errores.correo" class="campo-error" role="alert">{{ errores.correo }}</p>
-              </div>
-              <div>
-                <label for="celular" class="campo-label">Celular <span aria-hidden="true">*</span></label>
-                <input id="celular" v-model="form.celular" type="tel" inputmode="tel" class="campo" maxlength="20" placeholder="987654321" autocomplete="tel" :aria-invalid="errores.celular ? true : undefined">
-                <p v-if="errores.celular" class="campo-error" role="alert">{{ errores.celular }}</p>
-              </div>
-            </div>
 
-            <fieldset class="mt-6">
-              <legend class="campo-label">¿Perteneces a la UNDC? <span class="font-normal text-slate-400">(opcional)</span></legend>
-              <div class="mt-2 flex flex-wrap gap-3">
-                <label v-for="opcion in PROCEDENCIAS" :key="opcion.valor" class="radio-chip" :class="{ activo: form.procedencia === opcion.valor }">
-                  <input v-model="form.procedencia" type="radio" name="procedencia" :value="opcion.valor" class="sr-only">
-                  {{ opcion.etiqueta }}
-                </label>
-                <button v-if="form.procedencia" type="button" class="text-xs font-semibold text-primary-300 underline-offset-2 hover:underline" @click="form.procedencia = ''">Quitar</button>
-              </div>
-            </fieldset>
+              <fieldset class="mt-6">
+                <legend class="campo-label">¿Perteneces a la UNDC? <span class="font-normal text-slate-400">(opcional)</span></legend>
+                <div class="mt-2 flex flex-wrap gap-3">
+                  <label v-for="opcion in PROCEDENCIAS" :key="opcion.valor" class="radio-chip" :class="{ activo: form.procedencia === opcion.valor }">
+                    <input v-model="form.procedencia" type="radio" name="procedencia" :value="opcion.valor" class="sr-only">
+                    {{ opcion.etiqueta }}
+                  </label>
+                  <button v-if="form.procedencia" type="button" class="text-xs font-semibold text-primary-300 underline-offset-2 hover:underline" @click="form.procedencia = ''">Quitar</button>
+                </div>
+              </fieldset>
+            </template>
 
             <div v-if="errorEnvio" class="mt-6 flex items-start gap-3 rounded-2xl border border-red-300/30 bg-red-400/10 p-4 text-sm leading-relaxed text-red-100" role="alert">
               <Icon name="heroicons:exclamation-circle" class="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
@@ -256,13 +346,16 @@
 
 <script setup lang="ts">
 import type { ApiExito } from '~/types/evento'
-import type { InscripcionPonenciasRespuesta, PonenciaEspecializadaPublica } from '~/types/ponencias-especializadas'
+import type { InscripcionPonenciasRespuesta, ModoAsistencia, PonenciaEspecializadaPublica, VerificacionCongresista } from '~/types/ponencias-especializadas'
 import { mensajeFallaConsultaDni } from '~/utils/consulta-dni'
 import {
   alternarSeleccion,
   cuerpoInscripcion,
+  cuerpoVerificacion,
   depurarSeleccion,
   destinoTrasElegir,
+  esErrorDeCongreso,
+  etiquetaModoAsistencia,
   filtrarPonencias,
   formularioVacio,
   mensajeErrorInscripcionPonencias,
@@ -275,6 +368,7 @@ import {
   TEXTO_NO_DISPONIBLE,
   textoCupos,
   validarFormulario,
+  validarVerificacion,
   type ErroresFormulario,
 } from '~/utils/inscripcion-ponencias'
 import { duracionTexto, etiquetaDia, rangoHorario } from '~/utils/ponencias-especializadas'
@@ -282,9 +376,9 @@ import { rutasSitio } from '~/utils/rutas-sitio'
 
 useSeoMeta({
   title: 'Inscripción a ponencias especializadas | VIII CIISIC 2026',
-  description: 'Inscríbete gratis a las ponencias especializadas del VIII CIISIC 2026 (27 y 28 de octubre): elige tus ponencias, deja tu DNI y lleva tu documento.',
+  description: 'Inscríbete gratis a las ponencias especializadas del VIII CIISIC 2026 (27 y 28 de octubre): verifica tu inscripción al congreso, elige tus ponencias y lleva tu documento.',
   ogTitle: 'Inscripción a ponencias especializadas | VIII CIISIC 2026',
-  ogDescription: 'Elige tus ponencias especializadas y regístrate con tu DNI.',
+  ogDescription: 'Verifica tu inscripción al congreso, elige tus ponencias especializadas y regístrate con tu DNI.',
 })
 
 const PROCEDENCIAS = [
@@ -293,7 +387,7 @@ const PROCEDENCIAS = [
 ] as const
 
 const { request } = useApi()
-const { ponencias, dias, error, cargando, recargar } = usePonenciasEspecializadas()
+const { ponencias, dias, accesoLibre, error, cargando, recargar } = usePonenciasEspecializadas()
 const { documentTypes, consultDni } = useConsultation()
 
 const form = reactive(formularioVacio())
@@ -304,18 +398,28 @@ const errorEnvio = ref('')
 const enviando = ref(false)
 const resultado = ref<InscripcionPonenciasRespuesta | null>(null)
 const bloqueResultado = ref<HTMLElement | null>(null)
-/** `NAMES_REQUIRED`: el documento no trajo nombres y hay que escribirlos. */
+/** `NAMES_REQUIRED`: el documento no trajo nombres y hay que escribirlos (solo con el acceso libre). */
 const nombresManuales = ref(false)
+
+/** Verificación previa (sin acceso libre): el documento y el correo son de un congresista con el pago aprobado. */
+const verificacion = ref<VerificacionCongresista | null>(null)
+const verificando = ref(false)
+const errorVerificacion = ref('')
+/** Con qué documento y correo se verificó: si cambian, la verificación y la elección dejan de valer. */
+let verificadoCon = ''
 
 const consulta = ref<{ estado: 'INICIAL' | 'CONSULTANDO' | 'ENCONTRADO' | 'FALLO', numero: string, mensaje: string }>({ estado: 'INICIAL', numero: '', mensaje: '' })
 let turnoConsulta = 0
 
 const noDisponible = computed(() => programaNoDisponible(error.value))
+/** Cómo asiste quien se verificó; `null` con el acceso libre (no se distingue). */
+const modo = computed<ModoAsistencia | null>(() => (accesoLibre.value ? null : verificacion.value?.modoAsistencia ?? null))
 const elegidas = computed(() => ponencias.value.filter(p => seleccion.value.includes(p.id)))
 const nombresConsultados = computed(() => form.tipoDocumento === 'DNI' && consulta.value.estado === 'ENCONTRADO' && consulta.value.numero === form.numeroDocumento)
 const nombresObligatorios = computed(() =>
   form.tipoDocumento === 'CE' || nombresManuales.value || (form.tipoDocumento === 'DNI' && consulta.value.estado === 'FALLO' && consulta.value.numero === form.numeroDocumento))
 const primerNombre = computed(() => resultado.value?.asistente.nombres.split(' ')[0] ?? '')
+const primerNombreVerificado = computed(() => verificacion.value?.nombres.split(' ')[0] ?? '')
 
 const buscando = computed(() => busqueda.value.trim().length > 0)
 const resumenBusqueda = computed(() => {
@@ -337,9 +441,14 @@ const vistaDias = computed(() => dias.value.map((dia) => {
   return { dia, visibles, resumen }
 }))
 
+// El aforo es presencial: para un congresista virtual las ponencias llenas siguen disponibles
+const motivo = (ponencia: PonenciaEspecializadaPublica) => motivoNoDisponible(ponencia, modo.value)
+const cupos = (ponencia: PonenciaEspecializadaPublica) => textoCupos(ponencia, modo.value)
+const nivel = (ponencia: PonenciaEspecializadaPublica) => nivelDeCupos(ponencia, modo.value)
+
 const estaElegida = (ponencia: PonenciaEspecializadaPublica) => seleccion.value.includes(ponencia.id)
 const alternar = (ponencia: PonenciaEspecializadaPublica) => {
-  seleccion.value = alternarSeleccion(seleccion.value, ponencia, ponencias.value)
+  seleccion.value = alternarSeleccion(seleccion.value, ponencia, ponencias.value, modo.value)
   errores.value = { ...errores.value, ponencias: undefined }
 }
 
@@ -349,7 +458,7 @@ async function alternarYAvanzar(ponencia: PonenciaEspecializadaPublica) {
   alternar(ponencia)
   if (eraElegida || !estaElegida(ponencia)) return
   await nextTick()
-  const destino = document.getElementById(destinoTrasElegir(dias.value, seleccion.value, ponencia.fecha))
+  const destino = document.getElementById(destinoTrasElegir(dias.value, seleccion.value, ponencia.fecha, modo.value))
   if (!destino) return
   const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   destino.scrollIntoView({ behavior: sinMovimiento ? 'auto' : 'smooth', block: 'start' })
@@ -360,10 +469,12 @@ const iniciales = (nombre: string) => nombre.replace(/^(dr|dra|mg|m\.sc|ph\.d)\.
 // Los cupos del HTML pueden tener hasta unos segundos de antigüedad: se renuevan al abrir la página
 onMounted(async () => {
   await recargar()
-  seleccion.value = depurarSeleccion(seleccion.value, ponencias.value)
+  seleccion.value = depurarSeleccion(seleccion.value, ponencias.value, modo.value)
 })
 
-// Número de documento: solo los caracteres válidos; con un DNI completo se consultan los nombres
+const claveVerificada = () => `${form.tipoDocumento}|${form.numeroDocumento}|${form.correo.trim().toLowerCase()}`
+
+// Número de documento: solo los caracteres válidos; con el acceso libre y un DNI completo se consultan los nombres
 watch(() => [form.tipoDocumento, form.numeroDocumento] as const, ([tipo, numero]) => {
   const limpio = normalizarDocumento(tipo, numero)
   if (limpio !== numero) {
@@ -377,7 +488,16 @@ watch(() => [form.tipoDocumento, form.numeroDocumento] as const, ([tipo, numero]
     consulta.value = { estado: 'INICIAL', numero: '', mensaje: '' }
     nombresManuales.value = false
   }
-  if (tipo === 'DNI' && /^\d{8}$/.test(limpio)) buscarNombres(limpio)
+  if (accesoLibre.value && tipo === 'DNI' && /^\d{8}$/.test(limpio)) buscarNombres(limpio)
+})
+
+// Cambiar el documento o el correo después de verificar obliga a verificar de nuevo (y vacía la elección)
+watch(() => [form.tipoDocumento, form.numeroDocumento, form.correo] as const, () => {
+  errores.value = { ...errores.value, correo: undefined }
+  if (verificacion.value && claveVerificada() !== verificadoCon) {
+    verificacion.value = null
+    seleccion.value = []
+  }
 })
 
 async function buscarNombres(numero: string) {
@@ -404,16 +524,48 @@ function enfocarPrimerError() {
   if (primero) nextTick(() => document.getElementById(primero[1])?.focus({ preventScroll: false }))
 }
 
+/** Comprueba el documento y el correo del congreso y dice cómo asiste la persona (presencial o virtual). */
+async function verificar() {
+  if (verificando.value) return
+  errorVerificacion.value = ''
+  const faltas = validarVerificacion(form)
+  errores.value = { ...errores.value, numeroDocumento: faltas.numeroDocumento, correo: faltas.correo }
+  if (faltas.numeroDocumento || faltas.correo) return enfocarPrimerError()
+  verificando.value = true
+  try {
+    const respuesta = await request<ApiExito<VerificacionCongresista>>(rutasSitio.verificacionPonenciasEspecializadas, {
+      method: 'POST',
+      body: cuerpoVerificacion(form),
+      timeout: 15000,
+    })
+    verificacion.value = respuesta.data
+    verificadoCon = claveVerificada()
+    seleccion.value = []
+    // Los cupos pueden haber cambiado mientras se escribía
+    await recargar()
+    await nextTick()
+    document.getElementById('titulo-eleccion')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+  } catch (e) {
+    verificacion.value = null
+    const falla = normalizeApiError(e)
+    errorVerificacion.value = mensajeErrorInscripcionPonencias(falla)
+    // El evento pasó a acceso libre: se vuelve a leer el programa para mostrar el formulario sencillo
+    if (falla.code === 'FREE_ACCESS_ENABLED') await recargar()
+  } finally {
+    verificando.value = false
+  }
+}
+
 async function enviar() {
   if (enviando.value) return
   errorEnvio.value = ''
-  errores.value = validarFormulario(form, seleccion.value, { nombresObligatorios: nombresObligatorios.value })
+  errores.value = validarFormulario(form, seleccion.value, { nombresObligatorios: nombresObligatorios.value, accesoLibre: accesoLibre.value })
   if (Object.keys(errores.value).length) return enfocarPrimerError()
   enviando.value = true
   try {
     const respuesta = await request<ApiExito<InscripcionPonenciasRespuesta>>(rutasSitio.inscripcionPonenciasEspecializadas, {
       method: 'POST',
-      body: cuerpoInscripcion(form, seleccion.value),
+      body: cuerpoInscripcion(form, seleccion.value, { accesoLibre: accesoLibre.value }),
       timeout: 20000,
     })
     resultado.value = respuesta.data
@@ -427,10 +579,16 @@ async function enviar() {
       nombresManuales.value = true
       nextTick(() => document.getElementById('nombres')?.focus())
     }
+    // El pago dejó de estar aprobado o el evento cambió de acceso: se vuelve a verificar desde el principio
+    if (esErrorDeCongreso(falla) || falla.code === 'VALIDATION_ERROR') {
+      verificacion.value = null
+      errorVerificacion.value = errorEnvio.value
+      await recargar()
+    }
     // Un cupo, un cruce o una ponencia que cambió: se vuelve a leer el programa y se depura la elección
     if (['TALK_FULL', 'TALK_NOT_FOUND', 'TALK_ENDED', 'SCHEDULE_CONFLICT', 'PAID_TALK_UNAVAILABLE'].includes(falla.code)) {
       await recargar()
-      seleccion.value = depurarSeleccion(seleccion.value, ponencias.value)
+      seleccion.value = depurarSeleccion(seleccion.value, ponencias.value, modo.value)
     }
   } finally {
     enviando.value = false
@@ -441,8 +599,11 @@ function nuevaInscripcion() {
   resultado.value = null
   seleccion.value = []
   errorEnvio.value = ''
+  errorVerificacion.value = ''
   errores.value = {}
   nombresManuales.value = false
+  verificacion.value = null
+  verificadoCon = ''
   turnoConsulta++
   consulta.value = { estado: 'INICIAL', numero: '', mensaje: '' }
   Object.assign(form, formularioVacio())
