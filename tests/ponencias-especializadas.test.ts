@@ -13,12 +13,12 @@ import {
 } from '../app/utils/ponencias-especializadas'
 
 describe('datos de las ponencias especializadas', () => {
-  it('tiene 18 ponentes únicos y 19 temas', () => {
+  it('tiene 18 ponentes únicos y 18 temas', () => {
     expect(specializedSpeakers).toHaveLength(18)
     expect(new Set(specializedSpeakers.map(speaker => speaker.id)).size).toBe(18)
     expect(new Set(specializedSpeakers.map(speaker => speaker.name)).size).toBe(18)
-    expect(specializedTalks).toHaveLength(19)
-    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(19)
+    expect(specializedTalks).toHaveLength(18)
+    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(18)
   })
 
   it('cada tema apunta a un ponente existente y cada ponente dicta al menos un tema', () => {
@@ -62,13 +62,18 @@ describe('datos de las ponencias especializadas', () => {
     for (const talk of specializedTalks) expect(duracionMin(talk.start, talk.end)).toBe(45)
   })
 
-  it('Echaccaya dicta dos temas: laboratorio 8 el martes y laboratorio 4 el miércoles', () => {
+  it('Echaccaya dicta un solo tema: laboratorio 4 el miércoles', () => {
     const suyos = specializedTalks.filter(talk => talk.speakerId === 'jhonatan-echaccaya')
-    expect(suyos.map(talk => [talk.date, talk.room])).toEqual([
-      ['2026-10-27', 'Laboratorio 8'],
-      ['2026-10-28', 'Laboratorio 4'],
+    expect(suyos.map(talk => [talk.date, talk.room, talk.topic])).toEqual([
+      ['2026-10-28', 'Laboratorio 4', 'De robots a agentes de IA: automatiza como en el futuro'],
     ])
-    expect(suyos[0]?.topic).not.toBe(suyos[1]?.topic)
+  })
+
+  it('Almidon y Yucra dictan el miércoles en las aulas 2 y 3, y Angoma en el aula 1', () => {
+    const ambiente = (id: string) => specializedTalks.filter(talk => talk.speakerId === id).map(talk => [talk.date, talk.room])
+    expect(ambiente('carlos-almidon')).toEqual([['2026-10-28', 'Aula 2']])
+    expect(ambiente('daniel-yucra')).toEqual([['2026-10-28', 'Aula 3']])
+    expect(ambiente('miriam-angoma')).toEqual([['2026-10-28', 'Aula 1']])
   })
 })
 
@@ -100,28 +105,28 @@ describe('ponentesOrdenados', () => {
 describe('temasPorDia', () => {
   const dias = temasPorDia(specializedTalks)
 
-  it('agrupa en martes 27 (9 temas) y miércoles 28 (10 temas), en ese orden', () => {
+  it('agrupa en martes 27 (7 temas) y miércoles 28 (11 temas), en ese orden', () => {
     expect(dias.map(dia => [dia.etiqueta, dia.talks.length])).toEqual([
-      ['Martes 27 de octubre', 9],
-      ['Miércoles 28 de octubre', 10],
+      ['Martes 27 de octubre', 7],
+      ['Miércoles 28 de octubre', 11],
     ])
   })
 
   it('ordena por ambiente: laboratorios primero y aulas al final', () => {
     expect(dias[0]?.talks.map(talk => talk.room)).toEqual([
       'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 5',
-      'Laboratorio 6', 'Laboratorio 7', 'Laboratorio 8', 'Aula 5',
+      'Laboratorio 6', 'Laboratorio 7',
     ])
     expect(dias[1]?.talks.map(talk => talk.room)).toEqual([
-      'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 6',
-      'Laboratorio 7', 'Laboratorio 8', 'Aula 3', 'Aula 5', 'Aula 6',
+      'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 4', 'Laboratorio 6', 'Laboratorio 7',
+      'Laboratorio 8', 'Aula 1', 'Aula 2', 'Aula 3', 'Aula 5', 'Aula 6',
     ])
   })
 
-  it('repite a quien dicta dos temas, uno en cada día', () => {
-    const dePonente = (id: string) => dias.flatMap(dia => dia.talks).filter(talk => talk.speakerId === id)
-    expect(dePonente('jhonatan-echaccaya')).toHaveLength(2)
-    expect(dias[0]?.talks.some(talk => talk.speakerId === 'jhonatan-echaccaya')).toBe(true)
+  it('cada ponente dicta un solo tema y Echaccaya solo el miércoles', () => {
+    const temas = dias.flatMap(dia => dia.talks)
+    for (const speaker of specializedSpeakers) expect(temas.filter(talk => talk.speakerId === speaker.id)).toHaveLength(1)
+    expect(dias[0]?.talks.some(talk => talk.speakerId === 'jhonatan-echaccaya')).toBe(false)
     expect(dias[1]?.talks.some(talk => talk.speakerId === 'jhonatan-echaccaya')).toBe(true)
   })
 

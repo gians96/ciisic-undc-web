@@ -59,11 +59,11 @@ describe('sesiones de los ponentes invitados', () => {
 
 describe('bloques «Ponencias Especializadas» del cronograma', () => {
   const dias = [
-    { dia: 'Martes', date: '2026-10-27', cantidad: 9 },
-    { dia: 'Miércoles', date: '2026-10-28', cantidad: 10 },
+    { dia: 'Martes', date: '2026-10-27', cantidad: 7, ambientes: 'Laboratorios' },
+    { dia: 'Miércoles', date: '2026-10-28', cantidad: 11, ambientes: 'Laboratorios y aulas' },
   ]
 
-  for (const { dia, date, cantidad } of dias) {
+  for (const { dia, date, cantidad, ambientes } of dias) {
     describe(dia, () => {
       const bloque = bloqueEspecializado(schedule.find(item => item.short === dia)!)
       const talks = specializedTalks.filter(talk => talk.date === date)
@@ -81,7 +81,7 @@ describe('bloques «Ponencias Especializadas» del cronograma', () => {
 
       it(`indica que son ${cantidad} ponencias simultáneas`, () => {
         expect(bloque?.detail).toContain(`${cantidad} ponencias simultáneas`)
-        expect(bloque?.detail).toContain('Laboratorios y aulas')
+        expect(bloque?.detail).toBe(`${cantidad} ponencias simultáneas · ${ambientes}`)
       })
     })
   }
