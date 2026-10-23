@@ -1,4 +1,4 @@
-import type { SpecializedSpeaker, SpecializedTalk } from '../data/ponencias-especializadas'
+import type { CategoriaDocente, SpecializedSpeaker, SpecializedTalk } from '../data/ponencias-especializadas'
 
 export interface DiaDeTemas {
   date: string
@@ -53,9 +53,22 @@ export function rangoHorario(start: string, end: string): string {
   return sufijoInicio === sufijoFin ? `${inicio.slice(0, inicio.indexOf(' '))} – ${fin}` : `${inicio} – ${fin}`
 }
 
-/** Externos primero y luego el resto, conservando el orden original dentro de cada grupo. */
+/** Orden de los docentes UNDC: principal, asociado, auxiliar y contratado. */
+export const ORDEN_CATEGORIAS: readonly CategoriaDocente[] = ['PRINCIPAL', 'ASOCIADO', 'AUXILIAR', 'CONTRATADO']
+
+/** 0 externos; 1–4 categorías en orden; el último lugar es para el invitado interno (sin categoría). */
+function posicionPonente(speaker: SpecializedSpeaker): number {
+  if (speaker.external) return 0
+  const categoria = speaker.category ? ORDEN_CATEGORIAS.indexOf(speaker.category) : -1
+  return categoria === -1 ? ORDEN_CATEGORIAS.length + 1 : categoria + 1
+}
+
+/**
+ * Externos primero y luego los docentes UNDC por categoría (principal, asociado, auxiliar, contratado); el
+ * invitado interno, sin categoría, va al final. Dentro de cada grupo se conserva el orden original (el sort es estable).
+ */
 export function ponentesOrdenados(speakers: readonly SpecializedSpeaker[]): SpecializedSpeaker[] {
-  return [...speakers.filter(s => s.external), ...speakers.filter(s => !s.external)]
+  return [...speakers].sort((a, b) => posicionPonente(a) - posicionPonente(b))
 }
 
 /** Laboratorios, luego aulas y al final el auditorio; dentro de cada tipo, por número. */

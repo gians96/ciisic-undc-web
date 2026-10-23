@@ -51,9 +51,12 @@ describe('datos de las ponencias especializadas', () => {
     }
   })
 
-  it('marca como externos a Janeth Mariño, Mario Ormachea y a los cinco ponentes de otras universidades', () => {
+  it('marca como externos a Gamarra, Yucra, Mariño, Ormachea y a los cinco ponentes de otras universidades', () => {
     const externos = specializedSpeakers.filter(speaker => speaker.external).map(speaker => speaker.id)
-    expect(externos).toEqual(['janeth-marino', 'mario-ormachea', 'saul-arauco', 'karen-alcos', 'jorge-pozo', 'angel-almidon', 'javier-poma'])
+    expect(externos).toEqual([
+      'abraham-gamarra', 'daniel-yucra', 'janeth-marino', 'mario-ormachea',
+      'saul-arauco', 'karen-alcos', 'jorge-pozo', 'angel-almidon', 'javier-poma',
+    ])
   })
 
   it('no repite ponente ni ambiente en la misma fecha y hora', () => {
@@ -133,10 +136,55 @@ describe('ponentesOrdenados', () => {
     expect(ordenados.map(speaker => speaker.id)).toEqual(['b', 'd', 'a', 'c'])
   })
 
+  it('ordena a los internos por categoría: principal, asociado, auxiliar, contratado y, al final, el invitado sin categoría', () => {
+    const ordenados = ponentesOrdenados([
+      { id: 'sin-categoria', name: 'S', image: '', bio: '', external: false },
+      { id: 'contratado', name: 'C', image: '', bio: '', external: false, category: 'CONTRATADO' },
+      { id: 'auxiliar-1', name: 'X1', image: '', bio: '', external: false, category: 'AUXILIAR' },
+      { id: 'externo', name: 'E', image: '', bio: '', external: true },
+      { id: 'principal', name: 'P', image: '', bio: '', external: false, category: 'PRINCIPAL' },
+      { id: 'auxiliar-2', name: 'X2', image: '', bio: '', external: false, category: 'AUXILIAR' },
+      { id: 'asociado', name: 'A', image: '', bio: '', external: false, category: 'ASOCIADO' },
+    ])
+    expect(ordenados.map(speaker => speaker.id)).toEqual([
+      'externo', 'principal', 'asociado', 'auxiliar-1', 'auxiliar-2', 'contratado', 'sin-categoria',
+    ])
+  })
+
+  it('con los datos reales: externos, principales, asociados, auxiliares, contratados y, al final, los invitados internos', () => {
+    expect(ponentesOrdenados(specializedSpeakers).map(speaker => speaker.id)).toEqual([
+      'abraham-gamarra', 'daniel-yucra', 'janeth-marino', 'mario-ormachea',
+      'saul-arauco', 'karen-alcos', 'jorge-pozo', 'angel-almidon', 'javier-poma',
+      'guido-larico', 'wagner-vicente', 'carlos-almidon', 'edwin-roque',
+      'amanda-duran', 'marisol-daga',
+      'miriam-angoma', 'jair-ferreyros', 'claudio-huancahuire', 'joel-vilca',
+      'percy-salcedo', 'jhonatan-echaccaya', 'jhancarlo-silva',
+      'richard-condori', 'dany-isuiza',
+    ])
+  })
+
+  it('cada docente UNDC con categoría coincide con el directorio de docentes 2026-II', () => {
+    const categoria = (id: string) => specializedSpeakers.find(speaker => speaker.id === id)?.category
+    expect(['guido-larico', 'wagner-vicente', 'carlos-almidon', 'edwin-roque'].map(categoria)).toEqual(Array(4).fill('PRINCIPAL'))
+    expect(['amanda-duran', 'marisol-daga'].map(categoria)).toEqual(Array(2).fill('ASOCIADO'))
+    expect(['miriam-angoma', 'jair-ferreyros', 'claudio-huancahuire', 'joel-vilca'].map(categoria)).toEqual(Array(4).fill('AUXILIAR'))
+    expect(['percy-salcedo', 'jhonatan-echaccaya', 'jhancarlo-silva'].map(categoria)).toEqual(Array(3).fill('CONTRATADO'))
+    for (const speaker of specializedSpeakers.filter(item => item.external)) expect(speaker.category, speaker.id).toBeUndefined()
+  })
+
+  it('Condori e Isuiza son invitados internos: no son externos y no tienen categoría docente', () => {
+    for (const id of ['richard-condori', 'dany-isuiza']) {
+      const speaker = specializedSpeakers.find(item => item.id === id)
+      expect(speaker?.external, id).toBe(false)
+      expect(speaker?.category, id).toBeUndefined()
+    }
+  })
+
   it('muestra a cada persona una sola vez, con Echaccaya incluido', () => {
     const ordenados = ponentesOrdenados(specializedSpeakers)
     expect(ordenados).toHaveLength(24)
-    expect(ordenados.slice(0, 2).map(speaker => speaker.id)).toEqual(['janeth-marino', 'mario-ormachea'])
+    expect(new Set(ordenados.map(speaker => speaker.id)).size).toBe(24)
+    expect(ordenados.slice(0, 2).map(speaker => speaker.id)).toEqual(['abraham-gamarra', 'daniel-yucra'])
     expect(ordenados.filter(speaker => speaker.id === 'jhonatan-echaccaya')).toHaveLength(1)
   })
 
@@ -175,11 +223,11 @@ describe('temasPorDia', () => {
     expect(dias[1]?.talks.some(talk => talk.speakerIds.includes('jhonatan-echaccaya'))).toBe(true)
   })
 
-  it('el martes el único externo dicta en el laboratorio 7', () => {
+  it('el martes el único externo dicta en el laboratorio 7 y el miércoles lo hacen seis temas, con Gamarra y Yucra', () => {
     const porId = ponentesPorId(specializedSpeakers)
     const conExterno = (dia: number) => dias[dia]?.talks.filter(talk => ponentesDelTema(talk, porId).some(speaker => speaker.external)) ?? []
     expect(conExterno(0).map(talk => talk.room)).toEqual(['Laboratorio 7'])
-    expect(conExterno(1).map(talk => talk.room)).toEqual(['Laboratorio 5', 'Laboratorio 7', 'Laboratorio 8', 'Aula 2'])
+    expect(conExterno(1).map(talk => talk.room)).toEqual(['Laboratorio 1', 'Laboratorio 5', 'Laboratorio 7', 'Laboratorio 8', 'Aula 2', 'Aula 3'])
   })
 })
 

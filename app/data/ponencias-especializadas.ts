@@ -1,3 +1,6 @@
+/** Categoría docente del «Directorio de docentes 2026-II» de Ingeniería de Sistemas (UNDC). */
+export type CategoriaDocente = 'PRINCIPAL' | 'ASOCIADO' | 'AUXILIAR' | 'CONTRATADO'
+
 export interface SpecializedSpeaker {
   id: string
   name: string
@@ -6,6 +9,8 @@ export interface SpecializedSpeaker {
   bio: string
   /** Ponente que no pertenece a la comunidad UNDC. */
   external: boolean
+  /** Categoría del docente UNDC según el directorio; ausente en los externos y en los invitados internos. */
+  category?: CategoriaDocente
 }
 
 export type SpecializedDate = '2026-10-27' | '2026-10-28'
@@ -24,8 +29,25 @@ export interface SpecializedTalk {
 
 const FOTOS = '/images/ponentes/2026/especializados'
 
-/** Ponentes externos primero; el resto en el orden en que aparecen en el programa. */
+/**
+ * Ponentes externos primero; luego los docentes UNDC por categoría (principal, asociado, auxiliar y contratado, en el
+ * orden del directorio) y al final los invitados internos, que no figuran en él.
+ */
 export const specializedSpeakers: SpecializedSpeaker[] = [
+  {
+    id: 'abraham-gamarra',
+    name: 'Dr. Abraham Esteban Gamarra Moreno',
+    image: '/images/ponentes/2026/abraham-gamarra-enhanced.webp',
+    external: true,
+    bio: 'Doctor en Ingeniería. Docente de pregrado y posgrado, investigador y conferencista internacional con formación en informática, inteligencia artificial, robótica y aprendizaje automático.',
+  },
+  {
+    id: 'daniel-yucra',
+    name: 'M.Sc. Daniel Alejandro Yucra Sotomayor',
+    image: '/images/ponentes/2026/daniel-yucra-enhanced.webp',
+    external: true,
+    bio: 'Máster universitario en Administración y Gestión Avanzada de Proyectos. Especialista y docente en seguridad de la información, gestión de riesgos tecnológicos, gobierno digital y transformación digital.',
+  },
   {
     id: 'janeth-marino',
     name: 'Dra. Janeth Bertha Mariño Arroyo',
@@ -76,6 +98,110 @@ export const specializedSpeakers: SpecializedSpeaker[] = [
     bio: 'Ingeniero Electrónico por la Universidad Nacional de Ingeniería (CIP N.° 80965), magíster en Ingeniería de Sistemas por la Universidad Nacional del Centro del Perú (UNCP) y doctor en Ingeniería Química Ambiental por la UNCP (febrero de 2023). Está registrado en CONCYTEC y ORCID. Se dedica a la investigación y al asesoramiento de tesis de pregrado y posgrado en automatización y control y en redes de sensores inalámbricos, desde 2006 a la fecha.\n\nEs especialista en automatización y control, redes de sensores inalámbricos y metrología eléctrica y electrónica; proactivo y con prospección en investigación científica, ha sido investigador principal y asociado en diversos proyectos con financiamiento nacional. Desde 2006 es docente de la Universidad Nacional de Huancavelica (UNH), de la que es profesor principal desde noviembre de 2023. A finales de 2019 realizó una pasantía en la Universitat Politècnica de Catalunya (España).',
   },
   {
+    id: 'guido-larico',
+    name: 'Dr. Guido Raúl Larico Uchumaco',
+    image: `${FOTOS}/guido-larico.webp`,
+    external: false,
+    category: 'PRINCIPAL',
+    bio: 'Docente ordinario de la Universidad Nacional de Cañete. Doctor en Ingeniería de Sistemas por la Universidad Nacional Federico Villarreal, doctor en Educación, magíster en Docencia Universitaria por la Universidad Nacional de Educación Enrique Guzmán y Valle y magíster en Informática con mención en Gerencia de Tecnologías de Información y Comunicaciones por la Universidad Nacional del Altiplano. Durante su carrera profesional ha desempeñado diversos cargos y trabajado como consultor y desarrollador de tecnologías libres y abiertas en proyectos de software para empresas privadas y públicas.',
+  },
+  {
+    id: 'wagner-vicente',
+    name: 'Dr. Wagner Enoc Vicente Ramos',
+    image: `${FOTOS}/wagner-vicente.webp`,
+    external: false,
+    category: 'PRINCIPAL',
+    bio: 'Docente universitario e investigador de la Universidad Nacional de Cañete con más de quince años de experiencia en pregrado y posgrado. Ingeniero de Sistemas, maestro en Gestión Educativa y doctor en Sistemas de Ingeniería. Se ha desempeñado como director de escuela profesional de Ingeniería de Sistemas y Computación, coordinador de investigación de Ciencias de la Empresa, coordinador de facultad de Ingeniería y director de escuela de posgrado. Es investigador RENACYT y miembro del Institute for Systems and Technologies of Information, Control and Communication; participa como conferencista y par evaluador en congresos nacionales e internacionales sobre ciencias de las organizaciones, transformación digital e inteligencia artificial.',
+  },
+  {
+    id: 'carlos-almidon',
+    name: 'Dr. Carlos Alcides Almidon Ortiz',
+    image: `${FOTOS}/carlos-almidon.webp`,
+    external: false,
+    category: 'PRINCIPAL',
+    bio: 'Doctor en Sistemas de Ingeniería, egresado del doctorado en Ingeniería de Sistemas, magíster en Ingeniería de Sistemas e ingeniero de Sistemas colegiado. Cuenta con experiencia como docente de posgrado y universitario, además de formación especializada en infraestructura tecnológica, telecomunicaciones y gestión académica. Su trayectoria incluye certificaciones y estudios en redes, ciberseguridad, domótica, diseño de centros de datos, cableado estructurado, gestión por procesos, configuración de servidores, gerencia, didáctica universitaria, inversión pública, modelamiento de software e investigación formativa. Se desempeña como consultor y capacitador en tecnologías de información, infraestructuras de comunicaciones, seguridad informática y gestión de procesos para instituciones públicas y privadas.',
+  },
+  {
+    id: 'edwin-roque',
+    name: 'Ph.D. Edwin Roque Tito',
+    image: `${FOTOS}/edwin-roque.webp`,
+    external: false,
+    category: 'PRINCIPAL',
+    bio: 'Investigador RENACYT, Ph. D. en Investigación por la UPEL de Venezuela, doctor en Ingeniería de Sistemas por la Universidad Nacional Federico Villarreal, candidato a magíster en Innovación e Integración de TI por la Pontificia Universidad Católica del Perú, magíster scientiae en Informática por la Universidad Nacional del Altiplano e ingeniero de Sistemas. Es docente principal de la Universidad Nacional de Cañete y realizó una pasantía en el Laboratorio Cavendish de la Universidad de Cambridge, en el Reino Unido. Cuenta con experiencia en proyectos de desarrollo de software e implementación de sistemas de información en la nube para organizaciones.',
+  },
+  {
+    id: 'amanda-duran',
+    name: 'Dra. Amanda Duran Carhuamaca',
+    image: `${FOTOS}/amanda-duran.webp`,
+    external: false,
+    category: 'ASOCIADO',
+    bio: 'Profesional orientada al logro de objetivos mediante el uso de tecnología. Magíster en Informática por la Pontificia Universidad Católica del Perú, ingeniera de Sistemas, candidata a doctora en Ingeniería de Sistemas y con doctorado en Docencia Universitaria. Cuenta con experiencia en gestión y dirección de proyectos, análisis funcional de software y trece años de docencia universitaria. Ha sido directora de una escuela profesional de Ingeniería de Sistemas, docente investigadora en más de diez universidades y expositora de temas de vanguardia en investigación y tecnología.',
+  },
+  {
+    id: 'marisol-daga',
+    name: 'Dra. Marisol Daga Chaca',
+    image: `${FOTOS}/marisol-daga.webp`,
+    external: false,
+    category: 'ASOCIADO',
+    bio: 'Doctora en Ciencias de la Educación, maestra en Gestión Empresarial e ingeniera de Sistemas. Cuenta con estudios de doctorado en Ingeniería de Sistemas y licenciatura en Educación, especialidad de Computación e Informática. Tiene experiencia en docencia universitaria y dirección de procesos empresariales.',
+  },
+  {
+    id: 'miriam-angoma',
+    name: 'Dra. Miriam Angoma Astucuri',
+    image: `${FOTOS}/miriam-angoma.webp`,
+    external: false,
+    category: 'AUXILIAR',
+    bio: 'Docente ordinaria de la Universidad Nacional de Cañete, adscrita a la Facultad de Ingeniería y a la Escuela Profesional de Ingeniería de Sistemas. Doctora en Sistemas de Ingeniería y magíster en Administración de Empresas con mención en Gestión de Proyectos. Cuenta con estudios de maestría en Docencia en Educación Superior y de segunda especialización en Didáctica Universitaria.',
+  },
+  {
+    id: 'jair-ferreyros',
+    name: 'Dr. Jair Emerson Ferreyros Yucra',
+    image: `${FOTOS}/jair-ferreyros.webp`,
+    external: false,
+    category: 'AUXILIAR',
+    bio: 'Doctor en Ingeniería de Sistemas, magíster scientiae en Informática, ingeniero de Sistemas y licenciado en Matemáticas. Cuenta con estudios concluidos de segunda especialidad centrada en investigación, didáctica y docencia en educación superior, así como estudios concluidos de doctorado en Administración. Sus habilidades comprenden el análisis de sistemas y la gestión de proyectos de tecnologías de la información. Destaca por su capacidad para resolver problemas técnicos y por una comunicación sólida con el personal de las organizaciones y los usuarios finales.',
+  },
+  {
+    id: 'claudio-huancahuire',
+    name: 'Mg. Claudio Isaías Huancahuire Bravo',
+    image: `${FOTOS}/claudio-huancahuire.webp`,
+    external: false,
+    category: 'AUXILIAR',
+    bio: 'Ingeniero de Sistemas e Informática, maestro en Ciencias con mención en Informática y estudiante de doctorado en Ingeniería de Sistemas en la Universidad Nacional del Callao. Su perfil reúne experiencia académica, investigación y ejercicio profesional en PHP, Python, Big Data, Linux, cloud computing e inteligencia artificial. Es docente ordinario de la Universidad Nacional de Cañete y también ha ejercido docencia en otras universidades. Ha participado como ponente en eventos académicos y científicos y cuenta con producción vinculada al procesamiento distribuido de grandes volúmenes de datos, las arquitecturas de sistemas y Big Data. Obtuvo el grado de bachiller y el título de ingeniero en la Universidad Tecnológica de los Andes, y el grado de maestro en la Universidad Nacional de San Antonio Abad del Cusco.',
+  },
+  {
+    id: 'joel-vilca',
+    name: 'Mg. Joel Linder Vilca Pizarro',
+    image: `${FOTOS}/joel-vilca.webp`,
+    external: false,
+    category: 'AUXILIAR',
+    bio: 'Profesional de Informática y Sistemas, magíster en Telecomunicaciones con mención en Redes y Servicios de Banda Ancha. Cuenta con experiencia profesional en docencia universitaria, investigación, desarrollo e innovación tecnológica en redes y telecomunicaciones, así como en tecnologías de información y gestión de proyectos.',
+  },
+  {
+    id: 'percy-salcedo',
+    name: 'Mg. Percy Ismael Salcedo Rodas',
+    image: `${FOTOS}/percy-salcedo.webp`,
+    external: false,
+    category: 'CONTRATADO',
+    bio: 'Ingeniero en Computación e Informática, maestro en Docencia Universitaria e Investigación Educativa y estudiante de doctorado en Ingeniería de Sistemas. Su trayectoria integra ingeniería, tecnologías de la información, docencia universitaria, investigación y gestión académica. Ha desarrollado actividades en la Universidad Nacional de Cañete, Universidad Autónoma del Perú, Universidad Autónoma de Ica, Universidad Nacional de Educación Enrique Guzmán y Valle, Universidad César Vallejo, Universidad Politécnica Amazónica y Universidad Nacional Pedro Ruiz Gallo. Su formación complementaria comprende inteligencia artificial, ciberseguridad, Internet de las Cosas, arquitectura de computadoras, tecnologías educativas, servicios cloud, herramientas digitales y gestión pública; además, participa de manera constante como asistente, ponente y organizador de actividades académicas.',
+  },
+  {
+    id: 'jhonatan-echaccaya',
+    name: 'Mg. Jhonatan Edilfonso Echaccaya Anyosa',
+    image: `${FOTOS}/jhonatan-echaccaya.webp`,
+    external: false,
+    category: 'CONTRATADO',
+    bio: 'Ingeniero de Sistemas y maestro en Gestión de la Tecnología de la Información, con estudios de doctorado en Ingeniería de Sistemas. Su perfil se orienta a la transformación digital, automatización de procesos, RPA/RDA, inteligencia artificial, desarrollo de software, liderazgo tecnológico y docencia universitaria. Se desempeña como líder técnico RDA y RPA en Indra/Minsait para BBVA Perú, donde lidera equipos, diseña arquitecturas de automatización, analiza la viabilidad técnica, gestiona iniciativas y pruebas de concepto, controla indicadores y aplica lineamientos de gobierno, seguridad y arquitectura. Trabaja con UiPath, Automation Anywhere, Power Platform, Python, Selenium, Playwright, machine learning, TensorFlow, Keras, APIs REST, Git y herramientas de analítica.',
+  },
+  {
+    id: 'jhancarlo-silva',
+    name: 'Mg. Jhancarlo Florencio Silva Ochoa',
+    image: `${FOTOS}/jhancarlo-silva.webp`,
+    external: false,
+    category: 'CONTRATADO',
+    bio: 'Ingeniero de Sistemas, maestro en Ingeniería Informática con mención en Ingeniería de Software, máster universitario en Ciberseguridad y doctorando en Ciencias de la Computación. Cuenta con más de diez años de experiencia en desarrollo de software y una sólida trayectoria en desarrollo móvil y multiplataforma. Está especializado en Android con Java y Kotlin, arquitecturas MVC, MVP y MVVM, APIs REST, integración de servicios externos, persistencia local, Kotlin Multiplatform y Compose Multiplatform. Es fundador y gerente general de CODELAB TECH E.I.R.L., donde ha diseñado, publicado y mantenido aplicaciones para escenarios reales de negocio, entre ellas InvoFact, una plataforma de gestión empresarial y facturación electrónica con integración a SUNAT, RENIEC, APIs REST, geolocalización e impresión mediante Bluetooth, Wi-Fi y USB.',
+  },
+  {
     id: 'richard-condori',
     name: 'Dr. Richard Condori Cruz',
     image: `${FOTOS}/richard-condori.webp`,
@@ -83,116 +209,11 @@ export const specializedSpeakers: SpecializedSpeaker[] = [
     bio: 'Ingeniero de Sistemas, doctor en Ingeniería de Sistemas, maestro en Informática, bachiller en Derecho y abogado. Cuenta con estudios de maestría en Derecho con mención en Derecho Procesal Penal y estudios concluidos de segunda especialidad en Didáctica e Investigación en Docencia Superior.',
   },
   {
-    id: 'jhancarlo-silva',
-    name: 'Mg. Jhancarlo Florencio Silva Ochoa',
-    image: `${FOTOS}/jhancarlo-silva.webp`,
-    external: false,
-    bio: 'Ingeniero de Sistemas, maestro en Ingeniería Informática con mención en Ingeniería de Software, máster universitario en Ciberseguridad y doctorando en Ciencias de la Computación. Cuenta con más de diez años de experiencia en desarrollo de software y una sólida trayectoria en desarrollo móvil y multiplataforma. Está especializado en Android con Java y Kotlin, arquitecturas MVC, MVP y MVVM, APIs REST, integración de servicios externos, persistencia local, Kotlin Multiplatform y Compose Multiplatform. Es fundador y gerente general de CODELAB TECH E.I.R.L., donde ha diseñado, publicado y mantenido aplicaciones para escenarios reales de negocio, entre ellas InvoFact, una plataforma de gestión empresarial y facturación electrónica con integración a SUNAT, RENIEC, APIs REST, geolocalización e impresión mediante Bluetooth, Wi-Fi y USB.',
-  },
-  {
-    id: 'marisol-daga',
-    name: 'Dra. Marisol Daga Chaca',
-    image: `${FOTOS}/marisol-daga.webp`,
-    external: false,
-    bio: 'Doctora en Ciencias de la Educación, maestra en Gestión Empresarial e ingeniera de Sistemas. Cuenta con estudios de doctorado en Ingeniería de Sistemas y licenciatura en Educación, especialidad de Computación e Informática. Tiene experiencia en docencia universitaria y dirección de procesos empresariales.',
-  },
-  {
-    id: 'joel-vilca',
-    name: 'Mg. Joel Linder Vilca Pizarro',
-    image: `${FOTOS}/joel-vilca.webp`,
-    external: false,
-    bio: 'Profesional de Informática y Sistemas, magíster en Telecomunicaciones con mención en Redes y Servicios de Banda Ancha. Cuenta con experiencia profesional en docencia universitaria, investigación, desarrollo e innovación tecnológica en redes y telecomunicaciones, así como en tecnologías de información y gestión de proyectos.',
-  },
-  {
-    id: 'claudio-huancahuire',
-    name: 'Mg. Claudio Isaías Huancahuire Bravo',
-    image: `${FOTOS}/claudio-huancahuire.webp`,
-    external: false,
-    bio: 'Ingeniero de Sistemas e Informática, maestro en Ciencias con mención en Informática y estudiante de doctorado en Ingeniería de Sistemas en la Universidad Nacional del Callao. Su perfil reúne experiencia académica, investigación y ejercicio profesional en PHP, Python, Big Data, Linux, cloud computing e inteligencia artificial. Es docente ordinario de la Universidad Nacional de Cañete y también ha ejercido docencia en otras universidades. Ha participado como ponente en eventos académicos y científicos y cuenta con producción vinculada al procesamiento distribuido de grandes volúmenes de datos, las arquitecturas de sistemas y Big Data. Obtuvo el grado de bachiller y el título de ingeniero en la Universidad Tecnológica de los Andes, y el grado de maestro en la Universidad Nacional de San Antonio Abad del Cusco.',
-  },
-  {
-    id: 'edwin-roque',
-    name: 'Ph.D. Edwin Roque Tito',
-    image: `${FOTOS}/edwin-roque.webp`,
-    external: false,
-    bio: 'Investigador RENACYT, Ph. D. en Investigación por la UPEL de Venezuela, doctor en Ingeniería de Sistemas por la Universidad Nacional Federico Villarreal, candidato a magíster en Innovación e Integración de TI por la Pontificia Universidad Católica del Perú, magíster scientiae en Informática por la Universidad Nacional del Altiplano e ingeniero de Sistemas. Es docente principal de la Universidad Nacional de Cañete y realizó una pasantía en el Laboratorio Cavendish de la Universidad de Cambridge, en el Reino Unido. Cuenta con experiencia en proyectos de desarrollo de software e implementación de sistemas de información en la nube para organizaciones.',
-  },
-  {
-    id: 'abraham-gamarra',
-    name: 'Dr. Abraham Esteban Gamarra Moreno',
-    image: '/images/ponentes/2026/abraham-gamarra-enhanced.webp',
-    external: false,
-    bio: 'Doctor en Ingeniería. Docente de pregrado y posgrado, investigador y conferencista internacional con formación en informática, inteligencia artificial, robótica y aprendizaje automático.',
-  },
-  {
-    id: 'guido-larico',
-    name: 'Dr. Guido Raúl Larico Uchumaco',
-    image: `${FOTOS}/guido-larico.webp`,
-    external: false,
-    bio: 'Docente ordinario de la Universidad Nacional de Cañete. Doctor en Ingeniería de Sistemas por la Universidad Nacional Federico Villarreal, doctor en Educación, magíster en Docencia Universitaria por la Universidad Nacional de Educación Enrique Guzmán y Valle y magíster en Informática con mención en Gerencia de Tecnologías de Información y Comunicaciones por la Universidad Nacional del Altiplano. Durante su carrera profesional ha desempeñado diversos cargos y trabajado como consultor y desarrollador de tecnologías libres y abiertas en proyectos de software para empresas privadas y públicas.',
-  },
-  {
     id: 'dany-isuiza',
     name: 'Dr. Dany Dorian Isuiza Pérez',
     image: `${FOTOS}/dany-isuiza.webp`,
     external: false,
     bio: 'Doctor en Administración e Ingeniero de Sistemas con más de 15 años de experiencia en gestión de proyectos de TI, desarrollo de software y optimización de procesos. Trayectoria como docente universitario en la UNAMAD, UAC, UNTELS y UNDC. Especialista en liderar la transformación digital con visión estratégica, pensamiento analítico y enfoque en la mejora continua.',
-  },
-  {
-    id: 'jhonatan-echaccaya',
-    name: 'Mg. Jhonatan Edilfonso Echaccaya Anyosa',
-    image: `${FOTOS}/jhonatan-echaccaya.webp`,
-    external: false,
-    bio: 'Ingeniero de Sistemas y maestro en Gestión de la Tecnología de la Información, con estudios de doctorado en Ingeniería de Sistemas. Su perfil se orienta a la transformación digital, automatización de procesos, RPA/RDA, inteligencia artificial, desarrollo de software, liderazgo tecnológico y docencia universitaria. Se desempeña como líder técnico RDA y RPA en Indra/Minsait para BBVA Perú, donde lidera equipos, diseña arquitecturas de automatización, analiza la viabilidad técnica, gestiona iniciativas y pruebas de concepto, controla indicadores y aplica lineamientos de gobierno, seguridad y arquitectura. Trabaja con UiPath, Automation Anywhere, Power Platform, Python, Selenium, Playwright, machine learning, TensorFlow, Keras, APIs REST, Git y herramientas de analítica.',
-  },
-  {
-    id: 'amanda-duran',
-    name: 'Dra. Amanda Duran Carhuamaca',
-    image: `${FOTOS}/amanda-duran.webp`,
-    external: false,
-    bio: 'Profesional orientada al logro de objetivos mediante el uso de tecnología. Magíster en Informática por la Pontificia Universidad Católica del Perú, ingeniera de Sistemas, candidata a doctora en Ingeniería de Sistemas y con doctorado en Docencia Universitaria. Cuenta con experiencia en gestión y dirección de proyectos, análisis funcional de software y trece años de docencia universitaria. Ha sido directora de una escuela profesional de Ingeniería de Sistemas, docente investigadora en más de diez universidades y expositora de temas de vanguardia en investigación y tecnología.',
-  },
-  {
-    id: 'percy-salcedo',
-    name: 'Mg. Percy Ismael Salcedo Rodas',
-    image: `${FOTOS}/percy-salcedo.webp`,
-    external: false,
-    bio: 'Ingeniero en Computación e Informática, maestro en Docencia Universitaria e Investigación Educativa y estudiante de doctorado en Ingeniería de Sistemas. Su trayectoria integra ingeniería, tecnologías de la información, docencia universitaria, investigación y gestión académica. Ha desarrollado actividades en la Universidad Nacional de Cañete, Universidad Autónoma del Perú, Universidad Autónoma de Ica, Universidad Nacional de Educación Enrique Guzmán y Valle, Universidad César Vallejo, Universidad Politécnica Amazónica y Universidad Nacional Pedro Ruiz Gallo. Su formación complementaria comprende inteligencia artificial, ciberseguridad, Internet de las Cosas, arquitectura de computadoras, tecnologías educativas, servicios cloud, herramientas digitales y gestión pública; además, participa de manera constante como asistente, ponente y organizador de actividades académicas.',
-  },
-  {
-    id: 'miriam-angoma',
-    name: 'Dra. Miriam Angoma Astucuri',
-    image: `${FOTOS}/miriam-angoma.webp`,
-    external: false,
-    bio: 'Docente ordinaria de la Universidad Nacional de Cañete, adscrita a la Facultad de Ingeniería y a la Escuela Profesional de Ingeniería de Sistemas. Doctora en Sistemas de Ingeniería y magíster en Administración de Empresas con mención en Gestión de Proyectos. Cuenta con estudios de maestría en Docencia en Educación Superior y de segunda especialización en Didáctica Universitaria.',
-  },
-  {
-    id: 'carlos-almidon',
-    name: 'Dr. Carlos Alcides Almidon Ortiz',
-    image: `${FOTOS}/carlos-almidon.webp`,
-    external: false,
-    bio: 'Doctor en Sistemas de Ingeniería, egresado del doctorado en Ingeniería de Sistemas, magíster en Ingeniería de Sistemas e ingeniero de Sistemas colegiado. Cuenta con experiencia como docente de posgrado y universitario, además de formación especializada en infraestructura tecnológica, telecomunicaciones y gestión académica. Su trayectoria incluye certificaciones y estudios en redes, ciberseguridad, domótica, diseño de centros de datos, cableado estructurado, gestión por procesos, configuración de servidores, gerencia, didáctica universitaria, inversión pública, modelamiento de software e investigación formativa. Se desempeña como consultor y capacitador en tecnologías de información, infraestructuras de comunicaciones, seguridad informática y gestión de procesos para instituciones públicas y privadas.',
-  },
-  {
-    id: 'daniel-yucra',
-    name: 'M.Sc. Daniel Alejandro Yucra Sotomayor',
-    image: '/images/ponentes/2026/daniel-yucra-enhanced.webp',
-    external: false,
-    bio: 'Máster universitario en Administración y Gestión Avanzada de Proyectos. Especialista y docente en seguridad de la información, gestión de riesgos tecnológicos, gobierno digital y transformación digital.',
-  },
-  {
-    id: 'jair-ferreyros',
-    name: 'Dr. Jair Emerson Ferreyros Yucra',
-    image: `${FOTOS}/jair-ferreyros.webp`,
-    external: false,
-    bio: 'Doctor en Ingeniería de Sistemas, magíster scientiae en Informática, ingeniero de Sistemas y licenciado en Matemáticas. Cuenta con estudios concluidos de segunda especialidad centrada en investigación, didáctica y docencia en educación superior, así como estudios concluidos de doctorado en Administración. Sus habilidades comprenden el análisis de sistemas y la gestión de proyectos de tecnologías de la información. Destaca por su capacidad para resolver problemas técnicos y por una comunicación sólida con el personal de las organizaciones y los usuarios finales.',
-  },
-  {
-    id: 'wagner-vicente',
-    name: 'Dr. Wagner Enoc Vicente Ramos',
-    image: `${FOTOS}/wagner-vicente.webp`,
-    external: false,
-    bio: 'Docente universitario e investigador de la Universidad Nacional de Cañete con más de quince años de experiencia en pregrado y posgrado. Ingeniero de Sistemas, maestro en Gestión Educativa y doctor en Sistemas de Ingeniería. Se ha desempeñado como director de escuela profesional de Ingeniería de Sistemas y Computación, coordinador de investigación de Ciencias de la Empresa, coordinador de facultad de Ingeniería y director de escuela de posgrado. Es investigador RENACYT y miembro del Institute for Systems and Technologies of Information, Control and Communication; participa como conferencista y par evaluador en congresos nacionales e internacionales sobre ciencias de las organizaciones, transformación digital e inteligencia artificial.',
   },
 ]
 

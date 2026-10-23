@@ -81,6 +81,8 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
   obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
   Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no los toca esa inscripción.
+  **Orden de la pestaña «Ponentes»** (`ponentesOrdenados`): externos, docentes UNDC por categoría del «Directorio de docentes 2026-II»
+  (`category`: principal, asociado, auxiliar, contratado; dentro de cada una, el orden del directorio) y, al final, los invitados internos (sin `category`).
   **Temas con varios ponentes** (spec 011; contrato en la spec 032 del backend): un tema que dictan varias personas a la misma hora y en el mismo ambiente lleva varios ids en
   `speakerIds` (`app/data/ponencias-especializadas.ts`; el primero es el principal; cada ponente aparece en un solo tema) y su tarjeta muestra a todos
   (`ponentesDelTema`, `etiquetaDePonentes`). La API trae `coponentes` (ausente en un backend anterior: un solo ponente) y la inscripción los muestra y los busca
