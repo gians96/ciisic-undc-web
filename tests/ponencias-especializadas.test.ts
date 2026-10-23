@@ -1,47 +1,59 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { specializedSpeakers, specializedTalks } from '../app/data/ponencias-especializadas'
 import {
   duracionMin,
   duracionTexto,
+  etiquetaDePonentes,
   etiquetaDia,
   formatoHora12,
   parrafosDelPerfil,
+  ponentesDelTema,
   ponentesOrdenados,
   ponentesPorId,
   rangoHorario,
   temasPorDia,
 } from '../app/utils/ponencias-especializadas'
 
+/** Los ids de quienes dictan un tema, en una sola lista (`speakerIds` de todos los temas). */
+const idsDePonentes = () => specializedTalks.flatMap(talk => [...talk.speakerIds])
+const dePonente = (id: string) => specializedTalks.filter(talk => talk.speakerIds.includes(id))
+
 describe('datos de las ponencias especializadas', () => {
-  it('tiene 19 ponentes únicos y 19 temas', () => {
-    expect(specializedSpeakers).toHaveLength(19)
-    expect(new Set(specializedSpeakers.map(speaker => speaker.id)).size).toBe(19)
-    expect(new Set(specializedSpeakers.map(speaker => speaker.name)).size).toBe(19)
-    expect(specializedTalks).toHaveLength(19)
-    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(19)
+  it('tiene 24 ponentes únicos y 22 temas', () => {
+    expect(specializedSpeakers).toHaveLength(24)
+    expect(new Set(specializedSpeakers.map(speaker => speaker.id)).size).toBe(24)
+    expect(new Set(specializedSpeakers.map(speaker => speaker.name)).size).toBe(24)
+    expect(specializedTalks).toHaveLength(22)
+    expect(new Set(specializedTalks.map(talk => talk.id)).size).toBe(22)
   })
 
-  it('cada tema apunta a un ponente existente y cada ponente dicta al menos un tema', () => {
+  it('cada tema apunta a ponentes existentes y cada ponente dicta exactamente un tema', () => {
     const ids = new Set(specializedSpeakers.map(speaker => speaker.id))
-    for (const talk of specializedTalks) expect(ids.has(talk.speakerId)).toBe(true)
-    const conTema = new Set(specializedTalks.map(talk => talk.speakerId))
-    for (const speaker of specializedSpeakers) expect(conTema.has(speaker.id)).toBe(true)
+    for (const talk of specializedTalks) {
+      expect(talk.speakerIds.length).toBeGreaterThan(0)
+      for (const id of talk.speakerIds) expect(ids.has(id), id).toBe(true)
+    }
+    for (const speaker of specializedSpeakers) expect(dePonente(speaker.id), speaker.id).toHaveLength(1)
+    expect(idsDePonentes()).toHaveLength(24)
   })
 
-  it('todos los ponentes tienen foto, perfil y los temas tienen título y ambiente', () => {
+  it('todos los ponentes tienen foto (y el archivo existe), perfil y los temas tienen título y ambiente', () => {
     for (const speaker of specializedSpeakers) {
       expect(speaker.image).toMatch(/^\/images\/ponentes\/2026\/(especializados\/)?.+\.webp$/)
+      expect(existsSync(join(__dirname, '..', 'public', speaker.image)), speaker.image).toBe(true)
       expect(speaker.bio.trim().length).toBeGreaterThan(40)
     }
     for (const talk of specializedTalks) {
       expect(talk.topic.trim().length).toBeGreaterThan(5)
-      expect(talk.room).toMatch(/^(Laboratorio|Aula) \d+$/)
+      expect(talk.room).toMatch(/^(Laboratorio \d+|Aula \d+|Auditorio)$/)
     }
   })
 
-  it('marca como externos solo a Janeth Mariño y Mario Ormachea', () => {
+  it('marca como externos a Janeth Mariño, Mario Ormachea y a los cinco ponentes de otras universidades', () => {
     const externos = specializedSpeakers.filter(speaker => speaker.external).map(speaker => speaker.id)
-    expect(externos).toEqual(['janeth-marino', 'mario-ormachea'])
+    expect(externos).toEqual(['janeth-marino', 'mario-ormachea', 'saul-arauco', 'karen-alcos', 'jorge-pozo', 'angel-almidon', 'javier-poma'])
   })
 
   it('no repite ponente ni ambiente en la misma fecha y hora', () => {
@@ -49,12 +61,14 @@ describe('datos de las ponencias especializadas', () => {
     const porAmbiente = new Set<string>()
     for (const talk of specializedTalks) {
       const turno = `${talk.date} ${talk.start}`
-      const ponente = `${turno} ${talk.speakerId}`
       const ambiente = `${turno} ${talk.room}`
-      expect(porPonente.has(ponente)).toBe(false)
-      expect(porAmbiente.has(ambiente)).toBe(false)
-      porPonente.add(ponente)
+      expect(porAmbiente.has(ambiente), ambiente).toBe(false)
       porAmbiente.add(ambiente)
+      for (const id of talk.speakerIds) {
+        const ponente = `${turno} ${id}`
+        expect(porPonente.has(ponente), ponente).toBe(false)
+        porPonente.add(ponente)
+      }
     }
   })
 
@@ -63,24 +77,48 @@ describe('datos de las ponencias especializadas', () => {
   })
 
   it('Echaccaya dicta un solo tema: laboratorio 4 el miércoles', () => {
-    const suyos = specializedTalks.filter(talk => talk.speakerId === 'jhonatan-echaccaya')
-    expect(suyos.map(talk => [talk.date, talk.room, talk.topic])).toEqual([
+    expect(dePonente('jhonatan-echaccaya').map(talk => [talk.date, talk.room, talk.topic])).toEqual([
       ['2026-10-28', 'Laboratorio 4', 'De robots a agentes de IA: automatiza como en el futuro'],
     ])
   })
 
   it('Roque dicta el martes en el aula 5 e Isuiza el miércoles en el laboratorio 3', () => {
-    const dePonente = (id: string) => specializedTalks.filter(talk => talk.speakerId === id).map(talk => [talk.date, talk.room])
-    expect(dePonente('edwin-roque')).toEqual([['2026-10-27', 'Aula 5']])
-    expect(dePonente('dany-isuiza')).toEqual([['2026-10-28', 'Laboratorio 3']])
+    const ambiente = (id: string) => dePonente(id).map(talk => [talk.date, talk.room])
+    expect(ambiente('edwin-roque')).toEqual([['2026-10-27', 'Aula 5']])
+    expect(ambiente('dany-isuiza')).toEqual([['2026-10-28', 'Laboratorio 3']])
     expect(specializedSpeakers.find(speaker => speaker.id === 'dany-isuiza')?.image).toBe('/images/ponentes/2026/especializados/dany-isuiza.webp')
   })
 
-  it('Almidon y Yucra dictan el miércoles en las aulas 2 y 3, y Angoma en el aula 1', () => {
-    const ambiente = (id: string) => specializedTalks.filter(talk => talk.speakerId === id).map(talk => [talk.date, talk.room])
-    expect(ambiente('carlos-almidon')).toEqual([['2026-10-28', 'Aula 2']])
+  it('Salcedo dicta el martes en el laboratorio 8 y Almidon Ortiz el miércoles en el auditorio', () => {
+    const ambiente = (id: string) => dePonente(id).map(talk => [talk.date, talk.room])
+    expect(ambiente('percy-salcedo')).toEqual([['2026-10-27', 'Laboratorio 8']])
+    expect(ambiente('carlos-almidon')).toEqual([['2026-10-28', 'Auditorio']])
+    expect(ambiente('jorge-pozo')).toEqual([['2026-10-28', 'Laboratorio 8']])
     expect(ambiente('daniel-yucra')).toEqual([['2026-10-28', 'Aula 3']])
     expect(ambiente('miriam-angoma')).toEqual([['2026-10-28', 'Aula 1']])
+  })
+
+  it('dos temas del miércoles los comparten dos ponentes, en el mismo ambiente y horario', () => {
+    const compartidos = specializedTalks.filter(talk => talk.speakerIds.length > 1)
+    expect(compartidos.map(talk => [talk.date, talk.start, talk.room, [...talk.speakerIds]])).toEqual([
+      ['2026-10-28', '12:00', 'Laboratorio 5', ['saul-arauco', 'karen-alcos']],
+      ['2026-10-28', '12:00', 'Aula 2', ['angel-almidon', 'javier-poma']],
+    ])
+  })
+
+  it('cada foto nueva se relaciona con el ponente que lleva su nombre', () => {
+    const imagen = (id: string) => specializedSpeakers.find(speaker => speaker.id === id)?.image
+    expect(imagen('jorge-pozo')).toBe('/images/ponentes/2026/especializados/jorge-pozo.webp')
+    expect(imagen('angel-almidon')).toBe('/images/ponentes/2026/especializados/angel-almidon.webp')
+    expect(imagen('javier-poma')).toBe('/images/ponentes/2026/especializados/javier-poma.webp')
+    expect(imagen('saul-arauco')).toBe('/images/ponentes/2026/especializados/saul-arauco.webp')
+    expect(imagen('karen-alcos')).toBe('/images/ponentes/2026/especializados/karen-alcos.webp')
+    const nombre = (id: string) => specializedSpeakers.find(speaker => speaker.id === id)?.name
+    expect(nombre('jorge-pozo')).toBe('Dr. Jorge Luis Pozo Malpartida')
+    expect(nombre('angel-almidon')).toBe('Dr. Ángel Almidón Elescano')
+    expect(nombre('javier-poma')).toBe('Dr. Javier Camilo Poma Palacios')
+    expect(nombre('saul-arauco')).toBe('Dr. Saúl Ernesto Arauco Esquivel')
+    expect(nombre('karen-alcos')).toBe('Dra. Karen Michel Alcos Flores')
   })
 })
 
@@ -97,7 +135,7 @@ describe('ponentesOrdenados', () => {
 
   it('muestra a cada persona una sola vez, con Echaccaya incluido', () => {
     const ordenados = ponentesOrdenados(specializedSpeakers)
-    expect(ordenados).toHaveLength(19)
+    expect(ordenados).toHaveLength(24)
     expect(ordenados.slice(0, 2).map(speaker => speaker.id)).toEqual(['janeth-marino', 'mario-ormachea'])
     expect(ordenados.filter(speaker => speaker.id === 'jhonatan-echaccaya')).toHaveLength(1)
   })
@@ -112,37 +150,61 @@ describe('ponentesOrdenados', () => {
 describe('temasPorDia', () => {
   const dias = temasPorDia(specializedTalks)
 
-  it('agrupa en martes 27 (7 temas) y miércoles 28 (12 temas), en ese orden', () => {
+  it('agrupa en martes 27 (8 temas) y miércoles 28 (14 temas), en ese orden', () => {
     expect(dias.map(dia => [dia.etiqueta, dia.talks.length])).toEqual([
-      ['Martes 27 de octubre', 7],
-      ['Miércoles 28 de octubre', 12],
+      ['Martes 27 de octubre', 8],
+      ['Miércoles 28 de octubre', 14],
     ])
   })
 
-  it('ordena por ambiente: laboratorios primero y aulas al final', () => {
+  it('ordena por ambiente: laboratorios primero, luego aulas y al final el auditorio', () => {
     expect(dias[0]?.talks.map(talk => talk.room)).toEqual([
       'Laboratorio 1', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 5', 'Laboratorio 6',
-      'Laboratorio 7', 'Aula 5',
+      'Laboratorio 7', 'Laboratorio 8', 'Aula 5',
     ])
     expect(dias[1]?.talks.map(talk => talk.room)).toEqual([
-      'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 6',
-      'Laboratorio 7', 'Laboratorio 8', 'Aula 1', 'Aula 2', 'Aula 3', 'Aula 5', 'Aula 6',
+      'Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3', 'Laboratorio 4', 'Laboratorio 5', 'Laboratorio 6',
+      'Laboratorio 7', 'Laboratorio 8', 'Aula 1', 'Aula 2', 'Aula 3', 'Aula 5', 'Aula 6', 'Auditorio',
     ])
   })
 
   it('cada ponente dicta un solo tema y Echaccaya solo el miércoles', () => {
     const temas = dias.flatMap(dia => dia.talks)
-    for (const speaker of specializedSpeakers) expect(temas.filter(talk => talk.speakerId === speaker.id)).toHaveLength(1)
-    expect(dias[0]?.talks.some(talk => talk.speakerId === 'jhonatan-echaccaya')).toBe(false)
-    expect(dias[1]?.talks.some(talk => talk.speakerId === 'jhonatan-echaccaya')).toBe(true)
+    for (const speaker of specializedSpeakers) expect(temas.filter(talk => talk.speakerIds.includes(speaker.id))).toHaveLength(1)
+    expect(dias[0]?.talks.some(talk => talk.speakerIds.includes('jhonatan-echaccaya'))).toBe(false)
+    expect(dias[1]?.talks.some(talk => talk.speakerIds.includes('jhonatan-echaccaya'))).toBe(true)
   })
 
-  it('el externo de cada día dicta en el laboratorio 7', () => {
-    const externos = ponentesPorId(specializedSpeakers)
-    for (const dia of dias) {
-      const talk = dia.talks.find(item => externos.get(item.speakerId)?.external)
-      expect(talk?.room).toBe('Laboratorio 7')
-    }
+  it('el martes el único externo dicta en el laboratorio 7', () => {
+    const porId = ponentesPorId(specializedSpeakers)
+    const conExterno = (dia: number) => dias[dia]?.talks.filter(talk => ponentesDelTema(talk, porId).some(speaker => speaker.external)) ?? []
+    expect(conExterno(0).map(talk => talk.room)).toEqual(['Laboratorio 7'])
+    expect(conExterno(1).map(talk => talk.room)).toEqual(['Laboratorio 5', 'Laboratorio 7', 'Laboratorio 8', 'Aula 2'])
+  })
+})
+
+describe('ponentesDelTema', () => {
+  const porId = ponentesPorId(specializedSpeakers)
+
+  it('devuelve a los ponentes en el orden del tema, el principal primero', () => {
+    const talk = specializedTalks.find(item => item.room === 'Aula 2')!
+    expect(ponentesDelTema(talk, porId).map(speaker => speaker.name)).toEqual(['Dr. Ángel Almidón Elescano', 'Dr. Javier Camilo Poma Palacios'])
+  })
+
+  it('un tema de un solo ponente devuelve solo a esa persona y un id desconocido se omite', () => {
+    expect(ponentesDelTema({ speakerIds: ['edwin-roque'] }, porId).map(speaker => speaker.id)).toEqual(['edwin-roque'])
+    expect(ponentesDelTema({ speakerIds: ['nadie', 'edwin-roque'] }, porId).map(speaker => speaker.id)).toEqual(['edwin-roque'])
+  })
+})
+
+describe('etiquetaDePonentes', () => {
+  it('distingue uno de varios y avisa «externo» solo si todos lo son', () => {
+    expect(etiquetaDePonentes([false])).toBe('Ponente')
+    expect(etiquetaDePonentes([true])).toBe('Ponente externo')
+    expect(etiquetaDePonentes([true, true])).toBe('Ponentes externos')
+    expect(etiquetaDePonentes([true, false])).toBe('Ponentes')
+    expect(etiquetaDePonentes([false, false])).toBe('Ponentes')
+    expect(etiquetaDePonentes([])).toBe('Ponente')
   })
 })
 

@@ -6,6 +6,13 @@
 export type ModalidadPonencia = 'PRESENCIAL' | 'VIRTUAL'
 export type ProcedenciaAsistente = 'INTERNO' | 'EXTERNO'
 
+export interface PonentePublico {
+  nombre: string
+  bio: string | null
+  foto: string | null
+  externo: boolean
+}
+
 /** Ponencia publicada (`GET /site/specialized-talks`): sin datos de inscritos, solo los cupos que quedan. */
 export interface PonenciaEspecializadaPublica {
   id: number
@@ -24,7 +31,9 @@ export interface PonenciaEspecializadaPublica {
   cupo: number | null
   cuposDisponibles: number | null
   llena: boolean
-  ponente: { nombre: string, bio: string | null, foto: string | null, externo: boolean }
+  ponente: PonentePublico
+  /** Los demás ponentes de un tema compartido (backend spec 032); ausente en un backend anterior: un solo ponente. */
+  coponentes?: PonentePublico[]
   orden: number
 }
 

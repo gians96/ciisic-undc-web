@@ -47,9 +47,11 @@ const fechaIso = (date: string) => {
 const ponenciasEspecializadas = (date: string): ScheduleEvent => {
   const talks = specializedTalks.filter(talk => talk.date === fechaIso(date))
   const primero = talks[0]
-  const hayLaboratorios = talks.some(talk => /^laboratorio/i.test(talk.room))
-  const hayAulas = talks.some(talk => /^aula/i.test(talk.room))
-  const ambientes = hayLaboratorios && hayAulas ? 'Laboratorios y aulas' : hayLaboratorios ? 'Laboratorios' : 'Aulas'
+  const tipos = [['laboratorio', 'laboratorios'], ['aula', 'aulas'], ['auditorio', 'auditorio']]
+    .filter(([raiz]) => talks.some(talk => talk.room.toLowerCase().startsWith(raiz!)))
+    .map(([, plural]) => plural!)
+  const lista = tipos.length > 1 ? `${tipos.slice(0, -1).join(', ')} y ${tipos.at(-1)}` : (tipos[0] ?? 'aulas')
+  const ambientes = lista.charAt(0).toUpperCase() + lista.slice(1)
 
   return {
     time: primero ? `${primero.start} - ${primero.end}` : '12:00 - 12:45',

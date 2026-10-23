@@ -1,15 +1,15 @@
 <template>
-  <article class="tema-card flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 p-5 sm:p-6" :class="{ 'is-external': speaker.external }">
+  <article class="tema-card flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 p-5 sm:p-6" :class="{ 'is-external': hayExterno }">
     <div class="flex flex-wrap items-center justify-between gap-2">
       <span class="rounded-full border border-white/15 bg-white/[.06] px-3 py-1 text-xs font-bold text-slate-200">
         Ponencia {{ String(numero).padStart(2, '0') }}
       </span>
       <span
-        v-if="speaker.external"
+        v-if="hayExterno"
         class="inline-flex items-center gap-1.5 rounded-full bg-primary-400 px-3 py-1 text-[.68rem] font-extrabold uppercase tracking-wider text-[#032f5f]"
       >
         <Icon name="heroicons:globe-alt" class="h-3.5 w-3.5" aria-hidden="true" />
-        Ponente externo
+        {{ speakers.length > 1 && !todosExternos ? 'Con ponente externo' : etiqueta }}
       </span>
     </div>
 
@@ -34,17 +34,21 @@
 
     <div class="pt-5">
       <div class="flex items-center gap-3 border-t border-white/10 pt-5">
-        <NuxtImg
-          :src="speaker.image"
-          alt=""
-          width="96"
-          height="96"
-          class="h-12 w-12 shrink-0 rounded-full border border-white/20 object-cover object-top"
-          loading="lazy"
-        />
+        <div class="flex shrink-0 -space-x-3">
+          <NuxtImg
+            v-for="speaker in speakers"
+            :key="speaker.id"
+            :src="speaker.image"
+            alt=""
+            width="96"
+            height="96"
+            class="h-12 w-12 rounded-full border-2 border-[#0a3157] object-cover object-top"
+            loading="lazy"
+          />
+        </div>
         <div class="min-w-0">
-          <p class="text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">Ponente</p>
-          <p class="font-semibold leading-snug text-slate-100">{{ speaker.name }}</p>
+          <p class="text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">{{ speakers.length > 1 ? 'Ponentes del tema' : 'Ponente' }}</p>
+          <p v-for="speaker in speakers" :key="speaker.id" class="font-semibold leading-snug text-slate-100">{{ speaker.name }}</p>
         </div>
       </div>
     </div>
@@ -53,15 +57,19 @@
 
 <script setup lang="ts">
 import type { SpecializedSpeaker, SpecializedTalk } from '~/data/ponencias-especializadas'
-import { duracionMin, duracionTexto, rangoHorario } from '~/utils/ponencias-especializadas'
+import { duracionMin, duracionTexto, etiquetaDePonentes, rangoHorario } from '~/utils/ponencias-especializadas'
 
 const props = defineProps<{
   talk: SpecializedTalk
-  speaker: SpecializedSpeaker
+  /** Quienes dictan el tema (uno o varios si lo comparten); el principal va primero. */
+  speakers: readonly SpecializedSpeaker[]
   /** Posición de la ponencia dentro de su día (empieza en 1). */
   numero: number
 }>()
 
+const hayExterno = computed(() => props.speakers.some(speaker => speaker.external))
+const todosExternos = computed(() => props.speakers.length > 0 && props.speakers.every(speaker => speaker.external))
+const etiqueta = computed(() => etiquetaDePonentes(props.speakers.map(speaker => speaker.external)))
 const duracion = computed(() => duracionTexto(duracionMin(props.talk.start, props.talk.end)))
 const horario = computed(() => rangoHorario(props.talk.start, props.talk.end))
 </script>

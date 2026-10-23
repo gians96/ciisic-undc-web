@@ -80,7 +80,12 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   las vuelve a mostrar; hay un buscador por tema, ponente, ambiente, hora o día); el servidor decide cupos,
   cruces y nombres (con DNI usa los oficiales) y nunca modifica a una persona ya registrada. En la landing son
   obligatorios el documento, el correo y el celular (el backend los deja opcionales para el staff en puerta).
-  Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no se tocan.
+  Los datos estáticos de `/ponencias-especializadas` (ponentes y temas) no los toca esa inscripción.
+  **Temas con varios ponentes** (spec 011; contrato en la spec 032 del backend): un tema que dictan varias personas a la misma hora y en el mismo ambiente lleva varios ids en
+  `speakerIds` (`app/data/ponencias-especializadas.ts`; el primero es el principal; cada ponente aparece en un solo tema) y su tarjeta muestra a todos
+  (`ponentesDelTema`, `etiquetaDePonentes`). La API trae `coponentes` (ausente en un backend anterior: un solo ponente) y la inscripción los muestra y los busca
+  (`ponentesDeLaPonencia`). Las fotos van en `public/images/ponentes/2026/especializados/<id>.webp`, recortadas a 4:5 como las demás, y el ambiente «Auditorio» se ordena después de las aulas.
+  **Backend 032 primero** (si no, la inscripción solo muestra al principal).
 - **Ponencias solo para congresistas** (spec 009; contrato en la spec 030 del backend): `meta.accesoLibre` de la lista decide el
   formulario (`accesoLibreDe`; ausente = libre). **Acceso libre apagado** (por defecto en el backend): Paso 1 «Verifica tu
   inscripción» (documento + el correo con el que se inscribió al congreso → `POST …/elegibilidad`, que responde su modo), Paso 2 elegir
@@ -150,8 +155,9 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 `specs/006-inscripcion-ponencias/` (inscripción a ponencias especializadas),
 `specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC),
 `specs/008-delegaciones/` (inscripción de delegaciones, página oculta),
-`specs/009-ponencias-validacion-congreso/` (ponencias solo para congresistas con pago aprobado) y
-`specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual).
+`specs/009-ponencias-validacion-congreso/` (ponencias solo para congresistas con pago aprobado),
+`specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual) y
+`specs/011-ponencias-coponentes/` (temas de ponencias especializadas con varios ponentes).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

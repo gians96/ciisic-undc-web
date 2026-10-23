@@ -227,11 +227,15 @@
                     <span class="inline-flex items-center gap-1.5"><Icon :name="ponencia.modalidad === 'VIRTUAL' ? 'heroicons:video-camera' : 'heroicons:map-pin'" class="h-4 w-4 text-primary-400" aria-hidden="true" />{{ ponencia.ambiente }}<template v-if="ponencia.modalidad === 'VIRTUAL'"> · Virtual</template></span>
                   </span>
                   <span class="mt-4 flex items-center gap-3 border-t border-white/10 pt-4">
-                    <img v-if="ponencia.ponente.foto" :src="ponencia.ponente.foto" alt="" width="48" height="48" loading="lazy" class="h-10 w-10 shrink-0 rounded-full border border-white/20 object-cover object-top">
-                    <span v-else class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 text-sm font-bold text-primary-200" aria-hidden="true">{{ iniciales(ponencia.ponente.nombre) }}</span>
+                    <span class="flex shrink-0 gap-1.5">
+                      <template v-for="ponente in ponentesDeLaPonencia(ponencia)" :key="ponente.nombre">
+                        <img v-if="ponente.foto" :src="ponente.foto" alt="" width="48" height="48" loading="lazy" class="h-10 w-10 rounded-full border border-white/20 object-cover object-top">
+                        <span v-else class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-sm font-bold text-primary-200" aria-hidden="true">{{ iniciales(ponente.nombre) }}</span>
+                      </template>
+                    </span>
                     <span class="min-w-0 text-sm">
-                      <span class="block text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">Ponente<template v-if="ponencia.ponente.externo"> externo</template></span>
-                      <span class="block font-semibold leading-snug text-slate-100">{{ ponencia.ponente.nombre }}</span>
+                      <span class="block text-[.68rem] font-semibold uppercase tracking-[.14em] text-slate-400">{{ etiquetaDePonentes(ponentesDeLaPonencia(ponencia).map(ponente => ponente.externo)) }}</span>
+                      <span v-for="ponente in ponentesDeLaPonencia(ponencia)" :key="ponente.nombre" class="block font-semibold leading-snug text-slate-100">{{ ponente.nombre }}</span>
                     </span>
                   </span>
                   <span v-if="estaElegida(ponencia)" class="mt-3 text-xs font-semibold text-primary-300">Elegida · púlsala para quitarla y ver las demás.</span>
@@ -364,6 +368,7 @@ import {
   normalizarDocumento,
   pideNombres,
   ponenciasVisibles,
+  ponentesDeLaPonencia,
   programaNoDisponible,
   TEXTO_NO_DISPONIBLE,
   textoCupos,
@@ -371,7 +376,7 @@ import {
   validarVerificacion,
   type ErroresFormulario,
 } from '~/utils/inscripcion-ponencias'
-import { duracionTexto, etiquetaDia, rangoHorario } from '~/utils/ponencias-especializadas'
+import { duracionTexto, etiquetaDePonentes, etiquetaDia, rangoHorario } from '~/utils/ponencias-especializadas'
 import { rutasSitio } from '~/utils/rutas-sitio'
 
 useSeoMeta({

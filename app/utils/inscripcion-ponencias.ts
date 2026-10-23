@@ -10,6 +10,7 @@ import type {
   ListaPonenciasRespuesta,
   ModoAsistencia,
   PonenciaEspecializadaPublica,
+  PonentePublico,
   ProcedenciaAsistente,
   VerificacionCuerpo,
 } from '../types/ponencias-especializadas'
@@ -127,15 +128,20 @@ function sinTildes(texto: string): string {
   return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
 
+/** Todos los ponentes del tema: el principal y, si lo comparten, los demás (un backend anterior no envía `coponentes`). */
+export function ponentesDeLaPonencia(ponencia: Pick<Ponencia, 'ponente' | 'coponentes'>): PonentePublico[] {
+  return [ponencia.ponente, ...(ponencia.coponentes ?? [])]
+}
+
 /**
- * Ponencias que contienen todas las palabras buscadas en el tema, el ponente, el ambiente, la hora o el
+ * Ponencias que contienen todas las palabras buscadas en el tema, los ponentes, el ambiente, la hora o el
  * día («miércoles», «27 de octubre»); sin tildes ni mayúsculas. Sin texto devuelve todas.
  */
 export function filtrarPonencias(ponencias: readonly Ponencia[], busqueda: string): Ponencia[] {
   const palabras = sinTildes(busqueda).split(/\s+/).filter(Boolean)
   if (!palabras.length) return [...ponencias]
   return ponencias.filter(ponencia => {
-    const texto = sinTildes([ponencia.tema, ponencia.ponente.nombre, ponencia.ambiente, ponencia.horaInicio, etiquetaDia(ponencia.fecha)].join(' '))
+    const texto = sinTildes([ponencia.tema, ...ponentesDeLaPonencia(ponencia).map(ponente => ponente.nombre), ponencia.ambiente, ponencia.horaInicio, etiquetaDia(ponencia.fecha)].join(' '))
     return palabras.every(palabra => texto.includes(palabra))
   })
 }

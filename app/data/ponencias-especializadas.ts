@@ -12,7 +12,8 @@ export type SpecializedDate = '2026-10-27' | '2026-10-28'
 
 export interface SpecializedTalk {
   id: number
-  speakerId: string
+  /** Quienes dictan el tema: uno o, si lo comparten (misma hora y ambiente), varios. El primero es el principal. */
+  speakerIds: readonly string[]
   topic: string
   date: SpecializedDate
   /** Hora de inicio y fin en formato 24 h (HH:mm). */
@@ -38,6 +39,41 @@ export const specializedSpeakers: SpecializedSpeaker[] = [
     image: `${FOTOS}/mario-ormachea.webp`,
     external: true,
     bio: 'Ingeniero de Sistemas con Maestría en Gestión de TIC por la Universidad Nacional de Huancavelica y estudios de Doctorado en Ciencias de la Educación (UAC). Posee más de dos décadas de experiencia liderando proyectos de conectividad, infraestructura de redes, servidores y soluciones TIC. Actualmente es docente en la Universidad Nacional Amazónica de Madre de Dios, directivo empresarial, investigador con publicaciones científicas indexadas y ponente en congresos internacionales de computación e innovación tecnológica.',
+  },
+  {
+    id: 'saul-arauco',
+    name: 'Dr. Saúl Ernesto Arauco Esquivel',
+    image: `${FOTOS}/saul-arauco.webp`,
+    external: true,
+    bio: 'Docente nombrado de la Facultad de Ingeniería de Sistemas de la Universidad Nacional del Centro del Perú (UNCP). Especialista en automatización y control y en modelamiento con elementos finitos.\n\nSus campos de investigación son los sistemas de información geográfica, la inteligencia artificial y la matemática avanzada.',
+  },
+  {
+    id: 'karen-alcos',
+    name: 'Dra. Karen Michel Alcos Flores',
+    image: `${FOTOS}/karen-alcos.webp`,
+    external: true,
+    bio: 'Docente de Ciencias Sociales y Desarrollo Rural, egresada de la Universidad Nacional de Huancavelica, con experiencia en educación superior y educación básica regular. Egresada de la Facultad de Derecho y Ciencias Políticas de la Universidad Peruana Los Andes (Huancayo), donde realizó el Servicio Civil de Graduados (SECIGRA) en la Corte Superior de Justicia de Junín.',
+  },
+  {
+    id: 'jorge-pozo',
+    name: 'Dr. Jorge Luis Pozo Malpartida',
+    image: `${FOTOS}/jorge-pozo.webp`,
+    external: true,
+    bio: 'Doctor en Medio Ambiente y Desarrollo Sostenible, magíster en Ingeniería de Sistemas y docente asociado de la Facultad de Ingeniería en Informática y Sistemas de la Universidad Nacional Agraria de la Selva. Tiene amplia experiencia en la práctica pedagógica: casi dos décadas en la Educación Básica Regular desarrollando competencias y capacidades en las áreas de Matemática y de Ciencia, Tecnología y Ambiente.\n\nEs experto en promover el desarrollo de habilidades blandas en los futuros ingenieros en informática y sistemas. Resuelve situaciones problemáticas con un enfoque sistémico que prioriza el desarrollo sostenible en el uso de las tecnologías.',
+  },
+  {
+    id: 'angel-almidon',
+    name: 'Dr. Ángel Almidón Elescano',
+    image: `${FOTOS}/angel-almidon.webp`,
+    external: true,
+    bio: 'Ingeniero Electrónico con grado de maestro en Docencia Superior, egresado del pregrado y del posgrado de la Universidad Ricardo Palma. Concluyó los estudios del doctorado con mención en Psicología de la Educación y Desarrollo Humano de la Universidad de Valencia y es egresado del doctorado en Sistemas de Ingeniería de la Universidad Nacional del Centro del Perú.\n\nEs docente ordinario principal adscrito al Departamento Académico de Ingeniería Electrónica de la Universidad Nacional de Huancavelica.',
+  },
+  {
+    id: 'javier-poma',
+    name: 'Dr. Javier Camilo Poma Palacios',
+    image: `${FOTOS}/javier-poma.webp`,
+    external: true,
+    bio: 'Ingeniero Electrónico por la Universidad Nacional de Ingeniería (CIP N.° 80965), magíster en Ingeniería de Sistemas por la Universidad Nacional del Centro del Perú (UNCP) y doctor en Ingeniería Química Ambiental por la UNCP (febrero de 2023). Está registrado en CONCYTEC y ORCID. Se dedica a la investigación y al asesoramiento de tesis de pregrado y posgrado en automatización y control y en redes de sensores inalámbricos, desde 2006 a la fecha.\n\nEs especialista en automatización y control, redes de sensores inalámbricos y metrología eléctrica y electrónica; proactivo y con prospección en investigación científica, ha sido investigador principal y asociado en diversos proyectos con financiamiento nacional. Desde 2006 es docente de la Universidad Nacional de Huancavelica (UNH), de la que es profesor principal desde noviembre de 2023. A finales de 2019 realizó una pasantía en la Universitat Politècnica de Catalunya (España).',
   },
   {
     id: 'richard-condori',
@@ -166,26 +202,30 @@ const MIERCOLES: SpecializedDate = '2026-10-28'
 /** Todas las ponencias especializadas duran 45 minutos, de 12:00 a 12:45, en ambientes distintos. */
 const turno = (date: SpecializedDate) => ({ date, start: '12:00', end: '12:45' })
 
+/** En el orden del cronograma de la organización (laboratorios, aulas y, al final, el auditorio). */
 export const specializedTalks: SpecializedTalk[] = [
   // Martes 27 de octubre
-  { id: 1, speakerId: 'richard-condori', ...turno(MARTES), room: 'Laboratorio 1', topic: 'Arquitectura del cibercrimen: el peritaje forense frente a la IA y los delitos informáticos en el Perú' },
-  { id: 2, speakerId: 'jhancarlo-silva', ...turno(MARTES), room: 'Laboratorio 3', topic: 'Kotlin Multiplatform: una base de código, múltiples plataformas' },
-  { id: 3, speakerId: 'marisol-daga', ...turno(MARTES), room: 'Laboratorio 4', topic: 'La inteligencia artificial generativa como catalizador de la transformación educativa: retos, oportunidades y perspectivas para la ingeniería de sistemas' },
-  { id: 4, speakerId: 'joel-vilca', ...turno(MARTES), room: 'Laboratorio 5', topic: 'Implementación de soluciones IoT con simulación, sensores, actuadores y servicios en la nube' },
-  { id: 5, speakerId: 'claudio-huancahuire', ...turno(MARTES), room: 'Laboratorio 6', topic: 'Arquitectura Big Data a gran escala: del ecosistema open source a la nube de AWS' },
-  { id: 6, speakerId: 'janeth-marino', ...turno(MARTES), room: 'Laboratorio 7', topic: 'Del Technology Scouting al Horizon Scanning: IA para anticipar oportunidades de innovación' },
-  { id: 7, speakerId: 'edwin-roque', ...turno(MARTES), room: 'Aula 5', topic: 'Bases de datos vectoriales' },
+  { id: 1, speakerIds: ['richard-condori'], ...turno(MARTES), room: 'Laboratorio 1', topic: 'Arquitectura del cibercrimen: el peritaje forense frente a la IA y los delitos informáticos en el Perú' },
+  { id: 2, speakerIds: ['jhancarlo-silva'], ...turno(MARTES), room: 'Laboratorio 3', topic: 'Kotlin Multiplatform: una base de código, múltiples plataformas' },
+  { id: 3, speakerIds: ['marisol-daga'], ...turno(MARTES), room: 'Laboratorio 4', topic: 'La inteligencia artificial generativa como catalizador de la transformación educativa: retos, oportunidades y perspectivas para la ingeniería de sistemas' },
+  { id: 4, speakerIds: ['joel-vilca'], ...turno(MARTES), room: 'Laboratorio 5', topic: 'Implementación de soluciones IoT con simulación, sensores, actuadores y servicios en la nube' },
+  { id: 5, speakerIds: ['claudio-huancahuire'], ...turno(MARTES), room: 'Laboratorio 6', topic: 'Arquitectura Big Data a gran escala: del ecosistema open source a la nube de AWS' },
+  { id: 6, speakerIds: ['janeth-marino'], ...turno(MARTES), room: 'Laboratorio 7', topic: 'Del Technology Scouting al Horizon Scanning: IA para anticipar oportunidades de innovación' },
+  { id: 7, speakerIds: ['percy-salcedo'], ...turno(MARTES), room: 'Laboratorio 8', topic: 'Computación cuántica: del bit al qubit y el nuevo paradigma del procesamiento' },
+  { id: 8, speakerIds: ['edwin-roque'], ...turno(MARTES), room: 'Aula 5', topic: 'Bases de datos vectoriales' },
   // Miércoles 28 de octubre
-  { id: 8, speakerId: 'abraham-gamarra', ...turno(MIERCOLES), room: 'Laboratorio 1', topic: 'Implementación de un chatbot con RAG (Retrieval-Augmented Generation)' },
-  { id: 9, speakerId: 'guido-larico', ...turno(MIERCOLES), room: 'Laboratorio 2', topic: 'El enunciado del estudio en la investigación científica' },
-  { id: 10, speakerId: 'dany-isuiza', ...turno(MIERCOLES), room: 'Laboratorio 3', topic: 'Calidad de software y pruebas automatizadas utilizando herramientas de análisis estático basadas en IA' },
-  { id: 11, speakerId: 'jhonatan-echaccaya', ...turno(MIERCOLES), room: 'Laboratorio 4', topic: 'De robots a agentes de IA: automatiza como en el futuro' },
-  { id: 12, speakerId: 'amanda-duran', ...turno(MIERCOLES), room: 'Laboratorio 6', topic: 'De la idea a la aprobación: hackea tu tesis con IA generativa' },
-  { id: 13, speakerId: 'mario-ormachea', ...turno(MIERCOLES), room: 'Laboratorio 7', topic: 'Programación con IA: riesgos, retos y oportunidades' },
-  { id: 14, speakerId: 'percy-salcedo', ...turno(MIERCOLES), room: 'Laboratorio 8', topic: 'Computación cuántica: del bit al qubit y el nuevo paradigma del procesamiento' },
-  { id: 15, speakerId: 'miriam-angoma', ...turno(MIERCOLES), room: 'Aula 1', topic: 'Transformación digital' },
-  { id: 16, speakerId: 'carlos-almidon', ...turno(MIERCOLES), room: 'Aula 2', topic: 'Universidad ciberresiliente 2030: gobernanza, inteligencia artificial y ciberseguridad' },
-  { id: 17, speakerId: 'daniel-yucra', ...turno(MIERCOLES), room: 'Aula 3', topic: 'Ciberseguridad con Kali Linux' },
-  { id: 18, speakerId: 'jair-ferreyros', ...turno(MIERCOLES), room: 'Aula 5', topic: 'El futuro de la investigación universitaria en el Perú: desafíos, estrategias y oportunidades para una ciencia con impacto' },
-  { id: 19, speakerId: 'wagner-vicente', ...turno(MIERCOLES), room: 'Aula 6', topic: 'Niveles de madurez tecnológica' },
+  { id: 9, speakerIds: ['abraham-gamarra'], ...turno(MIERCOLES), room: 'Laboratorio 1', topic: 'Implementación de un chatbot con RAG (Retrieval-Augmented Generation)' },
+  { id: 10, speakerIds: ['guido-larico'], ...turno(MIERCOLES), room: 'Laboratorio 2', topic: 'El enunciado del estudio en la investigación científica' },
+  { id: 11, speakerIds: ['dany-isuiza'], ...turno(MIERCOLES), room: 'Laboratorio 3', topic: 'Calidad de software y pruebas automatizadas utilizando herramientas de análisis estático basadas en IA' },
+  { id: 12, speakerIds: ['jhonatan-echaccaya'], ...turno(MIERCOLES), room: 'Laboratorio 4', topic: 'De robots a agentes de IA: automatiza como en el futuro' },
+  { id: 13, speakerIds: ['saul-arauco', 'karen-alcos'], ...turno(MIERCOLES), room: 'Laboratorio 5', topic: '¿Puede la IA aprender cómo aprende cada estudiante? Hacia un aprendizaje adaptativo e inteligente en ingeniería' },
+  { id: 14, speakerIds: ['amanda-duran'], ...turno(MIERCOLES), room: 'Laboratorio 6', topic: 'De la idea a la aprobación: hackea tu tesis con IA generativa' },
+  { id: 15, speakerIds: ['mario-ormachea'], ...turno(MIERCOLES), room: 'Laboratorio 7', topic: 'Programación con IA: riesgos, retos y oportunidades' },
+  { id: 16, speakerIds: ['jorge-pozo'], ...turno(MIERCOLES), room: 'Laboratorio 8', topic: 'Definición de problemas: sistemas con enfoque sistémico' },
+  { id: 17, speakerIds: ['miriam-angoma'], ...turno(MIERCOLES), room: 'Aula 1', topic: 'Transformación digital' },
+  { id: 18, speakerIds: ['angel-almidon', 'javier-poma'], ...turno(MIERCOLES), room: 'Aula 2', topic: 'Automatización y control inteligente de sistemas electromecánicos, neumáticos e hidráulicos en la Industria 4.0' },
+  { id: 19, speakerIds: ['daniel-yucra'], ...turno(MIERCOLES), room: 'Aula 3', topic: 'Ciberseguridad con Kali Linux' },
+  { id: 20, speakerIds: ['jair-ferreyros'], ...turno(MIERCOLES), room: 'Aula 5', topic: 'El futuro de la investigación universitaria en el Perú: desafíos, estrategias y oportunidades para una ciencia con impacto' },
+  { id: 21, speakerIds: ['wagner-vicente'], ...turno(MIERCOLES), room: 'Aula 6', topic: 'Niveles de madurez tecnológica' },
+  { id: 22, speakerIds: ['carlos-almidon'], ...turno(MIERCOLES), room: 'Auditorio', topic: 'Universidad ciberresiliente 2030: gobernanza, inteligencia artificial y ciberseguridad' },
 ]

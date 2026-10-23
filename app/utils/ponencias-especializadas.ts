@@ -58,10 +58,11 @@ export function ponentesOrdenados(speakers: readonly SpecializedSpeaker[]): Spec
   return [...speakers.filter(s => s.external), ...speakers.filter(s => !s.external)]
 }
 
-/** Laboratorios antes que aulas y, dentro de cada tipo, por número. */
+/** Laboratorios, luego aulas y al final el auditorio; dentro de cada tipo, por número. */
 function claveAmbiente(room: string): [number, number] {
   const numero = Number(room.match(/\d+/)?.[0] ?? 0)
-  return [/^laboratorio/i.test(room) ? 0 : 1, numero]
+  const tipo = /^laboratorio/i.test(room) ? 0 : /^aula/i.test(room) ? 1 : 2
+  return [tipo, numero]
 }
 
 /** Agrupa los temas por día (cronológico) y los ordena por hora y ambiente. */
@@ -85,6 +86,18 @@ export function temasPorDia(talks: readonly SpecializedTalk[]): DiaDeTemas[] {
 
 export function ponentesPorId(speakers: readonly SpecializedSpeaker[]): Map<string, SpecializedSpeaker> {
   return new Map(speakers.map(speaker => [speaker.id, speaker]))
+}
+
+/** Quienes dictan el tema, en el orden de `speakerIds` (el principal primero). Un id desconocido se omite. */
+export function ponentesDelTema(talk: Pick<SpecializedTalk, 'speakerIds'>, porId: ReadonlyMap<string, SpecializedSpeaker>): SpecializedSpeaker[] {
+  return talk.speakerIds.flatMap(id => porId.get(id) ?? [])
+}
+
+/** «Ponente», «Ponente externo», «Ponentes» o «Ponentes externos» (solo si todos lo son). */
+export function etiquetaDePonentes(externos: readonly boolean[]): string {
+  const plural = externos.length > 1
+  const todosExternos = externos.length > 0 && externos.every(Boolean)
+  return `${plural ? 'Ponentes' : 'Ponente'}${todosExternos ? (plural ? ' externos' : ' externo') : ''}`
 }
 
 /** Párrafos del perfil: se separan con líneas en blanco y se ignoran los vacíos. */

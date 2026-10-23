@@ -11,7 +11,7 @@
         <div class="mt-8 flex flex-wrap justify-center gap-3 text-sm">
           <span class="summary-chip"><Icon name="heroicons:calendar-days" class="h-5 w-5 text-primary-400" aria-hidden="true" />Martes 27 y miércoles 28 de octubre</span>
           <span class="summary-chip"><Icon name="heroicons:clock" class="h-5 w-5 text-primary-400" aria-hidden="true" />{{ horario }}</span>
-          <span class="summary-chip"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" aria-hidden="true" />Laboratorios y aulas</span>
+          <span class="summary-chip"><Icon name="heroicons:map-pin" class="h-5 w-5 text-primary-400" aria-hidden="true" />Laboratorios, aulas y auditorio</span>
         </div>
 
         <div class="mt-8 flex justify-center">
@@ -92,7 +92,7 @@
                 v-for="(talk, index) in dia.talks"
                 :key="talk.id"
                 :talk="talk"
-                :speaker="porId.get(talk.speakerId)!"
+                :speakers="ponentesDelTema(talk, porId)"
                 :numero="index + 1"
               />
             </div>
@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { specializedSpeakers, specializedTalks } from '~/data/ponencias-especializadas'
-import { ponentesOrdenados, ponentesPorId, rangoHorario, temasPorDia } from '~/utils/ponencias-especializadas'
+import { ponentesDelTema, ponentesOrdenados, ponentesPorId, rangoHorario, temasPorDia } from '~/utils/ponencias-especializadas'
 
 type Vista = 'ponentes' | 'temas'
 

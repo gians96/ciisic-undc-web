@@ -10,6 +10,7 @@ import {
   esErrorDeCongreso,
   etiquetaModoAsistencia,
   filtrarPonencias,
+  ponentesDeLaPonencia,
   formularioVacio,
   mensajeErrorInscripcionPonencias,
   motivoNoDisponible,
@@ -142,6 +143,27 @@ describe('búsqueda', () => {
     expect(filtrarPonencias(lista, 'kali daniel').map(p => p.id)).toEqual([7])
     expect(filtrarPonencias(lista, 'kali edwin')).toEqual([])
     expect(filtrarPonencias(lista, 'blockchain')).toEqual([])
+  })
+
+  it('un tema compartido se encuentra también por el nombre de cualquiera de sus ponentes', () => {
+    const compartido = ponencia({
+      id: 9, tema: 'Automatización y control', ambiente: 'Aula 2',
+      ponente: { nombre: 'Dr. Ángel Almidón Elescano', bio: null, foto: null, externo: true },
+      coponentes: [{ nombre: 'Dr. Javier Camilo Poma Palacios', bio: null, foto: null, externo: true }],
+    })
+    const todas = [...lista, compartido]
+    expect(filtrarPonencias(todas, 'elescano').map(p => p.id)).toEqual([9])
+    expect(filtrarPonencias(todas, 'poma palacios').map(p => p.id)).toEqual([9])
+    expect(filtrarPonencias(todas, 'angel poma').map(p => p.id)).toEqual([9])
+  })
+})
+
+describe('ponentesDeLaPonencia', () => {
+  it('lista al principal y, si el tema es compartido, a los demás; un backend anterior no envía coponentes', () => {
+    const otro = { nombre: 'Dra. Karen Michel Alcos Flores', bio: null, foto: null, externo: true }
+    expect(ponentesDeLaPonencia(ponencia()).map(p => p.nombre)).toEqual(['Ph.D. Edwin Roque Tito'])
+    expect(ponentesDeLaPonencia(ponencia({ coponentes: [] })).map(p => p.nombre)).toEqual(['Ph.D. Edwin Roque Tito'])
+    expect(ponentesDeLaPonencia(ponencia({ coponentes: [otro] })).map(p => p.nombre)).toEqual(['Ph.D. Edwin Roque Tito', 'Dra. Karen Michel Alcos Flores'])
   })
 })
 
