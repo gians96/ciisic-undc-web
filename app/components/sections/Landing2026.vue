@@ -221,6 +221,8 @@
       </div>
     </section>
 
+    <AuspiciadoresSeccion />
+
     <SpeakersCarousel />
 
     <LandingActivities />
@@ -384,6 +386,7 @@ import LandingActivities from "./LandingActivities.vue";
 import EncuentroEgresadosSection from "./EncuentroEgresadosSection.vue";
 import ReinadoFeature from "./ReinadoFeature.vue";
 import PreviousCongressCarousel from "./PreviousCongressCarousel.vue";
+import AuspiciadoresSeccion from "./AuspiciadoresSeccion.vue";
 import EventCountdown from "../countdown/Countdown.vue";
 
 const previousCongressImage = "/images/congreso-anterior.webp";
