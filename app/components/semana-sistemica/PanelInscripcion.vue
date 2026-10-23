@@ -1,6 +1,6 @@
 <!-- Panel lateral de inscripción: datos, botón de inscripción (o «Inscripciones cerradas»), bases y contacto. -->
 <template>
-  <aside class="ss-panel sticky top-24 overflow-hidden rounded-[2rem] border border-white/10 p-7 sm:p-9" :aria-labelledby="`panel-${actividad.slug}`">
+  <aside class="ss-panel overflow-hidden rounded-[2rem] border border-white/10 p-7 sm:p-9" :aria-labelledby="`panel-${actividad.slug}`">
     <span class="ss-icon-box h-14 w-14 rounded-2xl">
       <Icon :name="actividad.icono" class="h-7 w-7" />
     </span>
@@ -82,8 +82,5 @@ const cierreTexto = computed(() => formatearFechaSoloDia(inscripcion.value.cierr
 .ss-panel {
   background: radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--acento) 15%, transparent), transparent 38%), linear-gradient(150deg, #0a3157, #062541);
   box-shadow: 0 28px 80px #020f204d;
-}
-@media (max-width: 1023px) {
-  .ss-panel { position: static; }
 }
 </style>
