@@ -19,7 +19,7 @@
       class="mt-10"
       :logos="logos"
       :logo-height="80"
-      :gap="40"
+      :gap="20"
       :speed="80"
       labels="hover"
       scale-on-hover
@@ -40,6 +40,11 @@ const logos: LogoLoopItem[] = [
     title: "Bodega De La Cruz",
   },
   {
+    src: "/images/auspiciadores/bloom.webp",
+    alt: "Bloom Centro de Belleza",
+    title: "Bloom Centro de Belleza",
+  },
+  {
     src: "/images/auspiciadores/carbonero.webp",
     alt: "Carbonero",
     title: "Carbonero",
@@ -50,9 +55,19 @@ const logos: LogoLoopItem[] = [
     title: "Comedor Edita's",
   },
   {
+    src: "/images/auspiciadores/devits.webp",
+    alt: "DevITS.pe",
+    title: "DevITS.pe",
+  },
+  {
     src: "/images/auspiciadores/don-erasmo.webp",
     alt: "Don Erasmo",
     title: "Don Erasmo",
+  },
+  {
+    src: "/images/auspiciadores/glen-soft.webp",
+    alt: "Glen Soft",
+    title: "Glen Soft",
   },
   {
     src: "/images/auspiciadores/imprenta-angel.webp",
@@ -87,6 +102,25 @@ const logos: LogoLoopItem[] = [
    el overflow del loop. */
 .auspiciadores :deep(.logoloop) {
   --logoloop-pad: 18px;
+}
+
+/* Cards sutiles tras cada logo (tipo «trusted by»): disimulan que varios
+   logos tienen colores parecidos al fondo navy. Tamaño fijo para que la
+   fila se vea uniforme aunque los logos tengan anchos distintos. */
+.auspiciadores :deep(.logoloop__content) {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  width: 168px;
+  height: 104px;
+  justify-content: center;
+}
+
+.auspiciadores :deep(.logoloop__item img) {
+  width: auto;
+  height: auto;
+  max-width: 124px;
+  max-height: 64px;
 }
 
 @media (min-width: 1024px) {
