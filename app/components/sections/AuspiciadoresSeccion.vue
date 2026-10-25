@@ -23,7 +23,7 @@
       :logos="logos"
       :logo-height="104"
       :gap="28"
-      :speed="110"
+      :speed="200"
       step
       pause-on-hover
       labels="hover"

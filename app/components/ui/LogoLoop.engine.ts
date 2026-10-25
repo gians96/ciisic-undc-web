@@ -146,6 +146,8 @@ const SMOOTH_TAU = 0.25
 const GLIDE_TAU = 0.8
 const DRAG_THRESHOLD = 6
 const MAX_FLING = 4000
+/** Espera máxima (s) para el siguiente paso del modo `step` tras soltar el mouse. */
+const STEP_RESUME_DELAY = 0.15
 const INTRO_TIME = 0.7
 const INTRO_STAGGER = 0.45
 const HALF_SQRT_PI = Math.sqrt(Math.PI) / 2
@@ -793,7 +795,10 @@ export function crearMotorLogoLoop(
       busy = true
       if (st.move.t >= 1) {
         st.move = null
-        st.hold = stepTiming(paused ? pausedSpeed : cfg.speed).hold
+        // La pausa entre pasos sale de la velocidad normal aunque haya hover:
+        // con velocidad 0 el ciclo dura pitch/1 s y al soltar el mouse el loop
+        // esperaba minutos para volver a avanzar.
+        st.hold = stepTiming(cfg.speed).hold
       }
     } else if (cfg.step && !st.reduced) {
       const speed = paused ? pausedSpeed : cfg.speed
@@ -875,6 +880,8 @@ export function crearMotorLogoLoop(
   const onLeave = () => {
     st.hovered = false
     st.pointerInside = false
+    // En modo `step`, al soltar el mouse el siguiente paso arranca casi de inmediato.
+    st.hold = Math.min(st.hold, STEP_RESUME_DELAY)
     wake()
   }
 
