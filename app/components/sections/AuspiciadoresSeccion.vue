@@ -101,6 +101,12 @@ const logos: Auspiciador[] = [
     fondo: "oscuro",
   },
   {
+    src: "/images/auspiciadores/devits.webp",
+    alt: "Devits.pe",
+    title: "Devits.pe · Ir al sitio",
+    href: "https://devits.pe",
+  },
+  {
     src: "/images/auspiciadores/bloom.webp",
     alt: "Bloom",
     title: "Bloom",
@@ -188,6 +194,12 @@ const logos: Auspiciador[] = [
 
 .auspiciadores :deep(.logoloop__item:hover .logoloop__tip),
 .auspiciadores :deep(.logoloop__item:focus-within .logoloop__tip) {
+  opacity: 1;
+}
+
+/* Los logos con enlace (`href`) se abren en otra pestaña: el loop los atenúa al
+   hover y aquí lo anulamos para que la tarjeta no se opaque. */
+.auspiciadores :deep(.logoloop:not([data-muted]) .logoloop__item:not([data-color]) a.logoloop__content:hover) {
   opacity: 1;
 }
 
