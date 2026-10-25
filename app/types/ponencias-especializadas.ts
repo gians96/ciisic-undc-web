@@ -40,9 +40,18 @@ export interface PonenciaEspecializadaPublica {
 /** Ponente en el enlace del aforo: sin biografía. */
 export type PonenteAforo = Pick<PonentePublico, 'nombre' | 'foto' | 'externo'>
 
+/** Inscrito vigente en el enlace del aforo: solo su nombre, cómo asiste y cuándo marcó asistencia (nunca documento ni contacto). */
+export interface PersonaAforo {
+  nombre: string
+  modo: ModoAsistencia
+  /** Instante ISO; `null` si aún no asistió. */
+  asistioEn: string | null
+}
+
 /**
  * Ponencia del enlace público del aforo (`GET /site/specialized-talk-occupancy`, backend spec 036). `inscritos` son solo los
- * presenciales vigentes (los que ocupan aforo); `asistentes`, los que ya marcaron asistencia en puerta. Sin datos de personas.
+ * presenciales vigentes (los que ocupan aforo); `asistentes`, los que ya marcaron asistencia en puerta; `personas`, todos los
+ * inscritos vigentes (presenciales y virtuales) por apellido.
  */
 export interface PonenciaAforo {
   id: number
@@ -63,6 +72,8 @@ export interface PonenciaAforo {
   cuposDisponibles: number | null
   llena: boolean
   asistentes: number
+  /** Ausente en un backend anterior: sin lista. */
+  personas?: PersonaAforo[]
   orden: number
 }
 

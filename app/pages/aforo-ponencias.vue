@@ -101,6 +101,28 @@
                     <dd class="mt-1 font-semibold text-slate-100">{{ textoAsistencia(ponencia) }}</dd>
                   </div>
                 </dl>
+
+                <details v-if="ponencia.personas?.length" class="lista-inscritos mt-4 border-t border-white/10 pt-3">
+                  <summary class="flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg py-1 text-sm font-semibold text-primary-200 hover:text-primary-100">
+                    <span class="inline-flex items-center gap-2">
+                      <Icon name="heroicons:chevron-right" class="chevron h-4 w-4" aria-hidden="true" />Ver inscritos
+                    </span>
+                    <span class="text-xs font-medium text-slate-400">{{ resumenDeInscritos(ponencia.personas) }}</span>
+                  </summary>
+                  <ol class="mt-2 max-h-80 space-y-0.5 overflow-y-auto pr-1 text-sm" :aria-label="`Inscritos en ${ponencia.ambiente}`">
+                    <li v-for="(persona, indice) in ponencia.personas" :key="indice" class="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 odd:bg-white/[.03]">
+                      <span class="min-w-0 text-slate-100"><span class="mr-1.5 tabular-nums text-slate-500">{{ indice + 1 }}.</span>{{ persona.nombre }}</span>
+                      <span class="flex shrink-0 items-center gap-2 text-xs">
+                        <span v-if="persona.modo === 'VIRTUAL'" class="rounded-full bg-white/[.06] px-2 py-0.5 text-slate-300 ring-1 ring-inset ring-white/15">Virtual</span>
+                        <span v-if="persona.asistioEn" class="inline-flex items-center gap-1 font-semibold tabular-nums text-emerald-300">
+                          <Icon name="heroicons:check-circle" class="h-4 w-4" aria-hidden="true" /><span class="sr-only">Asistió a las </span>{{ horaLima(persona.asistioEn) }}
+                        </span>
+                        <span v-else class="text-slate-500"><span aria-hidden="true">—</span><span class="sr-only">Aún no asiste</span></span>
+                      </span>
+                    </li>
+                  </ol>
+                </details>
+                <p v-else-if="ponencia.personas" class="mt-4 border-t border-white/10 pt-3 text-sm text-slate-500">Aún sin inscritos.</p>
               </article>
             </div>
           </section>
@@ -108,8 +130,9 @@
 
         <p class="mt-14 border-t border-white/10 pt-5 text-xs leading-relaxed text-slate-400">
           <strong class="font-semibold text-slate-300">Inscritos</strong> = reservas presenciales vigentes (son las que ocupan el aforo).
-          <strong class="font-semibold text-slate-300">Asistencia</strong> = registrada en la puerta del ambiente. Las cifras se actualizan solas cada minuto.
-          Enlace de uso restringido: compártelo solo con quien lo necesite y no lo publiques.
+          <strong class="font-semibold text-slate-300">Asistencia</strong> = registrada en la puerta del ambiente. La lista de cada tema incluye a todos los inscritos
+          vigentes, también los virtuales. Las cifras se actualizan solas cada minuto.
+          Enlace de uso restringido: muestra nombres de personas, así que compártelo solo con quien lo necesite y no lo publiques.
         </p>
       </template>
     </section>
@@ -120,9 +143,10 @@
 import type { AforoPonencias } from '~/types/ponencias-especializadas'
 import { normalizeApiError, type ApiErrorShape } from '~/composables/useApi'
 import {
-  horaDeActualizacion,
+  horaLima,
   nivelOcupacion,
   porcentajeOcupacion,
+  resumenDeInscritos,
   textoAsistencia,
   textoCuposLibres,
   textoInscritos,
@@ -134,7 +158,8 @@ import { ponenciasPorDia, ponentesDeLaPonencia } from '~/utils/inscripcion-ponen
 import { rangoHorario } from '~/utils/ponencias-especializadas'
 import { rutasSitio } from '~/utils/rutas-sitio'
 
-// Página oculta (spec 012; backend spec 036): no está en el menú ni en el pie y no se indexa. El token del enlace va tras
+// Página oculta (spec 012; backend spec 036): no está en el menú ni en el pie y no se indexa. Muestra nombres de inscritos (solo
+// nombre, modo y hora de asistencia: el backend no envía documento ni contacto). El token del enlace va tras
 // el `#` (el navegador no lo envía a ningún servidor) y solo vive en memoria: nunca en la URL de una petición ni en la consola.
 useSeoMeta({
   title: 'Aforo de ponencias especializadas | VIII CIISIC 2026',
@@ -169,7 +194,7 @@ let ultimaLectura = 0
 let temporizador: ReturnType<typeof setInterval> | undefined
 
 const dias = computed(() => ponenciasPorDia(vista.value?.ponencias ?? []))
-const hora = computed(() => horaDeActualizacion(vista.value?.generadoEn))
+const hora = computed(() => horaLima(vista.value?.generadoEn))
 
 const mensajeDe = (error: ApiErrorShape) => (error.statusCode === 429 ? error.message : SERVICIO_NO_DISPONIBLE)
 
@@ -245,5 +270,8 @@ onBeforeUnmount(() => {
 .estado-card { margin-inline: auto; max-width: 36rem; border: 1px solid #ffffff1a; border-radius: 1.5rem; background: #ffffff08; padding: 2.5rem 1.75rem; text-align: center; }
 .aforo-card { background: linear-gradient(150deg, #0a3157d9, #062541f2); box-shadow: 0 20px 55px #020f2033; }
 .barra { transition: width .5s ease; }
-@media (prefers-reduced-motion: reduce) { .barra { transition: none; } }
+.lista-inscritos summary::-webkit-details-marker { display: none; }
+.lista-inscritos .chevron { transition: transform .2s ease; }
+.lista-inscritos[open] .chevron { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { .barra, .lista-inscritos .chevron { transition: none; } }
 </style>

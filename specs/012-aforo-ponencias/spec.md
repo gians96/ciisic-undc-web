@@ -15,7 +15,10 @@ pública, a la que solo se llega con un enlace que **él genera y comparte** des
   en la consola ni en el `<head>`.
 - **Qué muestra**: por día (mismo orden que el programa, `ponenciasPorDia`) una tarjeta por tema con el ambiente, el tema, los ponentes, los **inscritos presenciales** frente
   al aforo con una barra («14 / 20»), los **cupos libres** («6 cupos libres», «Lleno» o «Sin límite de aforo»), el horario y la **asistencia** registrada en puerta. Los virtuales
-  no se muestran aparte y no hay totales por día (decisión del usuario). Nada de personas.
+  no se cuentan aparte y no hay totales por día (decisión del usuario).
+- **Lista de inscritos** (pedida por el usuario el 2026-10-25): cada tarjeta tiene un desplegable «Ver inscritos» (`<details>`, cerrado por defecto; se mantiene abierto
+  al refrescar) con el resumen «14 presenciales · 3 virtuales» (`resumenDeInscritos`) y la lista numerada por apellido: nombre, insignia «Virtual» si lo es y la hora de
+  asistencia con un check (`horaLima`) o «—». **Solo** nombre, modo y asistencia: el backend no envía documento, correo, celular ni procedencia.
 - **Tonos**: libre (cian), casi lleno desde el 80 % (ámbar) y lleno (rojo) — `nivelOcupacion`.
 - **Actualización**: sola cada 60 s con la pestaña visible, al volver a la pestaña si pasó más de 30 s y con el botón «Actualizar». Si una lectura falla con cifras a la vista,
   se conservan y se avisa. `404 LINK_NOT_FOUND` (enlace renovado, desactivado o mal copiado) muestra «Este enlace no es válido».

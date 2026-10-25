@@ -3,7 +3,7 @@
 // Página /aforo-ponencias#<token> (spec 012) → BFF /api/publico/ponencias-especializadas/aforo →
 // backend GET /api/v1/site/specialized-talk-occupancy (spec 036). El backend da las cifras; aquí solo se presentan.
 // ============================================================================
-import type { PonenciaAforo } from '../types/ponencias-especializadas'
+import type { PersonaAforo, PonenciaAforo } from '../types/ponencias-especializadas'
 
 /** Desde este porcentaje de ocupación un tema se muestra «casi lleno». */
 export const UMBRAL_CASI_LLENO = 0.8
@@ -53,8 +53,19 @@ export function textoAsistencia({ asistentes }: Pick<PonenciaAforo, 'asistentes'
   return asistentes === 1 ? '1 asistió' : `${asistentes} asistieron`
 }
 
-/** Hora de Lima del instante ISO: «12:05 p. m.». Vacío si no es una fecha válida. */
-export function horaDeActualizacion(instante: string | null | undefined): string {
+/** «14 presenciales · 3 virtuales», «1 presencial» o «2 virtuales»: el resumen de la lista de inscritos de un tema. */
+export function resumenDeInscritos(personas: readonly Pick<PersonaAforo, 'modo'>[]): string {
+  const virtuales = personas.filter(p => p.modo === 'VIRTUAL').length
+  const presenciales = personas.length - virtuales
+  const partes = [
+    presenciales ? plural(presenciales, 'presencial', 'presenciales') : '',
+    virtuales ? plural(virtuales, 'virtual', 'virtuales') : '',
+  ].filter(Boolean)
+  return partes.join(' · ')
+}
+
+/** Hora de Lima del instante ISO: «12:05 p. m.» (la última lectura o la llegada de un inscrito). Vacío si no es una fecha válida. */
+export function horaLima(instante: string | null | undefined): string {
   if (!instante) return ''
   const fecha = new Date(instante)
   if (Number.isNaN(fecha.getTime())) return ''

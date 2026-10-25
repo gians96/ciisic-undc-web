@@ -102,7 +102,8 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
 - **Aforo de las ponencias** (spec 012; contrato en la spec 036 del backend): `/aforo-ponencias#<token>` es **oculta** (`noindex`, `referrer: no-referrer`, sin menú ni pie) y solo se abre
   con el enlace que el Owner crea en el panel. El token va **tras el `#`**, vive solo en memoria y viaja por `POST` en el cuerpo a `/api/publico/ponencias-especializadas/aforo`, que lo reenvía
   en `X-Link-Token` (`responderAforoPonencias`); **nunca** en una URL, un log, la consola ni el `<head>`. Muestra por tema los inscritos **presenciales** frente al aforo, los cupos libres y la
-  asistencia en puerta (`app/utils/aforo-ponencias.ts`), sin datos de personas; se actualiza sola cada minuto. `/ponencias-especializadas` no muestra cupos. **Backend 036 primero.**
+  asistencia en puerta (`app/utils/aforo-ponencias.ts`) y, en «Ver inscritos», la lista de cada tema con **solo** nombre, modo y hora de asistencia (nunca documento ni contacto:
+  no los agregues); se actualiza sola cada minuto. `/ponencias-especializadas` no muestra cupos. **Backend 036 primero.**
 - **Delegaciones** (specs 008 y 010; contrato en la spec 029 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin enlaces en el menú ni en el pie; el delegado
   recibe el link por correo) y **ya no crea delegaciones**: las crea el staff con sus **planes y precios propios** (Con kit, Sin kit y Virtual). Tiene tres estados según el parámetro:
   `?delegacion=<código>` (el delegado ve su grupo, sus planes y **solo agrega** integrantes —cada uno con su plan— y vouchers; sin borrar ni editar; ve el link individual para compartirlo),

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { PonenciaAforo } from '../app/types/ponencias-especializadas'
 import {
-  horaDeActualizacion,
+  horaLima,
   nivelOcupacion,
   porcentajeOcupacion,
+  resumenDeInscritos,
   textoAsistencia,
   textoCuposLibres,
   textoInscritos,
@@ -69,10 +70,19 @@ describe('textos', () => {
     expect(textoAsistencia({ asistentes: 9 })).toBe('9 asistieron')
   })
 
-  it('hora de la última lectura en Lima', () => {
-    expect(horaDeActualizacion('2026-10-27T17:05:00.000Z')).toMatch(/^12:05\s?p\.\s?m\.$/)
-    expect(horaDeActualizacion('no es fecha')).toBe('')
-    expect(horaDeActualizacion(null)).toBe('')
+  it('hora de Lima de la última lectura o de la llegada de un inscrito', () => {
+    expect(horaLima('2026-10-27T17:05:00.000Z')).toMatch(/^12:05\s?p\.\s?m\.$/)
+    expect(horaLima('no es fecha')).toBe('')
+    expect(horaLima(null)).toBe('')
+  })
+
+  it('resume la lista de inscritos por modo', () => {
+    const presencial = { modo: 'PRESENCIAL' as const }
+    const virtual = { modo: 'VIRTUAL' as const }
+    expect(resumenDeInscritos([presencial, presencial, virtual])).toBe('2 presenciales · 1 virtual')
+    expect(resumenDeInscritos([presencial])).toBe('1 presencial')
+    expect(resumenDeInscritos([virtual, virtual])).toBe('2 virtuales')
+    expect(resumenDeInscritos([])).toBe('')
   })
 })
 
