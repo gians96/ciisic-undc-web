@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { Readable } from 'node:stream'
-import { getRequestHeader, setResponseHeader, setResponseStatus, type H3Event } from 'h3'
+import { type H3Event } from 'h3'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   BACKEND_NO_DISPONIBLE,
@@ -262,12 +262,12 @@ describe('verificación con Google: credential → idToken', () => {
         socket: { remoteAddress: '172.18.0.3' },
       })
       const encabezados: Record<string, string> = {}
-      const res = {
-        statusCode: 200,
-        statusMessage: '',
-        setHeader: (nombre: string, valor: string) => { encabezados[nombre.toLowerCase()] = String(valor) },
+      const res = { statusCode: 200, statusMessage: '', encabezados }
+      return {
+        evento: { node: { req, res }, res, context: {} } as unknown as H3Event,
+        res,
+        encabezados,
       }
-      return { evento: { node: { req, res }, context: {} } as unknown as H3Event, res, encabezados }
     }
 
     async function manejador() {
@@ -280,9 +280,12 @@ describe('verificación con Google: credential → idToken', () => {
       respuestaBackend = { status: 200, _data: VERIFICADO }
       // Globals que Nitro auto-importa en el servidor
       vi.stubGlobal('useRuntimeConfig', () => ({ backendBaseUrl: 'http://backend.interno:3010', backendEventToken: TOKEN }))
-      vi.stubGlobal('getRequestHeader', getRequestHeader)
-      vi.stubGlobal('setResponseStatus', setResponseStatus)
-      vi.stubGlobal('setResponseHeader', setResponseHeader)
+      // h3 real exige `event.res.headers` (Headers); estos stubs van contra el evento simulado
+      vi.stubGlobal('getRequestHeader', (ev: H3Event, nombre: string) => ev.node.req.headers[nombre.toLowerCase()])
+      vi.stubGlobal('setResponseStatus', (ev: { res: { statusCode: number } }, codigo: number) => { ev.res.statusCode = codigo })
+      vi.stubGlobal('setResponseHeader', (ev: { res: { encabezados: Record<string, string> } }, nombre: string, valor: unknown) => {
+        ev.res.encabezados[nombre.toLowerCase()] = String(valor)
+      })
       vi.stubGlobal('$fetch', {
         raw: vi.fn(async (url: string, opciones: OpcionesFetchSitio) => {
           llamadas.push({ url, opciones })

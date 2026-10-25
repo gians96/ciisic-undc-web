@@ -30,6 +30,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `POST /google-verification` | JSON `{ idToken }` (ver abajo) |
 | `GET /document-lookup/dni/:numero` | `404 DOCUMENT_NOT_FOUND`, `503 LOOKUP_UNAVAILABLE`, `429` |
 | `GET /payment-qr/:archivo` | Imagen del QR de una billetera (`qrArchivo`), solo del evento del token (spec 012 del backend) |
+| `GET /credential/:codigo` | Datos de la credencial de una inscripción **aprobada** del evento: `{ nombres, apellidos, codigo, clasificacion, tipo: { nombre, etiqueta } \| null, evento: { nombre, nombreCorto } }` (spec 020 del backend). Mal formado → `422 INVALID_CODE`; no encontrado / de otro evento / no aprobada → `404 CREDENTIAL_NOT_FOUND` |
 | `POST /papers` | multipart: `data` JSON + `file` PDF |
 | `POST /contact` | JSON `{ nombres, apellidos, correo, asunto, mensaje }` |
 | `GET /specialized-talks` | Ponencias especializadas `publicada`s del evento con `cuposDisponibles` y `llena`, sin datos de inscritos (spec 019 del backend) |
@@ -57,6 +58,7 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `GET /api/publico/configuracion` | `GET /config` | 60 s, clave constante | — |
 | `GET /api/publico/consulta-dni/:numero` | `GET /document-lookup/dni/:numero` | no (`no-store`) | — |
 | `GET /api/publico/qr/:archivo` | `GET /payment-qr/:archivo` | `public, max-age=86400, immutable` (navegador/CDN) | — |
+| `GET /api/publico/credencial/:codigo` | `GET /credential/:codigo` | no (`no-store`) | — |
 | `POST /api/publico/verificacion-estudiante` | `POST /student-verification` | no | JSON, 100 KB |
 | `POST /api/publico/verificacion-google` | `POST /google-verification` | no | JSON, 8 KB |
 | `POST /api/publico/inscripciones` | `POST /inscriptions` | no | multipart, 5 MB + 512 KB |
@@ -98,4 +100,5 @@ Errores que genera el propio BFF (misma forma `{ success: false, code, message }
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | `Content-Type` distinto de multipart o JSON según la ruta |
 | 400 | `INVALID_CATEGORY` | `categoria` fuera de la lista blanca |
 | 422 | `INVALID_DNI` | `:numero` no tiene 8 dígitos (no se consulta al backend) |
+| 422 | `INVALID_CODE` | `:codigo` de `/credencial` no tiene 10 caracteres `[0-9A-Z]` (se normaliza a mayúsculas antes de validar; no se consulta al backend) |
 | 422 | `INVALID_GOOGLE_CREDENTIAL` | `credential` falta, no es texto, supera 4096 caracteres o no tiene 3 segmentos base64url, o el cuerpo no es JSON (no se consulta al backend) |
