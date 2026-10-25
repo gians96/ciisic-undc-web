@@ -6,6 +6,7 @@ import {
   BACKEND_NO_DISPONIBLE,
   CREDENCIAL_GOOGLE_INVALIDA,
   CuerpoDemasiadoGrande,
+  ENLACE_NO_VALIDO,
   LIMITE_MULTIPART_BYTES,
   LIMITE_VERIFICACION_GOOGLE_BYTES,
   PREFIJO_API_SITIO,
@@ -17,6 +18,7 @@ import {
   ipDelVisitante,
   leerCuerpoLimitado,
   llamarApiSitio,
+  tokenDelCuerpoAforo,
   type ContextoSitio,
   type FetchSitio,
   type OpcionesFetchSitio,
@@ -93,6 +95,13 @@ describe('llamarApiSitio', () => {
     expect(llamadas[0]!.opciones.headers).not.toHaveProperty('Content-Type')
   })
 
+  it('agrega los encabezados propios de la ruta (X-Link-Token del aforo) sin dejar que reemplacen al token del evento', async () => {
+    const { fetchSitio, llamadas } = fetchSimulado({ status: 200, _data: { success: true, data: {} } })
+    await llamarApiSitio(contexto(), { ruta: '/specialized-talk-occupancy', encabezados: { 'X-Link-Token': 'enlace', 'X-Api-Key': 'otro' } }, fetchSitio)
+    expect(llamadas[0]!.url).toBe(`http://backend.interno:3010${PREFIJO_API_SITIO}/specialized-talk-occupancy`)
+    expect(llamadas[0]!.opciones.headers).toEqual({ 'Accept': 'application/json', 'X-Api-Key': TOKEN, 'X-Client-Ip': '181.65.10.20', 'X-Link-Token': 'enlace' })
+  })
+
   it('sin token o sin dirección del backend responde 503 SITE_NOT_CONFIGURED sin llamar al backend', async () => {
     const { fetchSitio } = fetchSimulado({ status: 200 })
     expect(await llamarApiSitio(contexto({ token: '  ' }), { ruta: '/event' }, fetchSitio)).toEqual({ status: 503, cuerpo: SITIO_NO_CONFIGURADO })
@@ -141,6 +150,23 @@ describe('llamarApiSitio', () => {
       await llamarApiSitio(contexto(), { ruta: '/event' }, fetchSimulado({ status: 500 }).fetchSitio),
     ]
     for (const caso of casos) expect(JSON.stringify(caso)).not.toContain(TOKEN)
+  })
+})
+
+describe('aforo de las ponencias: token del enlace en el cuerpo', () => {
+  const json = (valor: unknown) => new TextEncoder().encode(typeof valor === 'string' ? valor : JSON.stringify(valor))
+  const TOKEN_ENLACE = 'A'.repeat(42) + '_'
+
+  it('lee el token de 43 caracteres base64url', () => {
+    expect(tokenDelCuerpoAforo(json({ token: TOKEN_ENLACE }))).toBe(TOKEN_ENLACE)
+    expect(tokenDelCuerpoAforo(json({ token: ` ${TOKEN_ENLACE} ` }))).toBe(TOKEN_ENLACE)
+  })
+
+  it('cualquier otra cosa no es un token (el BFF responde 404 sin consultar al backend)', () => {
+    for (const cuerpo of [json('no es json'), json(null), json([]), json({}), json({ token: 123 }), json({ token: 'corto' }), json({ token: `${TOKEN_ENLACE}=` })]) {
+      expect(tokenDelCuerpoAforo(cuerpo)).toBeNull()
+    }
+    expect(ENLACE_NO_VALIDO).toEqual({ success: false, code: 'LINK_NOT_FOUND', message: 'El enlace no es válido o fue desactivado.' })
   })
 })
 

@@ -6,6 +6,8 @@ import { Buffer } from 'node:buffer'
 import type { H3Event } from 'h3'
 import {
   CuerpoDemasiadoGrande,
+  ENLACE_NO_VALIDO,
+  LIMITE_AFORO_BYTES,
   LIMITE_JSON_BYTES,
   LIMITE_MULTIPART_BYTES,
   codigoLinkValido,
@@ -16,6 +18,7 @@ import {
   leerCuerpoLimitado,
   llamarApiSitio,
   obtenerQrSitio,
+  tokenDelCuerpoAforo,
   type ContextoSitio,
   type CuerpoAdaptado,
   type FetchImagenSitio,
@@ -143,6 +146,29 @@ export async function reenviarCuerpoSitio(event: H3Event, ruta: string, opciones
   }
 
   return responderSitio(event, peticion)
+}
+
+/**
+ * Aforo de las ponencias con el enlace público (spec 012; backend spec 036). La página manda `{ token }` en el cuerpo y aquí
+ * va al backend en `X-Link-Token`, junto con el token del evento: nunca en una URL. Un token sin la forma del backend
+ * responde el mismo 404 sin consultarlo. Sin caché y sin indexar.
+ */
+export async function responderAforoPonencias(event: H3Event): Promise<unknown> {
+  setResponseHeaders(event, { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' })
+
+  let token: string | null = null
+  if (!excedeLongitudDeclarada(getRequestHeader(event, 'content-length'), LIMITE_AFORO_BYTES)) {
+    try {
+      token = tokenDelCuerpoAforo(await leerCuerpoLimitado(event.node.req, LIMITE_AFORO_BYTES))
+    } catch (error) {
+      if (!(error instanceof CuerpoDemasiadoGrande)) throw error
+    }
+  }
+  if (!token) {
+    setResponseStatus(event, 404)
+    return ENLACE_NO_VALIDO
+  }
+  return responderSitio(event, { ruta: '/specialized-talk-occupancy', encabezados: { 'X-Link-Token': token }, timeoutMs: 10000 })
 }
 
 /** El `:codigo` de la ruta si es un código de link válido; `null` si no (la ruta responde 404). */

@@ -37,6 +37,43 @@ export interface PonenciaEspecializadaPublica {
   orden: number
 }
 
+/** Ponente en el enlace del aforo: sin biografía. */
+export type PonenteAforo = Pick<PonentePublico, 'nombre' | 'foto' | 'externo'>
+
+/**
+ * Ponencia del enlace público del aforo (`GET /site/specialized-talk-occupancy`, backend spec 036). `inscritos` son solo los
+ * presenciales vigentes (los que ocupan aforo); `asistentes`, los que ya marcaron asistencia en puerta. Sin datos de personas.
+ */
+export interface PonenciaAforo {
+  id: number
+  tema: string
+  /** `YYYY-MM-DD`. */
+  fecha: string
+  /** `HH:mm`, hora de Lima. */
+  horaInicio: string
+  horaFin: string
+  duracionMin: number
+  ambiente: string
+  modalidad: ModalidadPonencia
+  ponente: PonenteAforo
+  coponentes: PonenteAforo[]
+  /** Aforo presencial; `null`: sin límite. */
+  cupo: number | null
+  inscritos: number
+  cuposDisponibles: number | null
+  llena: boolean
+  asistentes: number
+  orden: number
+}
+
+/** `data` de la respuesta del aforo. */
+export interface AforoPonencias {
+  evento: { nombre: string, nombreCorto: string }
+  /** Instante ISO en que el servidor calculó las cifras. */
+  generadoEn: string
+  ponencias: PonenciaAforo[]
+}
+
 /**
  * Cómo se asiste al congreso (backend spec 030): sale del tipo de inscripción. Solo el modo presencial ocupa el
  * aforo de las ponencias; el virtual no tiene límite de cupo.

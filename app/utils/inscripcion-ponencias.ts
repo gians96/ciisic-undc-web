@@ -38,15 +38,18 @@ export function etiquetaModoAsistencia(modo: ModoAsistencia): string {
 
 // ─── Programa ───────────────────────────────────────────────────────────────
 
-export interface DiaDePonenciasApi {
+export interface DiaDePonenciasApi<T = Ponencia> {
   fecha: string
   etiqueta: string
-  ponencias: Ponencia[]
+  ponencias: T[]
 }
 
-/** Agrupa por día (cronológico) y ordena por hora, `orden` y ambiente (laboratorios y aulas por número). */
-export function ponenciasPorDia(ponencias: readonly Ponencia[]): DiaDePonenciasApi[] {
-  const dias = new Map<string, Ponencia[]>()
+/**
+ * Agrupa por día (cronológico) y ordena por hora, `orden` y ambiente (laboratorios y aulas por número). Sirve también
+ * para las ponencias del enlace del aforo, que traen los mismos campos.
+ */
+export function ponenciasPorDia<T extends Pick<Ponencia, 'fecha' | 'horaInicio' | 'orden' | 'ambiente'> = Ponencia>(ponencias: readonly T[]): DiaDePonenciasApi<T>[] {
+  const dias = new Map<string, T[]>()
   for (const ponencia of ponencias) dias.set(ponencia.fecha, [...(dias.get(ponencia.fecha) ?? []), ponencia])
   return [...dias.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
@@ -129,7 +132,7 @@ function sinTildes(texto: string): string {
 }
 
 /** Todos los ponentes del tema: el principal y, si lo comparten, los demás (un backend anterior no envía `coponentes`). */
-export function ponentesDeLaPonencia(ponencia: Pick<Ponencia, 'ponente' | 'coponentes'>): PonentePublico[] {
+export function ponentesDeLaPonencia<P = PonentePublico>(ponencia: { ponente: P, coponentes?: P[] }): P[] {
   return [ponencia.ponente, ...(ponencia.coponentes ?? [])]
 }
 

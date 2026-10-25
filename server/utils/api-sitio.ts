@@ -46,6 +46,8 @@ export interface PeticionSitio {
   cuerpo?: Uint8Array
   tipoContenido?: string
   timeoutMs?: number
+  /** Encabezados propios de la ruta (p. ej. `X-Link-Token`); nunca reemplazan al token del evento. */
+  encabezados?: Record<string, string>
 }
 
 export interface RespuestaSitio {
@@ -103,6 +105,7 @@ export async function llamarApiSitio(contexto: ContextoSitio, peticion: Peticion
   if (configuracionFaltante(contexto).length) return { status: 503, cuerpo: SITIO_NO_CONFIGURADO }
 
   const headers: Record<string, string> = {
+    ...peticion.encabezados,
     'Accept': 'application/json',
     'X-Api-Key': contexto.token.trim(),
   }
@@ -258,6 +261,30 @@ export async function leerCuerpoLimitado(flujo: AsyncIterable<Uint8Array | strin
     partes.push(bytes)
   }
   return Buffer.concat(partes, total)
+}
+
+// ─── Enlace público del aforo de las ponencias (spec 012; backend spec 036) ──
+
+/** Token del enlace del aforo: 43 caracteres base64url (256 bits), como los emite el backend. */
+const TOKEN_ENLACE = /^[A-Za-z0-9_-]{43}$/
+/** El cuerpo `{ "token": "…" }` cabe de sobra en 1 KB. */
+export const LIMITE_AFORO_BYTES = 1024
+/** El mismo aviso del backend para un token ausente, mal formado, desconocido o desactivado. */
+export const ENLACE_NO_VALIDO = errorSitio('LINK_NOT_FOUND', 'El enlace no es válido o fue desactivado.')
+
+/**
+ * Token del enlace del aforo en el cuerpo JSON `{ token }` que envía la página (lo lee del `#` de su URL). `null` si el
+ * cuerpo no es JSON o el token no tiene la forma del backend: no hace falta preguntarle.
+ */
+export function tokenDelCuerpoAforo(cuerpo: Uint8Array): string | null {
+  let datos: unknown
+  try {
+    datos = JSON.parse(new TextDecoder().decode(cuerpo))
+  } catch {
+    return null
+  }
+  const token = esObjeto(datos) && typeof datos.token === 'string' ? datos.token.trim() : ''
+  return TOKEN_ENLACE.test(token) ? token : null
 }
 
 /** Hasta 6 vouchers de 5 MB en una sola petición de delegación, más los campos de texto. */

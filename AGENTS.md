@@ -35,6 +35,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   Cyber Clash, Encuentro de Egresados y Deportes, con el contenido estático de `app/data/semana-sistemica.ts`), 
   `ponencias-especializadas` (ponentes y temas, datos estáticos de `app/data/ponencias-especializadas.ts`), 
   `inscripcion-ponencias` (inscripción a ponencias especializadas con las ponencias y cupos del backend), 
+  `aforo-ponencias` (aforo, inscritos presenciales y asistencia por tema con el enlace público del Owner; **oculta**, sin enlaces), 
   `delegaciones` (delegaciones con planes propios: vista del delegado, link individual de cada integrante y vouchers múltiples; **oculta**, sin enlaces), 
   `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
@@ -98,6 +99,10 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   `CONGRESS_PAYMENT_PENDING` y `CONGRESS_REGISTRATION_REJECTED` se muestran con el texto del servidor y piden verificar de nuevo. **Acceso
   libre encendido**: solo el documento (nombres por la consulta DNI como antes; correo y celular opcionales) y el cupo normal. El backend
   decide siempre; el documento y el correo viajan en el cuerpo, nunca en la URL. **Backend 030 primero.**
+- **Aforo de las ponencias** (spec 012; contrato en la spec 036 del backend): `/aforo-ponencias#<token>` es **oculta** (`noindex`, `referrer: no-referrer`, sin menú ni pie) y solo se abre
+  con el enlace que el Owner crea en el panel. El token va **tras el `#`**, vive solo en memoria y viaja por `POST` en el cuerpo a `/api/publico/ponencias-especializadas/aforo`, que lo reenvía
+  en `X-Link-Token` (`responderAforoPonencias`); **nunca** en una URL, un log, la consola ni el `<head>`. Muestra por tema los inscritos **presenciales** frente al aforo, los cupos libres y la
+  asistencia en puerta (`app/utils/aforo-ponencias.ts`), sin datos de personas; se actualiza sola cada minuto. `/ponencias-especializadas` no muestra cupos. **Backend 036 primero.**
 - **Delegaciones** (specs 008 y 010; contrato en la spec 029 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin enlaces en el menú ni en el pie; el delegado
   recibe el link por correo) y **ya no crea delegaciones**: las crea el staff con sus **planes y precios propios** (Con kit, Sin kit y Virtual). Tiene tres estados según el parámetro:
   `?delegacion=<código>` (el delegado ve su grupo, sus planes y **solo agrega** integrantes —cada uno con su plan— y vouchers; sin borrar ni editar; ve el link individual para compartirlo),
@@ -158,8 +163,9 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 `specs/007-virtual-sin-estudiantes-undc/` (planes que no admiten estudiantes UNDC),
 `specs/008-delegaciones/` (inscripción de delegaciones, página oculta),
 `specs/009-ponencias-validacion-congreso/` (ponencias solo para congresistas con pago aprobado),
-`specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual) y
-`specs/011-ponencias-coponentes/` (temas de ponencias especializadas con varios ponentes).
+`specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual),
+`specs/011-ponencias-coponentes/` (temas de ponencias especializadas con varios ponentes) y
+`specs/012-aforo-ponencias/` (página oculta del aforo por tema con el enlace público del Owner).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado
