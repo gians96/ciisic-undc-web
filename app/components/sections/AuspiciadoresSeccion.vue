@@ -1,9 +1,9 @@
 <!-- Auspiciadores del congreso en un loop infinito (UiLogoLoop, port del
      React Bits LogoLoop). Va justo debajo del bloque de datos del hero; cada
-     logo va en una tarjeta grande: oscura translúcida por defecto (los logos con
-     letras blancas se leen sobre ella) y blanca solo cuando el logo trae su
-     propio fondo claro (`fondo: "claro"`). Al pasar el mouse sube la tarjeta y
-     aparece el nombre del auspiciador. -->
+     logo va en una tarjeta blanca grande (como los logos de nubetec-web) y el
+     loop avanza de a un logo con una pausa entre cada paso (`step`). Solo los
+     logos con letras blancas (`fondo: "oscuro"`) llevan tarjeta azul oscura. Al
+     pasar el mouse el loop se detiene, sube la tarjeta y aparece el nombre. -->
 <template>
   <section
     class="auspiciadores"
@@ -23,14 +23,16 @@
       :logos="logos"
       :logo-height="104"
       :gap="28"
-      :speed="80"
+      :speed="110"
+      step
+      pause-on-hover
       labels="hover"
       aria-label="Logos de los auspiciadores del VIII CIISIC 2026"
     >
       <template #item="{ item }">
         <span
           class="logoloop__node tarjeta"
-          :class="{ 'tarjeta--clara': esClara(item) }"
+          :class="{ 'tarjeta--oscura': esOscura(item) }"
         >
           <img
             :src="item.src"
@@ -48,10 +50,10 @@
 <script setup lang="ts">
 import type { LogoLoopItem } from "../ui/LogoLoop.vue";
 
-/** `fondo: "claro"`: el logo trae fondo blanco y necesita tarjeta blanca. */
-type Auspiciador = LogoLoopItem & { fondo?: "claro" };
+/** `fondo: "oscuro"`: el logo lleva letras blancas y se pierde en la tarjeta blanca. */
+type Auspiciador = LogoLoopItem & { fondo?: "oscuro" };
 
-const esClara = (item: LogoLoopItem) => (item as Auspiciador).fondo === "claro";
+const esOscura = (item: LogoLoopItem) => (item as Auspiciador).fondo === "oscuro";
 
 // Logos convertidos con sharp desde la carpeta local de auspiciadores
 // (máx. 640 px de ancho, WebP q82) y servidos desde public/images/auspiciadores/.
@@ -60,6 +62,7 @@ const logos: Auspiciador[] = [
     src: "/images/auspiciadores/bodega-de-la-cruz.webp",
     alt: "Bodega De La Cruz",
     title: "Bodega De La Cruz",
+    fondo: "oscuro",
   },
   {
     src: "/images/auspiciadores/carbonero.webp",
@@ -95,6 +98,7 @@ const logos: Auspiciador[] = [
     src: "/images/auspiciadores/residencia-benavides.webp",
     alt: "Residencia Benavides",
     title: "Residencia Benavides",
+    fondo: "oscuro",
   },
   {
     src: "/images/auspiciadores/bloom.webp",
@@ -105,7 +109,6 @@ const logos: Auspiciador[] = [
     src: "/images/auspiciadores/glen-soft.webp",
     alt: "Glen Soft",
     title: "Glen Soft",
-    fondo: "claro",
   },
 ];
 </script>
@@ -139,9 +142,9 @@ const logos: Auspiciador[] = [
 
 .tarjeta {
   padding: 14px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #fff;
   box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.6);
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -149,9 +152,10 @@ const logos: Auspiciador[] = [
     box-shadow 0.3s ease;
 }
 
-.tarjeta--clara {
-  border-color: rgba(255, 255, 255, 0.9);
-  background: #fff;
+/* Logos con letras blancas: sobre blanco desaparecen, así que llevan el azul del sitio. */
+.tarjeta--oscura {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #0b2a4d;
 }
 
 /* Un logo muy ancho (Glen Soft) no debe estirar su tarjeta más de la cuenta. */
@@ -185,6 +189,12 @@ const logos: Auspiciador[] = [
 .auspiciadores :deep(.logoloop__item:hover .logoloop__tip),
 .auspiciadores :deep(.logoloop__item:focus-within .logoloop__tip) {
   opacity: 1;
+}
+
+/* Con `step` el motor marca como activo al logo más cercano al centro y el loop
+   mostraría su nombre sin que nadie lo señale: el nombre solo sale al hover. */
+.auspiciadores :deep(.logoloop__item[data-active]:not(:hover):not(:focus-within) .logoloop__tip) {
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
