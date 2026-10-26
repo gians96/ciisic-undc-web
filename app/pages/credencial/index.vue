@@ -33,6 +33,7 @@
       Si tu inscripción ya fue aprobada y no encuentras el correo, revisa la carpeta de spam o escribe a la
       organización con tu documento.
     </p>
+    <NuxtLink to="/" class="mt-6 inline-block text-sm font-semibold text-primary-300 hover:text-white">Ir al sitio del congreso</NuxtLink>
   </div>
 </template>
 

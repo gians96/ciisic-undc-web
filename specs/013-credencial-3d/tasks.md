@@ -10,3 +10,4 @@
 - [x] T008 Contrato del BFF, `docs/arquitectura.md` y AGENTS.md
 - [ ] T009 Probado en el navegador contra el backend local (375 px y escritorio, guardado en el servidor, sin errores en la consola) y `bun run build` con los íconos resueltos en el servidor
 - [ ] T010 Producción: desplegar después del backend 038; poner la URL de la landing en Sistema (panel)
+- [x] T011 Rediseño a pantalla completa (2026-10-26): sin barra ni botón, QR y código centrados abajo, editar con doble toque (`esDobleToque`), aviso temporal y aviso de error de guardado

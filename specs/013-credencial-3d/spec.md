@@ -18,16 +18,18 @@ tecnologías. El usuario pidió probarla, enviarla por correo a los inscritos pr
 - **Catálogo de la landing**: `app/data/tecnologias.ts`, 53 tecnologías en 7 grupos (íconos `simple-icons`, ya instalados). Hasta **8** por persona (`MAXIMO_TECNOLOGIAS`, igual que el backend). La primera
   elegida es la **principal**: da el color del resplandor, el borde y la marca de agua; al agregar una pasa al frente y se puede cambiar tocándola en el editor. El `id` de una tecnología no se cambia
   (se guarda en el servidor); un id que ya no existe se ignora.
-- **Diseño minimalista y moderno**: sin el hero ni el panel lateral de Jeff; la credencial al centro, con giro 3D que sigue al cursor o al dedo (`pointer`), brillo suave, flotación en reposo y
-  `prefers-reduced-motion`. Contenido: marca del evento, nombre, rol (clasificación, tipo o «Asistente»), tecnologías y, en el pie, el código y el **QR real** del código (reemplaza el código de
-  barras decorativo de Jeff, que parecía escaneable y no lo era). Editor en una hoja inferior (celular) o cuadro centrado (escritorio) con buscador y grupos.
+- **Diseño minimalista, a pantalla completa** (pedido del usuario el 2026-10-26, tras verla en producción): la credencial es **lo único** de la página y ocupa toda la pantalla en vertical (alto de la ventana,
+  ancho en proporción); sin barra de navegación, sin pie, sin textos de ayuda ni botón. Giro 3D que sigue al cursor o al dedo (`pointer`), brillo suave, flotación en reposo y
+  `prefers-reduced-motion`. Contenido: marca del evento con su **nombre completo** («VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica», que viene de la API), **nombre** y tecnologías, y en el pie, **centrados, el QR y debajo el código** (sin etiqueta «Registro»; ya no lleva el rol, la sede ni el título «Credencial»). El QR es **real** y reemplaza el código de
+  barras decorativo de Jeff, que parecía escaneable y no lo era). **Editar = doble toque** (doble clic, o Intro con el teclado) sobre la credencial: abre el editor, una hoja inferior (celular) o cuadro centrado
+  (escritorio) con buscador y grupos. Un aviso «Toca dos veces para editar» se muestra 5 s al abrir; los correos también lo explican. Si un guardado falla con el editor cerrado, sale un aviso abajo con «Reintentar».
 - **Texto de «próximos pasos»** (presenciales): el correo de aprobación trae la credencial en PDF **y** el enlace a la credencial 3D (decisión del usuario: se conserva el PDF).
 
 ## Requisitos
 
 - **FR-001**: `GET /api/publico/credencial/:codigo` y `POST …/tecnologias` (BFF, ver `specs/001-landing-multi-evento/contracts/bff-landing.md`): `no-store`, token e IP del visitante, 2 KB en el POST.
 - **FR-002**: la página nunca muestra ni pide documento, correo, celular ni montos.
-- **FR-003**: sin JavaScript la página se renderiza en el servidor con la credencial (nombre, rol, código y las tecnologías ya guardadas).
+- **FR-003**: sin JavaScript la página se renderiza en el servidor con la credencial (nombre, código y las tecnologías ya guardadas).
 - **FR-004**: accesible: la credencial es texto real, el QR tiene `alt`, el editor es un `dialog` modal con `Esc` y foco, los botones de tecnologías usan `aria-pressed`.
 
 ## Fuera de alcance

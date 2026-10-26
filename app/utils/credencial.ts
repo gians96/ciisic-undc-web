@@ -115,3 +115,24 @@ export const ACENTO_POR_DEFECTO = '#00d9e8'
 export function acentoDe(ids: readonly string[]): string {
   return tecnologiasDe(ids)[0]?.color ?? ACENTO_POR_DEFECTO
 }
+
+// ─── Doble toque ────────────────────────────────────────────────────────────
+
+/** Un toque (o clic) sobre la credencial: cuándo (ms) y dónde (px). */
+export interface ToqueCredencial {
+  instante: number
+  x: number
+  y: number
+}
+
+/** Tiempo máximo entre los dos toques y distancia máxima entre ellos para que cuenten como un doble toque. */
+export const VENTANA_DOBLE_TOQUE_MS = 350
+export const DISTANCIA_DOBLE_TOQUE_PX = 40
+
+/** Si `actual` completa un doble toque con el toque anterior (`null` = no hubo). */
+export function esDobleToque(previo: ToqueCredencial | null, actual: ToqueCredencial): boolean {
+  if (!previo) return false
+  const transcurrido = actual.instante - previo.instante
+  if (transcurrido <= 0 || transcurrido > VENTANA_DOBLE_TOQUE_MS) return false
+  return Math.hypot(actual.x - previo.x, actual.y - previo.y) <= DISTANCIA_DOBLE_TOQUE_PX
+}

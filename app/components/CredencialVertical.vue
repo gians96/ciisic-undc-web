@@ -1,13 +1,20 @@
-<!-- Credencial vertical 3D (spec 013): ticket minimalista al estilo del de la miduConf. Sigue al cursor (o al dedo)
-     con un giro suave y un brillo, la tecnología principal pone el color y su ícono de marca de agua, y el QR es
-     el del código de registro (el mismo del fotocheck impreso). -->
+<!-- Credencial vertical 3D a pantalla completa (spec 013): ticket minimalista al estilo del de la miduConf. Sigue al cursor (o al
+     dedo) con un giro suave y un brillo; la tecnología principal pone el color y su ícono de marca de agua; el QR es el del
+     código de registro (el mismo del fotocheck impreso). Con doble toque (o Intro) pide editar las tecnologías. -->
 <template>
   <div
     class="credencial-escena"
     :class="{ 'credencial-escena--activa': activa }"
+    role="button"
+    tabindex="0"
+    :aria-label="`Credencial de ${asistente.nombre}, código ${asistente.codigo}. Toca dos veces o pulsa Intro para editar tus tecnologías.`"
     @pointermove="alMover"
     @pointerleave="alReposo"
     @pointercancel="alReposo"
+    @pointerup="alSoltar"
+    @dblclick.prevent="emit('editar')"
+    @keydown.enter.prevent="emit('editar')"
+    @keydown.space.prevent="emit('editar')"
   >
     <div
       class="credencial"
@@ -21,14 +28,13 @@
     >
       <div class="credencial__sombra" aria-hidden="true"/>
 
-      <article class="credencial__tarjeta" :aria-label="`Credencial de ${asistente.nombre}`">
+      <article class="credencial__tarjeta" aria-hidden="true">
         <Icon
           v-if="principal"
           :name="principal.icono"
           class="credencial__marca"
-          aria-hidden="true"
         />
-        <div class="credencial__brillo" aria-hidden="true"/>
+        <div class="credencial__brillo"/>
 
         <header class="credencial__cabecera">
           <NuxtImg
@@ -36,49 +42,35 @@
             alt=""
             class="credencial__logo"
           />
-          <div class="credencial__evento">
-            <p class="credencial__evento-nombre">{{ evento.nombreCorto }}</p>
-            <p class="credencial__evento-lugar">{{ evento.lugar }}</p>
-          </div>
+          <p class="credencial__evento">{{ evento.nombreCorto }}</p>
         </header>
+        <p v-if="evento.nombre" class="credencial__congreso">{{ evento.nombre }}</p>
+
+        <p v-if="pista" class="credencial__pista">Toca dos veces para editar</p>
 
         <div class="credencial__datos">
-          <p class="credencial__kicker">Credencial</p>
           <h2 class="credencial__nombre">{{ asistente.nombre }}</h2>
-          <p class="credencial__rol">{{ asistente.rol }}</p>
+          <ul v-if="tecnologiasElegidas.length" class="credencial__chips">
+            <li
+              v-for="tech in tecnologiasElegidas"
+              :key="tech.id"
+              class="credencial__chip"
+              :style="{ background: tech.color, color: textoSobreColor(tech.color) }"
+              :title="tech.nombre"
+            >
+              <Icon :name="tech.icono" class="credencial__chip-icono" />
+            </li>
+          </ul>
         </div>
 
-        <ul
-          v-if="tecnologiasElegidas.length"
-          class="credencial__chips"
-          aria-label="Tecnologías"
-        >
-          <li
-            v-for="tech in tecnologiasElegidas"
-            :key="tech.id"
-            class="credencial__chip"
-            :style="{ background: tech.color, color: textoSobreColor(tech.color) }"
-            :title="tech.nombre"
-          >
-            <Icon :name="tech.icono" class="credencial__chip-icono" />
-            <span class="sr-only">{{ tech.nombre }}</span>
-          </li>
-        </ul>
-        <p v-else class="credencial__sin-tech">Aún sin tecnologías</p>
-
         <footer class="credencial__pie">
-          <div class="credencial__codigo">
-            <span class="credencial__codigo-etiqueta">Registro</span>
-            <span class="credencial__codigo-valor">{{ asistente.codigo }}</span>
-          </div>
           <img
             v-if="qr"
             :src="qr"
-            alt="Código QR de la credencial"
+            alt=""
             class="credencial__qr"
-            width="72"
-            height="72"
           >
+          <p class="credencial__codigo">{{ asistente.codigo }}</p>
         </footer>
       </article>
     </div>
@@ -87,11 +79,10 @@
 
 <script setup lang="ts">
 import { textoSobreColor } from '~/data/tecnologias'
-import { acentoDe, tecnologiasDe } from '~/utils/credencial'
+import { acentoDe, esDobleToque, tecnologiasDe, type ToqueCredencial } from '~/utils/credencial'
 
 export interface AsistenteCredencial {
   nombre: string
-  rol: string
   codigo: string
 }
 
@@ -100,27 +91,33 @@ const props = withDefaults(
     /** Ids del catálogo de `TECNOLOGIAS`, en orden: la primera define el color y la marca de agua. */
     tecnologias?: string[]
     asistente: AsistenteCredencial
-    evento?: { nombreCorto: string, lugar: string }
+    evento?: { nombreCorto: string, nombre?: string }
     /** Imagen (data URL) del QR del código. */
     qr?: string
+    /** Muestra un momento «Toca dos veces para editar» (la página lo apaga solo). */
+    pista?: boolean
   }>(),
   {
     tecnologias: () => [],
-    evento: () => ({ nombreCorto: 'VIII CIISIC 2026', lugar: 'Cañete, Perú · 26–30 oct' }),
+    evento: () => ({ nombreCorto: 'VIII CIISIC 2026', nombre: 'VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica' }),
     qr: undefined,
+    pista: false,
   },
 )
+
+const emit = defineEmits<{ editar: [] }>()
 
 const tecnologiasElegidas = computed(() => tecnologiasDe(props.tecnologias))
 const principal = computed(() => tecnologiasElegidas.value[0])
 const acento = computed(() => acentoDe(props.tecnologias))
 
 /** Inclinación en reposo: el ticket nunca queda completamente plano. */
-const REPOSO = { x: 5, y: -7 }
+const REPOSO = { x: 4, y: -5 }
 const rot = reactive({ ...REPOSO })
 const brillo = reactive({ x: 30, y: 15 })
 const activa = ref(false)
 const sinMovimiento = ref(false)
+let ultimoToque: ToqueCredencial | null = null
 
 function alMover(event: PointerEvent) {
   if (sinMovimiento.value) return
@@ -129,8 +126,8 @@ function alMover(event: PointerEvent) {
   const px = (event.clientX - r.left) / r.width
   const py = (event.clientY - r.top) / r.height
   activa.value = true
-  rot.x = Math.max(-14, Math.min(14, -(py - 0.5) * 26))
-  rot.y = Math.max(-14, Math.min(14, (px - 0.5) * 26))
+  rot.x = Math.max(-10, Math.min(10, -(py - 0.5) * 20))
+  rot.y = Math.max(-10, Math.min(10, (px - 0.5) * 20))
   brillo.x = Math.max(0, Math.min(100, px * 100))
   brillo.y = Math.max(0, Math.min(100, py * 100))
 }
@@ -143,24 +140,51 @@ function alReposo() {
   brillo.y = 15
 }
 
+/** Doble toque con el dedo: se detecta a mano porque iOS no siempre dispara `dblclick` (con el mouse sí llega `dblclick`; el editor se abre una sola vez). */
+function alSoltar(event: PointerEvent) {
+  const toque: ToqueCredencial = { instante: event.timeStamp, x: event.clientX, y: event.clientY }
+  if (esDobleToque(ultimoToque, toque)) {
+    ultimoToque = null
+    emit('editar')
+    return
+  }
+  ultimoToque = toque
+}
+
 onMounted(() => {
   sinMovimiento.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 })
 </script>
 
 <style scoped>
+/* La credencial ocupa la pantalla en vertical: alto = el de la ventana y ancho en proporción (sin pasarse del ancho disponible) */
 .credencial-escena {
-  perspective: 1100px;
-  display: inline-block;
-  /* El dedo sigue desplazando la página en vertical; el giro responde al arrastre horizontal y al toque */
-  touch-action: pan-y;
+  --margen: 0.75rem;
+  --alto: calc(100vh - 2 * var(--margen));
+  --alto: calc(100dvh - 2 * var(--margen));
+  --ancho: min(calc(var(--alto) * 0.62), calc(100vw - 2 * var(--margen)));
+  perspective: 1400px;
+  width: var(--ancho);
+  height: var(--alto);
+  /* Sin zoom por doble toque (es el gesto de editar); la página no se desplaza */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+}
+
+.credencial-escena:focus-visible .credencial__tarjeta {
+  outline: 2px solid #00d9e8;
+  outline-offset: 3px;
 }
 
 /* Flotación suave en reposo; se detiene al interactuar y con «reducir movimiento» */
 .credencial {
   position: relative;
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx, 5deg)) rotateY(var(--ry, -7deg));
+  transform: rotateX(var(--rx, 4deg)) rotateY(var(--ry, -5deg));
   transition: transform 0.2s ease-out;
   animation: credencial-flota 6s ease-in-out infinite;
 }
@@ -175,7 +199,7 @@ onMounted(() => {
     translate: 0 0;
   }
   50% {
-    translate: 0 -6px;
+    translate: 0 -5px;
   }
 }
 
@@ -192,14 +216,15 @@ onMounted(() => {
 }
 
 .credencial__tarjeta {
+  container-type: size;
   position: relative;
-  width: clamp(290px, 82vw, 340px);
-  min-height: 520px;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.5rem 1.35rem;
+  padding: 7cqw 8cqw 7cqw;
   border: 1.5px solid transparent;
-  border-radius: 28px;
+  border-radius: 9cqw;
   background:
     linear-gradient(165deg, #0b2547 0%, #07162b 55%, #050f20 100%) padding-box,
     linear-gradient(
@@ -218,10 +243,10 @@ onMounted(() => {
 /* Ícono de la tecnología principal como marca de agua */
 .credencial__marca {
   position: absolute;
-  top: 22%;
-  right: -1.5rem;
-  width: 13rem;
-  height: 13rem;
+  top: 18%;
+  right: -12cqw;
+  width: 78cqw;
+  height: 78cqw;
   color: var(--acento, #00d9e8);
   opacity: 0.12;
   pointer-events: none;
@@ -248,66 +273,82 @@ onMounted(() => {
 .credencial__cabecera {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 3cqw;
   transform: translateZ(18px);
 }
 
 .credencial__logo {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 11cqw;
+  height: 11cqw;
   object-fit: contain;
 }
 
-.credencial__evento-nombre {
-  font-size: 0.85rem;
+.credencial__evento {
+  font-size: clamp(0.8rem, 4.2cqw, 1.1rem);
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.credencial__evento-lugar {
-  margin-top: 0.1rem;
-  font-size: 0.7rem;
-  color: rgba(226, 240, 255, 0.6);
+/* Nombre completo del congreso, bajo la cabecera */
+.credencial__congreso {
+  max-width: 92%;
+  margin-top: 5cqw;
+  font-size: clamp(0.85rem, 5.7cqw, 1.4rem);
+  font-weight: 600;
+  line-height: 1.32;
+  color: rgba(226, 240, 255, 0.88);
+  text-wrap: balance;
+  transform: translateZ(14px);
+}
+
+/* Aviso que se apaga solo: en el hueco entre el congreso y el nombre */
+.credencial__pista {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  z-index: 4;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(2, 10, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: clamp(0.7rem, 3.6cqw, 0.9rem);
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgba(226, 240, 255, 0.92);
+  transform: translateX(-50%) translateZ(40px);
+  animation: credencial-pista 5s ease forwards;
+}
+
+@keyframes credencial-pista {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .credencial__datos {
   margin-top: auto;
-  padding-top: 5.5rem;
   transform: translateZ(34px);
 }
 
-.credencial__kicker {
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--acento, #00d9e8);
-  transition: color 0.4s ease;
-}
-
 .credencial__nombre {
-  margin-top: 0.55rem;
-  font-size: clamp(1.6rem, 7.2vw, 1.95rem);
+  font-size: clamp(1.5rem, 10.5cqw, 3rem);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.05;
   letter-spacing: -0.02em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
-.credencial__rol {
-  margin-top: 0.5rem;
-  font-size: 0.82rem;
-  line-height: 1.4;
-  color: rgba(214, 231, 250, 0.7);
-}
-
 .credencial__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  margin: 1.35rem 0 0;
+  gap: 2.4cqw;
+  margin: 6cqw 0 0;
   padding: 0;
   list-style: none;
   transform: translateZ(24px);
@@ -317,69 +358,55 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 0.65rem;
+  width: 11cqw;
+  height: 11cqw;
+  border-radius: 3.4cqw;
   box-shadow:
     0 6px 14px rgba(1, 8, 18, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .credencial__chip-icono {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 5.8cqw;
+  height: 5.8cqw;
 }
 
-.credencial__sin-tech {
-  margin-top: 1.35rem;
-  font-size: 0.78rem;
-  color: rgba(214, 231, 250, 0.45);
-}
-
+/* QR abajo al centro y, debajo, el código */
 .credencial__pie {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1.1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 3.2cqw;
+  margin-top: 8cqw;
+  padding-top: 7cqw;
   border-top: 1px dashed rgba(255, 255, 255, 0.2);
   transform: translateZ(20px);
 }
 
-.credencial__codigo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-}
-
-.credencial__codigo-etiqueta {
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: rgba(214, 231, 250, 0.5);
-}
-
-.credencial__codigo-valor {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 .credencial__qr {
-  width: 4.5rem;
-  height: 4.5rem;
-  padding: 0.3rem;
-  border-radius: 0.6rem;
+  width: clamp(5.5rem, min(46cqw, 24cqh), 15rem);
+  height: auto;
+  aspect-ratio: 1;
+  padding: 2.6cqw;
+  border-radius: 4.4cqw;
   background: #fff;
-  flex-shrink: 0;
+}
+
+.credencial__codigo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(0.95rem, 5.4cqw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .credencial {
     transition: none;
+    animation: none;
+  }
+
+  .credencial__pista {
     animation: none;
   }
 }

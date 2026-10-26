@@ -1,5 +1,5 @@
-<!-- Credencial 3D con datos reales (spec 013): la abre el enlace del correo (/credencial/<codigo>). Minimalista:
-     la credencial al centro y un solo botón para editar las tecnologías, que se guardan solas en el servidor. -->
+<!-- Credencial 3D con datos reales (spec 013): la abre el enlace del correo (/credencial/<codigo>). La credencial ocupa toda la pantalla
+     en vertical y no hay nada más: con doble toque se abre el editor de tecnologías, que se guardan solas en el servidor. -->
 <template>
   <div class="pagina" :style="{ '--acento': acento }">
     <div class="pagina__fondo" aria-hidden="true"/>
@@ -9,13 +9,11 @@
       class="pagina__estado"
       aria-live="polite"
     >
-      <p class="kicker">Credencial</p>
       <p class="mt-4 text-lg text-slate-300">Cargando tu credencial…</p>
     </section>
 
     <section v-else-if="!datos" class="pagina__estado">
-      <p class="kicker">Credencial</p>
-      <h1 class="mt-3 text-3xl font-bold tracking-tight">No pudimos mostrar tu credencial</h1>
+      <h1 class="text-3xl font-bold tracking-tight">No pudimos mostrar tu credencial</h1>
       <p class="mt-4 text-slate-300">{{ mensajeFalla }}</p>
       <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
         <button
@@ -26,38 +24,32 @@
         >
           Reintentar
         </button>
-        <NuxtLink to="/" class="boton boton--secundario">Volver al inicio</NuxtLink>
+        <NuxtLink to="/" class="boton boton--secundario">Ir al sitio del congreso</NuxtLink>
       </div>
     </section>
 
-    <section v-else class="vista">
+    <template v-else>
       <h1 class="sr-only">Tu credencial del {{ datos.evento.nombreCorto }}</h1>
 
       <CredencialVertical
         :tecnologias="seleccion"
         :asistente="asistente"
-        :evento="{ nombreCorto: datos.evento.nombreCorto, lugar: LUGAR_EVENTO }"
+        :evento="{ nombreCorto: datos.evento.nombreCorto, nombre: datos.evento.nombre }"
         :qr="qr"
+        :pista="pista"
+        @editar="abrirEditor"
       />
 
-      <div class="vista__acciones">
-        <button type="button" class="boton boton--primario" @click="editando = true">
-          <Icon name="heroicons:pencil-square" class="h-4 w-4" aria-hidden="true" />
-          Editar tecnologías
-        </button>
-        <p class="vista__estado" :class="`vista__estado--${estado}`" role="status" aria-live="polite">
-          <template v-if="estado === 'guardando'">Guardando…</template>
-          <template v-else-if="estado === 'guardado'">
-            <Icon name="heroicons:check-circle" class="h-4 w-4" aria-hidden="true" /> Guardado
-          </template>
-          <template v-else-if="estado === 'error'">
-            {{ mensajeErrorGuardado }}
-            <button type="button" class="vista__reintentar" @click="guardar">Reintentar</button>
-          </template>
-          <template v-else>Elige las tecnologías que usas: la primera da el color.</template>
-        </p>
-      </div>
-    </section>
+      <!-- Solo si el guardado falló y el editor está cerrado: de otro modo la persona no se enteraría -->
+      <p
+        v-if="estado === 'error' && !editando"
+        class="pagina__aviso"
+        role="alert"
+      >
+        {{ mensajeErrorGuardado }}
+        <button type="button" class="pagina__reintentar" @click="guardar">Reintentar</button>
+      </p>
+    </template>
 
     <CredencialEditor
       :abierto="editando"
@@ -86,7 +78,6 @@ import {
   mismaSeleccion,
   nombreCompleto,
   normalizarSeleccion,
-  rolDeCredencial,
   type DatosCredencial,
   type EstadoGuardado,
 } from '~/utils/credencial'
@@ -94,10 +85,10 @@ import { rutasSitio } from '~/utils/rutas-sitio'
 
 definePageMeta({ layout: 'credencial' })
 
-/** Sede y fechas del VIII CIISIC (lo que va impreso en la credencial). */
-const LUGAR_EVENTO = 'Cañete, Perú · 26–30 oct'
 /** Tiempo sin cambios antes de guardar: agrupa varios toques seguidos en una sola petición. */
 const ESPERA_GUARDADO_MS = 600
+/** Cuánto se muestra el aviso «Toca dos veces para editar». */
+const DURACION_PISTA_MS = 5000
 
 const ruta = useRoute()
 const codigo = computed(() => String(ruta.params.codigo ?? '').trim().toUpperCase())
@@ -125,14 +116,15 @@ const recargar = () => { void refresh() }
 
 useSeoMeta({
   title: () => (datos.value ? `Credencial | ${datos.value.evento.nombreCorto}` : 'Credencial | VIII CIISIC 2026'),
-  description: 'Credencial digital 3D del congreso con tu nombre, tu rol y tu código de registro.',
+  description: 'Credencial digital 3D del congreso con tu nombre y tu código de registro.',
   // Es personal: se abre con el enlace del correo y no debe aparecer en buscadores
   robots: 'noindex, nofollow',
+  // Pantalla completa en el celular: la barra del navegador toma el color de fondo de la credencial
+  themeColor: '#041d39',
 })
 
 const asistente = computed(() => ({
   nombre: datos.value ? nombreCompleto(datos.value) : '',
-  rol: datos.value ? rolDeCredencial(datos.value) : '',
   codigo: datos.value?.codigo ?? codigo.value,
 }))
 
@@ -143,12 +135,22 @@ const qr = computed(() => {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 })
 
+// ─── Editor: doble toque sobre la credencial ────────────────────────────────
+
+const editando = ref(false)
+const pista = ref(false)
+let temporizadorPista: ReturnType<typeof setTimeout> | undefined
+
+function abrirEditor() {
+  pista.value = false
+  editando.value = true
+}
+
 // ─── Tecnologías: se guardan solas en el servidor ───────────────────────────
 
 const seleccion = ref<string[]>([])
 /** Lo último que el servidor confirmó: no se guarda lo que no cambió. */
 const guardadas = ref<string[]>([])
-const editando = ref(false)
 const lleno = ref(false)
 const estado = ref<EstadoGuardado>('inactivo')
 const mensajeErrorGuardado = ref('')
@@ -227,19 +229,28 @@ function guardarAlSalir() {
 
 onMounted(() => {
   window.addEventListener('pagehide', guardarAlSalir)
+  // El aviso solo tiene sentido si la credencial cargó
+  if (datos.value) {
+    pista.value = true
+    temporizadorPista = setTimeout(() => { pista.value = false }, DURACION_PISTA_MS)
+  }
 })
 onBeforeUnmount(() => {
   if (import.meta.client) window.removeEventListener('pagehide', guardarAlSalir)
+  clearTimeout(temporizadorPista)
   guardarAlSalir()
 })
 </script>
 
 <style scoped>
+/* Toda la pantalla, sin desplazamiento: la credencial es lo único que hay */
 .pagina {
   position: relative;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
-  min-height: calc(100vh - 5rem);
-  padding: 1rem 1.5rem 4rem;
 }
 
 /* Resplandor del color de la tecnología principal detrás de la credencial */
@@ -249,73 +260,47 @@ onBeforeUnmount(() => {
   pointer-events: none;
   background:
     radial-gradient(
-      circle at 50% 36%,
+      circle at 50% 45%,
       color-mix(in srgb, var(--acento, #00d9e8) 24%, transparent),
-      transparent 52%
+      transparent 55%
     ),
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 44px 44px,
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 44px 44px;
-  mask-image: radial-gradient(circle at 50% 40%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 20%, transparent 78%);
   transition: background 0.4s ease;
 }
 
 .pagina__estado {
   position: relative;
   max-width: 34rem;
-  margin: 0 auto;
-  padding: 6rem 0;
+  padding: 1.5rem;
   text-align: center;
 }
 
-.vista {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.25rem;
-  padding-top: 1rem;
-}
-
-.vista__acciones {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.9rem;
-  text-align: center;
-}
-
-.vista__estado {
+.pagina__aviso {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  z-index: 20;
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  min-height: 1.25rem;
-  max-width: 22rem;
-  font-size: 0.82rem;
-  color: rgba(214, 231, 250, 0.6);
+  gap: 0.5rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(252, 165, 165, 0.35);
+  background: rgba(40, 10, 16, 0.92);
+  font-size: 0.85rem;
+  color: #fecaca;
+  transform: translateX(-50%);
 }
 
-.vista__estado--guardado {
-  color: #6ee7b7;
-}
-
-.vista__estado--error {
-  color: #fca5a5;
-}
-
-.vista__reintentar {
+.pagina__reintentar {
   font-weight: 700;
   text-decoration: underline;
   color: #fff;
-}
-
-.kicker {
-  color: #67e8f9;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
 .boton {
@@ -334,7 +319,7 @@ onBeforeUnmount(() => {
 }
 
 .boton:focus-visible,
-.vista__reintentar:focus-visible {
+.pagina__reintentar:focus-visible {
   outline: 2px solid #00d9e8;
   outline-offset: 2px;
 }

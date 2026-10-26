@@ -4,7 +4,9 @@ import {
   acentoDe,
   ACENTO_POR_DEFECTO,
   alternarTecnologia,
+  DISTANCIA_DOBLE_TOQUE_PX,
   esCodigoCredencial,
+  esDobleToque,
   filtrarCatalogo,
   hacerPrincipal,
   mensajeCredencial,
@@ -15,6 +17,7 @@ import {
   REGEX_CODIGO_CREDENCIAL,
   rolDeCredencial,
   tecnologiasDe,
+  VENTANA_DOBLE_TOQUE_MS,
 } from '../app/utils/credencial'
 
 const datos = {
@@ -168,5 +171,23 @@ describe('tecnologías elegidas', () => {
     expect(ids('c#')).toContain('csharp')
     expect(ids('  ')).toHaveLength(TECNOLOGIAS.length)
     expect(ids('zzzzz')).toEqual([])
+  })
+})
+
+describe('doble toque sobre la credencial', () => {
+  const toque = (instante: number, x = 100, y = 200) => ({ instante, x, y })
+
+  it('dos toques seguidos y juntos abren el editor', () => {
+    expect(esDobleToque(toque(1000), toque(1200))).toBe(true)
+    expect(esDobleToque(toque(1000), toque(1000 + VENTANA_DOBLE_TOQUE_MS))).toBe(true)
+    expect(esDobleToque(toque(1000, 100, 200), toque(1150, 100 + DISTANCIA_DOBLE_TOQUE_PX - 1, 200))).toBe(true)
+  })
+
+  it('un toque suelto, o dos separados en el tiempo o en el espacio, no cuentan', () => {
+    expect(esDobleToque(null, toque(1000))).toBe(false)
+    expect(esDobleToque(toque(1000), toque(1000 + VENTANA_DOBLE_TOQUE_MS + 1))).toBe(false)
+    expect(esDobleToque(toque(1000, 100, 200), toque(1150, 100 + DISTANCIA_DOBLE_TOQUE_PX + 5, 200))).toBe(false)
+    expect(esDobleToque(toque(1000), toque(1000))).toBe(false)
+    expect(esDobleToque(toque(1200), toque(1000))).toBe(false)
   })
 })
