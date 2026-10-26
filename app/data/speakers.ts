@@ -51,7 +51,7 @@ const speakerProfiles: Speaker[] = [
     areas: ['Sistemas de información', 'Adopción tecnológica', 'Analítica de datos'],
   },
   {
-    name: 'Hugo David Calderón Vilca',
+    name: 'David Calderón Vilca',
     degreeLevel: 'Doctor',
     degree: 'Doctor en Ciencia de la Computación',
     country: 'Perú',
