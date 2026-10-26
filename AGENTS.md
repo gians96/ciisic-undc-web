@@ -37,6 +37,7 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   `inscripcion-ponencias` (inscripción a ponencias especializadas con las ponencias y cupos del backend), 
   `aforo-ponencias` (aforo, inscritos presenciales y asistencia por tema con el enlace público del Owner; **oculta**, sin enlaces), 
   `delegaciones` (delegaciones con planes propios: vista del delegado, link individual de cada integrante y vouchers múltiples; **oculta**, sin enlaces), 
+  `credencial/[codigo]` (credencial 3D personal, **oculta**: `noindex`, layout `credencial` sin menú ni pie; la abre el enlace del correo) y `credencial` (escribir el código si se perdió el enlace),
   `contacto`, `login` (redirige al panel), páginas informativas.
 - `app/composables/`: `useFormularioInscripcion` (formulario compartido), `useEvento`,
   `usePlanes`, `useCatalogos`, `usePonenciasEspecializadas`, `useConsultation` (DNI), `useVerificacionEstudiante`,
@@ -104,6 +105,11 @@ el token de acceso configurado en el servidor. Documentación: [`docs/`](docs/RE
   en `X-Link-Token` (`responderAforoPonencias`); **nunca** en una URL, un log, la consola ni el `<head>`. Muestra por tema los inscritos **presenciales** frente al aforo, los cupos libres y la
   asistencia en puerta (`app/utils/aforo-ponencias.ts`) y, en «Ver inscritos», la lista de cada tema con **solo** nombre, modo y hora de asistencia (nunca documento ni contacto:
   no los agregues); se actualiza sola cada minuto. `/ponencias-especializadas` no muestra cupos. **Backend 036 primero.**
+- **Credencial 3D** (spec 013; contrato en la spec 038 del backend): `/credencial/<codigo>` es **oculta** (`noindex`) y el enlace llega por correo al aprobar la inscripción o por el envío
+  masivo del panel (spec 039). El código (10 caracteres `[0-9A-Z]`, el del QR impreso) es la llave: el BFF lo valida y pide `GET /credential/:codigo`, que solo responde inscripciones aprobadas con lo que
+  se imprime y las tecnologías. La persona elige hasta 8 tecnologías (`app/data/tecnologias.ts`: el catálogo es **de la landing**; la primera da el color y la marca de agua) y se **guardan solas en el
+  servidor** (`POST …/tecnologias`, tras 600 ms sin cambios, una petición a la vez y `sendBeacon` al cerrar): ya no hay `localStorage`. **No cambies el `id` de una tecnología existente** (se guarda en el servidor; un id
+  que ya no está en el catálogo se ignora). El QR es del código (`uqr`, oscuro sobre blanco). Nunca muestres documento, correo ni montos aquí. **Backend 038 primero.**
 - **Delegaciones** (specs 008 y 010; contrato en la spec 029 del backend): la página `/delegaciones` es **oculta** (`noindex`, sin enlaces en el menú ni en el pie; el delegado
   recibe el link por correo) y **ya no crea delegaciones**: las crea el staff con sus **planes y precios propios** (Con kit, Sin kit y Virtual). Tiene tres estados según el parámetro:
   `?delegacion=<código>` (el delegado ve su grupo, sus planes y **solo agrega** integrantes —cada uno con su plan— y vouchers; sin borrar ni editar; ve el link individual para compartirlo),
@@ -165,8 +171,9 @@ Constitución: [`.specify/memory/constitution.md`](.specify/memory/constitution.
 `specs/008-delegaciones/` (inscripción de delegaciones, página oculta),
 `specs/009-ponencias-validacion-congreso/` (ponencias solo para congresistas con pago aprobado),
 `specs/010-delegaciones-planes/` (delegaciones con planes propios y link individual),
-`specs/011-ponencias-coponentes/` (temas de ponencias especializadas con varios ponentes) y
-`specs/012-aforo-ponencias/` (página oculta del aforo por tema con el enlace público del Owner).
+`specs/011-ponencias-coponentes/` (temas de ponencias especializadas con varios ponentes),
+`specs/012-aforo-ponencias/` (página oculta del aforo por tema con el enlace público del Owner) y
+`specs/013-credencial-3d/` (credencial 3D personal con tecnologías editables).
 Flujo: spec → plan → tasks; marcar tasks al implementar.
 
 ## Antes de dar por terminado

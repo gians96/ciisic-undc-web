@@ -67,6 +67,8 @@ reenvía a la API del sitio de `backend-ciisic` agregando el token del evento.
 | `GET /api/publico/ponencias-especializadas` | `GET /specialized-talks` | 15 s, clave constante | — |
 | `POST /api/publico/ponencias-especializadas/inscripciones` | `POST /specialized-talk-registrations` | no | JSON, 100 KB |
 | `POST /api/publico/ponencias-especializadas/elegibilidad` | `POST /specialized-talk-eligibility` | no (el documento y el correo van en el cuerpo, nunca en la URL) | JSON, 100 KB |
+| `GET /api/publico/credencial/:codigo` | `GET /credential/:codigo` (spec 038 del backend) | no (`no-store`; el código se normaliza a mayúsculas y, si no tiene 10 caracteres `[0-9A-Z]`, responde `422 INVALID_CODE` sin consultar) | — |
+| `POST /api/publico/credencial/:codigo/tecnologias` | `POST /credential/:codigo/technologies` (`{ tecnologias }`) | no (`no-store`; mismo código) | JSON, 2 KB |
 | `POST /api/publico/ponencias-especializadas/aforo` | `GET /specialized-talk-occupancy` con `X-Link-Token` | no (`no-store`, `noindex`; el token llega en el cuerpo `{ token }` y nunca va en una URL; sin la forma del backend —43 caracteres base64url— responde `404 LINK_NOT_FOUND` sin consultarlo) | JSON, 1 KB |
 
 Reglas comunes:

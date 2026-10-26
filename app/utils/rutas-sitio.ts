@@ -11,6 +11,10 @@ export const rutasSitio = {
   /** Client ID de Google y URL del panel (backend `GET /config`). */
   configuracion: '/api/publico/configuracion',
   consultaDni: (numero: string) => `/api/publico/consulta-dni/${encodeURIComponent(String(numero).trim())}`,
+  /** Datos de la credencial 3D por su código: enlace del correo (backend `GET /credential/:codigo`, spec 038). */
+  credencial: (codigo: string) => `/api/publico/credencial/${encodeURIComponent(String(codigo).trim().toUpperCase())}`,
+  /** Guarda las tecnologías elegidas en la credencial (backend `POST /credential/:codigo/technologies`, spec 038). */
+  tecnologiasCredencial: (codigo: string) => `/api/publico/credencial/${encodeURIComponent(String(codigo).trim().toUpperCase())}/tecnologias`,
   verificacionEstudiante: '/api/publico/verificacion-estudiante',
   /** `{ credential }` de Google → backend `POST /google-verification` con `{ idToken }`. */
   verificacionGoogle: '/api/publico/verificacion-google',

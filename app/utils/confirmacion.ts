@@ -21,7 +21,7 @@ export function proximosPasos(modalidad: unknown): string[] {
   return [
     '📧 Recibirás un email de confirmación en los próximos minutos',
     '🔍 Nuestro equipo verificará tu voucher de pago',
-    '✅ Una vez aprobado, recibirás tu certificado y carnet digital',
+    '✅ Una vez aprobado, recibirás tu credencial en PDF y el enlace a tu credencial digital 3D',
     '📅 Te notificaremos sobre el cronograma de actividades',
   ]
 }
