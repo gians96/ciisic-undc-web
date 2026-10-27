@@ -24,12 +24,12 @@ describe('sesiones de los ponentes invitados', () => {
   const sesiones = sesionesDePonentes(schedule)
 
   it('cada ponente de speakers.ts tiene exactamente una sesión en el cronograma', () => {
-    expect(speakers).toHaveLength(9)
+    expect(speakers).toHaveLength(8)
     for (const speaker of speakers) {
       expect(eventosConPonente.filter(event => event.ponente === speaker.name), speaker.name).toHaveLength(1)
       expect(sesiones.has(speaker.name), speaker.name).toBe(true)
     }
-    expect(sesiones.size).toBe(9)
+    expect(sesiones.size).toBe(8)
   })
 
   it('ningún evento del cronograma apunta a un ponente que no esté en speakers.ts', () => {
@@ -39,6 +39,7 @@ describe('sesiones de los ponentes invitados', () => {
 
   it('escribe el día y la hora de cada sesión', () => {
     expect(sesiones.get('Patricio Ramírez Correa')).toEqual({ dia: 'Martes 27 de octubre', hora: '9:00 – 10:30 a. m.' })
+    expect(sesiones.get('Javier Gamboa Cruzado')).toEqual({ dia: 'Martes 27 de octubre', hora: '11:15 a. m. – 12:00 p. m.' })
     expect(sesiones.get('Jorge Risco Becerra')).toEqual({ dia: 'Miércoles 28 de octubre', hora: '10:00 – 10:50 a. m.' })
     expect(sesiones.get('Enrique Luis Arnáez Braschi')).toEqual({ dia: 'Jueves 29 de octubre', hora: '11:15 a. m. – 12:00 p. m.' })
   })
