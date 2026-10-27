@@ -116,6 +116,12 @@ const logos: Auspiciador[] = [
     alt: "Glen Soft",
     title: "Glen Soft",
   },
+  {
+    src: "/images/auspiciadores/enzo-led-eventos.webp",
+    alt: "Enzo LED & Eventos",
+    title: "Enzo LED & Eventos",
+    fondo: "oscuro",
+  },
 ];
 </script>
 
