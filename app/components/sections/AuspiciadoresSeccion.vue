@@ -118,9 +118,8 @@ const logos: Auspiciador[] = [
   },
   {
     src: "/images/auspiciadores/enzo-led-eventos.webp",
-    alt: "Enzo LED & Eventos",
-    title: "Enzo LED & Eventos",
-    fondo: "oscuro",
+    alt: "Enzo Producciones, LED & Eventos",
+    title: "Enzo Producciones · LED & Eventos",
   },
 ];
 </script>
