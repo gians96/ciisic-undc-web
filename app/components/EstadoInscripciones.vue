@@ -19,11 +19,20 @@
         </span>
 
         <h2 class="mt-6 text-3xl font-bold text-white">
-          {{ estado === 'cerradas' ? 'Inscripciones cerradas' : 'No pudimos cargar la inscripción' }}
+          {{
+            estado === 'cerradas'
+              ? finalizadas ? 'Inscripciones finalizadas' : 'Inscripciones cerradas'
+              : 'No pudimos cargar la inscripción'
+          }}
         </h2>
         <p class="mt-3 leading-relaxed text-slate-300">
           <template v-if="estado === 'cerradas'">
-            Las inscripciones {{ nombreEvento ? `para el ${nombreEvento}` : '' }} no están disponibles en este momento.
+            <template v-if="finalizadas">
+              Las inscripciones {{ nombreEvento ? `al ${nombreEvento}` : '' }} han finalizado. Gracias por ser parte del congreso.
+            </template>
+            <template v-else>
+              Las inscripciones {{ nombreEvento ? `para el ${nombreEvento}` : '' }} no están disponibles en este momento.
+            </template>
             Si tienes dudas, comunícate con la organización.
           </template>
           <template v-else>
@@ -68,6 +77,8 @@ const emit = defineEmits<{
 }>()
 
 const { evento, contacto } = useEvento()
+// «Finalizadas» cuando la API informa que la ventana de inscripciones ya terminó
+const { finalizadas } = useEstadoInscripciones()
 
 // Contacto del evento (con el de la organización como respaldo si el evento no cargó)
 const nombreEvento = computed(() => evento.value?.nombreCorto || '')

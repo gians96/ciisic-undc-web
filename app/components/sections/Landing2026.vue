@@ -57,10 +57,11 @@
                 >
                   <NuxtLink
                     to="/planes"
-                    class="action-primary inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
-                    >Inscríbete ahora
+                    class="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 font-bold"
+                    :class="finalizadas ? 'action-secondary' : 'action-primary'"
+                    >{{ finalizadas ? 'Inscripciones finalizadas' : 'Inscríbete ahora' }}
                     <Icon
-                      name="heroicons:arrow-up-right"
+                      :name="finalizadas ? 'heroicons:lock-closed' : 'heroicons:arrow-up-right'"
                       class="h-5 w-5 shrink-0"
                   /></NuxtLink>
                   <NuxtLink
@@ -390,6 +391,9 @@ import AuspiciadoresSeccion from "./AuspiciadoresSeccion.vue";
 import EventCountdown from "../countdown/Countdown.vue";
 
 const previousCongressImage = "/images/congreso-anterior.webp";
+
+// Según la API del evento: cuando la ventana de inscripciones terminó, el botón lo dice
+const { finalizadas } = useEstadoInscripciones();
 
 // Coloca la fotografía en public/images/sede/ y reemplaza null por su ruta pública.
 // Ejemplo: const venueImage = '/images/sede/casa-de-la-cultura.webp'

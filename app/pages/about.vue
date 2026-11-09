@@ -19,7 +19,7 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-element" style="animation-delay: 0.4s;">
             <NuxtLink v-for="(action, index) in aboutCongress.actions" :key="index" :to="action.to"
               :class="action.style">
-              {{ action.label }}
+              {{ action.to === '/planes' && finalizadas ? 'Inscripciones finalizadas' : action.label }}
             </NuxtLink>
           </div>
         </div>
@@ -140,6 +140,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { speakers } from '~/data/speakers'
 import { specializedTalks } from '~/data/ponencias-especializadas'
+
+// Según la API del evento: cuando la ventana de inscripciones terminó, el botón lo dice
+const { finalizadas } = useEstadoInscripciones()
 
 // ============================================================================
 // SEO Y META TAGS

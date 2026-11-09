@@ -14,6 +14,9 @@ Spec y contratos: `specs/001-landing-multi-evento/` (`spec.md`, `plan.md`, `cont
 - Datos del evento (`useEvento` → `/api/publico/evento`), planes (`usePlanes` → `/api/publico/planes?categoria=`)
   y ciclos (`useCatalogos` → `/api/publico/catalogos`), cargados con `useAsyncData` (compatibles con SSR).
 - Muestran "Inscripciones cerradas", "Cargando" o un error con "Reintentar" según el estado del evento.
+  Cuando la API informa que la ventana de inscripciones ya terminó (`inscripciones.fin`, o el último día del evento
+  si no hay fin) dicen "Inscripciones finalizadas": lo decide `estadoInscripciones` (`app/utils/inscripciones.ts`)
+  y lo usan el botón «Inscripciones» del encabezado y del menú móvil, el botón del hero y `/about` (`useEstadoInscripciones`).
 - `/estudiantes` verifica al estudiante UNDC (`/api/publico/verificacion-estudiante`) y muestra el precio UNDC
   solo si `esEstudianteUndc === true`. En `/general` el precio UNDC depende del dominio del correo.
 - Con esa misma condición se ocultan los planes que no corresponden (`disponiblePara`, spec 016 del

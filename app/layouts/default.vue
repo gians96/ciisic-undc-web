@@ -57,9 +57,15 @@
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-flex items-center justify-center rounded-xl bg-primary-500 px-4 py-3 text-sm font-bold text-[#032f5f] transition hover:-translate-y-0.5 hover:bg-primary-300 xl:px-5"
+              class="hidden lg:inline-flex items-center justify-center rounded-xl px-4 text-sm font-bold transition hover:-translate-y-0.5 xl:px-5"
+              :class="finalizadas ? 'flex-col border border-white/20 bg-white/5 py-2 text-center whitespace-nowrap text-slate-300 hover:bg-white/10 hover:text-white' : 'bg-primary-500 py-3 text-[#032f5f] hover:bg-primary-300'"
             >
-              INSCRIPCIONES
+              <!-- Finalizadas: dos líneas para no ensanchar la barra de navegación -->
+              <template v-if="finalizadas">
+                <span class="block text-[10px] font-semibold leading-none tracking-wider opacity-70">INSCRIPCIONES</span>
+                <span class="block text-sm leading-tight">FINALIZADAS</span>
+              </template>
+              <template v-else>INSCRIPCIONES</template>
             </NuxtLink>
           </div>
         </div>
@@ -101,6 +107,9 @@ const navigationStore = useNavigationStore();
 // ============================================================================
 
 const route = useRoute();
+
+// Según la API del evento: cuando la ventana de inscripciones terminó, el botón lo dice
+const { finalizadas } = useEstadoInscripciones();
 
 // ============================================================================
 // METADATA Y SEO

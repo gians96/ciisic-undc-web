@@ -118,9 +118,10 @@
               <NuxtLink
                 to="/planes"
                 @click="closeMenu"
-                class="w-full bg-primary-500 hover:bg-primary-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+                class="w-full py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+                :class="finalizadas ? 'bg-white/10 text-slate-200 hover:bg-white/15' : 'bg-primary-500 hover:bg-primary-600 text-black'"
               >
-                INSCRIPCIONES
+                {{ finalizadas ? 'INSCRIPCIONES FINALIZADAS' : 'INSCRIPCIONES' }}
               </NuxtLink>
             </div>
           </div>
@@ -148,6 +149,9 @@ import { rutaEnGrupo } from '~/utils/semana-sistemica'
 
 const navigationStore = useNavigationStore()
 const layoutStore = useLayoutStore()
+
+// Según la API del evento: cuando la ventana de inscripciones terminó, el botón lo dice
+const { finalizadas } = useEstadoInscripciones()
 
 const { isMobileMenuOpen } = storeToRefs(layoutStore)
 

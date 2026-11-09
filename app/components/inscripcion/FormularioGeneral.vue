@@ -8,8 +8,9 @@
                 <NuxtLink to="/planes" class="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-300 hover:text-white"><Icon name="heroicons:arrow-left" class="h-4 w-4" /> Cambiar modalidad</NuxtLink>
                 <p class="mb-3 text-xs font-bold uppercase tracking-[.2em] text-primary-300">VIII CIISIC 2026 · Inscripciones</p>
                 <h1 class="page-title">{{ titulo }}</h1>
-                <p class="page-subtitle">Completa tu inscripción al VIII Congreso Internacional de Ingeniería de Sistemas
+                <p v-if="!finalizadas" class="page-subtitle">Completa tu inscripción al VIII Congreso Internacional de Ingeniería de Sistemas
                     e Investigación Científica</p>
+                <p v-else class="page-subtitle">Las inscripciones al VIII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica han finalizado</p>
             </div>
         </section>
 
@@ -520,6 +521,9 @@ const {
     apiSubmitting,
     handleSubmit
 } = useFormularioInscripcion({ categoria: props.categoria })
+
+// «Finalizadas» cuando la API informa que la ventana de inscripciones ya terminó
+const { finalizadas } = useEstadoInscripciones()
 </script>
 
 <style scoped>
