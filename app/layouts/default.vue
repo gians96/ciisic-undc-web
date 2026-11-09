@@ -43,9 +43,15 @@
 
             <NuxtLink
               to="/planes"
-              class="hidden lg:inline-block bg-transparent border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-black px-6 py-2 font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
+              class="hidden lg:inline-block bg-transparent border-2 px-6 py-2 text-center whitespace-nowrap font-bold uppercase text-sm transition-all duration-300 registro-button-clip"
+              :class="inscripcionesCerradas ? 'border-slate-500 text-slate-400 hover:border-slate-300 hover:text-slate-200' : 'border-green-500 text-green-500 hover:bg-green-500 hover:text-black'"
             >
-              INSCRIPCIONES
+              <!-- Cerradas: dos líneas para no ensanchar la barra de navegación -->
+              <template v-if="inscripcionesCerradas">
+                <span class="block text-[10px] leading-none tracking-wider opacity-70">INSCRIPCIONES</span>
+                <span class="block text-sm leading-tight">FINALIZADAS</span>
+              </template>
+              <template v-else>INSCRIPCIONES</template>
             </NuxtLink>
           </div>
         </div>
@@ -85,6 +91,9 @@ const navigationStore = useNavigationStore();
 // ============================================================================
 
 const route = useRoute();
+
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas();
 
 // ============================================================================
 // METADATA Y SEO

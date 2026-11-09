@@ -115,6 +115,12 @@ export const useInscription = () => {
      * Crea una inscripción completa con usuario, voucher y datos de pago
      */
     const createInscription = async (data: InscriptionData): Promise<InscriptionResponse> => {
+        // Edición histórica (ciisic-7): las inscripciones están cerradas y no se envía nada a la API
+        if (config.public.inscripcionesCerradas !== false) {
+            error.value = 'Las inscripciones al VII CIISIC han finalizado.'
+            throw new Error(error.value)
+        }
+
         isSubmitting.value = true
         error.value = null
 

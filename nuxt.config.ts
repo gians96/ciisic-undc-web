@@ -35,7 +35,10 @@ export default defineNuxtConfig({
       appName: 'VII CIISIC 2025',
       appVersion: '1.0.0',
       // Usar el backend correcto como fallback si la variable no está disponible
-      apiBaseUrl: process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe'
+      apiBaseUrl: process.env.API_BASE_URL || 'https://api-ciisic-vii.episundc.pe',
+      // Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas).
+      // Se levantan con NUXT_PUBLIC_INSCRIPCIONES_CERRADAS=false en el servidor.
+      inscripcionesCerradas: true
     }
   },
   app: {

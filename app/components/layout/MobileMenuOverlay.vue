@@ -82,9 +82,10 @@
               <NuxtLink
                 to="/planes"
                 @click="closeMenu"
-                class="w-full bg-green-500 hover:bg-green-600 text-black py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+                class="w-full py-3 px-4 rounded-lg text-center font-bold uppercase text-sm transition-colors duration-200 block"
+                :class="inscripcionesCerradas ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-green-500 hover:bg-green-600 text-black'"
               >
-                INSCRIPCIONES
+                {{ inscripcionesCerradas ? 'INSCRIPCIONES FINALIZADAS' : 'INSCRIPCIONES' }}
               </NuxtLink>
             </div>
           </div>
@@ -110,6 +111,9 @@ import { useLayoutStore } from '~/stores/layout'
 
 const navigationStore = useNavigationStore()
 const layoutStore = useLayoutStore()
+
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas()
 
 const { isMobileMenuOpen } = storeToRefs(layoutStore)
 

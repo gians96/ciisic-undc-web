@@ -19,7 +19,7 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-element" style="animation-delay: 0.4s;">
             <NuxtLink v-for="(action, index) in aboutCongress.actions" :key="index" :to="action.to"
               :class="action.style">
-              {{ action.label }}
+              {{ action.to === '/planes' && inscripcionesCerradas ? 'Inscripciones finalizadas' : action.label }}
             </NuxtLink>
           </div>
         </div>
@@ -130,6 +130,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas()
 
 // ============================================================================
 // SEO Y META TAGS

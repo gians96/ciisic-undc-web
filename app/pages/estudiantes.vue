@@ -6,8 +6,9 @@
         <section class="breadcrumb-area">
             <div class="breadcrumb-container">
                 <h1 class="page-title">REGISTRO ESTUDIANTES - VII CIISIC</h1>
-                <p class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas
+                <p v-if="!inscripcionesCerradas" class="page-subtitle">Completa tu inscripción al VII Congreso Internacional de Ingeniería de Sistemas
                     e Investigación Científica</p>
+                <p v-else class="page-subtitle">Las inscripciones al VII Congreso Internacional de Ingeniería de Sistemas e Investigación Científica han finalizado</p>
             </div>
         </section>
 
@@ -20,7 +21,8 @@
         <!-- ===========================================================================
         SECCIÓN DEL FORMULARIO
         ============================================================================ -->
-        <section class="form-section">
+        <InscripcionesFinalizadas v-if="inscripcionesCerradas" />
+        <section v-else class="form-section">
             <div class="form-container">
                 <form @submit.prevent="handleSubmit" class="registration-form">
 
@@ -410,6 +412,9 @@ const {
 const route = useRoute()
 const router = useRouter()
 
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas()
+
 // ===========================================================================
 // PLANES DE INSCRIPCIÓN
 // ===========================================================================
@@ -733,6 +738,9 @@ const handleFileChange = (event: Event) => {
 }
 
 const handleSubmit = async () => {
+    // Edición histórica: ya no se reciben inscripciones
+    if (inscripcionesCerradas.value) return
+
 
     // Prevenir múltiples envíos
     if (isSubmitting.value || apiSubmitting.value) return
@@ -983,6 +991,9 @@ const onClassificationAfterLeave = (el: Element) => {
 // INICIALIZACIÓN
 // ===========================================================================
 onMounted(async () => {
+    // Con las inscripciones cerradas no hace falta cargar los catálogos del formulario
+    if (inscripcionesCerradas.value) return
+
     // Inicializar catálogos de la API
     try {
         await initializeCatalogs()

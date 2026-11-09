@@ -59,7 +59,8 @@
             <div class="pb-8 lg:pb-12">
               <NuxtLink
                 to="/planes"
-                class="inline-block bg-green-500 hover:bg-green-400 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                class="inline-block font-bold px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg uppercase tracking-wider transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                :class="inscripcionesCerradas ? 'bg-slate-600 hover:bg-slate-500 text-slate-100' : 'bg-green-500 hover:bg-green-400 text-white'"
                 style="
                   clip-path: polygon(
                     0 0,
@@ -69,7 +70,7 @@
                   );
                 "
               >
-                REGISTRO
+                {{ inscripcionesCerradas ? 'INSCRIPCIONES FINALIZADAS' : 'REGISTRO' }}
               </NuxtLink>
             </div>
           </div>
@@ -167,6 +168,9 @@ const props = withDefaults(defineProps<HeroProps>(), {
   ctaText: "CONTACT US",
   ctaLink: "/contact",
 });
+
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas();
 </script>
 
 <style scoped>

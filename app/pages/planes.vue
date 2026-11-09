@@ -17,11 +17,12 @@
           </h1>
 
           <p class="text-xl text-gray-300 mb-6 leading-relaxed fade-in-element" style="animation-delay: 0.4s;">
-            Sé parte de la séptima edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica
+            {{ inscripcionesCerradas ? 'Gracias por ser parte de la séptima edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica' : 'Sé parte de la séptima edición del Congreso Internacional de Ingeniería de Sistemas e Investigación Científica' }}
           </p>
 
           <!-- Botones de inscripción -->
-          <div class="space-y-6 mb-6 fade-in-element" style="animation-delay: 0.6s;">
+          <InscripcionesFinalizadas v-if="inscripcionesCerradas" compacto class="mb-6 fade-in-element" style="animation-delay: 0.6s;" />
+          <div v-else class="space-y-6 mb-6 fade-in-element" style="animation-delay: 0.6s;">
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button @click="navigateToPlan('estudiantes')"
                 class="bg-green-400 hover:bg-green-300 text-black font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
@@ -84,6 +85,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+// Edición histórica: las inscripciones están cerradas (ver useInscripcionesCerradas)
+const inscripcionesCerradas = useInscripcionesCerradas()
 
 // ===========================================================================
 // ROUTER
